@@ -142,7 +142,9 @@ class BehaviorAssessmentService {
         return 0.4; // Moderate with supervision
       }
       if (age >= 18) return 0.2; // Low appropriateness
-      if (age >= 16 && purpose == 'education' && socialContext == 'supervised') {
+      if (age >= 16 &&
+          purpose == 'education' &&
+          socialContext == 'supervised') {
         return 0.3; // Educational context
       }
       return 0.0; // Very low for < 16

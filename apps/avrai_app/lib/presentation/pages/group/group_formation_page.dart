@@ -17,7 +17,7 @@ import 'package:avrai/presentation/blocs/group_matching_bloc.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai_runtime_os/services/matching/group_formation_service.dart';
 import 'package:go_router/go_router.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Group Formation Page
@@ -59,7 +59,7 @@ class _GroupFormationPageState extends State<GroupFormationPage>
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Form Group',
       appBarBackgroundColor: AppColors.primary,
       appBarForegroundColor: AppColors.white,

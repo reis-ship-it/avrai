@@ -1,15 +1,29 @@
 import 'dart:developer' as developer;
 
+import 'package:avrai_core/constants/vibe_constants.dart';
+import 'package:avrai_core/models/vibe/vibe_models.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_state.dart';
 import 'package:avrai_runtime_os/services/locality_agents/locality_agent_models_v1.dart';
+import 'package:avrai_runtime_os/services/vibe/canonical_vibe_runtime_policy.dart';
+import 'package:avrai_runtime_os/services/vibe/canonical_vibe_signal.dart';
 import 'package:avrai_runtime_os/services/places/geohash_service.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart';
+import 'package:reality_engine/reality_engine.dart';
 
 class LocalityMemory {
   static const String _box = 'spots_ai';
   static const String _logName = 'LocalityMemory';
 
   final StorageService _storage;
+  final Map<String, LocalityState> _snapshotCache = <String, LocalityState>{};
+  final Map<String, LocalityCandidateRecord> _candidateCache =
+      <String, LocalityCandidateRecord>{};
+  final Map<String, LocalityAgentPersonalDeltaV1> _personalDeltaCache =
+      <String, LocalityAgentPersonalDeltaV1>{};
+  final Map<String, LocalityAgentGlobalStateV1> _globalStateCache =
+      <String, LocalityAgentGlobalStateV1>{};
+  final Map<String, _LocalityMeshUpdateRecord> _meshUpdateCache =
+      <String, _LocalityMeshUpdateRecord>{};
 
   LocalityMemory({required StorageService storage}) : _storage = storage;
 
@@ -27,6 +41,10 @@ class LocalityMemory {
     required String agentId,
     required LocalityState state,
   }) async {
+    _snapshotCache[_snapshotKey(agentId)] = state;
+    if (CanonicalVibeRuntimePolicy.isCanonicalAuthorityActive) {
+      return;
+    }
     await _storage.setObject(
       _snapshotKey(agentId),
       state.toJson(),
@@ -35,6 +53,10 @@ class LocalityMemory {
   }
 
   LocalityState? getSnapshot(String agentId) {
+    final cached = _snapshotCache[_snapshotKey(agentId)];
+    if (cached != null) {
+      return cached;
+    }
     final raw = _storage.getObject<Map<String, dynamic>>(
       _snapshotKey(agentId),
       box: _box,
@@ -47,6 +69,10 @@ class LocalityMemory {
     required String agentId,
     required LocalityCandidateRecord record,
   }) async {
+    _candidateCache[_candidateKey(agentId, record.token.id)] = record;
+    if (CanonicalVibeRuntimePolicy.isCanonicalAuthorityActive) {
+      return;
+    }
     await _storage.setObject(
       _candidateKey(agentId, record.token.id),
       record.toJson(),
@@ -58,6 +84,10 @@ class LocalityMemory {
     required String agentId,
     required String tokenId,
   }) {
+    final cached = _candidateCache[_candidateKey(agentId, tokenId)];
+    if (cached != null) {
+      return cached;
+    }
     final raw = _storage.getObject<Map<String, dynamic>>(
       _candidateKey(agentId, tokenId),
       box: _box,
@@ -70,6 +100,10 @@ class LocalityMemory {
     required String agentId,
     required LocalityAgentPersonalDeltaV1 delta,
   }) async {
+    _personalDeltaCache[_personalDeltaKey(agentId, delta.key)] = delta;
+    if (CanonicalVibeRuntimePolicy.isCanonicalAuthorityActive) {
+      return;
+    }
     await _storage.setObject(
       _personalDeltaKey(agentId, delta.key),
       delta.toJson(),
@@ -81,8 +115,13 @@ class LocalityMemory {
     required String agentId,
     required LocalityAgentKeyV1 key,
   }) {
+    final cacheKey = _personalDeltaKey(agentId, key);
+    final cached = _personalDeltaCache[cacheKey];
+    if (cached != null) {
+      return cached;
+    }
     final raw = _storage.getObject<Map<String, dynamic>>(
-      _personalDeltaKey(agentId, key),
+      cacheKey,
       box: _box,
     );
     if (raw == null) return LocalityAgentPersonalDeltaV1.empty(key);
@@ -92,6 +131,10 @@ class LocalityMemory {
   Future<void> saveGlobalState({
     required LocalityAgentGlobalStateV1 state,
   }) async {
+    _globalStateCache[_globalStateKey(state.key)] = state;
+    if (CanonicalVibeRuntimePolicy.isCanonicalAuthorityActive) {
+      return;
+    }
     await _storage.setObject(
       _globalStateKey(state.key),
       state.toJson(),
@@ -100,8 +143,13 @@ class LocalityMemory {
   }
 
   LocalityAgentGlobalStateV1? getGlobalState(LocalityAgentKeyV1 key) {
+    final cacheKey = _globalStateKey(key);
+    final cached = _globalStateCache[cacheKey];
+    if (cached != null) {
+      return cached;
+    }
     final raw = _storage.getObject<Map<String, dynamic>>(
-      _globalStateKey(key),
+      cacheKey,
       box: _box,
     );
     if (raw == null) return null;
@@ -120,6 +168,10 @@ class LocalityMemory {
       receivedAt: receivedAt,
       expiresAt: receivedAt.add(ttl),
     );
+    _meshUpdateCache[_meshUpdateKey(key)] = record;
+    if (CanonicalVibeRuntimePolicy.isCanonicalAuthorityActive) {
+      return;
+    }
     await _storage.setObject(
       _meshUpdateKey(key),
       record.toJson(),
@@ -130,19 +182,23 @@ class LocalityMemory {
   List<List<double>> getNeighborMeshUpdates(LocalityAgentKeyV1 key) {
     final updates = <List<double>>[];
     final now = DateTime.now();
-    for (final geohash in GeohashService.neighbors(geohash: key.geohashPrefix)) {
+    for (final geohash
+        in GeohashService.neighbors(geohash: key.geohashPrefix)) {
       final neighborKey = LocalityAgentKeyV1(
         geohashPrefix: geohash,
         precision: key.precision,
         cityCode: key.cityCode,
       );
       try {
-        final raw = _storage.getObject<Map<String, dynamic>>(
-          _meshUpdateKey(neighborKey),
-          box: _box,
-        );
-        if (raw == null) continue;
-        final record = _LocalityMeshUpdateRecord.fromJson(raw);
+        final cachedRecord = _meshUpdateCache[_meshUpdateKey(neighborKey)];
+        final raw = cachedRecord == null
+            ? _storage.getObject<Map<String, dynamic>>(
+                _meshUpdateKey(neighborKey),
+                box: _box,
+              )
+            : null;
+        if (cachedRecord == null && raw == null) continue;
+        final record = cachedRecord ?? _LocalityMeshUpdateRecord.fromJson(raw!);
         if (record.expiresAt.isAfter(now)) {
           updates.add(record.delta12);
         }
@@ -156,6 +212,42 @@ class LocalityMemory {
       }
     }
     return updates;
+  }
+
+  LocalityAgentGlobalStateV1? getCanonicalGlobalState(LocalityAgentKeyV1 key) {
+    final subjectRef = VibeSubjectRef.locality(key.stableKey);
+    try {
+      final snapshot = VibeKernel().getSnapshot(subjectRef);
+      if (!hasCanonicalVibeSignal(snapshot)) {
+        return null;
+      }
+      return LocalityAgentGlobalStateV1(
+        key: key,
+        vector12: _vectorFromSnapshot(snapshot),
+        sampleCount: snapshot.behaviorPatterns.observationCount,
+        confidence12: List<double>.filled(
+          VibeConstants.coreDimensions.length,
+          snapshot.confidence,
+        ),
+        aggregateHappiness: snapshot.affectiveState.valence,
+        happinessSampleCount: snapshot.behaviorPatterns.observationCount,
+        happinessTrendSlope: snapshot.stringEvolution.mutationVelocity,
+        updatedAtUtc: snapshot.updatedAtUtc,
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  List<double> _vectorFromSnapshot(VibeStateSnapshot snapshot) {
+    return VibeConstants.coreDimensions
+        .map(
+          (dimension) => (snapshot.coreDna.dimensions[dimension] ??
+                  snapshot.pheromones.vectors[dimension] ??
+                  0.5)
+              .clamp(0.0, 1.0),
+        )
+        .toList(growable: false);
   }
 }
 

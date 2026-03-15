@@ -3,11 +3,12 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
+import 'package:avrai/presentation/schemas/pages/favorite_places_page_schema.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'package:avrai_core/models/user/onboarding_suggestion_event.dart';
 import 'package:avrai_runtime_os/services/onboarding/onboarding_suggestion_event_store.dart';
 import 'package:avrai/theme/colors.dart';
-import 'package:avrai/theme/app_theme.dart';
-import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 class FavoritePlacesPage extends StatefulWidget {
   final List<String> favoritePlaces;
@@ -294,147 +295,133 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header
-          Text(
-            'What matches your vibe?',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.primaryColor,
+    return AppSchemaPage(
+      schema: buildFavoritePlacesPageSchema(
+        searchSection: _buildSearchSection(),
+        selectionSection: _buildSelectionSection(),
+        placesSection: _buildPlacesSection(),
+      ),
+    );
+  }
+
+  Widget _buildSearchSection() {
+    return TextField(
+      controller: _searchController,
+      decoration: InputDecoration(
+        hintText: 'Search for places or neighborhoods',
+        prefixIcon: const Icon(Icons.search),
+        suffixIcon: _searchController.text.isNotEmpty
+            ? IconButton(
+                icon: const Icon(Icons.clear),
+                onPressed: () {
+                  _searchController.clear();
+                  setState(() {
+                    _suggestions = _getSmartSuggestions();
+                  });
+                },
+              )
+            : null,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.borderSubtle),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.textPrimary, width: 2),
+        ),
+      ),
+      onChanged: _onSearchChanged,
+    );
+  }
+
+  Widget _buildSelectionSection() {
+    if (_selectedPlaces.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              'Selected (${_selectedPlaces.length}):',
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
+            const Spacer(),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _selectedPlaces.clear();
+                });
+                widget.onPlacesChanged(_selectedPlaces);
+              },
+              child: const Text('Clear All'),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxHeight: 60),
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: _selectedPlaces.length,
+            itemBuilder: (context, index) {
+              final place = _selectedPlaces[index];
+              return Container(
+                margin: const EdgeInsets.only(right: 8),
+                child: Chip(
+                  label: Text(
+                    place,
+                    style: const TextStyle(fontSize: 11),
+                  ),
+                  deleteIcon: const Icon(Icons.close, size: 14),
+                  onDeleted: () => _removePlace(place),
+                  backgroundColor: AppColors.surfaceMuted,
+                  deleteIconColor: AppColors.textPrimary,
+                  labelStyle: const TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 11,
+                  ),
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  visualDensity: VisualDensity.compact,
                 ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPlacesSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (_searchController.text.isNotEmpty) ...[
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              'Search Results',
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
           ),
           const SizedBox(height: 8),
-          Text(
-            'Select places that match your aesthetic and lifestyle preferences.',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AppColors.grey600,
-                ),
+          SizedBox(
+            height: 220,
+            child: _buildSearchResults(),
           ),
-          const SizedBox(height: 24),
-
-          // Search field
-          TextField(
-            controller: _searchController,
-            decoration: InputDecoration(
-              hintText: 'Search for places that match your vibe...',
-              prefixIcon: const Icon(Icons.search),
-              suffixIcon: _searchController.text.isNotEmpty
-                  ? IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: () {
-                        _searchController.clear();
-                        setState(() {
-                          _suggestions = _getSmartSuggestions();
-                        });
-                      },
-                    )
-                  : null,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.grey300),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide:
-                    const BorderSide(color: AppTheme.primaryColor, width: 2),
-              ),
-            ),
-            onChanged: _onSearchChanged,
-          ),
-          const SizedBox(height: 24),
-
-          // Selected places - Smaller and adaptive
-          if (_selectedPlaces.isNotEmpty) ...[
-            Row(
-              children: [
-                Text(
-                  'Selected (${_selectedPlaces.length}):',
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                ),
-                const Spacer(),
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      _selectedPlaces.clear();
-                    });
-                    widget.onPlacesChanged(_selectedPlaces);
-                  },
-                  child: const Text('Clear All'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Container(
-              constraints: const BoxConstraints(maxHeight: 60),
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: _selectedPlaces.length,
-                itemBuilder: (context, index) {
-                  final place = _selectedPlaces[index];
-                  return Container(
-                    margin: const EdgeInsets.only(right: 8),
-                    child: Chip(
-                      label: Text(
-                        place,
-                        style: const TextStyle(fontSize: 11),
-                      ),
-                      deleteIcon: const Icon(Icons.close, size: 14),
-                      onDeleted: () => _removePlace(place),
-                      backgroundColor:
-                          AppTheme.primaryColor.withValues(alpha: 0.1),
-                      deleteIconColor: AppTheme.primaryColor,
-                      labelStyle: const TextStyle(
-                        color: AppTheme.primaryColor,
-                        fontSize: 11,
-                      ),
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      visualDensity: VisualDensity.compact,
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 16),
-          ],
-
-          // Search results and vibe categories
-          Expanded(
-            child: Column(
-              children: [
-                // Show search results if there's a search query.
-                // Use Flexible instead of a fixed-height container to avoid RenderFlex overflow
-                // on smaller screens / tighter viewports.
-                if (_searchController.text.isNotEmpty) ...[
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Search Results',
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Flexible(
-                    fit: FlexFit.loose,
-                    child: _buildSearchResults(),
-                  ),
-                  const SizedBox(height: 16),
-                ],
-
-                // Always show vibe categories
-                Expanded(child: _buildVibeCategories()),
-              ],
-            ),
-          ),
+          const SizedBox(height: 16),
         ],
-      ),
+        SizedBox(
+          height: 420,
+          child: _buildVibeCategories(),
+        ),
+      ],
     );
   }
 
@@ -465,7 +452,7 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
               children: [
                 Icon(
                   _getRegionIcon(region),
-                  color: AppTheme.primaryColor,
+                  color: AppColors.textSecondary,
                   size: 20,
                 ),
                 const SizedBox(width: 12),
@@ -480,7 +467,7 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: AppTheme.primaryColor,
+                      color: AppColors.textPrimary,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -524,7 +511,7 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
                           ? Icons.check_circle
                           : Icons.location_on_outlined,
                       color: isSelected
-                          ? AppTheme.primaryColor
+                          ? AppColors.textPrimary
                           : AppColors.grey600,
                       size: 20,
                     ),
@@ -545,9 +532,7 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
                         _addPlace(fullName);
                       }
                     },
-                    tileColor: isSelected
-                        ? AppTheme.primaryColor.withValues(alpha: 0.1)
-                        : null,
+                    tileColor: isSelected ? AppColors.surfaceMuted : null,
                   );
                 }).toList(),
               );
@@ -568,13 +553,13 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
         return ListTile(
           leading: Icon(
             isSelected ? Icons.check_circle : Icons.location_on_outlined,
-            color: isSelected ? AppTheme.primaryColor : AppColors.grey600,
+            color: isSelected ? AppColors.textPrimary : AppColors.grey600,
           ),
           title: Text(place),
           trailing: isSelected
               ? const Icon(
                   Icons.remove_circle_outline,
-                  color: AppTheme.errorColor,
+                  color: AppColors.error,
                 )
               : null,
           onTap: () {
@@ -594,8 +579,7 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
               _addPlace(place);
             }
           },
-          tileColor:
-              isSelected ? AppTheme.primaryColor.withValues(alpha: 0.1) : null,
+          tileColor: isSelected ? AppColors.surfaceMuted : null,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
@@ -778,10 +762,10 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
                             _addPlace(suggestion);
                             ScaffoldMessenger.of(context).hideCurrentSnackBar();
                           },
-                          backgroundColor:
-                              AppTheme.primaryColor.withValues(alpha: 0.1),
-                          labelStyle:
-                              const TextStyle(color: AppTheme.primaryColor),
+                          backgroundColor: AppColors.surfaceMuted,
+                          labelStyle: const TextStyle(
+                            color: AppColors.textPrimary,
+                          ),
                         ))
                     .toList(),
               ),
@@ -793,7 +777,7 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
           dismissDirection: DismissDirection.horizontal,
           action: SnackBarAction(
             label: 'Dismiss',
-            textColor: AppTheme.primaryColor,
+            textColor: AppColors.textPrimary,
             onPressed: () {
               ScaffoldMessenger.of(context).hideCurrentSnackBar();
             },

@@ -7,6 +7,7 @@ import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart';
 
 import 'package:avrai/injection_container.dart' as di;
 import '../../helpers/platform_channel_helper.dart';
+import '../../helpers/test_storage_helper.dart';
 
 void main() {
   group('AgentInitializationController Integration Tests', () {
@@ -15,8 +16,12 @@ void main() {
     late OnboardingData testOnboardingData;
 
     setUpAll(() async {
+      TestWidgetsFlutterBinding.ensureInitialized();
+
       // Initialize dependency injection
       await setupTestStorage();
+      await TestStorageHelper.initTestStorage();
+      await di.sl.reset();
       await di.init();
 
       // Get controller from DI
@@ -72,6 +77,12 @@ void main() {
       } catch (e) {
         // Ignore cleanup errors
       }
+    });
+
+    tearDownAll(() async {
+      await di.sl.reset();
+      await cleanupTestStorage();
+      await TestStorageHelper.clearTestStorage();
     });
 
     test('should successfully initialize agent with onboarding data', () async {

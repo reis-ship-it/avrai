@@ -11,7 +11,7 @@ import 'package:avrai_runtime_os/services/ledgers/ledger_receipt_v0.dart';
 import 'package:avrai_runtime_os/services/ledgers/ledger_receipts_service_v0.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/theme/colors.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 class ReceiptDetailPage extends StatefulWidget {
@@ -140,7 +140,7 @@ class _ReceiptDetailPageState extends State<ReceiptDetailPage> {
   Widget build(BuildContext context) {
     final receipt = _receipt;
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Receipt',
       constrainBody: false,
       actions: [

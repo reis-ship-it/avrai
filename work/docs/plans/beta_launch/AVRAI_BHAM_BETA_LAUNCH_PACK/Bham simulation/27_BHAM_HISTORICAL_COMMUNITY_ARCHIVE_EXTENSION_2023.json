@@ -1,0 +1,139 @@
+{
+  "bundleId": "bham-historical-community-archive-extension-2023-1",
+  "replayYear": 2023,
+  "generatedAtUtc": "2026-03-12T19:10:00Z",
+  "entries": [
+    {
+      "sourceName": "Bhamwiki",
+      "rawOutputKey": "bhamwiki_archive_extension",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "entity_history",
+        "opening_closure_history",
+        "neighborhood_links"
+      ],
+      "dedupeKeys": [
+        "page_title",
+        "normalized_entity",
+        "last_revision"
+      ],
+      "normalizationTargets": [
+        "community",
+        "locality"
+      ],
+      "requiresReview": false,
+      "templateRecord": {
+        "record_id": "<required>",
+        "entity_type": "community",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "entity_history": "<required>",
+        "opening_closure_history": "<required>",
+        "neighborhood_links": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "records": [
+        {
+          "record_id": "bhamwiki-east-avondale-neighborhood-association-2023",
+          "entity_type": "community",
+          "entity_id": "east_avondale_neighborhood_association",
+          "observed_at": "2023-12-31T00:00:00Z",
+          "published_at": "2026-03-12T19:00:00Z",
+          "valid_from": "2023-01-01T00:00:00Z",
+          "last_verified_at": "2026-03-12T19:00:00Z",
+          "entity_history": "Bhamwiki documents East Avondale as a Birmingham neighborhood with an active neighborhood association meeting cadence.",
+          "opening_closure_history": "Neighborhood association rhythm active through 2023; no closure state documented.",
+          "neighborhood_links": [
+            "East Avondale",
+            "New Bethel Baptist Church"
+          ],
+          "locality": "bham_east_avondale",
+          "name": "East Avondale Neighborhood Association",
+          "title": "East Avondale Neighborhood Association",
+          "page_title": "East Avondale",
+          "meeting_dates": "Second Tuesday at 7:00 PM at New Bethel Baptist Church",
+          "category": "neighborhood_association",
+          "retrospective_evidence": true,
+          "historical_admissibility": "retrospective_archive",
+          "confidence": 0.76,
+          "uncertainty_minutes": 10080,
+          "source_host": "bhamwiki.com",
+          "source_excerpt": "Neighborhood association meets on the second Tuesday at New Bethel Baptist Church."
+        },
+        {
+          "record_id": "bhamwiki-glen-iris-neighborhood-association-2023",
+          "entity_type": "community",
+          "entity_id": "glen_iris_neighborhood_association",
+          "observed_at": "2023-12-31T00:00:00Z",
+          "published_at": "2026-03-12T19:00:00Z",
+          "valid_from": "2023-01-01T00:00:00Z",
+          "last_verified_at": "2026-03-12T19:00:00Z",
+          "entity_history": "Bhamwiki documents Glen Iris as a Birmingham neighborhood with an active neighborhood association and named leadership in the 2023-present period.",
+          "opening_closure_history": "Neighborhood association rhythm active through 2023; no closure state documented.",
+          "neighborhood_links": [
+            "Glen Iris",
+            "St. Elias Maronite Catholic Church"
+          ],
+          "locality": "bham_glen_iris",
+          "name": "Glen Iris Neighborhood Association",
+          "title": "Glen Iris Neighborhood Association",
+          "page_title": "Glen Iris",
+          "meeting_dates": "First Monday at 6:30 PM at St. Elias Maronite Catholic Church",
+          "category": "neighborhood_association",
+          "retrospective_evidence": true,
+          "historical_admissibility": "retrospective_archive",
+          "confidence": 0.8,
+          "uncertainty_minutes": 10080,
+          "source_host": "bhamwiki.com",
+          "source_excerpt": "Neighborhood association meets on the first Monday at 6:30 PM at St. Elias; Rob Burton listed as president in the 2023-present period."
+        },
+        {
+          "record_id": "bhamwiki-wylam-neighborhood-association-2023",
+          "entity_type": "community",
+          "entity_id": "wylam_neighborhood_association",
+          "observed_at": "2023-12-31T00:00:00Z",
+          "published_at": "2026-03-12T19:00:00Z",
+          "valid_from": "2023-01-01T00:00:00Z",
+          "last_verified_at": "2026-03-12T19:00:00Z",
+          "entity_history": "Bhamwiki documents Wylam as a Birmingham neighborhood with an active neighborhood association meeting cadence.",
+          "opening_closure_history": "Neighborhood association rhythm active through 2023; no closure state documented.",
+          "neighborhood_links": [
+            "Wylam",
+            "Wylam Public Library"
+          ],
+          "locality": "bham_wylam",
+          "name": "Wylam Neighborhood Association",
+          "title": "Wylam Neighborhood Association",
+          "page_title": "Wylam",
+          "meeting_dates": "First Tuesday at 6:00 PM at Wylam Public Library",
+          "category": "neighborhood_association",
+          "retrospective_evidence": true,
+          "historical_admissibility": "retrospective_archive",
+          "confidence": 0.78,
+          "uncertainty_minutes": 10080,
+          "source_host": "bhamwiki.com",
+          "source_excerpt": "Neighborhood association meets on the first Tuesday at 6:00 PM at Wylam Public Library."
+        }
+      ],
+      "notes": [
+        "These rows extend the historical archive layer with neighborhood association structure that was missing from the first 2023 archive pass."
+      ],
+      "status": "populated"
+    }
+  ],
+  "notes": [
+    "This bundle strengthens the 2023 BHAM replay with additional archived neighborhood/community structure.",
+    "These are retrospective archive rows and should not be mistaken for live-known 2023 pages."
+  ],
+  "metadata": {
+    "scope": "historical_community_archive_extension",
+    "sourceFamilies": [
+      "Bhamwiki"
+    ]
+  }
+}

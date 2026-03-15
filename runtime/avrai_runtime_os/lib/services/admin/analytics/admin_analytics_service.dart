@@ -6,7 +6,7 @@ import 'package:avrai_runtime_os/monitoring/network_analytics.dart';
 import 'package:avrai_runtime_os/ai/ai2ai_learning.dart';
 import 'package:avrai_runtime_os/p2p/federated_learning.dart' as federated;
 import 'package:avrai_core/models/community/collaborative_activity_metrics.dart';
-import 'package:avrai_runtime_os/services/admin/admin_god_mode_service.dart'
+import 'package:avrai_runtime_os/services/admin/admin_runtime_governance_service.dart'
     as admin_models
     show
         AggregatePrivacyMetrics,

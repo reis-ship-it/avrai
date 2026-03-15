@@ -1,0 +1,4905 @@
+{
+  "pack": {
+    "packId": "bham-eventbrite-meetup-historicalized-2023",
+    "replayYear": 2023,
+    "generatedAtUtc": "2026-03-12T16:13:23.892294Z",
+    "datasets": [
+      {
+        "sourceName": "Eventbrite / Meetup",
+        "records": [
+          {
+            "record_id": "evtmeet-hist-1",
+            "entity_type": "community",
+            "entity_id": "community:birmingham-net-meetup-birmingham-al-1242-members",
+            "title": "Birmingham .NET Meetup Birmingham, AL • 1242 members",
+            "name": "Birmingham .NET Meetup Birmingham, AL • 1242 members",
+            "community_name": "Birmingham .NET Meetup Birmingham, AL • 1242 members",
+            "locality": "bham_metro_regional",
+            "observed_at": "2023-01-01T00:00:00.000Z",
+            "published_at": "2023-01-01T00:00:00.000Z",
+            "valid_from": "2023-01-01T00:00:00.000Z",
+            "valid_to": "2023-12-31T23:59:59.000Z",
+            "last_verified_at": "2026-03-12T23:45:00Z",
+            "category": "recurring_social_group_anchor",
+            "historical_admissibility": "governed_group_anchor_reconstruction",
+            "historical_capture_method": "persistent_meetup_group_listing",
+            "historical_validation_note": "Birmingham .NET Meetup Birmingham, AL • 1242 members was promoted as a persistent Birmingham social-group anchor from a Meetup group listing; it is treated as recurring community or club structure, not a dated 2023 event row.",
+            "historical_source_url": "https://www.meetup.com/Birmingham-NET-Meetup/?eventOrigin=city_popular_groups",
+            "source_host": "meetup.com",
+            "source_page_title": "Birmingham .NET Meetup Birmingham, AL • 1242 members",
+            "source_row_basis": [
+              "evt-55"
+            ],
+            "confidence": 0.64,
+            "uncertainty_minutes": 10080
+          },
+          {
+            "record_id": "evtmeet-hist-2",
+            "entity_type": "community",
+            "entity_id": "community:bham-language-exchange-birmingham-al-941-members",
+            "title": "Bham Language Exchange Birmingham, AL • 941 members",
+            "name": "Bham Language Exchange Birmingham, AL • 941 members",
+            "community_name": "Bham Language Exchange Birmingham, AL • 941 members",
+            "locality": "bham_metro_regional",
+            "observed_at": "2023-01-01T00:00:00.000Z",
+            "published_at": "2023-01-01T00:00:00.000Z",
+            "valid_from": "2023-01-01T00:00:00.000Z",
+            "valid_to": "2023-12-31T23:59:59.000Z",
+            "last_verified_at": "2026-03-12T23:45:00Z",
+            "category": "recurring_social_group_anchor",
+            "historical_admissibility": "governed_group_anchor_reconstruction",
+            "historical_capture_method": "persistent_meetup_group_listing",
+            "historical_validation_note": "Bham Language Exchange Birmingham, AL • 941 members was promoted as a persistent Birmingham social-group anchor from a Meetup group listing; it is treated as recurring community or club structure, not a dated 2023 event row.",
+            "historical_source_url": "https://www.meetup.com/bhamlangexchange/?eventOrigin=city_popular_groups",
+            "source_host": "meetup.com",
+            "source_page_title": "Bham Language Exchange Birmingham, AL • 941 members",
+            "source_row_basis": [
+              "evt-56"
+            ],
+            "confidence": 0.64,
+            "uncertainty_minutes": 10080
+          },
+          {
+            "record_id": "evtmeet-hist-3",
+            "entity_type": "community",
+            "entity_id": "community:birmingham-dining-experience-group-birmingham-al-559-members",
+            "title": "Birmingham Dining Experience Group Birmingham, AL • 559 members",
+            "name": "Birmingham Dining Experience Group Birmingham, AL • 559 members",
+            "community_name": "Birmingham Dining Experience Group Birmingham, AL • 559 members",
+            "locality": "bham_metro_regional",
+            "observed_at": "2023-01-01T00:00:00.000Z",
+            "published_at": "2023-01-01T00:00:00.000Z",
+            "valid_from": "2023-01-01T00:00:00.000Z",
+            "valid_to": "2023-12-31T23:59:59.000Z",
+            "last_verified_at": "2026-03-12T23:45:00Z",
+            "category": "recurring_social_group_anchor",
+            "historical_admissibility": "governed_group_anchor_reconstruction",
+            "historical_capture_method": "persistent_meetup_group_listing",
+            "historical_validation_note": "Birmingham Dining Experience Group Birmingham, AL • 559 members was promoted as a persistent Birmingham social-group anchor from a Meetup group listing; it is treated as recurring community or club structure, not a dated 2023 event row.",
+            "historical_source_url": "https://www.meetup.com/birmingham-dining-experience-group/?eventOrigin=city_popular_groups",
+            "source_host": "meetup.com",
+            "source_page_title": "Birmingham Dining Experience Group Birmingham, AL • 559 members",
+            "source_row_basis": [
+              "evt-57"
+            ],
+            "confidence": 0.64,
+            "uncertainty_minutes": 10080
+          },
+          {
+            "record_id": "evtmeet-hist-4",
+            "entity_type": "community",
+            "entity_id": "community:mocha-girls-read-birmingham-birmingham-al-549-members",
+            "title": "Mocha Girls Read - Birmingham Birmingham, AL • 549 members",
+            "name": "Mocha Girls Read - Birmingham Birmingham, AL • 549 members",
+            "community_name": "Mocha Girls Read - Birmingham Birmingham, AL • 549 members",
+            "locality": "bham_metro_regional",
+            "observed_at": "2023-01-01T00:00:00.000Z",
+            "published_at": "2023-01-01T00:00:00.000Z",
+            "valid_from": "2023-01-01T00:00:00.000Z",
+            "valid_to": "2023-12-31T23:59:59.000Z",
+            "last_verified_at": "2026-03-12T23:45:00Z",
+            "category": "recurring_social_group_anchor",
+            "historical_admissibility": "governed_group_anchor_reconstruction",
+            "historical_capture_method": "persistent_meetup_group_listing",
+            "historical_validation_note": "Mocha Girls Read - Birmingham Birmingham, AL • 549 members was promoted as a persistent Birmingham social-group anchor from a Meetup group listing; it is treated as recurring community or club structure, not a dated 2023 event row.",
+            "historical_source_url": "https://www.meetup.com/mocha-girls-read-birmingham/?eventOrigin=city_popular_groups",
+            "source_host": "meetup.com",
+            "source_page_title": "Mocha Girls Read - Birmingham Birmingham, AL • 549 members",
+            "source_row_basis": [
+              "evt-58"
+            ],
+            "confidence": 0.64,
+            "uncertainty_minutes": 10080
+          },
+          {
+            "record_id": "evtmeet-hist-5",
+            "entity_type": "community",
+            "entity_id": "community:cloud-security-alliance-alabama-chapter-birmingham-al-479-members",
+            "title": "Cloud Security Alliance Alabama Chapter Birmingham, AL • 479 members",
+            "name": "Cloud Security Alliance Alabama Chapter Birmingham, AL • 479 members",
+            "community_name": "Cloud Security Alliance Alabama Chapter Birmingham, AL • 479 members",
+            "locality": "bham_metro_regional",
+            "observed_at": "2023-01-01T00:00:00.000Z",
+            "published_at": "2023-01-01T00:00:00.000Z",
+            "valid_from": "2023-01-01T00:00:00.000Z",
+            "valid_to": "2023-12-31T23:59:59.000Z",
+            "last_verified_at": "2026-03-12T23:45:00Z",
+            "category": "recurring_social_group_anchor",
+            "historical_admissibility": "governed_group_anchor_reconstruction",
+            "historical_capture_method": "persistent_meetup_group_listing",
+            "historical_validation_note": "Cloud Security Alliance Alabama Chapter Birmingham, AL • 479 members was promoted as a persistent Birmingham social-group anchor from a Meetup group listing; it is treated as recurring community or club structure, not a dated 2023 event row.",
+            "historical_source_url": "https://www.meetup.com/cloud-security-alliance-alabama-chapter/?eventOrigin=city_popular_groups",
+            "source_host": "meetup.com",
+            "source_page_title": "Cloud Security Alliance Alabama Chapter Birmingham, AL • 479 members",
+            "source_row_basis": [
+              "evt-59"
+            ],
+            "confidence": 0.64,
+            "uncertainty_minutes": 10080
+          },
+          {
+            "record_id": "evtmeet-hist-6",
+            "entity_type": "community",
+            "entity_id": "community:gurdjieff-found-of-ala-red-mtn-study-grp-birmingham-al-301-members",
+            "title": "Gurdjieff Found. of Ala./Red Mtn. Study Grp. Birmingham, AL • 301 members",
+            "name": "Gurdjieff Found. of Ala./Red Mtn. Study Grp. Birmingham, AL • 301 members",
+            "community_name": "Gurdjieff Found. of Ala./Red Mtn. Study Grp. Birmingham, AL • 301 members",
+            "locality": "bham_metro_regional",
+            "observed_at": "2023-01-01T00:00:00.000Z",
+            "published_at": "2023-01-01T00:00:00.000Z",
+            "valid_from": "2023-01-01T00:00:00.000Z",
+            "valid_to": "2023-12-31T23:59:59.000Z",
+            "last_verified_at": "2026-03-12T23:45:00Z",
+            "category": "recurring_social_group_anchor",
+            "historical_admissibility": "governed_group_anchor_reconstruction",
+            "historical_capture_method": "persistent_meetup_group_listing",
+            "historical_validation_note": "Gurdjieff Found. of Ala./Red Mtn. Study Grp. Birmingham, AL • 301 members was promoted as a persistent Birmingham social-group anchor from a Meetup group listing; it is treated as recurring community or club structure, not a dated 2023 event row.",
+            "historical_source_url": "https://www.meetup.com/Gurdjieff-Found-Ala/?eventOrigin=city_popular_groups",
+            "source_host": "meetup.com",
+            "source_page_title": "Gurdjieff Found. of Ala./Red Mtn. Study Grp. Birmingham, AL • 301 members",
+            "source_row_basis": [
+              "evt-60"
+            ],
+            "confidence": 0.64,
+            "uncertainty_minutes": 10080
+          }
+        ],
+        "metadata": {
+          "status": "historicalized_partial",
+          "historicalPromotionPolicy": "persistent_group_pages_only",
+          "normalizationTargets": [
+            "community",
+            "club"
+          ]
+        }
+      }
+    ],
+    "notes": [
+      "This pack promotes only persistent Birmingham Meetup group pages, not dated event rows.",
+      "Rows are recurring social-group anchors for 2023 replay truth and remain unsuitable as exact 2023 event-instance truth."
+    ],
+    "metadata": {
+      "sourceBasis": "eventbrite_meetup_automated_pack",
+      "excludedRowClasses": [
+        "future_dated_events",
+        "generic_navigation"
+      ]
+    }
+  },
+  "ingestion": {
+    "manifest": {
+      "manifestId": "bham-replay-ingestion-2023",
+      "replayYear": 2023,
+      "generatedAtUtc": "2026-03-12T06:10:00.618463Z",
+      "selectedScore": {
+        "year": 2023,
+        "eventCoverage": 0.6821379310344828,
+        "venueCoverage": 0.6705000000000002,
+        "communityCoverage": 0.7123500000000003,
+        "recurrenceFidelity": 0.8081081081081084,
+        "temporalCertainty": 0.8244027027027027,
+        "trustQuality": 0.7182972972972973,
+        "overallScore": 0.7232952926374653,
+        "notes": [
+          "candidate sources still influence score"
+        ],
+        "sourceRefs": [
+          "BEA / U.S. Census Bureau Economic Series",
+          "Bureau of Labor Statistics / State DOL",
+          "Municipal Budgets and Revenue Reports",
+          "U.S. Census ACS",
+          "LEHD / OnTheMap",
+          "Jefferson / Shelby / Regional GIS and Assessors",
+          "City of Birmingham OpenGov",
+          "NWS / NOAA Weather API",
+          "MAX Transit GTFS",
+          "ALDOT Traffic Data",
+          "ALDOT Long-Term Construction Projects",
+          "BHM Airport / TSA Throughput",
+          "UAB Academic, Clinical, and Event Calendars",
+          "Samford University Calendars and Campus Map",
+          "UAB / Samford Enrollment Origin Reports",
+          "BJCC / Legacy Arena / Protective Stadium Calendars",
+          "SEC / College Football Broadcast Schedules",
+          "OpenStreetMap POI Data",
+          "Google Places / Yelp",
+          "Resy / OpenTable / Venue Reservation Exports",
+          "Delivery / Ordering Platform Aggregates",
+          "Data Axle / InfoGroup Business Listings",
+          "Real Estate and Rent Index",
+          "Neighborhood Association Calendars",
+          "Birmingham Public Library Network",
+          "IN Birmingham (CVB Calendar)",
+          "Major Venue Calendars and Historical Venue Calendars",
+          "City of Birmingham Play Pages",
+          "Birmingham365.org",
+          "Eventbrite / Meetup",
+          "County / Municipal Courts and Police Dispatch",
+          "Bham Now / AL.com / Birmingham Business Journal",
+          "WBHM 90.3 Public Radio",
+          "James Beard / Garden & Gun / Michelin",
+          "Bhamwiki",
+          "Birmingham Public Library Archives",
+          "REV Birmingham Updates"
+        ]
+      },
+      "sourcePlans": [
+        {
+          "source": {
+            "sourceName": "ALDOT Long-Term Construction Projects",
+            "sourceType": "infrastructure_friction",
+            "accessMethod": "api",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "movement",
+              "routes",
+              "events",
+              "localities"
+            ],
+            "temporalStartYear": 2005,
+            "temporalEndYear": 2026,
+            "replayRole": "multi_year_route_friction",
+            "legalStatus": "allowed",
+            "sourceOwner": "ALDOT",
+            "sourceUrl": null,
+            "updateCadence": "monthly",
+            "richestYear": 2019,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 1,
+              "ingestPriority": 1,
+              "manualImportRequired": true,
+              "plannedIngestFields": [
+                "project_timeline",
+                "closures",
+                "detours",
+                "affected_segments"
+              ],
+              "dedupeKeys": [
+                "project_id",
+                "segment_id"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 1,
+          "normalizationTargetTypes": [
+            "event",
+            "locality",
+            "movement_flow"
+          ],
+          "dedupeKeys": [
+            "project_id",
+            "segment_id"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 1,
+            "plannedIngestFields": [
+              "project_timeline",
+              "closures",
+              "detours",
+              "affected_segments"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "ALDOT Traffic Data",
+            "sourceType": "traffic_flow",
+            "accessMethod": "api",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "movement",
+              "routes",
+              "traffic",
+              "localities"
+            ],
+            "temporalStartYear": 2000,
+            "temporalEndYear": 2026,
+            "replayRole": "arterial_flow_truth",
+            "legalStatus": "allowed",
+            "sourceOwner": "ALDOT",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2019,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 1,
+              "ingestPriority": 1,
+              "manualImportRequired": true,
+              "plannedIngestFields": [
+                "counts",
+                "travel_speed",
+                "artery_load"
+              ],
+              "dedupeKeys": [
+                "segment_id",
+                "date"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 1,
+          "normalizationTargetTypes": [
+            "locality",
+            "movement_flow"
+          ],
+          "dedupeKeys": [
+            "segment_id",
+            "date"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 1,
+            "plannedIngestFields": [
+              "counts",
+              "travel_speed",
+              "artery_load"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "BEA / U.S. Census Bureau Economic Series",
+            "sourceType": "economic_reality",
+            "accessMethod": "api",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "economics",
+              "income",
+              "wallets",
+              "households"
+            ],
+            "temporalStartYear": 1969,
+            "temporalEndYear": 2025,
+            "replayRole": "economic_priors",
+            "legalStatus": "allowed",
+            "sourceOwner": "BEA / U.S. Census Bureau",
+            "sourceUrl": "https://apps.bea.gov/api/data",
+            "updateCadence": "yearly",
+            "richestYear": 2019,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": "Aggregate-only source; never instantiate under-13 personal agents.",
+            "metadata": {
+              "registryTier": 1,
+              "ingestPriority": 1,
+              "legalUsageNotes": "Public economic series; safe for aggregate seeding.",
+              "apiKeyRequired": true,
+              "endpointRef": "https://apps.bea.gov/api/data",
+              "apiUserGuideRef": "https://apps.bea.gov/api/_pdf/bea_web_service_api_user_guide.pdf",
+              "termsOfServiceRef": "https://apps.bea.gov/API/_pdf/bea_api_tos.pdf",
+              "developerRefs": [
+                "https://apps.bea.gov/developers/r-index.htm",
+                "https://github.com/us-bea/",
+                "https://github.com/us-bea/bea_geo_aggregator"
+              ],
+              "accessProvisionedAtUtc": "2026-03-11T19:30:00Z",
+              "accessProvisioningMode": "user_supplied_api_key_out_of_band",
+              "validatedQueryNotes": [
+                "Jefferson County GeoFIPS 01073 CAINC1 line 3 year 2023 query succeeded on 2026-03-11.",
+                "API key is intentionally not persisted in the repository."
+              ],
+              "plannedIngestFields": [
+                "personal_income",
+                "consumer_spending",
+                "median_wages"
+              ],
+              "dedupeKeys": [
+                "county_fips",
+                "series_id",
+                "year"
+              ],
+              "currentStatusNotes": "Approved for baseline economic priors. Local API access was validated on 2026-03-11 without persisting the user-provided key."
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 1,
+          "normalizationTargetTypes": [
+            "economic_signal",
+            "population_cohort"
+          ],
+          "dedupeKeys": [
+            "county_fips",
+            "series_id",
+            "year"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors.",
+            "Aggregate-only source; never instantiate under-13 personal agents."
+          ],
+          "metadata": {
+            "registryTier": 1,
+            "legalUsageNotes": "Public economic series; safe for aggregate seeding.",
+            "plannedIngestFields": [
+              "personal_income",
+              "consumer_spending",
+              "median_wages"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "BHM Airport / TSA Throughput",
+            "sourceType": "travel_flow",
+            "accessMethod": "scrape",
+            "trustTier": "tier2",
+            "status": "approved",
+            "entityCoverage": [
+              "movement",
+              "events",
+              "travelers",
+              "localities"
+            ],
+            "temporalStartYear": 1990,
+            "temporalEndYear": 2026,
+            "replayRole": "travel_influx_egress",
+            "legalStatus": "allowed",
+            "sourceOwner": "Birmingham-Shuttlesworth Airport / TSA",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2019,
+            "structuredExportAvailable": false,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 1,
+              "ingestPriority": 1,
+              "plannedIngestFields": [
+                "departures",
+                "arrivals",
+                "holiday_throughput"
+              ],
+              "dedupeKeys": [
+                "airport_code",
+                "date"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 1,
+          "normalizationTargetTypes": [
+            "event",
+            "locality",
+            "movement_flow"
+          ],
+          "dedupeKeys": [
+            "airport_code",
+            "date"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 1,
+            "plannedIngestFields": [
+              "departures",
+              "arrivals",
+              "holiday_throughput"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Bureau of Labor Statistics / State DOL",
+            "sourceType": "employment_distribution",
+            "accessMethod": "api",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "employment",
+              "occupations",
+              "shift_patterns",
+              "workplaces"
+            ],
+            "temporalStartYear": 1990,
+            "temporalEndYear": 2026,
+            "replayRole": "occupation_priors",
+            "legalStatus": "allowed",
+            "sourceOwner": "BLS / Alabama Department of Labor",
+            "sourceUrl": null,
+            "updateCadence": "monthly",
+            "richestYear": 2021,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": "Adult labor patterns only; do not create under-13 personal agents.",
+            "metadata": {
+              "registryTier": 1,
+              "ingestPriority": 1,
+              "legalUsageNotes": "Public labor data; use as aggregate role prior.",
+              "plannedIngestFields": [
+                "occupation_mix",
+                "industry_sectors",
+                "shift_hours"
+              ],
+              "dedupeKeys": [
+                "metro_code",
+                "occupation_code",
+                "year_month"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 1,
+          "normalizationTargetTypes": [
+            "venue"
+          ],
+          "dedupeKeys": [
+            "metro_code",
+            "occupation_code",
+            "year_month"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors.",
+            "Adult labor patterns only; do not create under-13 personal agents."
+          ],
+          "metadata": {
+            "registryTier": 1,
+            "legalUsageNotes": "Public labor data; use as aggregate role prior.",
+            "plannedIngestFields": [
+              "occupation_mix",
+              "industry_sectors",
+              "shift_hours"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "City of Birmingham OpenGov",
+            "sourceType": "civic_spatial_truth",
+            "accessMethod": "openData",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "localities",
+              "neighborhoods",
+              "events",
+              "civic_boundaries",
+              "communities"
+            ],
+            "temporalStartYear": 2015,
+            "temporalEndYear": 2026,
+            "replayRole": "locality_truth",
+            "legalStatus": "allowed",
+            "sourceOwner": "City of Birmingham",
+            "sourceUrl": "https://data.birminghamal.gov/dataset/",
+            "updateCadence": "monthly",
+            "richestYear": 2023,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 1,
+              "ingestPriority": 1,
+              "manualImportRequired": true,
+              "endpointRef": "https://data.birminghamal.gov/dataset/",
+              "plannedIngestFields": [
+                "neighborhood_polygons",
+                "districts",
+                "civic_datasets",
+                "budget_reports",
+                "crime_precinct_exports",
+                "planning_archives",
+                "civic_contracts"
+              ],
+              "dedupeKeys": [
+                "dataset_id",
+                "neighborhood_name",
+                "revision_date"
+              ],
+              "providedInputRefs": [
+                "https://data.birminghamal.gov/dataset/comprehensive-annual-financial-reports",
+                "https://data.birminghamal.gov/dataset/birmingham-planning-commission-archive-2023-2019",
+                "https://data.birminghamal.gov/dataset/magic-city-classic-contract-2023-2026/resource/0383f73c-486d-45a8-a593-9ecf184a1602",
+                "https://s3.amazonaws.com/og-production-open-data-birminghamal-892364687672/resources/83954d55-51a3-4a57-8181-bcd00d961ead/open-data-east-dec-2023.csv",
+                "https://s3.amazonaws.com/og-production-open-data-birminghamal-892364687672/resources/21397b4a-e99a-42f5-993f-713c87742653/open-data-north-dec-2023.csv",
+                "https://s3.amazonaws.com/og-production-open-data-birminghamal-892364687672/resources/fb772dd6-8b92-4735-978c-790bd4c21e10/open-data-south-dec-2023.csv",
+                "https://s3.amazonaws.com/og-production-open-data-birminghamal-892364687672/resources/4b3640fe-ccea-4135-acce-dd5ee1b28c16/open-data-west-dec-2023.csv"
+              ],
+              "currentStatusNotes": "Manual-import lane materially advanced on 2026-03-11 through user-provided OpenGov portal links, financial reports, crime precinct CSVs, planning archive references, and a Magic City Classic contract dataset."
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 1,
+          "normalizationTargetTypes": [
+            "community",
+            "event",
+            "locality"
+          ],
+          "dedupeKeys": [
+            "dataset_id",
+            "neighborhood_name",
+            "revision_date"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 1,
+            "plannedIngestFields": [
+              "neighborhood_polygons",
+              "districts",
+              "civic_datasets",
+              "budget_reports",
+              "crime_precinct_exports",
+              "planning_archives",
+              "civic_contracts"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Jefferson / Shelby / Regional GIS and Assessors",
+            "sourceType": "spatial_grounding",
+            "accessMethod": "openData",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "venues",
+              "places",
+              "localities",
+              "parcels",
+              "buildings"
+            ],
+            "temporalStartYear": 1998,
+            "temporalEndYear": 2026,
+            "replayRole": "spatial_truth",
+            "legalStatus": "allowed",
+            "sourceOwner": "Jefferson County, Shelby County, RPCGB",
+            "sourceUrl": "https://www.rpcgb.org/data-and-maps-downloads",
+            "updateCadence": "monthly",
+            "richestYear": 2024,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 1,
+              "ingestPriority": 1,
+              "manualImportRequired": true,
+              "plannedIngestFields": [
+                "parcel_geometry",
+                "building_footprints",
+                "zoning",
+                "addresses"
+              ],
+              "dedupeKeys": [
+                "parcel_id",
+                "address",
+                "county"
+              ],
+              "providedInputRefs": [
+                "https://www.rpcgb.org/data-and-maps-downloads"
+              ],
+              "currentStatusNotes": "Public GIS acquisition target is now explicit through RPCGB data downloads. A governed 2023 historical geometry/import pack is still pending."
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 1,
+          "normalizationTargetTypes": [
+            "locality",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "parcel_id",
+            "address",
+            "county"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 1,
+            "plannedIngestFields": [
+              "parcel_geometry",
+              "building_footprints",
+              "zoning",
+              "addresses"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "LEHD / OnTheMap",
+            "sourceType": "movement_reality",
+            "accessMethod": "api",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "movement",
+              "commutes",
+              "day_night_flows",
+              "localities"
+            ],
+            "temporalStartYear": 2002,
+            "temporalEndYear": 2023,
+            "replayRole": "commuter_flow_priors",
+            "legalStatus": "allowed",
+            "sourceOwner": "U.S. Census Bureau",
+            "sourceUrl": null,
+            "updateCadence": "yearly",
+            "richestYear": 2019,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": "Aggregate mobility only.",
+            "metadata": {
+              "registryTier": 1,
+              "ingestPriority": 1,
+              "plannedIngestFields": [
+                "origin_destination_flow",
+                "daytime_population",
+                "worker_concentration"
+              ],
+              "dedupeKeys": [
+                "origin_geoid",
+                "destination_geoid",
+                "year"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 1,
+          "normalizationTargetTypes": [
+            "locality",
+            "movement_flow"
+          ],
+          "dedupeKeys": [
+            "origin_geoid",
+            "destination_geoid",
+            "year"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors.",
+            "Aggregate mobility only."
+          ],
+          "metadata": {
+            "registryTier": 1,
+            "plannedIngestFields": [
+              "origin_destination_flow",
+              "daytime_population",
+              "worker_concentration"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "MAX Transit GTFS",
+            "sourceType": "transit_schedule",
+            "accessMethod": "api",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "movement",
+              "routes",
+              "stops",
+              "localities"
+            ],
+            "temporalStartYear": 2014,
+            "temporalEndYear": 2026,
+            "replayRole": "public_transit_rhythm",
+            "legalStatus": "allowed",
+            "sourceOwner": "MAX Transit",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2019,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 1,
+              "ingestPriority": 1,
+              "plannedIngestFields": [
+                "routes",
+                "stops",
+                "trips",
+                "service_calendar"
+              ],
+              "dedupeKeys": [
+                "route_id",
+                "trip_id",
+                "service_id"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 1,
+          "normalizationTargetTypes": [
+            "locality",
+            "movement_flow"
+          ],
+          "dedupeKeys": [
+            "route_id",
+            "trip_id",
+            "service_id"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 1,
+            "plannedIngestFields": [
+              "routes",
+              "stops",
+              "trips",
+              "service_calendar"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Municipal Budgets and Revenue Reports",
+            "sourceType": "municipal_finance",
+            "accessMethod": "openData",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "economics",
+              "localities",
+              "revenue",
+              "taxes",
+              "economic_signal"
+            ],
+            "temporalStartYear": 2005,
+            "temporalEndYear": 2026,
+            "replayRole": "municipal_finance_signal",
+            "legalStatus": "allowed",
+            "sourceOwner": "City of Birmingham",
+            "sourceUrl": "https://data.birminghamal.gov/dataset/comprehensive-annual-financial-reports",
+            "updateCadence": "monthly",
+            "richestYear": 2023,
+            "structuredExportAvailable": false,
+            "seedingEligible": true,
+            "ageSafetyNotes": "Aggregate municipal source; never instantiate under-13 personal agents.",
+            "metadata": {
+              "registryTier": 1,
+              "ingestPriority": 1,
+              "manualImportRequired": true,
+              "plannedIngestFields": [
+                "monthly_revenue_by_type",
+                "budget_category",
+                "annual_operating_budget",
+                "acfr_signals",
+                "advertising_invoices"
+              ],
+              "dedupeKeys": [
+                "report_type",
+                "report_month",
+                "report_year"
+              ],
+              "providedInputRefs": [
+                "https://s3.amazonaws.com/og-production-open-data-birminghamal-892364687672/resources/e8caddb7-6cdc-42a5-8927-8e7d7e9eed3e/acfr-print-file-01222024.pdf",
+                "https://s3.amazonaws.com/og-production-open-data-birminghamal-892364687672/resources/9113d270-945f-4d8b-bf9a-1fc116445763/fy23-official-operating-budget-final.pdf",
+                "/Users/reisgordon/Downloads/budget-by-revenue-type-january-2023.pdf",
+                "/Users/reisgordon/Downloads/budget-by-revenue-type-february-2023.pdf",
+                "/Users/reisgordon/Downloads/budget-by-revenue-type-march-2023.pdf",
+                "/Users/reisgordon/Downloads/budget-by-revenue-type-april-2023.pdf",
+                "/Users/reisgordon/Downloads/budget-by-revenue-type-may-2023.pdf",
+                "https://s3.amazonaws.com/og-production-open-data-birminghamal-892364687672/resources/5fc81463-230b-403c-a889-784c7a26a1e3/budget-by-revenue-type-july-2023.pdf",
+                "https://s3.amazonaws.com/og-production-open-data-birminghamal-892364687672/resources/65462364-d758-4d08-91b2-231426d7ba87/budget-by-revenue-type-august-2023.pdf",
+                "https://s3.amazonaws.com/og-production-open-data-birminghamal-892364687672/resources/684bc3f1-2510-49e6-a77a-638a880f701c/budget-by-revenue-type-september-2023.pdf",
+                "https://s3.amazonaws.com/og-production-open-data-birminghamal-892364687672/resources/6ba74459-dd9f-4dc2-94ff-4a4b5e91f841/budget-by-revenue-type-october-2023.pdf",
+                "https://s3.amazonaws.com/og-production-open-data-birminghamal-892364687672/resources/9afa850e-1062-4bff-95d6-8f7582cee4dc/budget-by-revenue-type-november-2023.pdf",
+                "https://s3.amazonaws.com/og-production-open-data-birminghamal-892364687672/resources/8be4284c-24af-49f1-b49a-92da05fc8587/budget-by-revenue-type-december-2023.pdf",
+                "/Users/reisgordon/Downloads/2023.2.3.open-data.finance.advertising-invoice-and-payment-reports.bhamtimes.pdf"
+              ],
+              "currentStatusNotes": "Approved and materially provisioned for 2023. ACFR, operating budget, January-May local revenue PDFs, July-December revenue URLs, and a Birmingham Times advertising invoice report are now logged. June 2023 revenue is still missing."
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 1,
+          "normalizationTargetTypes": [
+            "economic_signal",
+            "locality",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "report_type",
+            "report_month",
+            "report_year"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors.",
+            "Aggregate municipal source; never instantiate under-13 personal agents."
+          ],
+          "metadata": {
+            "registryTier": 1,
+            "plannedIngestFields": [
+              "monthly_revenue_by_type",
+              "budget_category",
+              "annual_operating_budget",
+              "acfr_signals",
+              "advertising_invoices"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "NWS / NOAA Weather API",
+            "sourceType": "environmental_truth",
+            "accessMethod": "api",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "weather",
+              "events",
+              "movement",
+              "localities"
+            ],
+            "temporalStartYear": 1950,
+            "temporalEndYear": 2026,
+            "replayRole": "environmental_overrides",
+            "legalStatus": "allowed",
+            "sourceOwner": "NOAA / NWS",
+            "sourceUrl": "https://api.weather.gov",
+            "updateCadence": "daily",
+            "richestYear": 2011,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 1,
+              "ingestPriority": 1,
+              "endpointRef": "https://api.weather.gov",
+              "plannedIngestFields": [
+                "storms",
+                "warnings",
+                "heatwaves",
+                "floods"
+              ],
+              "dedupeKeys": [
+                "event_id",
+                "issued_at",
+                "zone"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 1,
+          "normalizationTargetTypes": [
+            "environmental_signal",
+            "event",
+            "locality",
+            "movement_flow"
+          ],
+          "dedupeKeys": [
+            "event_id",
+            "issued_at",
+            "zone"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 1,
+            "plannedIngestFields": [
+              "storms",
+              "warnings",
+              "heatwaves",
+              "floods"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "U.S. Census ACS",
+            "sourceType": "demographic_reality",
+            "accessMethod": "api",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "population",
+              "age_distribution",
+              "families",
+              "housing"
+            ],
+            "temporalStartYear": 2005,
+            "temporalEndYear": 2024,
+            "replayRole": "population_priors",
+            "legalStatus": "allowed",
+            "sourceOwner": "U.S. Census Bureau",
+            "sourceUrl": "https://api.census.gov/data/2023/acs/acs5",
+            "updateCadence": "yearly",
+            "richestYear": 2020,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": "Use for aggregate dependent mobility only; never instantiate under-13 personal agents.",
+            "metadata": {
+              "registryTier": 1,
+              "ingestPriority": 1,
+              "endpointRef": "https://api.census.gov/data/2023/acs/acs5",
+              "plannedIngestFields": [
+                "population",
+                "age_bands",
+                "family_size",
+                "housing_tenure"
+              ],
+              "dedupeKeys": [
+                "tract_id",
+                "year"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 1,
+          "normalizationTargetTypes": [
+            "housing_signal",
+            "population_cohort"
+          ],
+          "dedupeKeys": [
+            "tract_id",
+            "year"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors.",
+            "Use for aggregate dependent mobility only; never instantiate under-13 personal agents."
+          ],
+          "metadata": {
+            "registryTier": 1,
+            "plannedIngestFields": [
+              "population",
+              "age_bands",
+              "family_size",
+              "housing_tenure"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "BJCC / Legacy Arena / Protective Stadium Calendars",
+            "sourceType": "major_venue_calendar",
+            "accessMethod": "ics",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "events",
+              "venues",
+              "movement",
+              "communities",
+              "localities"
+            ],
+            "temporalStartYear": 1995,
+            "temporalEndYear": 2026,
+            "replayRole": "major_event_truth",
+            "legalStatus": "allowed",
+            "sourceOwner": "BJCC",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2022,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 2,
+              "ingestPriority": 2,
+              "plannedIngestFields": [
+                "event_calendar",
+                "capacity",
+                "doors_open",
+                "venue_status"
+              ],
+              "dedupeKeys": [
+                "venue",
+                "event_name",
+                "event_start"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 2,
+          "normalizationTargetTypes": [
+            "community",
+            "event",
+            "locality",
+            "movement_flow",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "venue",
+            "event_name",
+            "event_start"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 2,
+            "plannedIngestFields": [
+              "event_calendar",
+              "capacity",
+              "doors_open",
+              "venue_status"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "SEC / College Football Broadcast Schedules",
+            "sourceType": "macro_event_schedule",
+            "accessMethod": "api",
+            "trustTier": "tier2",
+            "status": "approved",
+            "entityCoverage": [
+              "events",
+              "movement",
+              "communities",
+              "localities"
+            ],
+            "temporalStartYear": 1990,
+            "temporalEndYear": 2026,
+            "replayRole": "macro_behavior_override",
+            "legalStatus": "allowed",
+            "sourceOwner": "SEC / Broadcast Networks / Universities",
+            "sourceUrl": null,
+            "updateCadence": "weekly",
+            "richestYear": 2023,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 2,
+              "ingestPriority": 2,
+              "plannedIngestFields": [
+                "game_time",
+                "broadcast_window",
+                "team_affinity_pressure"
+              ],
+              "dedupeKeys": [
+                "sport",
+                "game_id",
+                "broadcast_date"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 2,
+          "normalizationTargetTypes": [
+            "community",
+            "event",
+            "locality",
+            "movement_flow"
+          ],
+          "dedupeKeys": [
+            "sport",
+            "game_id",
+            "broadcast_date"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 2,
+            "plannedIngestFields": [
+              "game_time",
+              "broadcast_window",
+              "team_affinity_pressure"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Samford University Calendars and Campus Map",
+            "sourceType": "institutional_calendar",
+            "accessMethod": "ics",
+            "trustTier": "tier2",
+            "status": "approved",
+            "entityCoverage": [
+              "events",
+              "venues",
+              "communities",
+              "movement"
+            ],
+            "temporalStartYear": 2005,
+            "temporalEndYear": 2026,
+            "replayRole": "institutional_gravity_well",
+            "legalStatus": "allowed",
+            "sourceOwner": "Samford University",
+            "sourceUrl": null,
+            "updateCadence": "weekly",
+            "richestYear": 2023,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 2,
+              "ingestPriority": 2,
+              "plannedIngestFields": [
+                "event_calendar",
+                "campus_map",
+                "term_schedule"
+              ],
+              "dedupeKeys": [
+                "calendar_uid",
+                "building_name",
+                "event_start"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 2,
+          "normalizationTargetTypes": [
+            "community",
+            "event",
+            "movement_flow",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "calendar_uid",
+            "building_name",
+            "event_start"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 2,
+            "plannedIngestFields": [
+              "event_calendar",
+              "campus_map",
+              "term_schedule"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "UAB / Samford Enrollment Origin Reports",
+            "sourceType": "enrollment_origin",
+            "accessMethod": "manual",
+            "trustTier": "tier2",
+            "status": "approved",
+            "entityCoverage": [
+              "population",
+              "movement",
+              "communities"
+            ],
+            "temporalStartYear": 1990,
+            "temporalEndYear": 2025,
+            "replayRole": "seasonal_population_influx",
+            "legalStatus": "allowed",
+            "sourceOwner": "UAB / Samford",
+            "sourceUrl": null,
+            "updateCadence": "yearly",
+            "richestYear": 2022,
+            "structuredExportAvailable": false,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 2,
+              "ingestPriority": 2,
+              "plannedIngestFields": [
+                "origin_states",
+                "international_mix",
+                "term_count"
+              ],
+              "dedupeKeys": [
+                "institution",
+                "term",
+                "report_year"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 2,
+          "normalizationTargetTypes": [
+            "community",
+            "movement_flow",
+            "population_cohort"
+          ],
+          "dedupeKeys": [
+            "institution",
+            "term",
+            "report_year"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 2,
+            "plannedIngestFields": [
+              "origin_states",
+              "international_mix",
+              "term_count"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "UAB Academic, Clinical, and Event Calendars",
+            "sourceType": "institutional_calendar",
+            "accessMethod": "ics",
+            "trustTier": "tier1",
+            "status": "approved",
+            "entityCoverage": [
+              "events",
+              "venues",
+              "communities",
+              "movement",
+              "localities"
+            ],
+            "temporalStartYear": 2000,
+            "temporalEndYear": 2026,
+            "replayRole": "institutional_gravity_well",
+            "legalStatus": "allowed",
+            "sourceOwner": "University of Alabama at Birmingham",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2023,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 2,
+              "ingestPriority": 2,
+              "manualImportRequired": true,
+              "plannedIngestFields": [
+                "academic_calendar",
+                "event_calendar",
+                "clinical_schedule"
+              ],
+              "dedupeKeys": [
+                "calendar_uid",
+                "event_start",
+                "campus_location"
+              ],
+              "providedInputRefs": [
+                "https://calendar.uab.edu/calendar/day/2023/1/1?card_size=small&order=date&days=366&experience=",
+                "https://www.uab.edu/students/academics/academic-calendar/2022-2023",
+                "https://www.uab.edu/students/academics/academic-calendar/2023-2024"
+              ],
+              "currentStatusNotes": "2023 campus-calendar and academic-calendar links are now provided for manual replay intake. Academic term windows are directly available; event-level extraction still requires normalization."
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 2,
+          "normalizationTargetTypes": [
+            "community",
+            "event",
+            "locality",
+            "movement_flow",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "calendar_uid",
+            "event_start",
+            "campus_location"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 2,
+            "plannedIngestFields": [
+              "academic_calendar",
+              "event_calendar",
+              "clinical_schedule"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Data Axle / InfoGroup Business Listings",
+            "sourceType": "business_listing",
+            "accessMethod": "partnerExport",
+            "trustTier": "tier3",
+            "status": "candidate",
+            "entityCoverage": [
+              "venues",
+              "places",
+              "businesses",
+              "clubs"
+            ],
+            "temporalStartYear": 2006,
+            "temporalEndYear": 2026,
+            "replayRole": "business_truth_enrichment",
+            "legalStatus": "review_required",
+            "sourceOwner": "Data Axle / InfoGroup",
+            "sourceUrl": null,
+            "updateCadence": "monthly",
+            "richestYear": 2023,
+            "structuredExportAvailable": true,
+            "seedingEligible": false,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 3,
+              "ingestPriority": 3,
+              "plannedIngestFields": [
+                "naics",
+                "entity_status",
+                "business_name",
+                "address"
+              ],
+              "dedupeKeys": [
+                "business_id",
+                "normalized_name",
+                "address"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "pendingReview",
+          "ingestPriority": 3,
+          "normalizationTargetTypes": [
+            "club",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "business_id",
+            "normalized_name",
+            "address"
+          ],
+          "notes": [
+            "Requires review or final approval before authoritative replay ingest.",
+            "Use as enrichment or verification layer after base entity normalization."
+          ],
+          "metadata": {
+            "registryTier": 3,
+            "plannedIngestFields": [
+              "naics",
+              "entity_status",
+              "business_name",
+              "address"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Delivery / Ordering Platform Aggregates",
+            "sourceType": "delivery_demand",
+            "accessMethod": "partnerExport",
+            "trustTier": "tier3",
+            "status": "candidate",
+            "entityCoverage": [
+              "venues",
+              "restaurants",
+              "localities",
+              "demand_windows"
+            ],
+            "temporalStartYear": 2014,
+            "temporalEndYear": 2026,
+            "replayRole": "meal_demand_rhythm",
+            "legalStatus": "review_required",
+            "sourceOwner": "Delivery Partners",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2024,
+            "structuredExportAvailable": true,
+            "seedingEligible": false,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 3,
+              "ingestPriority": 3,
+              "legalUsageNotes": "Aggregate-only patterns; never retain raw personal order history.",
+              "plannedIngestFields": [
+                "demand_density",
+                "cuisine_timing",
+                "delivery_heat"
+              ],
+              "dedupeKeys": [
+                "provider",
+                "delivery_zone",
+                "service_date",
+                "meal_period"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "pendingReview",
+          "ingestPriority": 3,
+          "normalizationTargetTypes": [
+            "locality",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "provider",
+            "delivery_zone",
+            "service_date",
+            "meal_period"
+          ],
+          "notes": [
+            "Requires review or final approval before authoritative replay ingest.",
+            "Use as enrichment or verification layer after base entity normalization."
+          ],
+          "metadata": {
+            "registryTier": 3,
+            "legalUsageNotes": "Aggregate-only patterns; never retain raw personal order history.",
+            "plannedIngestFields": [
+              "demand_density",
+              "cuisine_timing",
+              "delivery_heat"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Google Places / Yelp",
+            "sourceType": "commercial_poi_enrichment",
+            "accessMethod": "api",
+            "trustTier": "tier3",
+            "status": "approved",
+            "entityCoverage": [
+              "venues",
+              "places",
+              "restaurants",
+              "spots"
+            ],
+            "temporalStartYear": 2011,
+            "temporalEndYear": 2026,
+            "replayRole": "hours_and_operating_enrichment",
+            "legalStatus": "allowed_with_terms",
+            "sourceOwner": "Google / Yelp",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2023,
+            "structuredExportAvailable": true,
+            "seedingEligible": false,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 3,
+              "ingestPriority": 3,
+              "legalUsageNotes": "Respect provider terms; use as enrichment after identity normalization.",
+              "plannedIngestFields": [
+                "operating_hours",
+                "category",
+                "rating_count"
+              ],
+              "dedupeKeys": [
+                "provider_place_id",
+                "normalized_name",
+                "address"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 3,
+          "normalizationTargetTypes": [
+            "venue"
+          ],
+          "dedupeKeys": [
+            "provider_place_id",
+            "normalized_name",
+            "address"
+          ],
+          "notes": [
+            "Use as enrichment or verification layer after base entity normalization."
+          ],
+          "metadata": {
+            "registryTier": 3,
+            "legalUsageNotes": "Respect provider terms; use as enrichment after identity normalization.",
+            "plannedIngestFields": [
+              "operating_hours",
+              "category",
+              "rating_count"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "OpenStreetMap POI Data",
+            "sourceType": "poi_baseline",
+            "accessMethod": "api",
+            "trustTier": "tier2",
+            "status": "approved",
+            "entityCoverage": [
+              "venues",
+              "places",
+              "communities",
+              "clubs",
+              "localities"
+            ],
+            "temporalStartYear": 2008,
+            "temporalEndYear": 2026,
+            "replayRole": "poi_identity_baseline",
+            "legalStatus": "allowed",
+            "sourceOwner": "OpenStreetMap",
+            "sourceUrl": "https://download.geofabrik.de/north-america/us/alabama.html",
+            "updateCadence": "daily",
+            "richestYear": 2024,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 3,
+              "ingestPriority": 3,
+              "plannedIngestFields": [
+                "poi_type",
+                "name",
+                "address",
+                "hours",
+                "geometry"
+              ],
+              "dedupeKeys": [
+                "osm_id",
+                "address",
+                "lat_lng"
+              ],
+              "endpointRef": "https://overpass-api.de/api/interpreter",
+              "providedInputRefs": [
+                "https://download.geofabrik.de/north-america/us/alabama.html",
+                "https://overpass-api.de/api/interpreter"
+              ],
+              "currentStatusNotes": "OSM is approved as a citywide place baseline. Historical 2023 snapshot acquisition is still pending because only current extract endpoints have been validated so far."
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 3,
+          "normalizationTargetTypes": [
+            "club",
+            "community",
+            "locality",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "osm_id",
+            "address",
+            "lat_lng"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 3,
+            "plannedIngestFields": [
+              "poi_type",
+              "name",
+              "address",
+              "hours",
+              "geometry"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Real Estate and Rent Index",
+            "sourceType": "housing_market",
+            "accessMethod": "manual",
+            "trustTier": "tier3",
+            "status": "approved",
+            "entityCoverage": [
+              "localities",
+              "housing",
+              "population",
+              "movement"
+            ],
+            "temporalStartYear": 2000,
+            "temporalEndYear": 2026,
+            "replayRole": "gentrification_and_displacement",
+            "legalStatus": "allowed",
+            "sourceOwner": "Zillow / MLS / HUD / Redfin",
+            "sourceUrl": null,
+            "updateCadence": "monthly",
+            "richestYear": 2023,
+            "structuredExportAvailable": false,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 3,
+              "ingestPriority": 3,
+              "plannedIngestFields": [
+                "rent_index",
+                "home_price_index",
+                "inventory"
+              ],
+              "dedupeKeys": [
+                "zip",
+                "month",
+                "provider"
+              ],
+              "providedInputRefs": [
+                "/Users/reisgordon/Downloads/Redfin Monthly Housing Market Data-2.pdf"
+              ],
+              "currentStatusNotes": "Public Redfin monthly Birmingham housing data is now provided locally and is sufficient to approve a first-pass housing signal lane. Richer MLS/provider enrichment remains optional later."
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 3,
+          "normalizationTargetTypes": [
+            "housing_signal",
+            "locality",
+            "movement_flow",
+            "population_cohort"
+          ],
+          "dedupeKeys": [
+            "zip",
+            "month",
+            "provider"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 3,
+            "plannedIngestFields": [
+              "rent_index",
+              "home_price_index",
+              "inventory"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Resy / OpenTable / Venue Reservation Exports",
+            "sourceType": "reservation_demand",
+            "accessMethod": "partnerExport",
+            "trustTier": "tier3",
+            "status": "candidate",
+            "entityCoverage": [
+              "venues",
+              "restaurants",
+              "events",
+              "demand_windows"
+            ],
+            "temporalStartYear": 2014,
+            "temporalEndYear": 2026,
+            "replayRole": "occupancy_and_booking_pressure",
+            "legalStatus": "review_required",
+            "sourceOwner": "Resy / OpenTable / Venue Partners",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2024,
+            "structuredExportAvailable": true,
+            "seedingEligible": false,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 3,
+              "ingestPriority": 3,
+              "legalUsageNotes": "Use only after legal and partner access review. Never sole venue truth.",
+              "plannedIngestFields": [
+                "reservation_windows",
+                "seat_pressure",
+                "table_scarcity"
+              ],
+              "dedupeKeys": [
+                "venue_name",
+                "service_date",
+                "service_period"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "pendingReview",
+          "ingestPriority": 3,
+          "normalizationTargetTypes": [
+            "event",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "venue_name",
+            "service_date",
+            "service_period"
+          ],
+          "notes": [
+            "Requires review or final approval before authoritative replay ingest.",
+            "Use as enrichment or verification layer after base entity normalization."
+          ],
+          "metadata": {
+            "registryTier": 3,
+            "legalUsageNotes": "Use only after legal and partner access review. Never sole venue truth.",
+            "plannedIngestFields": [
+              "reservation_windows",
+              "seat_pressure",
+              "table_scarcity"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Birmingham Public Library Network",
+            "sourceType": "civic_community_calendar",
+            "accessMethod": "scrape",
+            "trustTier": "tier2",
+            "status": "approved",
+            "entityCoverage": [
+              "events",
+              "venues",
+              "communities",
+              "localities"
+            ],
+            "temporalStartYear": 2005,
+            "temporalEndYear": 2026,
+            "replayRole": "public_space_community_truth",
+            "legalStatus": "allowed",
+            "sourceOwner": "Birmingham Public Library",
+            "sourceUrl": null,
+            "updateCadence": "weekly",
+            "richestYear": 2023,
+            "structuredExportAvailable": false,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 4,
+              "ingestPriority": 4,
+              "manualImportRequired": true,
+              "plannedIngestFields": [
+                "classes",
+                "events",
+                "branch_locations"
+              ],
+              "dedupeKeys": [
+                "branch",
+                "event_name",
+                "event_start"
+              ],
+              "currentStatusNotes": "Validated as a citywide community and branch-location seed on 2026-03-11. Current public pages are acceptable for structural seed rows but not authoritative historical event truth."
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 4,
+          "normalizationTargetTypes": [
+            "community",
+            "event",
+            "locality",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "branch",
+            "event_name",
+            "event_start"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 4,
+            "plannedIngestFields": [
+              "classes",
+              "events",
+              "branch_locations"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Birmingham365.org",
+            "sourceType": "community_spatial_directory",
+            "accessMethod": "scrape",
+            "trustTier": "tier3",
+            "status": "approved",
+            "entityCoverage": [
+              "venues",
+              "communities",
+              "clubs",
+              "localities"
+            ],
+            "temporalStartYear": 2023,
+            "temporalEndYear": 2026,
+            "replayRole": "cultural_event_discovery_seed",
+            "legalStatus": "allowed",
+            "sourceOwner": "Create Birmingham",
+            "sourceUrl": "https://www.birmingham365.org/",
+            "updateCadence": "daily",
+            "richestYear": 2026,
+            "structuredExportAvailable": false,
+            "seedingEligible": true,
+            "ageSafetyNotes": "Directory/discovery source only; never instantiate under-13 personal agents.",
+            "metadata": {
+              "registryTier": 4,
+              "ingestPriority": 4,
+              "manualImportRequired": true,
+              "legalUsageNotes": "Use for cultural discovery and structural seeding. Deduplicate against venue truth before promotion.",
+              "plannedIngestFields": [
+                "community_name",
+                "address",
+                "category",
+                "seed_scope"
+              ],
+              "dedupeKeys": [
+                "community_name",
+                "address"
+              ],
+              "currentStatusNotes": "Validated on 2026-03-11 from the public site as a citywide culture/community seed source. Historical 2023 extraction is still pending."
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 4,
+          "normalizationTargetTypes": [
+            "club",
+            "community",
+            "locality",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "community_name",
+            "address"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors.",
+            "Directory/discovery source only; never instantiate under-13 personal agents."
+          ],
+          "metadata": {
+            "registryTier": 4,
+            "legalUsageNotes": "Use for cultural discovery and structural seeding. Deduplicate against venue truth before promotion.",
+            "plannedIngestFields": [
+              "community_name",
+              "address",
+              "category",
+              "seed_scope"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "City of Birmingham Play Pages",
+            "sourceType": "civic_cultural_spatial_directory",
+            "accessMethod": "scrape",
+            "trustTier": "tier2",
+            "status": "approved",
+            "entityCoverage": [
+              "events",
+              "venues",
+              "places",
+              "communities",
+              "localities"
+            ],
+            "temporalStartYear": 2023,
+            "temporalEndYear": 2026,
+            "replayRole": "civic_cultural_seed_and_event_truth",
+            "legalStatus": "allowed",
+            "sourceOwner": "City of Birmingham",
+            "sourceUrl": "https://www.birminghamal.gov/play/arts-museums",
+            "updateCadence": "monthly",
+            "richestYear": 2026,
+            "structuredExportAvailable": false,
+            "seedingEligible": true,
+            "ageSafetyNotes": "Civic directory source only; never instantiate under-13 personal agents.",
+            "metadata": {
+              "registryTier": 4,
+              "ingestPriority": 4,
+              "manualImportRequired": true,
+              "legalUsageNotes": "Use for structural BHAM cultural seed rows and official city event-page history when a dated 2023 page is directly available.",
+              "plannedIngestFields": [
+                "event_name",
+                "event_dates",
+                "venue_name",
+                "address",
+                "category",
+                "seed_scope"
+              ],
+              "dedupeKeys": [
+                "venue_name",
+                "address"
+              ],
+              "providedInputRefs": [
+                "https://www.birminghamal.gov/play/arts-museums",
+                "https://www.birminghamal.gov/play/city-birmingham-festivals"
+              ],
+              "currentStatusNotes": "Validated on 2026-03-11 as a citywide civic culture seed layer. Direct dated 2023 city event pages are now admissible for replay-year event rows when captured explicitly."
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 4,
+          "normalizationTargetTypes": [
+            "community",
+            "event",
+            "locality",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "venue_name",
+            "address"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors.",
+            "Civic directory source only; never instantiate under-13 personal agents."
+          ],
+          "metadata": {
+            "registryTier": 4,
+            "legalUsageNotes": "Use for structural BHAM cultural seed rows and official city event-page history when a dated 2023 page is directly available.",
+            "plannedIngestFields": [
+              "event_name",
+              "event_dates",
+              "venue_name",
+              "address",
+              "category",
+              "seed_scope"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "County / Municipal Courts and Police Dispatch",
+            "sourceType": "civic_friction",
+            "accessMethod": "openData",
+            "trustTier": "tier2",
+            "status": "candidate",
+            "entityCoverage": [
+              "events",
+              "movement",
+              "localities",
+              "safety"
+            ],
+            "temporalStartYear": 2010,
+            "temporalEndYear": 2026,
+            "replayRole": "incident_and_friction_truth",
+            "legalStatus": "review_required",
+            "sourceOwner": "Jefferson County / Municipalities",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2023,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 4,
+              "ingestPriority": 4,
+              "plannedIngestFields": [
+                "incident_type",
+                "time",
+                "location",
+                "disposition"
+              ],
+              "dedupeKeys": [
+                "incident_id",
+                "timestamp",
+                "location"
+              ],
+              "providedInputRefs": [
+                "https://cde.ucr.cjis.gov/LATEST/webapp/#/pages/explorer/crime/crime-trend",
+                "https://s3.amazonaws.com/og-production-open-data-birminghamal-892364687672/resources/83954d55-51a3-4a57-8181-bcd00d961ead/open-data-east-dec-2023.csv",
+                "https://s3.amazonaws.com/og-production-open-data-birminghamal-892364687672/resources/21397b4a-e99a-42f5-993f-713c87742653/open-data-north-dec-2023.csv",
+                "https://s3.amazonaws.com/og-production-open-data-birminghamal-892364687672/resources/fb772dd6-8b92-4735-978c-790bd4c21e10/open-data-south-dec-2023.csv",
+                "https://s3.amazonaws.com/og-production-open-data-birminghamal-892364687672/resources/4b3640fe-ccea-4135-acce-dd5ee1b28c16/open-data-west-dec-2023.csv"
+              ],
+              "currentStatusNotes": "This lane remains review-gated because full court/dispatch data is still unavailable. Public Birmingham precinct crime CSVs and the FBI crime trend explorer are now logged as partial safety/frequency inputs."
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "pendingReview",
+          "ingestPriority": 4,
+          "normalizationTargetTypes": [
+            "event",
+            "locality",
+            "movement_flow"
+          ],
+          "dedupeKeys": [
+            "incident_id",
+            "timestamp",
+            "location"
+          ],
+          "notes": [
+            "Requires review or final approval before authoritative replay ingest.",
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 4,
+            "plannedIngestFields": [
+              "incident_type",
+              "time",
+              "location",
+              "disposition"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Eventbrite / Meetup",
+            "sourceType": "community_event_platform",
+            "accessMethod": "api",
+            "trustTier": "tier3",
+            "status": "approved",
+            "entityCoverage": [
+              "events",
+              "communities",
+              "clubs",
+              "venues"
+            ],
+            "temporalStartYear": 2012,
+            "temporalEndYear": 2026,
+            "replayRole": "community_event_discovery",
+            "legalStatus": "allowed_with_terms",
+            "sourceOwner": "Eventbrite / Meetup",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2023,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 4,
+              "ingestPriority": 4,
+              "legalUsageNotes": "Must be deduplicated against official venue truth before promotion.",
+              "plannedIngestFields": [
+                "event_name",
+                "organizer",
+                "venue",
+                "recurrence"
+              ],
+              "dedupeKeys": [
+                "platform_event_id",
+                "event_name",
+                "event_start"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 4,
+          "normalizationTargetTypes": [
+            "club",
+            "community",
+            "event",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "platform_event_id",
+            "event_name",
+            "event_start"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 4,
+            "legalUsageNotes": "Must be deduplicated against official venue truth before promotion.",
+            "plannedIngestFields": [
+              "event_name",
+              "organizer",
+              "venue",
+              "recurrence"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "IN Birmingham (CVB Calendar)",
+            "sourceType": "tourism_calendar",
+            "accessMethod": "scrape",
+            "trustTier": "tier2",
+            "status": "approved",
+            "entityCoverage": [
+              "events",
+              "venues",
+              "communities",
+              "localities"
+            ],
+            "temporalStartYear": 2012,
+            "temporalEndYear": 2026,
+            "replayRole": "official_tourism_event_truth",
+            "legalStatus": "allowed",
+            "sourceOwner": "Greater Birmingham Convention & Visitors Bureau",
+            "sourceUrl": null,
+            "updateCadence": "weekly",
+            "richestYear": 2022,
+            "structuredExportAvailable": false,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 4,
+              "ingestPriority": 4,
+              "manualImportRequired": true,
+              "plannedIngestFields": [
+                "event_name",
+                "venue_name",
+                "event_dates",
+                "category"
+              ],
+              "dedupeKeys": [
+                "event_name",
+                "venue_name",
+                "event_start"
+              ],
+              "currentStatusNotes": "Use as a tourism/event discovery and seed layer until historical extraction is validated for a governed replay year."
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 4,
+          "normalizationTargetTypes": [
+            "community",
+            "event",
+            "locality",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "event_name",
+            "venue_name",
+            "event_start"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 4,
+            "plannedIngestFields": [
+              "event_name",
+              "venue_name",
+              "event_dates",
+              "category"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Major Venue Calendars and Historical Venue Calendars",
+            "sourceType": "venue_spatial_calendar",
+            "accessMethod": "ics",
+            "trustTier": "tier2",
+            "status": "approved",
+            "entityCoverage": [
+              "events",
+              "venues",
+              "communities",
+              "clubs",
+              "localities"
+            ],
+            "temporalStartYear": 2014,
+            "temporalEndYear": 2026,
+            "replayRole": "nightlife_and_culture_truth",
+            "legalStatus": "allowed",
+            "sourceOwner": "Individual venues",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2023,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 4,
+              "ingestPriority": 4,
+              "manualImportRequired": true,
+              "plannedIngestFields": [
+                "event_calendar",
+                "venue_status",
+                "ticketed_events"
+              ],
+              "dedupeKeys": [
+                "venue",
+                "event_name",
+                "event_start"
+              ],
+              "venueFamilies": [
+                "Saturn",
+                "Iron City",
+                "The Nick",
+                "Alabama Theatre",
+                "Lyric Theatre",
+                "Alys Stephens Center",
+                "Avondale Brewing Company",
+                "Workplay",
+                "Sidewalk Film Center + Cinema",
+                "Sloss Furnaces",
+                "Cahaba Brewing Company",
+                "TrimTab Brewing Company",
+                "Regions Field",
+                "BJCC / Legacy Arena / Protective Stadium / Concert Hall",
+                "Oak Mountain Amphitheatre",
+                "legacy or sunset venue calendars where historical rows remain relevant"
+              ],
+              "currentStatusNotes": "Current venue sites validated on 2026-03-11 for structural nightlife and cultural seed rows. Historical 2023 event extraction remains pending. This family is not limited to Saturn, Iron City, and The Nick."
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 4,
+          "normalizationTargetTypes": [
+            "club",
+            "community",
+            "event",
+            "locality",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "venue",
+            "event_name",
+            "event_start"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 4,
+            "plannedIngestFields": [
+              "event_calendar",
+              "venue_status",
+              "ticketed_events"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Neighborhood Association Calendars",
+            "sourceType": "hyper_local_calendar",
+            "accessMethod": "scrape",
+            "trustTier": "tier2",
+            "status": "approved",
+            "entityCoverage": [
+              "events",
+              "communities",
+              "clubs",
+              "neighborhoods",
+              "localities"
+            ],
+            "temporalStartYear": 2012,
+            "temporalEndYear": 2026,
+            "replayRole": "hyper_local_community_truth",
+            "legalStatus": "allowed",
+            "sourceOwner": "Neighborhood Associations",
+            "sourceUrl": null,
+            "updateCadence": "monthly",
+            "richestYear": 2019,
+            "structuredExportAvailable": false,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 4,
+              "ingestPriority": 4,
+              "plannedIngestFields": [
+                "meeting_dates",
+                "community_topics",
+                "association_identity"
+              ],
+              "dedupeKeys": [
+                "association_name",
+                "meeting_date",
+                "neighborhood"
+              ],
+              "currentStatusNotes": "Historical neighborhood association rows can now be reconstructed from archived community pages such as Bhamwiki neighborhood entries, but the dedicated calendar lane is still pending direct 2023 captures."
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 4,
+          "normalizationTargetTypes": [
+            "club",
+            "community",
+            "event",
+            "locality"
+          ],
+          "dedupeKeys": [
+            "association_name",
+            "meeting_date",
+            "neighborhood"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 4,
+            "plannedIngestFields": [
+              "meeting_dates",
+              "community_topics",
+              "association_identity"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Bham Now / AL.com / Birmingham Business Journal",
+            "sourceType": "local_news_verification",
+            "accessMethod": "rss",
+            "trustTier": "tier3",
+            "status": "approved",
+            "entityCoverage": [
+              "events",
+              "venues",
+              "communities",
+              "clubs",
+              "localities"
+            ],
+            "temporalStartYear": 2016,
+            "temporalEndYear": 2026,
+            "replayRole": "opening_closure_cross_verification",
+            "legalStatus": "allowed",
+            "sourceOwner": "Local news organizations",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2023,
+            "structuredExportAvailable": false,
+            "seedingEligible": false,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 5,
+              "ingestPriority": 5,
+              "plannedIngestFields": [
+                "article_date",
+                "venue_name",
+                "event_mentions",
+                "closure_signal"
+              ],
+              "dedupeKeys": [
+                "headline",
+                "published_at",
+                "normalized_entity"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 5,
+          "normalizationTargetTypes": [
+            "club",
+            "community",
+            "event",
+            "locality",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "headline",
+            "published_at",
+            "normalized_entity"
+          ],
+          "notes": [
+            "Use as enrichment or verification layer after base entity normalization."
+          ],
+          "metadata": {
+            "registryTier": 5,
+            "plannedIngestFields": [
+              "article_date",
+              "venue_name",
+              "event_mentions",
+              "closure_signal"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Bhamwiki",
+            "sourceType": "historical_entity_archive",
+            "accessMethod": "archive",
+            "trustTier": "tier3",
+            "status": "approved",
+            "entityCoverage": [
+              "venues",
+              "places",
+              "events",
+              "communities",
+              "localities"
+            ],
+            "temporalStartYear": 2006,
+            "temporalEndYear": 2026,
+            "replayRole": "historical_entity_memory",
+            "legalStatus": "allowed",
+            "sourceOwner": "Bhamwiki",
+            "sourceUrl": "https://www.bhamwiki.com/",
+            "updateCadence": "monthly",
+            "richestYear": 2024,
+            "structuredExportAvailable": false,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 5,
+              "ingestPriority": 5,
+              "manualImportRequired": true,
+              "plannedIngestFields": [
+                "entity_history",
+                "opening_closure_history",
+                "neighborhood_links"
+              ],
+              "dedupeKeys": [
+                "page_title",
+                "normalized_entity",
+                "last_revision"
+              ],
+              "currentStatusNotes": "Validated on 2026-03-11 as the first practical citywide historical venue/community archive lane for BHAM replay reconstruction."
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 5,
+          "normalizationTargetTypes": [
+            "community",
+            "event",
+            "locality",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "page_title",
+            "normalized_entity",
+            "last_revision"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 5,
+            "plannedIngestFields": [
+              "entity_history",
+              "opening_closure_history",
+              "neighborhood_links"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "Birmingham Public Library Archives",
+            "sourceType": "historical_archive",
+            "accessMethod": "archive",
+            "trustTier": "tier3",
+            "status": "approved",
+            "entityCoverage": [
+              "events",
+              "venues",
+              "places",
+              "communities",
+              "localities"
+            ],
+            "temporalStartYear": 1880,
+            "temporalEndYear": 2026,
+            "replayRole": "deep_historical_context",
+            "legalStatus": "allowed",
+            "sourceOwner": "Birmingham Public Library",
+            "sourceUrl": "https://www.bplonline.org/resources/archives/",
+            "updateCadence": "yearly",
+            "richestYear": 1963,
+            "structuredExportAvailable": false,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 5,
+              "ingestPriority": 5,
+              "plannedIngestFields": [
+                "archival_reference",
+                "event_dates",
+                "location_history"
+              ],
+              "dedupeKeys": [
+                "archive_id",
+                "collection_name",
+                "date"
+              ],
+              "currentStatusNotes": "Public library archives remain approved for deep historical grounding, but no governed 2023 archival rows have been ingested yet."
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 5,
+          "normalizationTargetTypes": [
+            "community",
+            "event",
+            "locality",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "archive_id",
+            "collection_name",
+            "date"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 5,
+            "plannedIngestFields": [
+              "archival_reference",
+              "event_dates",
+              "location_history"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "James Beard / Garden & Gun / Michelin",
+            "sourceType": "prestige_signal",
+            "accessMethod": "manual",
+            "trustTier": "tier4",
+            "status": "approved",
+            "entityCoverage": [
+              "venues",
+              "restaurants",
+              "prestige"
+            ],
+            "temporalStartYear": 2000,
+            "temporalEndYear": 2026,
+            "replayRole": "prestige_enrichment",
+            "legalStatus": "allowed",
+            "sourceOwner": "Editorial and awards organizations",
+            "sourceUrl": null,
+            "updateCadence": "yearly",
+            "richestYear": 2025,
+            "structuredExportAvailable": false,
+            "seedingEligible": false,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 5,
+              "ingestPriority": 5,
+              "plannedIngestFields": [
+                "award_date",
+                "venue_name",
+                "recognition_type"
+              ],
+              "dedupeKeys": [
+                "venue_name",
+                "award_name",
+                "award_year"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 5,
+          "normalizationTargetTypes": [
+            "venue"
+          ],
+          "dedupeKeys": [
+            "venue_name",
+            "award_name",
+            "award_year"
+          ],
+          "notes": [
+            "Use as enrichment or verification layer after base entity normalization."
+          ],
+          "metadata": {
+            "registryTier": 5,
+            "plannedIngestFields": [
+              "award_date",
+              "venue_name",
+              "recognition_type"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "REV Birmingham Updates",
+            "sourceType": "district_turnover_signal",
+            "accessMethod": "rss",
+            "trustTier": "tier3",
+            "status": "approved",
+            "entityCoverage": [
+              "venues",
+              "events",
+              "communities",
+              "localities"
+            ],
+            "temporalStartYear": 2013,
+            "temporalEndYear": 2026,
+            "replayRole": "district_opening_closure_signal",
+            "legalStatus": "allowed",
+            "sourceOwner": "REV Birmingham",
+            "sourceUrl": null,
+            "updateCadence": "weekly",
+            "richestYear": 2022,
+            "structuredExportAvailable": false,
+            "seedingEligible": false,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 5,
+              "ingestPriority": 5,
+              "plannedIngestFields": [
+                "district_news",
+                "opening_signal",
+                "closure_signal"
+              ],
+              "dedupeKeys": [
+                "headline",
+                "published_at",
+                "district"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 5,
+          "normalizationTargetTypes": [
+            "community",
+            "event",
+            "locality",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "headline",
+            "published_at",
+            "district"
+          ],
+          "notes": [
+            "Use as enrichment or verification layer after base entity normalization."
+          ],
+          "metadata": {
+            "registryTier": 5,
+            "plannedIngestFields": [
+              "district_news",
+              "opening_signal",
+              "closure_signal"
+            ]
+          }
+        },
+        {
+          "source": {
+            "sourceName": "WBHM 90.3 Public Radio",
+            "sourceType": "civic_news_verification",
+            "accessMethod": "rss",
+            "trustTier": "tier3",
+            "status": "approved",
+            "entityCoverage": [
+              "events",
+              "communities",
+              "localities"
+            ],
+            "temporalStartYear": 2005,
+            "temporalEndYear": 2026,
+            "replayRole": "civic_mood_and_major_event_crosscheck",
+            "legalStatus": "allowed",
+            "sourceOwner": "WBHM",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2020,
+            "structuredExportAvailable": false,
+            "seedingEligible": false,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 5,
+              "ingestPriority": 5,
+              "plannedIngestFields": [
+                "story_date",
+                "entity_mentions",
+                "civic_signal"
+              ],
+              "dedupeKeys": [
+                "headline",
+                "published_at"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 5,
+          "normalizationTargetTypes": [
+            "community",
+            "event",
+            "locality"
+          ],
+          "dedupeKeys": [
+            "headline",
+            "published_at"
+          ],
+          "notes": [
+            "Use as enrichment or verification layer after base entity normalization."
+          ],
+          "metadata": {
+            "registryTier": 5,
+            "plannedIngestFields": [
+              "story_date",
+              "entity_mentions",
+              "civic_signal"
+            ]
+          }
+        }
+      ],
+      "canonicalEntityTypes": [
+        "club",
+        "community",
+        "economic_signal",
+        "environmental_signal",
+        "event",
+        "housing_signal",
+        "locality",
+        "movement_flow",
+        "population_cohort",
+        "venue"
+      ],
+      "notes": [
+        "Manifest generated from governed BHAM replay source registry wave8-phase1b.",
+        "33 sources are ready for replay-year intake.",
+        "4 sources remain pending review before full replay-year authority.",
+        "Normalization targets are canonical entity types derived from source coverage and replay role."
+      ],
+      "sourceStatusCounts": {
+        "approved": 33,
+        "candidate": 4
+      }
+    },
+    "results": [
+      {
+        "sourcePlan": {
+          "source": {
+            "sourceName": "Eventbrite / Meetup",
+            "sourceType": "community_event_platform",
+            "accessMethod": "api",
+            "trustTier": "tier3",
+            "status": "approved",
+            "entityCoverage": [
+              "events",
+              "communities",
+              "clubs",
+              "venues"
+            ],
+            "temporalStartYear": 2012,
+            "temporalEndYear": 2026,
+            "replayRole": "community_event_discovery",
+            "legalStatus": "allowed_with_terms",
+            "sourceOwner": "Eventbrite / Meetup",
+            "sourceUrl": null,
+            "updateCadence": "daily",
+            "richestYear": 2023,
+            "structuredExportAvailable": true,
+            "seedingEligible": true,
+            "ageSafetyNotes": null,
+            "metadata": {
+              "registryTier": 4,
+              "ingestPriority": 4,
+              "legalUsageNotes": "Must be deduplicated against official venue truth before promotion.",
+              "plannedIngestFields": [
+                "event_name",
+                "organizer",
+                "venue",
+                "recurrence"
+              ],
+              "dedupeKeys": [
+                "platform_event_id",
+                "event_name",
+                "event_start"
+              ]
+            }
+          },
+          "replayYear": 2023,
+          "readiness": "ready",
+          "ingestPriority": 4,
+          "normalizationTargetTypes": [
+            "club",
+            "community",
+            "event",
+            "venue"
+          ],
+          "dedupeKeys": [
+            "platform_event_id",
+            "event_name",
+            "event_start"
+          ],
+          "notes": [
+            "Eligible to seed governed replay/entity priors."
+          ],
+          "metadata": {
+            "registryTier": 4,
+            "legalUsageNotes": "Must be deduplicated against official venue truth before promotion.",
+            "plannedIngestFields": [
+              "event_name",
+              "organizer",
+              "venue",
+              "recurrence"
+            ]
+          }
+        },
+        "adapterId": "calendar_event_replay_source_adapter",
+        "records": [
+          {
+            "recordId": "evtmeet-hist-1",
+            "sourceName": "Eventbrite / Meetup",
+            "replayYear": 2023,
+            "rawEntityId": "community:birmingham-net-meetup-birmingham-al-1242-members",
+            "rawEntityType": "community",
+            "replayEnvelope": {
+              "envelopeId": "env:evtmeet-hist-1",
+              "subjectId": "community:birmingham-net-meetup-birmingham-al-1242-members",
+              "observedAt": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "validTo": {
+                "referenceTime": "2023-12-31T23:59:59.000Z",
+                "civilTime": "2023-12-31T23:59:59.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1704067199000000,
+                "atomicTimestamp": null
+              },
+              "eventStartAt": null,
+              "eventEndAt": null,
+              "lastVerifiedAt": {
+                "referenceTime": "2026-03-12T23:45:00.000Z",
+                "civilTime": "2026-03-12T23:45:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1773359100000000,
+                "atomicTimestamp": null
+              },
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "Eventbrite / Meetup"
+              },
+              "uncertainty": {
+                "windowMicros": 604800000000,
+                "confidence": 0.64
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "calendar_event_replay_source_adapter"
+              }
+            },
+            "canonicalEntityHint": "community",
+            "localityHint": "bham_metro_regional",
+            "payload": {
+              "name": "Birmingham .NET Meetup Birmingham, AL • 1242 members",
+              "venue_name": null,
+              "community_name": "Birmingham .NET Meetup Birmingham, AL • 1242 members",
+              "starts_at": null,
+              "ends_at": null,
+              "record_id": "evtmeet-hist-1",
+              "entity_type": "community",
+              "entity_id": "community:birmingham-net-meetup-birmingham-al-1242-members",
+              "title": "Birmingham .NET Meetup Birmingham, AL • 1242 members",
+              "locality": "bham_metro_regional",
+              "observed_at": "2023-01-01T00:00:00.000Z",
+              "published_at": "2023-01-01T00:00:00.000Z",
+              "valid_from": "2023-01-01T00:00:00.000Z",
+              "valid_to": "2023-12-31T23:59:59.000Z",
+              "last_verified_at": "2026-03-12T23:45:00Z",
+              "category": "recurring_social_group_anchor",
+              "historical_admissibility": "governed_group_anchor_reconstruction",
+              "historical_capture_method": "persistent_meetup_group_listing",
+              "historical_validation_note": "Birmingham .NET Meetup Birmingham, AL • 1242 members was promoted as a persistent Birmingham social-group anchor from a Meetup group listing; it is treated as recurring community or club structure, not a dated 2023 event row.",
+              "historical_source_url": "https://www.meetup.com/Birmingham-NET-Meetup/?eventOrigin=city_popular_groups",
+              "source_host": "meetup.com",
+              "source_page_title": "Birmingham .NET Meetup Birmingham, AL • 1242 members",
+              "source_row_basis": [
+                "evt-55"
+              ],
+              "confidence": 0.64,
+              "uncertainty_minutes": 10080
+            },
+            "metadata": {
+              "adapter_id": "calendar_event_replay_source_adapter",
+              "source_type": "community_event_platform"
+            }
+          },
+          {
+            "recordId": "evtmeet-hist-2",
+            "sourceName": "Eventbrite / Meetup",
+            "replayYear": 2023,
+            "rawEntityId": "community:bham-language-exchange-birmingham-al-941-members",
+            "rawEntityType": "community",
+            "replayEnvelope": {
+              "envelopeId": "env:evtmeet-hist-2",
+              "subjectId": "community:bham-language-exchange-birmingham-al-941-members",
+              "observedAt": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "validTo": {
+                "referenceTime": "2023-12-31T23:59:59.000Z",
+                "civilTime": "2023-12-31T23:59:59.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1704067199000000,
+                "atomicTimestamp": null
+              },
+              "eventStartAt": null,
+              "eventEndAt": null,
+              "lastVerifiedAt": {
+                "referenceTime": "2026-03-12T23:45:00.000Z",
+                "civilTime": "2026-03-12T23:45:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1773359100000000,
+                "atomicTimestamp": null
+              },
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "Eventbrite / Meetup"
+              },
+              "uncertainty": {
+                "windowMicros": 604800000000,
+                "confidence": 0.64
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "calendar_event_replay_source_adapter"
+              }
+            },
+            "canonicalEntityHint": "community",
+            "localityHint": "bham_metro_regional",
+            "payload": {
+              "name": "Bham Language Exchange Birmingham, AL • 941 members",
+              "venue_name": null,
+              "community_name": "Bham Language Exchange Birmingham, AL • 941 members",
+              "starts_at": null,
+              "ends_at": null,
+              "record_id": "evtmeet-hist-2",
+              "entity_type": "community",
+              "entity_id": "community:bham-language-exchange-birmingham-al-941-members",
+              "title": "Bham Language Exchange Birmingham, AL • 941 members",
+              "locality": "bham_metro_regional",
+              "observed_at": "2023-01-01T00:00:00.000Z",
+              "published_at": "2023-01-01T00:00:00.000Z",
+              "valid_from": "2023-01-01T00:00:00.000Z",
+              "valid_to": "2023-12-31T23:59:59.000Z",
+              "last_verified_at": "2026-03-12T23:45:00Z",
+              "category": "recurring_social_group_anchor",
+              "historical_admissibility": "governed_group_anchor_reconstruction",
+              "historical_capture_method": "persistent_meetup_group_listing",
+              "historical_validation_note": "Bham Language Exchange Birmingham, AL • 941 members was promoted as a persistent Birmingham social-group anchor from a Meetup group listing; it is treated as recurring community or club structure, not a dated 2023 event row.",
+              "historical_source_url": "https://www.meetup.com/bhamlangexchange/?eventOrigin=city_popular_groups",
+              "source_host": "meetup.com",
+              "source_page_title": "Bham Language Exchange Birmingham, AL • 941 members",
+              "source_row_basis": [
+                "evt-56"
+              ],
+              "confidence": 0.64,
+              "uncertainty_minutes": 10080
+            },
+            "metadata": {
+              "adapter_id": "calendar_event_replay_source_adapter",
+              "source_type": "community_event_platform"
+            }
+          },
+          {
+            "recordId": "evtmeet-hist-3",
+            "sourceName": "Eventbrite / Meetup",
+            "replayYear": 2023,
+            "rawEntityId": "community:birmingham-dining-experience-group-birmingham-al-559-members",
+            "rawEntityType": "community",
+            "replayEnvelope": {
+              "envelopeId": "env:evtmeet-hist-3",
+              "subjectId": "community:birmingham-dining-experience-group-birmingham-al-559-members",
+              "observedAt": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "validTo": {
+                "referenceTime": "2023-12-31T23:59:59.000Z",
+                "civilTime": "2023-12-31T23:59:59.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1704067199000000,
+                "atomicTimestamp": null
+              },
+              "eventStartAt": null,
+              "eventEndAt": null,
+              "lastVerifiedAt": {
+                "referenceTime": "2026-03-12T23:45:00.000Z",
+                "civilTime": "2026-03-12T23:45:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1773359100000000,
+                "atomicTimestamp": null
+              },
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "Eventbrite / Meetup"
+              },
+              "uncertainty": {
+                "windowMicros": 604800000000,
+                "confidence": 0.64
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "calendar_event_replay_source_adapter"
+              }
+            },
+            "canonicalEntityHint": "community",
+            "localityHint": "bham_metro_regional",
+            "payload": {
+              "name": "Birmingham Dining Experience Group Birmingham, AL • 559 members",
+              "venue_name": null,
+              "community_name": "Birmingham Dining Experience Group Birmingham, AL • 559 members",
+              "starts_at": null,
+              "ends_at": null,
+              "record_id": "evtmeet-hist-3",
+              "entity_type": "community",
+              "entity_id": "community:birmingham-dining-experience-group-birmingham-al-559-members",
+              "title": "Birmingham Dining Experience Group Birmingham, AL • 559 members",
+              "locality": "bham_metro_regional",
+              "observed_at": "2023-01-01T00:00:00.000Z",
+              "published_at": "2023-01-01T00:00:00.000Z",
+              "valid_from": "2023-01-01T00:00:00.000Z",
+              "valid_to": "2023-12-31T23:59:59.000Z",
+              "last_verified_at": "2026-03-12T23:45:00Z",
+              "category": "recurring_social_group_anchor",
+              "historical_admissibility": "governed_group_anchor_reconstruction",
+              "historical_capture_method": "persistent_meetup_group_listing",
+              "historical_validation_note": "Birmingham Dining Experience Group Birmingham, AL • 559 members was promoted as a persistent Birmingham social-group anchor from a Meetup group listing; it is treated as recurring community or club structure, not a dated 2023 event row.",
+              "historical_source_url": "https://www.meetup.com/birmingham-dining-experience-group/?eventOrigin=city_popular_groups",
+              "source_host": "meetup.com",
+              "source_page_title": "Birmingham Dining Experience Group Birmingham, AL • 559 members",
+              "source_row_basis": [
+                "evt-57"
+              ],
+              "confidence": 0.64,
+              "uncertainty_minutes": 10080
+            },
+            "metadata": {
+              "adapter_id": "calendar_event_replay_source_adapter",
+              "source_type": "community_event_platform"
+            }
+          },
+          {
+            "recordId": "evtmeet-hist-4",
+            "sourceName": "Eventbrite / Meetup",
+            "replayYear": 2023,
+            "rawEntityId": "community:mocha-girls-read-birmingham-birmingham-al-549-members",
+            "rawEntityType": "community",
+            "replayEnvelope": {
+              "envelopeId": "env:evtmeet-hist-4",
+              "subjectId": "community:mocha-girls-read-birmingham-birmingham-al-549-members",
+              "observedAt": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "validTo": {
+                "referenceTime": "2023-12-31T23:59:59.000Z",
+                "civilTime": "2023-12-31T23:59:59.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1704067199000000,
+                "atomicTimestamp": null
+              },
+              "eventStartAt": null,
+              "eventEndAt": null,
+              "lastVerifiedAt": {
+                "referenceTime": "2026-03-12T23:45:00.000Z",
+                "civilTime": "2026-03-12T23:45:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1773359100000000,
+                "atomicTimestamp": null
+              },
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "Eventbrite / Meetup"
+              },
+              "uncertainty": {
+                "windowMicros": 604800000000,
+                "confidence": 0.64
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "calendar_event_replay_source_adapter"
+              }
+            },
+            "canonicalEntityHint": "community",
+            "localityHint": "bham_metro_regional",
+            "payload": {
+              "name": "Mocha Girls Read - Birmingham Birmingham, AL • 549 members",
+              "venue_name": null,
+              "community_name": "Mocha Girls Read - Birmingham Birmingham, AL • 549 members",
+              "starts_at": null,
+              "ends_at": null,
+              "record_id": "evtmeet-hist-4",
+              "entity_type": "community",
+              "entity_id": "community:mocha-girls-read-birmingham-birmingham-al-549-members",
+              "title": "Mocha Girls Read - Birmingham Birmingham, AL • 549 members",
+              "locality": "bham_metro_regional",
+              "observed_at": "2023-01-01T00:00:00.000Z",
+              "published_at": "2023-01-01T00:00:00.000Z",
+              "valid_from": "2023-01-01T00:00:00.000Z",
+              "valid_to": "2023-12-31T23:59:59.000Z",
+              "last_verified_at": "2026-03-12T23:45:00Z",
+              "category": "recurring_social_group_anchor",
+              "historical_admissibility": "governed_group_anchor_reconstruction",
+              "historical_capture_method": "persistent_meetup_group_listing",
+              "historical_validation_note": "Mocha Girls Read - Birmingham Birmingham, AL • 549 members was promoted as a persistent Birmingham social-group anchor from a Meetup group listing; it is treated as recurring community or club structure, not a dated 2023 event row.",
+              "historical_source_url": "https://www.meetup.com/mocha-girls-read-birmingham/?eventOrigin=city_popular_groups",
+              "source_host": "meetup.com",
+              "source_page_title": "Mocha Girls Read - Birmingham Birmingham, AL • 549 members",
+              "source_row_basis": [
+                "evt-58"
+              ],
+              "confidence": 0.64,
+              "uncertainty_minutes": 10080
+            },
+            "metadata": {
+              "adapter_id": "calendar_event_replay_source_adapter",
+              "source_type": "community_event_platform"
+            }
+          },
+          {
+            "recordId": "evtmeet-hist-5",
+            "sourceName": "Eventbrite / Meetup",
+            "replayYear": 2023,
+            "rawEntityId": "community:cloud-security-alliance-alabama-chapter-birmingham-al-479-members",
+            "rawEntityType": "community",
+            "replayEnvelope": {
+              "envelopeId": "env:evtmeet-hist-5",
+              "subjectId": "community:cloud-security-alliance-alabama-chapter-birmingham-al-479-members",
+              "observedAt": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "validTo": {
+                "referenceTime": "2023-12-31T23:59:59.000Z",
+                "civilTime": "2023-12-31T23:59:59.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1704067199000000,
+                "atomicTimestamp": null
+              },
+              "eventStartAt": null,
+              "eventEndAt": null,
+              "lastVerifiedAt": {
+                "referenceTime": "2026-03-12T23:45:00.000Z",
+                "civilTime": "2026-03-12T23:45:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1773359100000000,
+                "atomicTimestamp": null
+              },
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "Eventbrite / Meetup"
+              },
+              "uncertainty": {
+                "windowMicros": 604800000000,
+                "confidence": 0.64
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "calendar_event_replay_source_adapter"
+              }
+            },
+            "canonicalEntityHint": "community",
+            "localityHint": "bham_metro_regional",
+            "payload": {
+              "name": "Cloud Security Alliance Alabama Chapter Birmingham, AL • 479 members",
+              "venue_name": null,
+              "community_name": "Cloud Security Alliance Alabama Chapter Birmingham, AL • 479 members",
+              "starts_at": null,
+              "ends_at": null,
+              "record_id": "evtmeet-hist-5",
+              "entity_type": "community",
+              "entity_id": "community:cloud-security-alliance-alabama-chapter-birmingham-al-479-members",
+              "title": "Cloud Security Alliance Alabama Chapter Birmingham, AL • 479 members",
+              "locality": "bham_metro_regional",
+              "observed_at": "2023-01-01T00:00:00.000Z",
+              "published_at": "2023-01-01T00:00:00.000Z",
+              "valid_from": "2023-01-01T00:00:00.000Z",
+              "valid_to": "2023-12-31T23:59:59.000Z",
+              "last_verified_at": "2026-03-12T23:45:00Z",
+              "category": "recurring_social_group_anchor",
+              "historical_admissibility": "governed_group_anchor_reconstruction",
+              "historical_capture_method": "persistent_meetup_group_listing",
+              "historical_validation_note": "Cloud Security Alliance Alabama Chapter Birmingham, AL • 479 members was promoted as a persistent Birmingham social-group anchor from a Meetup group listing; it is treated as recurring community or club structure, not a dated 2023 event row.",
+              "historical_source_url": "https://www.meetup.com/cloud-security-alliance-alabama-chapter/?eventOrigin=city_popular_groups",
+              "source_host": "meetup.com",
+              "source_page_title": "Cloud Security Alliance Alabama Chapter Birmingham, AL • 479 members",
+              "source_row_basis": [
+                "evt-59"
+              ],
+              "confidence": 0.64,
+              "uncertainty_minutes": 10080
+            },
+            "metadata": {
+              "adapter_id": "calendar_event_replay_source_adapter",
+              "source_type": "community_event_platform"
+            }
+          },
+          {
+            "recordId": "evtmeet-hist-6",
+            "sourceName": "Eventbrite / Meetup",
+            "replayYear": 2023,
+            "rawEntityId": "community:gurdjieff-found-of-ala-red-mtn-study-grp-birmingham-al-301-members",
+            "rawEntityType": "community",
+            "replayEnvelope": {
+              "envelopeId": "env:evtmeet-hist-6",
+              "subjectId": "community:gurdjieff-found-of-ala-red-mtn-study-grp-birmingham-al-301-members",
+              "observedAt": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "validTo": {
+                "referenceTime": "2023-12-31T23:59:59.000Z",
+                "civilTime": "2023-12-31T23:59:59.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1704067199000000,
+                "atomicTimestamp": null
+              },
+              "eventStartAt": null,
+              "eventEndAt": null,
+              "lastVerifiedAt": {
+                "referenceTime": "2026-03-12T23:45:00.000Z",
+                "civilTime": "2026-03-12T23:45:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1773359100000000,
+                "atomicTimestamp": null
+              },
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "Eventbrite / Meetup"
+              },
+              "uncertainty": {
+                "windowMicros": 604800000000,
+                "confidence": 0.64
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "calendar_event_replay_source_adapter"
+              }
+            },
+            "canonicalEntityHint": "community",
+            "localityHint": "bham_metro_regional",
+            "payload": {
+              "name": "Gurdjieff Found. of Ala./Red Mtn. Study Grp. Birmingham, AL • 301 members",
+              "venue_name": null,
+              "community_name": "Gurdjieff Found. of Ala./Red Mtn. Study Grp. Birmingham, AL • 301 members",
+              "starts_at": null,
+              "ends_at": null,
+              "record_id": "evtmeet-hist-6",
+              "entity_type": "community",
+              "entity_id": "community:gurdjieff-found-of-ala-red-mtn-study-grp-birmingham-al-301-members",
+              "title": "Gurdjieff Found. of Ala./Red Mtn. Study Grp. Birmingham, AL • 301 members",
+              "locality": "bham_metro_regional",
+              "observed_at": "2023-01-01T00:00:00.000Z",
+              "published_at": "2023-01-01T00:00:00.000Z",
+              "valid_from": "2023-01-01T00:00:00.000Z",
+              "valid_to": "2023-12-31T23:59:59.000Z",
+              "last_verified_at": "2026-03-12T23:45:00Z",
+              "category": "recurring_social_group_anchor",
+              "historical_admissibility": "governed_group_anchor_reconstruction",
+              "historical_capture_method": "persistent_meetup_group_listing",
+              "historical_validation_note": "Gurdjieff Found. of Ala./Red Mtn. Study Grp. Birmingham, AL • 301 members was promoted as a persistent Birmingham social-group anchor from a Meetup group listing; it is treated as recurring community or club structure, not a dated 2023 event row.",
+              "historical_source_url": "https://www.meetup.com/Gurdjieff-Found-Ala/?eventOrigin=city_popular_groups",
+              "source_host": "meetup.com",
+              "source_page_title": "Gurdjieff Found. of Ala./Red Mtn. Study Grp. Birmingham, AL • 301 members",
+              "source_row_basis": [
+                "evt-60"
+              ],
+              "confidence": 0.64,
+              "uncertainty_minutes": 10080
+            },
+            "metadata": {
+              "adapter_id": "calendar_event_replay_source_adapter",
+              "source_type": "community_event_platform"
+            }
+          }
+        ],
+        "observations": [
+          {
+            "observationId": "obs:evtmeet-hist-1",
+            "subjectIdentity": {
+              "normalizedEntityId": "community:birmingham-net-meetup-birmingham-al-1242-members",
+              "entityType": "community",
+              "canonicalName": "Birmingham .NET Meetup Birmingham, AL • 1242 members",
+              "sourceAliases": [
+                "community:birmingham-net-meetup-birmingham-al-1242-members",
+                "Birmingham .NET Meetup Birmingham, AL • 1242 members"
+              ],
+              "sourceRefs": [
+                "Eventbrite / Meetup"
+              ],
+              "dedupeKeys": {
+                "raw_entity_id": "community:birmingham-net-meetup-birmingham-al-1242-members",
+                "locality": "bham_metro_regional"
+              },
+              "localityAnchor": "bham_metro_regional",
+              "metadata": {
+                "source_type": "community_event_platform",
+                "replay_year": 2023
+              }
+            },
+            "replayEnvelope": {
+              "envelopeId": "env:evtmeet-hist-1",
+              "subjectId": "community:birmingham-net-meetup-birmingham-al-1242-members",
+              "observedAt": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "validTo": {
+                "referenceTime": "2023-12-31T23:59:59.000Z",
+                "civilTime": "2023-12-31T23:59:59.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1704067199000000,
+                "atomicTimestamp": null
+              },
+              "eventStartAt": null,
+              "eventEndAt": null,
+              "lastVerifiedAt": {
+                "referenceTime": "2026-03-12T23:45:00.000Z",
+                "civilTime": "2026-03-12T23:45:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1773359100000000,
+                "atomicTimestamp": null
+              },
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "Eventbrite / Meetup"
+              },
+              "uncertainty": {
+                "windowMicros": 604800000000,
+                "confidence": 0.64
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "calendar_event_replay_source_adapter"
+              }
+            },
+            "status": "normalized",
+            "sourceRefs": [
+              "Eventbrite / Meetup"
+            ],
+            "normalizedFields": {
+              "canonical_name": "Birmingham .NET Meetup Birmingham, AL • 1242 members",
+              "entity_type": "community",
+              "locality_anchor": "bham_metro_regional",
+              "name": "Birmingham .NET Meetup Birmingham, AL • 1242 members",
+              "venue_name": null,
+              "community_name": "Birmingham .NET Meetup Birmingham, AL • 1242 members",
+              "starts_at": null,
+              "ends_at": null,
+              "record_id": "evtmeet-hist-1",
+              "entity_id": "community:birmingham-net-meetup-birmingham-al-1242-members",
+              "title": "Birmingham .NET Meetup Birmingham, AL • 1242 members",
+              "locality": "bham_metro_regional",
+              "observed_at": "2023-01-01T00:00:00.000Z",
+              "published_at": "2023-01-01T00:00:00.000Z",
+              "valid_from": "2023-01-01T00:00:00.000Z",
+              "valid_to": "2023-12-31T23:59:59.000Z",
+              "last_verified_at": "2026-03-12T23:45:00Z",
+              "category": "recurring_social_group_anchor",
+              "historical_admissibility": "governed_group_anchor_reconstruction",
+              "historical_capture_method": "persistent_meetup_group_listing",
+              "historical_validation_note": "Birmingham .NET Meetup Birmingham, AL • 1242 members was promoted as a persistent Birmingham social-group anchor from a Meetup group listing; it is treated as recurring community or club structure, not a dated 2023 event row.",
+              "historical_source_url": "https://www.meetup.com/Birmingham-NET-Meetup/?eventOrigin=city_popular_groups",
+              "source_host": "meetup.com",
+              "source_page_title": "Birmingham .NET Meetup Birmingham, AL • 1242 members",
+              "source_row_basis": [
+                "evt-55"
+              ],
+              "confidence": 0.64,
+              "uncertainty_minutes": 10080
+            },
+            "truthResolution": {
+              "resolutionId": "resolution:evtmeet-hist-1",
+              "subjectId": "community:birmingham-net-meetup-birmingham-al-1242-members",
+              "outcome": "merged",
+              "confidence": 0.78,
+              "rationale": "normalized from replay source record into canonical observation",
+              "resolvedAt": {
+                "referenceTime": "2026-03-12T16:13:24.513219Z",
+                "civilTime": "2026-03-12T11:13:24.513219",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "device",
+                  "source": "system_clock"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 5698,
+                "atomicTimestamp": null
+              },
+              "contributingSources": [
+                "Eventbrite / Meetup"
+              ],
+              "overrideRecordIds": [],
+              "metadata": {
+                "record_id": "evtmeet-hist-1",
+                "raw_entity_type": "community"
+              }
+            },
+            "metadata": {
+              "raw_record_id": "evtmeet-hist-1"
+            }
+          },
+          {
+            "observationId": "obs:evtmeet-hist-2",
+            "subjectIdentity": {
+              "normalizedEntityId": "community:bham-language-exchange-birmingham-al-941-members",
+              "entityType": "community",
+              "canonicalName": "Bham Language Exchange Birmingham, AL • 941 members",
+              "sourceAliases": [
+                "community:bham-language-exchange-birmingham-al-941-members",
+                "Bham Language Exchange Birmingham, AL • 941 members"
+              ],
+              "sourceRefs": [
+                "Eventbrite / Meetup"
+              ],
+              "dedupeKeys": {
+                "raw_entity_id": "community:bham-language-exchange-birmingham-al-941-members",
+                "locality": "bham_metro_regional"
+              },
+              "localityAnchor": "bham_metro_regional",
+              "metadata": {
+                "source_type": "community_event_platform",
+                "replay_year": 2023
+              }
+            },
+            "replayEnvelope": {
+              "envelopeId": "env:evtmeet-hist-2",
+              "subjectId": "community:bham-language-exchange-birmingham-al-941-members",
+              "observedAt": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "validTo": {
+                "referenceTime": "2023-12-31T23:59:59.000Z",
+                "civilTime": "2023-12-31T23:59:59.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1704067199000000,
+                "atomicTimestamp": null
+              },
+              "eventStartAt": null,
+              "eventEndAt": null,
+              "lastVerifiedAt": {
+                "referenceTime": "2026-03-12T23:45:00.000Z",
+                "civilTime": "2026-03-12T23:45:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1773359100000000,
+                "atomicTimestamp": null
+              },
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "Eventbrite / Meetup"
+              },
+              "uncertainty": {
+                "windowMicros": 604800000000,
+                "confidence": 0.64
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "calendar_event_replay_source_adapter"
+              }
+            },
+            "status": "normalized",
+            "sourceRefs": [
+              "Eventbrite / Meetup"
+            ],
+            "normalizedFields": {
+              "canonical_name": "Bham Language Exchange Birmingham, AL • 941 members",
+              "entity_type": "community",
+              "locality_anchor": "bham_metro_regional",
+              "name": "Bham Language Exchange Birmingham, AL • 941 members",
+              "venue_name": null,
+              "community_name": "Bham Language Exchange Birmingham, AL • 941 members",
+              "starts_at": null,
+              "ends_at": null,
+              "record_id": "evtmeet-hist-2",
+              "entity_id": "community:bham-language-exchange-birmingham-al-941-members",
+              "title": "Bham Language Exchange Birmingham, AL • 941 members",
+              "locality": "bham_metro_regional",
+              "observed_at": "2023-01-01T00:00:00.000Z",
+              "published_at": "2023-01-01T00:00:00.000Z",
+              "valid_from": "2023-01-01T00:00:00.000Z",
+              "valid_to": "2023-12-31T23:59:59.000Z",
+              "last_verified_at": "2026-03-12T23:45:00Z",
+              "category": "recurring_social_group_anchor",
+              "historical_admissibility": "governed_group_anchor_reconstruction",
+              "historical_capture_method": "persistent_meetup_group_listing",
+              "historical_validation_note": "Bham Language Exchange Birmingham, AL • 941 members was promoted as a persistent Birmingham social-group anchor from a Meetup group listing; it is treated as recurring community or club structure, not a dated 2023 event row.",
+              "historical_source_url": "https://www.meetup.com/bhamlangexchange/?eventOrigin=city_popular_groups",
+              "source_host": "meetup.com",
+              "source_page_title": "Bham Language Exchange Birmingham, AL • 941 members",
+              "source_row_basis": [
+                "evt-56"
+              ],
+              "confidence": 0.64,
+              "uncertainty_minutes": 10080
+            },
+            "truthResolution": {
+              "resolutionId": "resolution:evtmeet-hist-2",
+              "subjectId": "community:bham-language-exchange-birmingham-al-941-members",
+              "outcome": "merged",
+              "confidence": 0.78,
+              "rationale": "normalized from replay source record into canonical observation",
+              "resolvedAt": {
+                "referenceTime": "2026-03-12T16:13:24.516534Z",
+                "civilTime": "2026-03-12T11:13:24.516534",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "device",
+                  "source": "system_clock"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 9013,
+                "atomicTimestamp": null
+              },
+              "contributingSources": [
+                "Eventbrite / Meetup"
+              ],
+              "overrideRecordIds": [],
+              "metadata": {
+                "record_id": "evtmeet-hist-2",
+                "raw_entity_type": "community"
+              }
+            },
+            "metadata": {
+              "raw_record_id": "evtmeet-hist-2"
+            }
+          },
+          {
+            "observationId": "obs:evtmeet-hist-3",
+            "subjectIdentity": {
+              "normalizedEntityId": "community:birmingham-dining-experience-group-birmingham-al-559-members",
+              "entityType": "community",
+              "canonicalName": "Birmingham Dining Experience Group Birmingham, AL • 559 members",
+              "sourceAliases": [
+                "community:birmingham-dining-experience-group-birmingham-al-559-members",
+                "Birmingham Dining Experience Group Birmingham, AL • 559 members"
+              ],
+              "sourceRefs": [
+                "Eventbrite / Meetup"
+              ],
+              "dedupeKeys": {
+                "raw_entity_id": "community:birmingham-dining-experience-group-birmingham-al-559-members",
+                "locality": "bham_metro_regional"
+              },
+              "localityAnchor": "bham_metro_regional",
+              "metadata": {
+                "source_type": "community_event_platform",
+                "replay_year": 2023
+              }
+            },
+            "replayEnvelope": {
+              "envelopeId": "env:evtmeet-hist-3",
+              "subjectId": "community:birmingham-dining-experience-group-birmingham-al-559-members",
+              "observedAt": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "validTo": {
+                "referenceTime": "2023-12-31T23:59:59.000Z",
+                "civilTime": "2023-12-31T23:59:59.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1704067199000000,
+                "atomicTimestamp": null
+              },
+              "eventStartAt": null,
+              "eventEndAt": null,
+              "lastVerifiedAt": {
+                "referenceTime": "2026-03-12T23:45:00.000Z",
+                "civilTime": "2026-03-12T23:45:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1773359100000000,
+                "atomicTimestamp": null
+              },
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "Eventbrite / Meetup"
+              },
+              "uncertainty": {
+                "windowMicros": 604800000000,
+                "confidence": 0.64
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "calendar_event_replay_source_adapter"
+              }
+            },
+            "status": "normalized",
+            "sourceRefs": [
+              "Eventbrite / Meetup"
+            ],
+            "normalizedFields": {
+              "canonical_name": "Birmingham Dining Experience Group Birmingham, AL • 559 members",
+              "entity_type": "community",
+              "locality_anchor": "bham_metro_regional",
+              "name": "Birmingham Dining Experience Group Birmingham, AL • 559 members",
+              "venue_name": null,
+              "community_name": "Birmingham Dining Experience Group Birmingham, AL • 559 members",
+              "starts_at": null,
+              "ends_at": null,
+              "record_id": "evtmeet-hist-3",
+              "entity_id": "community:birmingham-dining-experience-group-birmingham-al-559-members",
+              "title": "Birmingham Dining Experience Group Birmingham, AL • 559 members",
+              "locality": "bham_metro_regional",
+              "observed_at": "2023-01-01T00:00:00.000Z",
+              "published_at": "2023-01-01T00:00:00.000Z",
+              "valid_from": "2023-01-01T00:00:00.000Z",
+              "valid_to": "2023-12-31T23:59:59.000Z",
+              "last_verified_at": "2026-03-12T23:45:00Z",
+              "category": "recurring_social_group_anchor",
+              "historical_admissibility": "governed_group_anchor_reconstruction",
+              "historical_capture_method": "persistent_meetup_group_listing",
+              "historical_validation_note": "Birmingham Dining Experience Group Birmingham, AL • 559 members was promoted as a persistent Birmingham social-group anchor from a Meetup group listing; it is treated as recurring community or club structure, not a dated 2023 event row.",
+              "historical_source_url": "https://www.meetup.com/birmingham-dining-experience-group/?eventOrigin=city_popular_groups",
+              "source_host": "meetup.com",
+              "source_page_title": "Birmingham Dining Experience Group Birmingham, AL • 559 members",
+              "source_row_basis": [
+                "evt-57"
+              ],
+              "confidence": 0.64,
+              "uncertainty_minutes": 10080
+            },
+            "truthResolution": {
+              "resolutionId": "resolution:evtmeet-hist-3",
+              "subjectId": "community:birmingham-dining-experience-group-birmingham-al-559-members",
+              "outcome": "merged",
+              "confidence": 0.78,
+              "rationale": "normalized from replay source record into canonical observation",
+              "resolvedAt": {
+                "referenceTime": "2026-03-12T16:13:24.516664Z",
+                "civilTime": "2026-03-12T11:13:24.516664",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "device",
+                  "source": "system_clock"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 9144,
+                "atomicTimestamp": null
+              },
+              "contributingSources": [
+                "Eventbrite / Meetup"
+              ],
+              "overrideRecordIds": [],
+              "metadata": {
+                "record_id": "evtmeet-hist-3",
+                "raw_entity_type": "community"
+              }
+            },
+            "metadata": {
+              "raw_record_id": "evtmeet-hist-3"
+            }
+          },
+          {
+            "observationId": "obs:evtmeet-hist-4",
+            "subjectIdentity": {
+              "normalizedEntityId": "community:mocha-girls-read-birmingham-birmingham-al-549-members",
+              "entityType": "community",
+              "canonicalName": "Mocha Girls Read - Birmingham Birmingham, AL • 549 members",
+              "sourceAliases": [
+                "community:mocha-girls-read-birmingham-birmingham-al-549-members",
+                "Mocha Girls Read - Birmingham Birmingham, AL • 549 members"
+              ],
+              "sourceRefs": [
+                "Eventbrite / Meetup"
+              ],
+              "dedupeKeys": {
+                "raw_entity_id": "community:mocha-girls-read-birmingham-birmingham-al-549-members",
+                "locality": "bham_metro_regional"
+              },
+              "localityAnchor": "bham_metro_regional",
+              "metadata": {
+                "source_type": "community_event_platform",
+                "replay_year": 2023
+              }
+            },
+            "replayEnvelope": {
+              "envelopeId": "env:evtmeet-hist-4",
+              "subjectId": "community:mocha-girls-read-birmingham-birmingham-al-549-members",
+              "observedAt": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "validTo": {
+                "referenceTime": "2023-12-31T23:59:59.000Z",
+                "civilTime": "2023-12-31T23:59:59.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1704067199000000,
+                "atomicTimestamp": null
+              },
+              "eventStartAt": null,
+              "eventEndAt": null,
+              "lastVerifiedAt": {
+                "referenceTime": "2026-03-12T23:45:00.000Z",
+                "civilTime": "2026-03-12T23:45:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1773359100000000,
+                "atomicTimestamp": null
+              },
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "Eventbrite / Meetup"
+              },
+              "uncertainty": {
+                "windowMicros": 604800000000,
+                "confidence": 0.64
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "calendar_event_replay_source_adapter"
+              }
+            },
+            "status": "normalized",
+            "sourceRefs": [
+              "Eventbrite / Meetup"
+            ],
+            "normalizedFields": {
+              "canonical_name": "Mocha Girls Read - Birmingham Birmingham, AL • 549 members",
+              "entity_type": "community",
+              "locality_anchor": "bham_metro_regional",
+              "name": "Mocha Girls Read - Birmingham Birmingham, AL • 549 members",
+              "venue_name": null,
+              "community_name": "Mocha Girls Read - Birmingham Birmingham, AL • 549 members",
+              "starts_at": null,
+              "ends_at": null,
+              "record_id": "evtmeet-hist-4",
+              "entity_id": "community:mocha-girls-read-birmingham-birmingham-al-549-members",
+              "title": "Mocha Girls Read - Birmingham Birmingham, AL • 549 members",
+              "locality": "bham_metro_regional",
+              "observed_at": "2023-01-01T00:00:00.000Z",
+              "published_at": "2023-01-01T00:00:00.000Z",
+              "valid_from": "2023-01-01T00:00:00.000Z",
+              "valid_to": "2023-12-31T23:59:59.000Z",
+              "last_verified_at": "2026-03-12T23:45:00Z",
+              "category": "recurring_social_group_anchor",
+              "historical_admissibility": "governed_group_anchor_reconstruction",
+              "historical_capture_method": "persistent_meetup_group_listing",
+              "historical_validation_note": "Mocha Girls Read - Birmingham Birmingham, AL • 549 members was promoted as a persistent Birmingham social-group anchor from a Meetup group listing; it is treated as recurring community or club structure, not a dated 2023 event row.",
+              "historical_source_url": "https://www.meetup.com/mocha-girls-read-birmingham/?eventOrigin=city_popular_groups",
+              "source_host": "meetup.com",
+              "source_page_title": "Mocha Girls Read - Birmingham Birmingham, AL • 549 members",
+              "source_row_basis": [
+                "evt-58"
+              ],
+              "confidence": 0.64,
+              "uncertainty_minutes": 10080
+            },
+            "truthResolution": {
+              "resolutionId": "resolution:evtmeet-hist-4",
+              "subjectId": "community:mocha-girls-read-birmingham-birmingham-al-549-members",
+              "outcome": "merged",
+              "confidence": 0.78,
+              "rationale": "normalized from replay source record into canonical observation",
+              "resolvedAt": {
+                "referenceTime": "2026-03-12T16:13:24.516743Z",
+                "civilTime": "2026-03-12T11:13:24.516743",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "device",
+                  "source": "system_clock"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 9221,
+                "atomicTimestamp": null
+              },
+              "contributingSources": [
+                "Eventbrite / Meetup"
+              ],
+              "overrideRecordIds": [],
+              "metadata": {
+                "record_id": "evtmeet-hist-4",
+                "raw_entity_type": "community"
+              }
+            },
+            "metadata": {
+              "raw_record_id": "evtmeet-hist-4"
+            }
+          },
+          {
+            "observationId": "obs:evtmeet-hist-5",
+            "subjectIdentity": {
+              "normalizedEntityId": "community:cloud-security-alliance-alabama-chapter-birmingham-al-479-members",
+              "entityType": "community",
+              "canonicalName": "Cloud Security Alliance Alabama Chapter Birmingham, AL • 479 members",
+              "sourceAliases": [
+                "community:cloud-security-alliance-alabama-chapter-birmingham-al-479-members",
+                "Cloud Security Alliance Alabama Chapter Birmingham, AL • 479 members"
+              ],
+              "sourceRefs": [
+                "Eventbrite / Meetup"
+              ],
+              "dedupeKeys": {
+                "raw_entity_id": "community:cloud-security-alliance-alabama-chapter-birmingham-al-479-members",
+                "locality": "bham_metro_regional"
+              },
+              "localityAnchor": "bham_metro_regional",
+              "metadata": {
+                "source_type": "community_event_platform",
+                "replay_year": 2023
+              }
+            },
+            "replayEnvelope": {
+              "envelopeId": "env:evtmeet-hist-5",
+              "subjectId": "community:cloud-security-alliance-alabama-chapter-birmingham-al-479-members",
+              "observedAt": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "validTo": {
+                "referenceTime": "2023-12-31T23:59:59.000Z",
+                "civilTime": "2023-12-31T23:59:59.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1704067199000000,
+                "atomicTimestamp": null
+              },
+              "eventStartAt": null,
+              "eventEndAt": null,
+              "lastVerifiedAt": {
+                "referenceTime": "2026-03-12T23:45:00.000Z",
+                "civilTime": "2026-03-12T23:45:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1773359100000000,
+                "atomicTimestamp": null
+              },
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "Eventbrite / Meetup"
+              },
+              "uncertainty": {
+                "windowMicros": 604800000000,
+                "confidence": 0.64
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "calendar_event_replay_source_adapter"
+              }
+            },
+            "status": "normalized",
+            "sourceRefs": [
+              "Eventbrite / Meetup"
+            ],
+            "normalizedFields": {
+              "canonical_name": "Cloud Security Alliance Alabama Chapter Birmingham, AL • 479 members",
+              "entity_type": "community",
+              "locality_anchor": "bham_metro_regional",
+              "name": "Cloud Security Alliance Alabama Chapter Birmingham, AL • 479 members",
+              "venue_name": null,
+              "community_name": "Cloud Security Alliance Alabama Chapter Birmingham, AL • 479 members",
+              "starts_at": null,
+              "ends_at": null,
+              "record_id": "evtmeet-hist-5",
+              "entity_id": "community:cloud-security-alliance-alabama-chapter-birmingham-al-479-members",
+              "title": "Cloud Security Alliance Alabama Chapter Birmingham, AL • 479 members",
+              "locality": "bham_metro_regional",
+              "observed_at": "2023-01-01T00:00:00.000Z",
+              "published_at": "2023-01-01T00:00:00.000Z",
+              "valid_from": "2023-01-01T00:00:00.000Z",
+              "valid_to": "2023-12-31T23:59:59.000Z",
+              "last_verified_at": "2026-03-12T23:45:00Z",
+              "category": "recurring_social_group_anchor",
+              "historical_admissibility": "governed_group_anchor_reconstruction",
+              "historical_capture_method": "persistent_meetup_group_listing",
+              "historical_validation_note": "Cloud Security Alliance Alabama Chapter Birmingham, AL • 479 members was promoted as a persistent Birmingham social-group anchor from a Meetup group listing; it is treated as recurring community or club structure, not a dated 2023 event row.",
+              "historical_source_url": "https://www.meetup.com/cloud-security-alliance-alabama-chapter/?eventOrigin=city_popular_groups",
+              "source_host": "meetup.com",
+              "source_page_title": "Cloud Security Alliance Alabama Chapter Birmingham, AL • 479 members",
+              "source_row_basis": [
+                "evt-59"
+              ],
+              "confidence": 0.64,
+              "uncertainty_minutes": 10080
+            },
+            "truthResolution": {
+              "resolutionId": "resolution:evtmeet-hist-5",
+              "subjectId": "community:cloud-security-alliance-alabama-chapter-birmingham-al-479-members",
+              "outcome": "merged",
+              "confidence": 0.78,
+              "rationale": "normalized from replay source record into canonical observation",
+              "resolvedAt": {
+                "referenceTime": "2026-03-12T16:13:24.516790Z",
+                "civilTime": "2026-03-12T11:13:24.516790",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "device",
+                  "source": "system_clock"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 9268,
+                "atomicTimestamp": null
+              },
+              "contributingSources": [
+                "Eventbrite / Meetup"
+              ],
+              "overrideRecordIds": [],
+              "metadata": {
+                "record_id": "evtmeet-hist-5",
+                "raw_entity_type": "community"
+              }
+            },
+            "metadata": {
+              "raw_record_id": "evtmeet-hist-5"
+            }
+          },
+          {
+            "observationId": "obs:evtmeet-hist-6",
+            "subjectIdentity": {
+              "normalizedEntityId": "community:gurdjieff-found-of-ala-red-mtn-study-grp-birmingham-al-301-members",
+              "entityType": "community",
+              "canonicalName": "Gurdjieff Found. of Ala./Red Mtn. Study Grp. Birmingham, AL • 301 members",
+              "sourceAliases": [
+                "community:gurdjieff-found-of-ala-red-mtn-study-grp-birmingham-al-301-members",
+                "Gurdjieff Found. of Ala./Red Mtn. Study Grp. Birmingham, AL • 301 members"
+              ],
+              "sourceRefs": [
+                "Eventbrite / Meetup"
+              ],
+              "dedupeKeys": {
+                "raw_entity_id": "community:gurdjieff-found-of-ala-red-mtn-study-grp-birmingham-al-301-members",
+                "locality": "bham_metro_regional"
+              },
+              "localityAnchor": "bham_metro_regional",
+              "metadata": {
+                "source_type": "community_event_platform",
+                "replay_year": 2023
+              }
+            },
+            "replayEnvelope": {
+              "envelopeId": "env:evtmeet-hist-6",
+              "subjectId": "community:gurdjieff-found-of-ala-red-mtn-study-grp-birmingham-al-301-members",
+              "observedAt": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "publishedAt": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "validFrom": {
+                "referenceTime": "2023-01-01T00:00:00.000Z",
+                "civilTime": "2023-01-01T00:00:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1672531200000000,
+                "atomicTimestamp": null
+              },
+              "validTo": {
+                "referenceTime": "2023-12-31T23:59:59.000Z",
+                "civilTime": "2023-12-31T23:59:59.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1704067199000000,
+                "atomicTimestamp": null
+              },
+              "eventStartAt": null,
+              "eventEndAt": null,
+              "lastVerifiedAt": {
+                "referenceTime": "2026-03-12T23:45:00.000Z",
+                "civilTime": "2026-03-12T23:45:00.000Z",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "historicalImport",
+                  "source": "Eventbrite / Meetup"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 1773359100000000,
+                "atomicTimestamp": null
+              },
+              "semanticBand": null,
+              "provenance": {
+                "authority": "historicalImport",
+                "source": "Eventbrite / Meetup"
+              },
+              "uncertainty": {
+                "windowMicros": 604800000000,
+                "confidence": 0.64
+              },
+              "temporalAuthoritySource": "when_kernel",
+              "branchId": null,
+              "runId": null,
+              "metadata": {
+                "adapter_id": "calendar_event_replay_source_adapter"
+              }
+            },
+            "status": "normalized",
+            "sourceRefs": [
+              "Eventbrite / Meetup"
+            ],
+            "normalizedFields": {
+              "canonical_name": "Gurdjieff Found. of Ala./Red Mtn. Study Grp. Birmingham, AL • 301 members",
+              "entity_type": "community",
+              "locality_anchor": "bham_metro_regional",
+              "name": "Gurdjieff Found. of Ala./Red Mtn. Study Grp. Birmingham, AL • 301 members",
+              "venue_name": null,
+              "community_name": "Gurdjieff Found. of Ala./Red Mtn. Study Grp. Birmingham, AL • 301 members",
+              "starts_at": null,
+              "ends_at": null,
+              "record_id": "evtmeet-hist-6",
+              "entity_id": "community:gurdjieff-found-of-ala-red-mtn-study-grp-birmingham-al-301-members",
+              "title": "Gurdjieff Found. of Ala./Red Mtn. Study Grp. Birmingham, AL • 301 members",
+              "locality": "bham_metro_regional",
+              "observed_at": "2023-01-01T00:00:00.000Z",
+              "published_at": "2023-01-01T00:00:00.000Z",
+              "valid_from": "2023-01-01T00:00:00.000Z",
+              "valid_to": "2023-12-31T23:59:59.000Z",
+              "last_verified_at": "2026-03-12T23:45:00Z",
+              "category": "recurring_social_group_anchor",
+              "historical_admissibility": "governed_group_anchor_reconstruction",
+              "historical_capture_method": "persistent_meetup_group_listing",
+              "historical_validation_note": "Gurdjieff Found. of Ala./Red Mtn. Study Grp. Birmingham, AL • 301 members was promoted as a persistent Birmingham social-group anchor from a Meetup group listing; it is treated as recurring community or club structure, not a dated 2023 event row.",
+              "historical_source_url": "https://www.meetup.com/Gurdjieff-Found-Ala/?eventOrigin=city_popular_groups",
+              "source_host": "meetup.com",
+              "source_page_title": "Gurdjieff Found. of Ala./Red Mtn. Study Grp. Birmingham, AL • 301 members",
+              "source_row_basis": [
+                "evt-60"
+              ],
+              "confidence": 0.64,
+              "uncertainty_minutes": 10080
+            },
+            "truthResolution": {
+              "resolutionId": "resolution:evtmeet-hist-6",
+              "subjectId": "community:gurdjieff-found-of-ala-red-mtn-study-grp-birmingham-al-301-members",
+              "outcome": "merged",
+              "confidence": 0.78,
+              "rationale": "normalized from replay source record into canonical observation",
+              "resolvedAt": {
+                "referenceTime": "2026-03-12T16:13:24.516834Z",
+                "civilTime": "2026-03-12T11:13:24.516834",
+                "timezoneId": "America/Chicago",
+                "provenance": {
+                  "authority": "device",
+                  "source": "system_clock"
+                },
+                "uncertainty": {
+                  "windowMicros": 0,
+                  "confidence": 1.0
+                },
+                "monotonicTicks": 9311,
+                "atomicTimestamp": null
+              },
+              "contributingSources": [
+                "Eventbrite / Meetup"
+              ],
+              "overrideRecordIds": [],
+              "metadata": {
+                "record_id": "evtmeet-hist-6",
+                "raw_entity_type": "community"
+              }
+            },
+            "metadata": {
+              "raw_record_id": "evtmeet-hist-6"
+            }
+          }
+        ]
+      }
+    ],
+    "skippedSources": [
+      "ALDOT Long-Term Construction Projects",
+      "ALDOT Traffic Data",
+      "BEA / U.S. Census Bureau Economic Series",
+      "BHM Airport / TSA Throughput",
+      "Bureau of Labor Statistics / State DOL",
+      "City of Birmingham OpenGov",
+      "Jefferson / Shelby / Regional GIS and Assessors",
+      "LEHD / OnTheMap",
+      "MAX Transit GTFS",
+      "Municipal Budgets and Revenue Reports",
+      "NWS / NOAA Weather API",
+      "U.S. Census ACS",
+      "BJCC / Legacy Arena / Protective Stadium Calendars",
+      "SEC / College Football Broadcast Schedules",
+      "Samford University Calendars and Campus Map",
+      "UAB / Samford Enrollment Origin Reports",
+      "UAB Academic, Clinical, and Event Calendars",
+      "Data Axle / InfoGroup Business Listings",
+      "Delivery / Ordering Platform Aggregates",
+      "Google Places / Yelp",
+      "OpenStreetMap POI Data",
+      "Real Estate and Rent Index",
+      "Resy / OpenTable / Venue Reservation Exports",
+      "Birmingham Public Library Network",
+      "Birmingham365.org",
+      "City of Birmingham Play Pages",
+      "County / Municipal Courts and Police Dispatch",
+      "IN Birmingham (CVB Calendar)",
+      "Major Venue Calendars and Historical Venue Calendars",
+      "Neighborhood Association Calendars",
+      "Bham Now / AL.com / Birmingham Business Journal",
+      "Bhamwiki",
+      "Birmingham Public Library Archives",
+      "James Beard / Garden & Gun / Michelin",
+      "REV Birmingham Updates",
+      "WBHM 90.3 Public Radio"
+    ]
+  }
+}

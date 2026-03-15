@@ -2,25 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/common/app_page_header.dart';
-import 'package:avrai/presentation/widgets/common/app_surface.dart';
-import 'package:avrai/presentation/widgets/settings/ai2ai_learning_methods_widget.dart';
+import 'package:avrai/presentation/widgets/common/app_error_state.dart';
+import 'package:avrai/presentation/widgets/common/app_info_banner.dart';
+import 'package:avrai/presentation/widgets/common/app_loading_state.dart';
+import 'package:avrai/presentation/widgets/common/app_section.dart';
+import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
+import 'package:avrai/presentation/schemas/pages/ai2ai_learning_methods_page_schema.dart';
 import 'package:avrai/presentation/widgets/settings/ai2ai_learning_effectiveness_widget.dart';
 import 'package:avrai/presentation/widgets/settings/ai2ai_learning_insights_widget.dart';
+import 'package:avrai/presentation/widgets/settings/ai2ai_learning_methods_widget.dart';
 import 'package:avrai/presentation/widgets/settings/ai2ai_learning_recommendations_widget.dart';
-import 'package:avrai/theme/colors.dart';
 import 'package:avrai_runtime_os/services/ai_infrastructure/ai2ai_learning_service.dart';
 
-/// AI2AI Learning Methods Page
-///
-/// Phase 7, Week 38: AI2AI Learning Methods UI - Integration & Polish
-///
-/// Combines all 4 AI2AI learning widgets into a single comprehensive page:
-/// 1. Learning Methods Overview (active methods, status, effectiveness)
-/// 2. Learning Effectiveness Metrics (metrics, insights count, acquisition rate)
-/// 3. Active Learning Insights (recent insights, cross-personality, patterns)
-/// 4. Learning Recommendations (optimal partners, topics, development areas)
 class AI2AILearningMethodsPage extends StatefulWidget {
   const AI2AILearningMethodsPage({super.key});
 
@@ -47,7 +40,6 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
         _errorMessage = null;
       });
 
-      // Get service from dependency injection
       final service = di.sl<AI2AILearning>();
 
       if (mounted) {
@@ -67,244 +59,129 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
+  Widget build(BuildContext context) {
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, authState) {
+        if (authState is! Authenticated) {
+          return AppSchemaPage(
+            schema: buildAI2AILearningMethodsPageSchema(
+              content: const Center(child: CircularProgressIndicator()),
+            ),
+          );
+        }
+
+        final userId = authState.user.id;
+
+        if (_isInitializing) {
+          return AppSchemaPage(
+            schema: buildAI2AILearningMethodsPageSchema(
+              content: const AppLoadingState(label: 'Loading AI2AI learning'),
+            ),
+          );
+        }
+
+        if (_errorMessage != null) {
+          return AppSchemaPage(
+            schema: buildAI2AILearningMethodsPageSchema(
+              content: AppErrorState(
+                title: 'Unable to load AI2AI learning',
+                body: _errorMessage!,
+                onRetry: _initializeService,
+              ),
+            ),
+          );
+        }
+
+        if (_learningService == null) {
+          return AppSchemaPage(
+            schema: buildAI2AILearningMethodsPageSchema(
+              content: const AppLoadingState(label: 'Loading AI2AI learning'),
+            ),
+          );
+        }
+
+        return AppSchemaPage(
+          schema: buildAI2AILearningMethodsPageSchema(
+            content: _buildContent(userId),
+          ),
+          bodyScrollKey: const Key('ai2ai_learning_methods_page_scroll'),
+        );
+      },
+    );
   }
+
+  Widget _buildContent(String userId) {
+    return Padding(
+      key: const Key('ai2ai_learning_methods_page_content'),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _DashboardSection(
+          title: 'Learning Methods Overview',
+          subtitle: 'See how your AI learns from other AIs.',
+          child: AI2AILearningMethodsWidget(
+            userId: userId,
+            learningService: _learningService!,
+          ),
+        ),
+        const SizedBox(height: 24),
+        _DashboardSection(
+          title: 'Learning Effectiveness Metrics',
+          subtitle: 'Track how effectively your AI is learning.',
+          child: AI2AILearningEffectivenessWidget(
+            userId: userId,
+            learningService: _learningService!,
+          ),
+        ),
+        const SizedBox(height: 24),
+        _DashboardSection(
+          title: 'Active Learning Insights',
+          subtitle: 'Recent insights from AI2AI interactions.',
+          child: AI2AILearningInsightsWidget(
+            userId: userId,
+            learningService: _learningService!,
+          ),
+        ),
+        const SizedBox(height: 24),
+        _DashboardSection(
+          title: 'Learning Recommendations',
+          subtitle: 'Suggested partners and development areas.',
+          child: AI2AILearningRecommendationsWidget(
+            userId: userId,
+            learningService: _learningService!,
+          ),
+        ),
+        const SizedBox(height: 24),
+        const AppInfoBanner(
+          title: 'Learn more',
+          body:
+              'AI2AI learning uses secure, anonymized exchanges to strengthen recommendations without sharing raw personal content.',
+          icon: Icons.info_outline,
+        ),
+      ],
+      ),
+    );
+  }
+}
+
+class _DashboardSection extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final Widget child;
+
+  const _DashboardSection({
+    required this.title,
+    required this.subtitle,
+    required this.child,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
-      title: 'AI2AI Learning Methods',
-      constrainBody: false,
-      body: BlocBuilder<AuthBloc, AuthState>(
-        builder: (context, authState) {
-          if (authState is! Authenticated) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-
-          final userId = authState.user.id;
-
-          if (_isInitializing) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-
-          if (_errorMessage != null) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.error_outline,
-                      size: 64,
-                      color: AppColors.error,
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Error',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      _errorMessage!,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    ElevatedButton(
-                      onPressed: _initializeService,
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-
-          if (_learningService == null) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-
-          return ListView(
-            key: const Key('ai2ai_learning_methods_page_list'),
-            padding: const EdgeInsets.all(16),
-            children: [
-              // Header
-              _buildHeader(context),
-              const SizedBox(height: 24),
-
-              // Section 1: Learning Methods Overview
-              _buildSectionHeader(context, 'Learning Methods Overview'),
-              const SizedBox(height: 8),
-              const Text(
-                'See how your AI learns from other AIs',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 12),
-              AI2AILearningMethodsWidget(
-                userId: userId,
-                learningService: _learningService!,
-              ),
-              const SizedBox(height: 32),
-
-              // Section 2: Learning Effectiveness
-              _buildSectionHeader(context, 'Learning Effectiveness Metrics'),
-              const SizedBox(height: 8),
-              const Text(
-                'Track how effectively your AI is learning',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 12),
-              AI2AILearningEffectivenessWidget(
-                userId: userId,
-                learningService: _learningService!,
-              ),
-              const SizedBox(height: 32),
-
-              // Section 3: Learning Insights
-              _buildSectionHeader(context, 'Active Learning Insights'),
-              const SizedBox(height: 8),
-              const Text(
-                'Recent insights from AI2AI interactions',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 12),
-              AI2AILearningInsightsWidget(
-                userId: userId,
-                learningService: _learningService!,
-              ),
-              const SizedBox(height: 32),
-
-              // Section 4: Learning Recommendations
-              _buildSectionHeader(context, 'Learning Recommendations'),
-              const SizedBox(height: 8),
-              const Text(
-                'Optimal learning partners and development areas',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 12),
-              AI2AILearningRecommendationsWidget(
-                userId: userId,
-                learningService: _learningService!,
-              ),
-              const SizedBox(height: 24),
-
-              // Footer
-              _buildFooter(context),
-            ],
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildHeader(BuildContext context) {
-    return AppSurface(
-      color: AppColors.primary.withValues(alpha: 0.1),
-      borderColor: AppColors.primary.withValues(alpha: 0.24),
-      child: const AppPageHeader(
-        title: 'AI2AI Learning Methods',
-        subtitle: 'See how your AI learns from other AIs',
-        leadingIcon: Icons.psychology,
-        showDivider: false,
-      ),
-    );
-  }
-
-  Widget _buildSectionHeader(BuildContext context, String title) {
-    return Text(
-      title,
-      style: const TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-        color: AppColors.textPrimary,
-      ),
-    );
-  }
-
-  Widget _buildFooter(BuildContext context) {
-    return const AppSurface(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.info_outline,
-                color: AppColors.primary,
-                size: 20,
-              ),
-              SizedBox(width: 8),
-              Text(
-                'Learn More',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 12),
-          Text(
-            'AI2AI learning enables your AI to learn from interactions with other AIs '
-            'through secure, privacy-preserving connections. Your AI discovers new '
-            'personality insights, learns from cross-personality patterns, and evolves '
-            'through collective intelligence. All learning happens on your device to '
-            'protect your privacy.',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.textSecondary,
-              height: 1.5,
-            ),
-          ),
-          SizedBox(height: 12),
-          Row(
-            children: [
-              Icon(
-                Icons.shield,
-                color: AppColors.success,
-                size: 16,
-              ),
-              SizedBox(width: 4),
-              Text(
-                'Your data stays on your device',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: AppColors.success,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+    return AppSection(
+      title: title,
+      subtitle: subtitle,
+      child: child,
     );
   }
 }

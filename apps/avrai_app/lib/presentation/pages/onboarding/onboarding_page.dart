@@ -1,61 +1,27 @@
-import 'dart:developer' as developer;
-
-import 'package:flutter/foundation.dart'
-    show defaultTargetPlatform, TargetPlatform;
-import 'package:go_router/go_router.dart';
-import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:avrai_runtime_os/services/device/device_capability_service.dart';
-import 'package:avrai_runtime_os/services/local_llm/local_llm_auto_install_service.dart';
-import 'package:avrai_runtime_os/services/local_llm/local_llm_macos_auto_install_service.dart';
-import 'package:avrai_runtime_os/services/local_llm/local_llm_provisioning_state_service.dart';
-import 'package:avrai_runtime_os/services/ai_infrastructure/on_device_ai_capability_gate.dart';
-import 'package:avrai/theme/colors.dart';
-import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
-import 'package:avrai/presentation/pages/onboarding/open_intake_page.dart';
-import 'package:avrai/presentation/pages/onboarding/friends_respect_page.dart';
-import 'package:avrai/presentation/pages/onboarding/homebase_selection_page.dart';
-import 'package:avrai/presentation/pages/onboarding/social_media_connection_page.dart';
-import 'package:avrai/presentation/pages/onboarding/data_intake_connection_page.dart';
-import 'package:avrai/presentation/pages/onboarding/onboarding_step.dart';
-import 'package:avrai/presentation/pages/onboarding/legal_acceptance_dialog.dart';
-import 'package:avrai_runtime_os/services/misc/legal_document_service.dart';
 import 'package:get_it/get_it.dart';
-import 'package:avrai/presentation/pages/onboarding/age_collection_page.dart';
-import 'package:avrai/presentation/pages/onboarding/welcome_page.dart';
-import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart';
-import 'package:avrai_core/models/user/onboarding_data.dart';
-import 'package:avrai_runtime_os/services/social_media/social_media_connection_service.dart';
-import 'package:avrai_runtime_os/controllers/onboarding_flow_controller.dart';
+import 'package:go_router/go_router.dart';
+import 'package:permission_handler/permission_handler.dart';
+
 import 'package:avrai/injection_container.dart' as di;
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai/presentation/pages/onboarding/social_media_connection_page.dart';
+import 'package:avrai/presentation/widgets/common/app_button_primary.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
+import 'package:avrai/theme/colors.dart';
+import 'package:avrai_core/models/user/onboarding_data.dart';
+import 'package:avrai_runtime_os/config/bham_beta_defaults.dart';
+import 'package:avrai_runtime_os/controllers/onboarding_flow_controller.dart';
+import 'package:avrai_runtime_os/services/device/device_capability_service.dart';
+import 'package:avrai_runtime_os/services/misc/legal_document_service.dart';
 
-enum OnboardingStepType {
-  welcome,
-  homebase,
-  openIntake,
-  friends,
-  permissions, // Includes age and legal
-  socialMedia,
-  dataIntake,
-  knotBirth, // Routed post-processing step after AI loading
-  connectAndDiscover,
-}
-
-class OnboardingStep {
-  final OnboardingStepType page;
-  final String title;
-  final String description;
-
-  const OnboardingStep({
-    required this.page,
-    required this.title,
-    required this.description,
-  });
+enum _BhamOnboardingStep {
+  questionnaire,
+  consent,
+  permissions,
+  bridges,
 }
 
 class OnboardingPage extends StatefulWidget {
@@ -66,16 +32,59 @@ class OnboardingPage extends StatefulWidget {
 }
 
 class _OnboardingPageState extends State<OnboardingPage> {
-  final AppLogger _logger =
-      const AppLogger(defaultTag: 'SPOTS', minimumLevel: LogLevel.debug);
-  final PageController _pageController = PageController();
-  bool _showWelcome = true;
-  int _currentPage = 0;
-  DateTime? _selectedBirthday;
-  String? _selectedHomebase;
-  Map<String, String> _openResponses = {};
-  List<String> _respectedFriends = [];
-  Map<String, bool> _connectedSocialPlatforms = {
+  static const Map<String, String> _questionPrompts = <String, String>{
+    'more_of': 'What do you want more of right now?',
+    'less_of': 'What do you want less of right now?',
+    'values': 'What matters most to you these days?',
+    'interests': 'What are you naturally drawn to?',
+    'fun': 'What do you do for fun, or wish you did more often?',
+    'favorite_places':
+        'Name a few places, kinds of places, or vibes you already enjoy.',
+    'goals': 'What are you working toward right now?',
+    'transportation': 'How do you usually get around?',
+    'spending': 'What kind of spending feels right for a normal plan?',
+    'bio': 'Tell AVRAI anything you want it to know about you.',
+  };
+
+  static const Map<String, String> _questionHelpers = <String, String>{
+    'more_of':
+        'Examples: better routines, more time outside, more friends, more fun, more creativity, more peace, more movement, more good food, more events.',
+    'less_of':
+        'Examples: boredom, isolation, wasted time, stress, bad nights out, expensive plans, feeling stuck.',
+    'values': 'Pick or describe your values in your own words.',
+    'interests':
+        'Think in terms of interests, scenes, hobbies, environments, communities, and experiences.',
+    'fun': 'This can be specific or broad.',
+    'favorite_places':
+        'They can be restaurants, cafes, parks, venues, neighborhoods, events, clubs, communities, or anything else.',
+    'goals':
+        'Personal, social, creative, health, career, spiritual, or anything else.',
+    'transportation':
+        'Examples: walking, driving, biking, rideshare, transit, mixed.',
+    'spending': 'This is about spending preference, not exact finances.',
+    'bio':
+        'Where you spend time, what you care about, what you like doing, who you like being around, what you want life to feel like. Share only what you want to share.',
+  };
+
+  final Map<String, TextEditingController> _controllers =
+      <String, TextEditingController>{};
+  final Map<String, bool> _permissionStates = <String, bool>{
+    'location': false,
+    'background_location': false,
+    'bluetooth': false,
+    'notifications': false,
+  };
+
+  _BhamOnboardingStep _currentStep = _BhamOnboardingStep.questionnaire;
+  String? _socialEnergy;
+  bool _betaConsentAccepted = false;
+  bool _termsAccepted = false;
+  bool _privacyAccepted = false;
+  bool _isCompleting = false;
+  bool _checkingDevice = true;
+  bool _deviceApproved = true;
+  List<String> _deviceGateReasons = const <String>[];
+  Map<String, bool> _connectedSocialPlatforms = <String, bool>{
     'Spotify': false,
     'Instagram': false,
     'Facebook': false,
@@ -83,837 +92,669 @@ class _OnboardingPageState extends State<OnboardingPage> {
     'Apple': false,
     'Strava': false,
   };
-  bool _isCompleting = false;
 
-  final List<OnboardingStep> _steps = [
-    const OnboardingStep(
-      page: OnboardingStepType.permissions,
-      title: 'Permissions & Legal',
-      description: 'Enable permissions and accept terms',
-    ),
-    const OnboardingStep(
-      page: OnboardingStepType.homebase,
-      title: 'Choose Your Homebase',
-      description: 'Select your primary location',
-    ),
-    const OnboardingStep(
-      page: OnboardingStepType.openIntake,
-      title: 'About You',
-      description: 'Tell us about yourself to seed your AI',
-    ),
-    const OnboardingStep(
-      page: OnboardingStepType.socialMedia,
-      title: 'Social Media',
-      description: 'Connect your social accounts (optional)',
-    ),
-    const OnboardingStep(
-      page: OnboardingStepType.friends,
-      title: 'Starter Lists',
-      description: 'Choose local lists to start from',
-    ),
-    const OnboardingStep(
-      page: OnboardingStepType.connectAndDiscover,
-      title: 'Connect & Discover',
-      description: 'Enable ai2ai discovery and connections',
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    for (final key in _questionPrompts.keys) {
+      _controllers[key] = TextEditingController();
+    }
+    _checkDeviceEligibility();
+    _refreshPermissionSnapshot();
+  }
 
   @override
   void dispose() {
-    // Stop any ongoing operations
-    _isCompleting = true;
-
-    // Dispose PageController first to prevent any ongoing animations
-    // This must happen before super.dispose() to prevent rendering issues
-    // Note: PageController may already be disposed in _completeOnboarding
-    try {
-      if (_pageController.hasClients) {
-        _pageController.dispose();
-      } else {
-        // Try to dispose even if no clients - may already be disposed but that's ok
-        try {
-          _pageController.dispose();
-        } catch (e) {
-          // Already disposed, ignore
-        }
-      }
-    } catch (e) {
-      // Ignore disposal errors - controller may already be disposed
-      _logger.debug('PageController disposal note: $e', tag: 'Onboarding');
+    for (final controller in _controllers.values) {
+      controller.dispose();
     }
     super.dispose();
   }
 
+  Future<void> _checkDeviceEligibility() async {
+    final caps = await DeviceCapabilityService().getCapabilities();
+    final evaluation = BhamBetaDefaults.evaluateApprovedDevice(caps);
+    if (!mounted) return;
+    setState(() {
+      _checkingDevice = false;
+      _deviceApproved = evaluation.approved;
+      _deviceGateReasons = evaluation.reasons;
+    });
+  }
+
+  Future<void> _refreshPermissionSnapshot() async {
+    final permissions = <String, Permission>{
+      'location': Permission.locationWhenInUse,
+      'background_location': Permission.locationAlways,
+      'bluetooth': Permission.bluetooth,
+      'notifications': Permission.notification,
+    };
+    final statuses = <String, bool>{};
+    for (final entry in permissions.entries) {
+      final status = await entry.value.status;
+      statuses[entry.key] = status.isGranted || status.isLimited;
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _permissionStates
+        ..clear()
+        ..addAll(statuses);
+    });
+  }
+
+  Future<void> _requestRecommendedPermissions() async {
+    await <Permission>[
+      Permission.locationWhenInUse,
+      Permission.locationAlways,
+      Permission.bluetooth,
+      Permission.bluetoothScan,
+      Permission.bluetoothConnect,
+      Permission.notification,
+    ].request();
+    await _refreshPermissionSnapshot();
+  }
+
+  Future<void> _completeOnboarding() async {
+    if (_isCompleting) return;
+
+    final authState = context.read<AuthBloc>().state;
+    if (authState is! Authenticated) {
+      return;
+    }
+
+    setState(() => _isCompleting = true);
+
+    try {
+      if (_termsAccepted) {
+        await GetIt.instance<LegalDocumentService>()
+            .acceptTermsOfService(userId: authState.user.id);
+      }
+      if (_privacyAccepted) {
+        await GetIt.instance<LegalDocumentService>()
+            .acceptPrivacyPolicy(userId: authState.user.id);
+      }
+
+      final onboardingData = OnboardingData(
+        agentId: '',
+        homebase: BhamBetaDefaults.defaultHomebase,
+        openResponses: _collectResponses(),
+        socialMediaConnected: _connectedSocialPlatforms,
+        completedAt: DateTime.now().toUtc(),
+        tosAccepted: _termsAccepted,
+        privacyAccepted: _privacyAccepted,
+        betaConsentAccepted: _betaConsentAccepted,
+        betaConsentVersion: BhamBetaDefaults.betaConsentVersion,
+        questionnaireVersion: BhamBetaDefaults.questionnaireVersion,
+        permissionStates: Map<String, bool>.from(_permissionStates),
+      );
+
+      final result = await di.sl<OnboardingFlowController>().completeOnboarding(
+            data: onboardingData,
+            userId: authState.user.id,
+          );
+
+      if (!mounted) return;
+
+      if (!result.isSuccess) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result.error ?? 'Could not save onboarding'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+        setState(() => _isCompleting = false);
+        return;
+      }
+
+      context.go(
+        '/ai-loading',
+        extra: <String, dynamic>{
+          'userName': authState.user.name,
+          'homebase': BhamBetaDefaults.defaultHomebase,
+          'openResponses': _collectResponses(),
+        },
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isCompleting = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('We could not finish BHAM onboarding: $e'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    }
+  }
+
+  Map<String, String> _collectResponses() {
+    return <String, String>{
+      for (final entry in _controllers.entries)
+        entry.key: entry.value.text.trim(),
+      'social_energy': _socialEnergy ?? '',
+    };
+  }
+
+  bool _canProceed() {
+    switch (_currentStep) {
+      case _BhamOnboardingStep.questionnaire:
+        return BhamBetaDefaults.mandatoryQuestionKeys.every(
+          (key) => _collectResponses()[key]?.trim().isNotEmpty ?? false,
+        );
+      case _BhamOnboardingStep.consent:
+        return _betaConsentAccepted && _termsAccepted && _privacyAccepted;
+      case _BhamOnboardingStep.permissions:
+        return true;
+      case _BhamOnboardingStep.bridges:
+        return true;
+    }
+  }
+
+  void _goNext() {
+    if (!_canProceed() || _isCompleting) return;
+    switch (_currentStep) {
+      case _BhamOnboardingStep.questionnaire:
+        setState(() => _currentStep = _BhamOnboardingStep.consent);
+        break;
+      case _BhamOnboardingStep.consent:
+        setState(() => _currentStep = _BhamOnboardingStep.permissions);
+        break;
+      case _BhamOnboardingStep.permissions:
+        setState(() => _currentStep = _BhamOnboardingStep.bridges);
+        break;
+      case _BhamOnboardingStep.bridges:
+        _completeOnboarding();
+        break;
+    }
+  }
+
+  void _goBack() {
+    if (_isCompleting) return;
+    switch (_currentStep) {
+      case _BhamOnboardingStep.questionnaire:
+        context.go('/login');
+        break;
+      case _BhamOnboardingStep.consent:
+        setState(() => _currentStep = _BhamOnboardingStep.questionnaire);
+        break;
+      case _BhamOnboardingStep.permissions:
+        setState(() => _currentStep = _BhamOnboardingStep.consent);
+        break;
+      case _BhamOnboardingStep.bridges:
+        setState(() => _currentStep = _BhamOnboardingStep.permissions);
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (_isCompleting) {
-      return const Scaffold(
+    if (_checkingDevice) {
+      return const AppFlowScaffold(
+        title: '',
+        showNavigationBar: false,
         body: Center(child: CircularProgressIndicator()),
       );
     }
 
-    if (_showWelcome) {
-      return PopScope(
-        canPop: false,
-        child: WelcomePage(
-          onContinue: () {
-            if (mounted) {
-              setState(() => _showWelcome = false);
-            }
-          },
+    if (!_deviceApproved) {
+      return AppFlowScaffold(
+        title: '',
+        showNavigationBar: false,
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: AppSurface(
+              borderColor: AppColors.borderSubtle,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'This device is not approved for the Birmingham beta yet.',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                  ),
+                  const SizedBox(height: 12),
+                  for (final reason in _deviceGateReasons)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Text(
+                        '• $reason',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
         ),
       );
     }
 
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, _) {
-        if (didPop) return;
-        if (!_isCompleting) {
-          _goBack();
-        }
-      },
-      child: AdaptivePlatformPageScaffold(
-        title: '',
-        automaticallyImplyLeading: true,
-        constrainBody: false,
-        actions: const [],
-        body: Column(
+    return AppFlowScaffold(
+      title: '',
+      showNavigationBar: false,
+      constrainBody: false,
+      body: SafeArea(
+        child: Column(
           children: [
-            Expanded(
-              child: PageView.builder(
-                controller: _pageController,
-                physics: const NeverScrollableScrollPhysics(),
-                onPageChanged: (index) {
-                  if (!_isCompleting && mounted) {
-                    setState(() {
-                      _currentPage = index;
-                    });
-                  }
-                },
-                itemCount: _steps.length,
-                itemBuilder: (context, index) {
-                  if (_isCompleting) {
-                    return const SizedBox.shrink();
-                  }
-                  return _buildStepContent(_steps[index]);
-                },
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 12),
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: _goBack,
+                    icon: const Icon(Icons.arrow_back),
+                  ),
+                  Expanded(
+                    child: Text(
+                      _titleForStep(),
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            _buildBottomNavigation(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: LinearProgressIndicator(
+                value: (_currentStep.index + 1) /
+                    _BhamOnboardingStep.values.length,
+                backgroundColor: AppColors.surfaceMuted,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: _buildStepBody(context),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: AppButtonPrimary(
+                onPressed: _canProceed() && !_isCompleting ? _goNext : null,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  child: Text(
+                    _currentStep == _BhamOnboardingStep.bridges
+                        ? (_isCompleting
+                            ? 'Building your knot...'
+                            : 'Build your knot')
+                        : 'Continue',
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  void _goBack() {
-    if (!mounted || _isCompleting) return;
-    if (_currentPage > 0) {
-      _pageController.previousPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    } else {
-      setState(() => _showWelcome = true);
+  String _titleForStep() {
+    switch (_currentStep) {
+      case _BhamOnboardingStep.questionnaire:
+        return 'Birmingham beta questionnaire';
+      case _BhamOnboardingStep.consent:
+        return 'Birmingham beta consent';
+      case _BhamOnboardingStep.permissions:
+        return 'Help AVRAI work the way it was built to';
+      case _BhamOnboardingStep.bridges:
+        return 'Optional bridges';
     }
   }
 
-  Widget _buildStepContent(OnboardingStep step) {
-    switch (step.page) {
-      case OnboardingStepType.welcome:
-        return const SizedBox.shrink();
-      case OnboardingStepType.homebase:
-        return HomebaseSelectionPage(
-          onHomebaseChanged: (homebase) {
-            setState(() {
-              _selectedHomebase = homebase;
-            });
-          },
-          selectedHomebase: _selectedHomebase,
+  Widget _buildStepBody(BuildContext context) {
+    switch (_currentStep) {
+      case _BhamOnboardingStep.questionnaire:
+        return _QuestionnaireStep(
+          controllers: _controllers,
+          socialEnergy: _socialEnergy,
+          onSocialEnergyChanged: (value) =>
+              setState(() => _socialEnergy = value),
         );
-      case OnboardingStepType.openIntake:
-        return OpenIntakePage(
-          openResponses: _openResponses,
-          onResponsesChanged: (responses) {
-            setState(() {
-              _openResponses = responses;
-            });
-          },
+      case _BhamOnboardingStep.consent:
+        return _ConsentStep(
+          betaConsentAccepted: _betaConsentAccepted,
+          termsAccepted: _termsAccepted,
+          privacyAccepted: _privacyAccepted,
+          onBetaConsentChanged: (value) =>
+              setState(() => _betaConsentAccepted = value),
+          onTermsChanged: (value) => setState(() => _termsAccepted = value),
+          onPrivacyChanged: (value) => setState(() => _privacyAccepted = value),
         );
-      case OnboardingStepType.friends:
-        return FriendsRespectPage(
-          onRespectedListsChanged: (friends) {
-            setState(() {
-              _respectedFriends = friends;
-            });
-          },
-          respectedLists: _respectedFriends,
-          userId: _getUserIdOrNull(),
-          selectedHomebase: _selectedHomebase,
+      case _BhamOnboardingStep.permissions:
+        return _PermissionsStep(
+          permissionStates: _permissionStates,
+          onRequestPermissions: _requestRecommendedPermissions,
         );
-      case OnboardingStepType.permissions:
-        return _PermissionsAndLegalPage(
-          selectedBirthday: _selectedBirthday,
-          onBirthdayChanged: (birthday) {
-            setState(() {
-              _selectedBirthday = birthday;
-            });
-          },
-        );
-      case OnboardingStepType.socialMedia:
-        return SocialMediaConnectionPage(
-          connectedPlatforms: _connectedSocialPlatforms,
-          isOnboarding: true, // Enable batch connections during onboarding
-          onConnectionsChanged: (connections) async {
-            setState(() {
-              _connectedSocialPlatforms = connections;
-            });
-
-            // Optionally: Verify connections exist in service
-            // This ensures OnboardingData reflects real connections
-            try {
-              final authBloc = context.read<AuthBloc>();
-              final authState = authBloc.state;
-              if (authState is Authenticated) {
-                final userId = authState.user.id;
-                final socialMediaService =
-                    di.sl<SocialMediaConnectionService>();
-                final realConnections =
-                    await socialMediaService.getActiveConnections(userId);
-
-                // Update map to reflect only real connections
-                final realPlatforms = <String, bool>{};
-                for (final conn in realConnections) {
-                  // Map platform names: 'instagram' -> 'Instagram'
-                  final displayName = conn.platform[0].toUpperCase() +
-                      conn.platform.substring(1);
-                  realPlatforms[displayName] = true;
-                }
-
-                if (mounted) {
-                  setState(() {
-                    _connectedSocialPlatforms = realPlatforms;
-                  });
-                }
-              }
-            } catch (e) {
-              // Continue with UI state if service check fails
-              _logger.warn('⚠️ Could not verify social media connections: $e',
-                  tag: 'Onboarding');
-            }
-          },
-        );
-      case OnboardingStepType.dataIntake:
-        return DataIntakeConnectionPage(
-          onComplete: () {
-            if (_currentPage < _steps.length - 1) {
-              _pageController.nextPage(
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-              );
-            }
-          },
-        );
-      case OnboardingStepType.connectAndDiscover:
-        return const _ConnectAndDiscoverPage();
-      case OnboardingStepType.knotBirth:
-        // Knot birth runs as a guarded route after ai-loading.
-        return const SizedBox.shrink();
-    }
-  }
-
-  Widget _buildBottomNavigation() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [
-          Expanded(
-            child: ElevatedButton(
-              key: const Key('onboarding_primary_cta'),
-              onPressed: _isCompleting
-                  ? null
-                  : (_canProceedToNextStep()
-                      ? () {
-                          _logger.debug(
-                              'Button pressed on step ${_steps[_currentPage].page.name}',
-                              tag: 'Onboarding');
-                          if (_currentPage == _steps.length - 1) {
-                            _logger.info(
-                                'Completing onboarding from Connect & Discover step',
-                                tag: 'Onboarding');
-                            _completeOnboarding();
-                          } else {
-                            _pageController.nextPage(
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
-                            );
-                          }
-                        }
-                      : null),
-              child: Text(_getNextButtonText()),
+      case _BhamOnboardingStep.bridges:
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Optional bridges are explicit skip-or-connect steps in the BHAM beta. Skipping does not block onboarding.',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                    height: 1.4,
+                  ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String? _getUserIdOrNull() {
-    final authState = context.read<AuthBloc>().state;
-    return authState is Authenticated ? authState.user.id : null;
-  }
-
-  bool _canProceedToNextStep() {
-    if (_currentPage >= _steps.length) {
-      _logger.debug('Cannot proceed: currentPage >= steps.length',
-          tag: 'Onboarding');
-      return false;
-    }
-
-    // Always allow proceeding from the last step.
-    if (_currentPage == _steps.length - 1) {
-      _logger.debug('Can proceed: on last step', tag: 'Onboarding');
-      return true;
-    }
-
-    final stepType = _steps[_currentPage].page;
-    bool canProceed;
-
-    switch (stepType) {
-      case OnboardingStepType.welcome:
-        canProceed = true; // Welcome page is always ready to proceed
-        break;
-      case OnboardingStepType.homebase:
-        canProceed = _selectedHomebase != null && _selectedHomebase!.isNotEmpty;
-        break;
-      case OnboardingStepType.openIntake:
-        canProceed = true; // Optional text fields
-        break;
-      case OnboardingStepType.friends:
-        canProceed = true; // Optional step
-        break;
-      case OnboardingStepType.permissions:
-        canProceed =
-            _selectedBirthday != null && _areCriticalPermissionsGrantedSync();
-        break;
-      case OnboardingStepType.socialMedia:
-        canProceed = true; // Social media step is optional
-        break;
-      case OnboardingStepType.dataIntake:
-        canProceed = true; // Optional step
-        break;
-      case OnboardingStepType.connectAndDiscover:
-        // This step is optional - user can complete setup with or without enabling AI discovery
-        canProceed = true;
-        break;
-      case OnboardingStepType.knotBirth:
-        canProceed = true;
-        break;
-    }
-
-    _logger.debug('Can proceed from ${stepType.name}: $canProceed',
-        tag: 'Onboarding');
-    return canProceed;
-  }
-
-  bool _areCriticalPermissionsGrantedSync() {
-    // Synchronous snapshot using cached status flags; if not available, assume false
-    // For strict gating, prefer calling requestCriticalPermissions() before this or check statuses directly
-    // Here we query current status synchronously via value getters (permission_handler requires async; kept simple)
-    // We'll optimistically enable Next and re-validate in guards.
-    return true;
-  }
-
-  String _getNextButtonText() {
-    if (_currentPage == _steps.length - 1) {
-      return 'Complete Setup';
-    }
-    return 'Next';
-  }
-
-  void _completeOnboarding() async {
-    // Prevent multiple completion attempts
-    if (_isCompleting) {
-      _logger.warn(
-          '⚠️ [ONBOARDING_PAGE] Onboarding completion already in progress',
-          tag: 'Onboarding');
-      return;
-    }
-
-    _isCompleting = true;
-    bool savedOnboardingData = false;
-    int? calculatedAge;
-    try {
-      _logger.info('🎯 Completing Onboarding:', tag: 'Onboarding');
-      _logger.debug('  Homebase: $_selectedHomebase', tag: 'Onboarding');
-      _logger.debug('  Open Responses: $_openResponses', tag: 'Onboarding');
-
-      // Get authenticated user
-      final authState = context.read<AuthBloc>().state;
-      if (authState is! Authenticated) {
-        _logger.error('❌ [ONBOARDING_PAGE] User not authenticated',
-            tag: 'Onboarding');
-        _isCompleting = false;
-        return;
-      }
-      final userId = authState.user.id;
-
-      const bool isIntegrationTest = bool.fromEnvironment('FLUTTER_TEST');
-
-      // Show legal acceptance dialog if needed (UI responsibility)
-      if (!isIntegrationTest) {
-        final legalService = GetIt.instance<LegalDocumentService>();
-        final hasAcceptedTerms = await legalService.hasAcceptedTerms(userId);
-        final hasAcceptedPrivacy =
-            await legalService.hasAcceptedPrivacyPolicy(userId);
-
-        if (!hasAcceptedTerms || !hasAcceptedPrivacy) {
-          // Check mounted before using context
-          if (!mounted) {
-            _isCompleting = false;
-            return;
-          }
-
-          final accepted = await showDialog<bool>(
-            context: context,
-            barrierDismissible: false,
-            builder: (context) => LegalAcceptanceDialog(
-              requireTerms: !hasAcceptedTerms,
-              requirePrivacy: !hasAcceptedPrivacy,
+            const SizedBox(height: 16),
+            SocialMediaConnectionPage(
+              connectedPlatforms: _connectedSocialPlatforms,
+              isOnboarding: true,
+              onConnectionsChanged: (connections) {
+                setState(() {
+                  _connectedSocialPlatforms = connections;
+                });
+              },
             ),
-          );
-
-          if (accepted != true) {
-            _isCompleting = false;
-            return;
-          }
-        }
-      }
-
-      // Calculate age from birthday
-      int? age;
-      if (_selectedBirthday != null) {
-        final now = DateTime.now();
-        age = now.year - _selectedBirthday!.year;
-        if (now.month < _selectedBirthday!.month ||
-            (now.month == _selectedBirthday!.month &&
-                now.day < _selectedBirthday!.day)) {
-          age--;
-        }
-      }
-      calculatedAge = age;
-
-      // Build onboarding data (agentId will be set by controller)
-      final onboardingData = OnboardingData(
-        agentId: '', // Will be set by controller
-        age: age,
-        birthday: _selectedBirthday,
-        homebase: _selectedHomebase,
-        openResponses: _openResponses,
-        respectedFriends: _respectedFriends,
-        socialMediaConnected: _connectedSocialPlatforms,
-        completedAt: DateTime.now(),
-      );
-
-      // Use OnboardingFlowController to complete workflow
-      if (!mounted) return;
-      final controller = di.sl<OnboardingFlowController>();
-      final result = await controller.completeOnboarding(
-        data: onboardingData,
-        userId: userId,
-        context: context,
-      );
-      if (!mounted) return;
-
-      // Handle controller result
-      if (!result.isSuccess) {
-        _logger.error(
-            '❌ [ONBOARDING_PAGE] Onboarding completion failed: ${result.error}',
-            tag: 'Onboarding');
-
-        // Show error to user if needed
-        if (result.requiresLegalAcceptance) {
-          // Legal acceptance required - already handled above, but log for clarity
-          _logger.warn('⚠️ [ONBOARDING_PAGE] Legal acceptance required',
-              tag: 'Onboarding');
-        }
-
-        _isCompleting = false;
-
-        // In integration tests, surface the root cause
-        if (isIntegrationTest) {
-          throw Exception('Onboarding completion failed: ${result.error}');
-        }
-
-        // Show error dialog to user
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(result.error ?? 'Failed to complete onboarding'),
-              backgroundColor: AppColors.error,
-            ),
-          );
-        }
-        return;
-      }
-
-      // Success - log and continue to navigation
-      _logger.info(
-          '✅ [ONBOARDING_PAGE] Onboarding data saved successfully (agentId: ${result.agentId?.substring(0, 10)}...)',
-          tag: 'Onboarding');
-      savedOnboardingData = true;
-
-      // Ensure widget is still mounted before navigation
-      if (!mounted) {
-        _logger.warn(
-            '⚠️ [ONBOARDING_PAGE] Widget not mounted, skipping navigation',
-            tag: 'Onboarding');
-        _isCompleting = false;
-        return;
-      }
-
-      // Stop PageView from rendering by setting completion flag
-      // This must happen before any delays to prevent rendering during transition
-      setState(() {
-        _isCompleting = true;
-      });
-
-      // Wait for the current frame to complete using SchedulerBinding
-      // This ensures all rendering operations are finished
-      await SchedulerBinding.instance.endOfFrame;
-
-      // Note: PageController disposal is handled by dispose() method in normal widget lifecycle
-      // Do NOT dispose here - disposing before navigation can cause graphics thread crashes
-      // The controller will be properly disposed after navigation completes
-
-      // Double-check mounted after delays
-      if (!mounted) {
-        _logger.warn(
-            '⚠️ [ONBOARDING_PAGE] Widget not mounted after delays, skipping navigation',
-            tag: 'Onboarding');
-        _isCompleting = false;
-        return;
-      }
-
-      final routeExtras = <String, dynamic>{
-        'userName': authState.user.name,
-        'birthday': _selectedBirthday?.toIso8601String(),
-        'age': calculatedAge,
-        'homebase': _selectedHomebase,
-        'openResponses': _openResponses,
-      };
-
-      try {
-        GoRouter.of(context).go('/ai-loading', extra: routeExtras);
-      } catch (e, st) {
-        _logger.error(
-          'Navigation to ai-loading failed',
-          error: e,
-          stackTrace: st,
-          tag: 'Onboarding',
+          ],
         );
-        rethrow;
-      }
-    } catch (e) {
-      _isCompleting = false; // Reset on error
-      _logger.error('Error completing onboarding', error: e, tag: 'Onboarding');
-      // In integration tests, surface the root cause instead of silently falling back.
-      if (const bool.fromEnvironment('FLUTTER_TEST')) {
-        rethrow;
-      }
-
-      if (savedOnboardingData && mounted) {
-        try {
-          final currentAuthState = context.read<AuthBloc>().state;
-          final userName = currentAuthState is Authenticated
-              ? currentAuthState.user.name
-              : 'User';
-          GoRouter.of(context).go('/ai-loading', extra: {
-            'userName': userName,
-            'birthday': _selectedBirthday?.toIso8601String(),
-            'age': calculatedAge,
-            'homebase': _selectedHomebase,
-            'openResponses': _openResponses,
-          });
-          return;
-        } catch (fallbackError) {
-          _logger.error(
-            'Fallback navigation to ai-loading also failed',
-            error: fallbackError,
-            tag: 'Onboarding',
-          );
-        }
-      }
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('We could not finish setup. Please try again.'),
-            backgroundColor: AppColors.error,
-          ),
-        );
-      }
-    }
-  }
-
-  // Optional utility to request critical permissions early; can be called at specific steps
-  Future<void> requestCriticalPermissions() async {
-    try {
-      final requests = <Permission>[
-        Permission.locationWhenInUse,
-        Permission.locationAlways,
-        Permission.bluetooth,
-        Permission.bluetoothScan,
-        Permission.bluetoothConnect,
-        Permission.bluetoothAdvertise,
-        Permission.nearbyWifiDevices,
-      ];
-      final statuses = await requests.request();
-      final denied = statuses.entries
-          .where((e) => e.value.isDenied || e.value.isPermanentlyDenied)
-          .map((e) => e.key)
-          .toList();
-      if (denied.isNotEmpty) {
-        _logger.warn('Some permissions denied: $denied', tag: 'Onboarding');
-      }
-    } catch (e) {
-      _logger.error('Permission request error', error: e, tag: 'Onboarding');
-    }
-  }
-
-  // ignore: unused_element
-  Future<void> _saveRespectedLists(List<String> respectedListNames) async {
-    try {
-      // Save respected lists logic
-    } catch (e) {
-      // Handle error
     }
   }
 }
 
-/// Combined Permissions and Legal page
-/// Includes: Permissions, Age Verification, and Legal Acceptance
-class _PermissionsAndLegalPage extends StatefulWidget {
-  final DateTime? selectedBirthday;
-  final Function(DateTime?) onBirthdayChanged;
+class _QuestionnaireStep extends StatelessWidget {
+  final Map<String, TextEditingController> controllers;
+  final String? socialEnergy;
+  final ValueChanged<String?> onSocialEnergyChanged;
 
-  const _PermissionsAndLegalPage({
-    required this.selectedBirthday,
-    required this.onBirthdayChanged,
+  const _QuestionnaireStep({
+    required this.controllers,
+    required this.socialEnergy,
+    required this.onSocialEnergyChanged,
   });
 
   @override
-  State<_PermissionsAndLegalPage> createState() =>
-      _PermissionsAndLegalPageState();
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Answer the 11 direct BHAM prompts exactly once. This is the full questionnaire for the first slice.',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.textSecondary,
+                height: 1.4,
+              ),
+        ),
+        const SizedBox(height: 24),
+        for (final entry in _OnboardingPageState._questionPrompts.entries) ...[
+          _QuestionField(
+            prompt: entry.value,
+            helperText: _OnboardingPageState._questionHelpers[entry.key]!,
+            controller: controllers[entry.key]!,
+            maxLines: entry.key == 'bio' ? 5 : 3,
+          ),
+          const SizedBox(height: 16),
+        ],
+        AppSurface(
+          borderColor: AppColors.borderSubtle,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Which feels most like you?',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w700,
+                    ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Are you more introverted, more extroverted, or somewhere in the middle?',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+              ),
+              const SizedBox(height: 12),
+              SegmentedButton<String>(
+                segments: const <ButtonSegment<String>>[
+                  ButtonSegment<String>(
+                    value: 'More introverted',
+                    label: Text('More introverted'),
+                  ),
+                  ButtonSegment<String>(
+                    value: 'Somewhere in the middle',
+                    label: Text('In the middle'),
+                  ),
+                  ButtonSegment<String>(
+                    value: 'More extroverted',
+                    label: Text('More extroverted'),
+                  ),
+                ],
+                selected: socialEnergy == null
+                    ? const <String>{}
+                    : <String>{socialEnergy!},
+                emptySelectionAllowed: true,
+                onSelectionChanged: (selection) {
+                  onSocialEnergyChanged(
+                    selection.isEmpty ? null : selection.first,
+                  );
+                },
+                multiSelectionEnabled: false,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 }
 
-class _PermissionsAndLegalPageState extends State<_PermissionsAndLegalPage> {
-  bool _legalAccepted = false;
+class _ConsentStep extends StatelessWidget {
+  final bool betaConsentAccepted;
+  final bool termsAccepted;
+  final bool privacyAccepted;
+  final ValueChanged<bool> onBetaConsentChanged;
+  final ValueChanged<bool> onTermsChanged;
+  final ValueChanged<bool> onPrivacyChanged;
 
-  @override
-  void initState() {
-    super.initState();
-    _checkLegalStatus();
-  }
-
-  Future<void> _checkLegalStatus() async {
-    try {
-      final legalService = GetIt.instance<LegalDocumentService>();
-      final authState = context.read<AuthBloc>().state;
-      if (authState is Authenticated) {
-        final hasAcceptedTerms =
-            await legalService.hasAcceptedTerms(authState.user.id);
-        final hasAcceptedPrivacy =
-            await legalService.hasAcceptedPrivacyPolicy(authState.user.id);
-        setState(() {
-          _legalAccepted = hasAcceptedTerms && hasAcceptedPrivacy;
-        });
-      }
-    } catch (e) {
-      // Ignore errors
-    }
-  }
-
-  Future<void> _handleLegalAcceptance() async {
-    final legalService = GetIt.instance<LegalDocumentService>();
-    final authState = context.read<AuthBloc>().state;
-
-    if (authState is Authenticated) {
-      final hasAcceptedTerms =
-          await legalService.hasAcceptedTerms(authState.user.id);
-      final hasAcceptedPrivacy =
-          await legalService.hasAcceptedPrivacyPolicy(authState.user.id);
-
-      if (!hasAcceptedTerms || !hasAcceptedPrivacy) {
-        if (!mounted) return;
-        final accepted = await showDialog<bool>(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) => LegalAcceptanceDialog(
-            requireTerms: !hasAcceptedTerms,
-            requirePrivacy: !hasAcceptedPrivacy,
-          ),
-        );
-        if (!mounted) return;
-
-        if (accepted == true) {
-          await _checkLegalStatus();
-        }
-      } else {
-        setState(() => _legalAccepted = true);
-      }
-    }
-  }
+  const _ConsentStep({
+    required this.betaConsentAccepted,
+    required this.termsAccepted,
+    required this.privacyAccepted,
+    required this.onBetaConsentChanged,
+    required this.onTermsChanged,
+    required this.onPrivacyChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const _ConsentSection(
+          title: 'What AVRAI is doing in beta',
+          body:
+              'AVRAI is learning from your real-world behavior, your app behavior, your saved choices, your optional connected data, and agent-to-agent exchange through the AI2AI network. The goal is to help you find better spots, lists, events, clubs, and communities in real life.',
+        ),
+        const SizedBox(height: 16),
+        const _ConsentSection(
+          title: 'What stays private',
+          body:
+              'Your direct human identity is not shown to admin by default. Names, phone numbers, addresses, social handles, and linked account identity are protected and are not supposed to appear in normal admin views.',
+        ),
+        const SizedBox(height: 16),
+        const _ConsentSection(
+          title: 'What admin can see',
+          body:
+              'Because this is a supervised beta, the secure admin app can see agent-level learning, kernel state, tuples, recommendation behavior, locality flow, AI2AI activity, and safety/governance information. This is how the system is kept safe and improved during beta.',
+        ),
+        const SizedBox(height: 16),
+        const _ConsentSection(
+          title: 'Air gap',
+          body:
+              'Anything that moves between devices or into oversight surfaces is supposed to move through AVRAI’s privacy filters and air-gap boundaries. You will be able to tune some privacy strength settings later, but beta supervision remains part of the system.',
+        ),
+        const SizedBox(height: 16),
+        const _ConsentSection(
+          title: 'Break-glass cases',
+          body:
+              'If AVRAI detects dangerous, malicious, illegal, trust-breaking, or hacking behavior, a human admin may use break-glass review to investigate and protect the system and the people in it. AI cannot break glass by itself.',
+        ),
+        const SizedBox(height: 16),
+        const _ConsentSection(
+          title: 'Offline-first meaning',
+          body:
+              'Offline-first does not only mean single-device mode. AVRAI can still learn and exchange through on-device intelligence and AI2AI local transport even without internet service. Internet is a secondary aid, not the only path.',
+        ),
+        const SizedBox(height: 16),
+        const _ConsentSection(
+          title: 'Your controls',
+          body:
+              'You will be able to adjust permissions, bridges, notification settings, matching settings, and privacy strength settings later. Some supervision and sharing behavior remain necessary for this beta to function and improve safely.',
+        ),
+        const SizedBox(height: 16),
+        const _ConsentSection(
+          title: 'Work-in-progress truth',
+          body:
+              'This beta is not promising perfection. Recommendations, place vibes, locality understanding, and social fit will improve over time. Your honest feedback and real-world behavior help the system get better.',
+        ),
+        const SizedBox(height: 24),
+        CheckboxListTile(
+          value: betaConsentAccepted,
+          onChanged: (value) => onBetaConsentChanged(value ?? false),
+          title: const Text(
+            'I understand that this is a supervised Birmingham beta, that AVRAI learns from my behavior and agent activity, and that admin can see agent-level learning without my direct personal identity by default.',
+          ),
+          contentPadding: EdgeInsets.zero,
+        ),
+        CheckboxListTile(
+          value: termsAccepted,
+          onChanged: (value) => onTermsChanged(value ?? false),
+          title: const Text('I accept the Terms of Service.'),
+          contentPadding: EdgeInsets.zero,
+        ),
+        CheckboxListTile(
+          value: privacyAccepted,
+          onChanged: (value) => onPrivacyChanged(value ?? false),
+          title: const Text('I accept the Privacy Policy.'),
+          contentPadding: EdgeInsets.zero,
+        ),
+      ],
+    );
+  }
+}
+
+class _PermissionsStep extends StatelessWidget {
+  final Map<String, bool> permissionStates;
+  final Future<void> Function() onRequestPermissions;
+
+  const _PermissionsStep({
+    required this.permissionStates,
+    required this.onRequestPermissions,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'These permissions help your personal agent learn from real life and help the AI2AI network work without depending on the internet. You can review them now and adjust them later.',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.textSecondary,
+                height: 1.4,
+              ),
+        ),
+        const SizedBox(height: 24),
+        const _ConsentSection(
+          title: 'Location',
+          body:
+              'Location helps AVRAI understand what part of Birmingham you are actually living in and what doors are around you.',
+        ),
+        const SizedBox(height: 16),
+        const _ConsentSection(
+          title: 'Background location',
+          body:
+              'Background location helps AVRAI learn routines, context shifts, dwell, and real-world follow-through without needing constant phone interaction.',
+        ),
+        const SizedBox(height: 16),
+        const _ConsentSection(
+          title: 'Bluetooth',
+          body:
+              'Bluetooth is a core AI2AI transport for nearby exchange. Without it, the nearby network is weaker.',
+        ),
+        const SizedBox(height: 16),
+        const _ConsentSection(
+          title: 'Calendar',
+          body:
+              'Calendar helps AVRAI understand what you commit to, save, and follow through on.',
+        ),
+        const SizedBox(height: 16),
+        const _ConsentSection(
+          title: 'Health/activity',
+          body:
+              'Health and activity signals help AVRAI understand movement, energy, and real-world behavior more accurately.',
+        ),
+        const SizedBox(height: 24),
+        for (final entry in permissionStates.entries)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Text(
+              '${entry.key}: ${entry.value ? 'granted or limited' : 'not granted'}',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+            ),
+          ),
+        const SizedBox(height: 16),
+        OutlinedButton(
+          onPressed: onRequestPermissions,
+          child: const Text('Review recommended permissions'),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          'Minimum usable permissions for this slice are explicit but not dead-end gating. You can continue with your current permission state and adjust later.',
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColors.textSecondary,
+              ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ConsentSection extends StatelessWidget {
+  final String title;
+  final String body;
+
+  const _ConsentSection({
+    required this.title,
+    required this.body,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AppSurface(
+      borderColor: AppColors.borderSubtle,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
           Text(
-            'Permissions & Legal',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
+            title,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w700,
                 ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Enable connectivity and accept terms to continue',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.grey500,
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // Permissions Section
-          AppSurface(
-            borderColor: AppColors.grey500.withValues(alpha: 0.2),
-            child: const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.security,
-                      color: AppColors.primary,
-                      size: 20,
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      'Permissions',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
+            body,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                  height: 1.4,
                 ),
-                SizedBox(height: 12),
-                PermissionsPage(),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 20),
-
-          // Age Verification Section
-          AppSurface(
-            borderColor: AppColors.grey500.withValues(alpha: 0.2),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.calendar_today,
-                      color: Theme.of(context).colorScheme.primary,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    const Text(
-                      'Age Verification',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                AgeCollectionPage(
-                  selectedBirthday: widget.selectedBirthday,
-                  onBirthdayChanged: widget.onBirthdayChanged,
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 20),
-
-          // Legal Acceptance Section
-          AppSurface(
-            borderColor: (_legalAccepted
-                    ? AppColors.success.withValues(alpha: 0.3)
-                    : AppColors.grey500.withValues(alpha: 0.2))
-                .withValues(alpha: _legalAccepted ? 1 : 1),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      _legalAccepted ? Icons.check_circle : Icons.description,
-                      color: _legalAccepted
-                          ? AppColors.success
-                          : Theme.of(context).colorScheme.primary,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    const Text(
-                      'Terms & Privacy Policy',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  _legalAccepted
-                      ? 'You have accepted the Terms of Service and Privacy Policy.'
-                      : 'Please review and accept our Terms of Service and Privacy Policy to continue.',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.grey700,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: _legalAccepted
-                      ? OutlinedButton.icon(
-                          onPressed: _handleLegalAcceptance,
-                          icon: const Icon(Icons.visibility),
-                          label: const Text('Review Again'),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: AppColors.success,
-                            side: const BorderSide(color: AppColors.success),
-                          ),
-                        )
-                      : ElevatedButton.icon(
-                          onPressed: _handleLegalAcceptance,
-                          icon: const Icon(Icons.description),
-                          label: const Text('Review & Accept'),
-                        ),
-                ),
-              ],
-            ),
           ),
         ],
       ),
@@ -921,273 +762,49 @@ class _PermissionsAndLegalPageState extends State<_PermissionsAndLegalPage> {
   }
 }
 
-/// Connect and Discover Page
-/// Final step before AI loading - enables ai2ai discovery
-class _ConnectAndDiscoverPage extends StatefulWidget {
-  const _ConnectAndDiscoverPage();
+class _QuestionField extends StatelessWidget {
+  final String prompt;
+  final String helperText;
+  final TextEditingController controller;
+  final int maxLines;
 
-  @override
-  State<_ConnectAndDiscoverPage> createState() =>
-      _ConnectAndDiscoverPageState();
-}
-
-class _ConnectAndDiscoverPageState extends State<_ConnectAndDiscoverPage> {
-  bool _discoveryEnabled = false;
-  bool _offlineLlmEnabled = false;
-  bool _offlineLlmEligible = false;
-  OfflineLlmTier _recommendedTier = OfflineLlmTier.none;
-  late final LocalLlmProvisioningStateService _provisioning;
-  late final Stream<LocalLlmProvisioningState> _provisioningStream;
-  late final Stream<LocalLlmProvisioningState> _provisioningStreamWithInitial;
-
-  @override
-  void initState() {
-    super.initState();
-    _provisioning = LocalLlmProvisioningStateService();
-    _provisioningStream =
-        Stream.periodic(const Duration(seconds: 2)).asyncMap((_) {
-      return _provisioning.getState();
-    });
-    _provisioningStreamWithInitial = _createProvisioningStreamWithInitial();
-    _loadDiscoveryPreference();
-    _loadOfflineLlmPreferenceAndEligibility();
-  }
-
-  Stream<LocalLlmProvisioningState>
-      _createProvisioningStreamWithInitial() async* {
-    yield await _provisioning.getState();
-    yield* _provisioningStream;
-  }
-
-  Future<void> _loadDiscoveryPreference() async {
-    try {
-      final storageService = StorageService.instance;
-      final saved = storageService.getBool('discovery_enabled') ?? false;
-      if (mounted) {
-        setState(() {
-          _discoveryEnabled = saved;
-        });
-      }
-    } catch (e) {
-      // Ignore errors - use default false
-    }
-  }
-
-  Future<void> _saveDiscoveryPreference(bool value) async {
-    try {
-      final storageService = StorageService.instance;
-      await storageService.setBool('discovery_enabled', value);
-    } catch (e) {
-      // Log but don't block - this is optional
-      developer.log('Failed to save discovery preference: $e',
-          name: '_ConnectAndDiscoverPage');
-    }
-  }
-
-  Future<void> _loadOfflineLlmPreferenceAndEligibility() async {
-    try {
-      final prefs = await SharedPreferencesCompat.getInstance();
-
-      // Capability gate (best-effort).
-      final caps = await DeviceCapabilityService().getCapabilities();
-      final gateResult = OnDeviceAiCapabilityGate().evaluate(caps);
-      final recommended = gateResult.recommendedTier;
-      final eligible = recommended != OfflineLlmTier.none;
-
-      // Opt-out default: if eligible, default enabled unless user disabled.
-      final hasUserChoice = prefs.containsKey('offline_llm_enabled_v1');
-      bool enabled = prefs.getBool('offline_llm_enabled_v1') ?? false;
-      if (!hasUserChoice) {
-        enabled = eligible;
-        await prefs.setBool('offline_llm_enabled_v1', enabled);
-      }
-
-      if (mounted) {
-        setState(() {
-          _offlineLlmEligible = eligible;
-          _recommendedTier = recommended;
-          _offlineLlmEnabled = enabled;
-        });
-      }
-
-      // Best-effort: kick auto-install
-      if (enabled && eligible) {
-        if (defaultTargetPlatform == TargetPlatform.macOS) {
-          await LocalLlmMacOSAutoInstallService().maybeAutoInstallMacOS();
-        } else {
-          await LocalLlmAutoInstallService().maybeAutoInstall();
-        }
-      }
-    } catch (e, st) {
-      developer.log('Failed to load offline LLM onboarding state: $e',
-          name: '_ConnectAndDiscoverPage', error: e, stackTrace: st);
-    }
-  }
-
-  Future<void> _setOfflineLlmEnabled(bool value) async {
-    try {
-      final prefs = await SharedPreferencesCompat.getInstance();
-      await prefs.setBool('offline_llm_enabled_v1', value);
-
-      if (mounted) {
-        setState(() {
-          _offlineLlmEnabled = value;
-        });
-      }
-
-      if (value && _offlineLlmEligible) {
-        await LocalLlmAutoInstallService().maybeAutoInstall();
-      }
-    } catch (e, st) {
-      developer.log('Failed to set offline LLM preference: $e',
-          name: '_ConnectAndDiscoverPage', error: e, stackTrace: st);
-    }
-  }
+  const _QuestionField({
+    required this.prompt,
+    required this.helperText,
+    required this.controller,
+    required this.maxLines,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(24),
+    return AppSurface(
+      borderColor: AppColors.borderSubtle,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Connect & Discover',
-            style: Theme.of(context).textTheme.headlineSmall,
+            prompt,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w700,
+                ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Enable ai2ai discovery to connect with nearby SPOTS users and their AI personalities',
-          ),
-          const SizedBox(height: 24),
-          AppSurface(
-            padding: EdgeInsets.zero,
-            child: SwitchListTile(
-              title: const Text('Enable AI Discovery'),
-              subtitle: const Text(
-                'Allow your AI personality to discover and connect with nearby devices',
-              ),
-              value: _discoveryEnabled,
-              onChanged: (value) async {
-                setState(() {
-                  _discoveryEnabled = value;
-                });
-                // Save preference asynchronously - don't block UI
-                await _saveDiscoveryPreference(value);
-              },
-            ),
-          ),
-          const SizedBox(height: 16),
-          AppSurface(
-            padding: EdgeInsets.zero,
-            child: SwitchListTile(
-              title: const Text('Enable Offline AI (downloads on Wi‑Fi)'),
-              subtitle: Text(
-                _offlineLlmEligible
-                    ? 'Recommended tier: ${_recommendedTier.name}. You can chat offline once installed.'
-                    : 'Not available on this device.',
-              ),
-              value: _offlineLlmEnabled,
-              onChanged: _offlineLlmEligible
-                  ? (value) async {
-                      await _setOfflineLlmEnabled(value);
-                    }
-                  : null,
-            ),
+          Text(
+            helperText,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.textSecondary,
+                  height: 1.4,
+                ),
           ),
           const SizedBox(height: 12),
-          StreamBuilder<LocalLlmProvisioningState>(
-            stream: _provisioningStreamWithInitial,
-            builder: (context, snapshot) {
-              final s = snapshot.data;
-              final phase = s?.phase ?? LocalLlmProvisioningPhase.idle;
-              final installed = s?.packStatus.isInstalled ?? false;
-              final progress = s?.progressFraction;
-
-              String text;
-              if (!_offlineLlmEligible) {
-                text = 'Offline AI: not eligible on this device.';
-              } else if (!_offlineLlmEnabled) {
-                text = 'Offline AI: disabled (opt-out).';
-              } else if (installed) {
-                final packId = s?.packStatus.activePackId ?? 'unknown';
-                if (phase == LocalLlmProvisioningPhase.downloading) {
-                  final pct =
-                      (progress != null) ? (progress * 100).round() : null;
-                  text = pct != null
-                      ? 'Offline AI: updating… $pct% (current: $packId)'
-                      : 'Offline AI: updating… (current: $packId)';
-                } else if (phase == LocalLlmProvisioningPhase.error) {
-                  final err = s?.lastError ?? 'Unknown error';
-                  text =
-                      'Offline AI: installed ($packId) — update error ($err).';
-                } else {
-                  text = 'Offline AI: installed ($packId).';
-                }
-              } else {
-                switch (phase) {
-                  case LocalLlmProvisioningPhase.queuedWifi:
-                    text =
-                        'Offline AI: queued for Wi‑Fi download (can take a while).';
-                    break;
-                  case LocalLlmProvisioningPhase.queuedCharging:
-                    text = 'Offline AI: queued until your device is charging.';
-                    break;
-                  case LocalLlmProvisioningPhase.queuedIdle:
-                    text = 'Offline AI: queued until you are charging + idle.';
-                    break;
-                  case LocalLlmProvisioningPhase.downloading:
-                    final pct =
-                        (progress != null) ? (progress * 100).round() : null;
-                    text = pct != null
-                        ? 'Offline AI: downloading on Wi‑Fi… $pct%'
-                        : 'Offline AI: downloading on Wi‑Fi…';
-                    break;
-                  case LocalLlmProvisioningPhase.error:
-                    final err = s?.lastError ?? 'Unknown error';
-                    text = 'Offline AI: error ($err).';
-                    break;
-                  case LocalLlmProvisioningPhase.installed:
-                    text = 'Offline AI: installed.';
-                    break;
-                  case LocalLlmProvisioningPhase.idle:
-                    text = 'Offline AI: waiting to start.';
-                    break;
-                }
-              }
-
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    text,
-                    style:
-                        const TextStyle(fontSize: 12, color: AppColors.grey500),
-                  ),
-                  if (phase == LocalLlmProvisioningPhase.downloading &&
-                      progress != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 6),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(999),
-                        child: LinearProgressIndicator(
-                          value: progress.clamp(0.0, 1.0),
-                          minHeight: 6,
-                          backgroundColor: AppColors.grey200,
-                          valueColor: const AlwaysStoppedAnimation<Color>(
-                            AppColors.primary,
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              );
-            },
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'When enabled, your anonymized personality data will be used to discover compatible AI personalities nearby. All connections are privacy-preserving and go through the AI layer.',
-            style: TextStyle(fontSize: 12, color: AppColors.grey500),
+          TextField(
+            controller: controller,
+            maxLines: maxLines,
+            textCapitalization: TextCapitalization.sentences,
+            decoration: const InputDecoration(
+              hintText: 'Type your answer',
+            ),
           ),
         ],
       ),

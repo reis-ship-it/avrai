@@ -25,7 +25,15 @@ void main() {
     setUp(() async {
       prefs =
           await SharedPreferencesCompat.getInstance(storage: getTestStorage());
-      networkAnalytics = NetworkAnalytics(prefs: prefs);
+      networkAnalytics = NetworkAnalytics(
+        prefs: prefs,
+        networkHealthUpdateInterval: const Duration(milliseconds: 25),
+        realTimeMetricsUpdateInterval: const Duration(milliseconds: 20),
+      );
+    });
+
+    tearDown(() {
+      networkAnalytics.disposeStreams();
     });
 
     group('streamNetworkHealth()', () {
@@ -63,7 +71,7 @@ void main() {
 
         // Wait for at least an initial emission (+ one update when available).
         await completer.future.timeout(
-          const Duration(seconds: 6),
+          const Duration(milliseconds: 250),
           onTimeout: () {
             subscription.cancel();
             expect(values.length, greaterThanOrEqualTo(1));
@@ -96,7 +104,7 @@ void main() {
         );
 
         // Wait for initial value
-        await Future.delayed(const Duration(seconds: 1));
+        await Future.delayed(const Duration(milliseconds: 80));
         await subscription.cancel();
 
         // Should have received at least initial value without errors
@@ -129,7 +137,7 @@ void main() {
         });
 
         // Wait for at least 2 emissions
-        await Future.delayed(const Duration(seconds: 2));
+        await Future.delayed(const Duration(milliseconds: 120));
 
         // Cancel if still listening
         await subscription.cancel();
@@ -174,7 +182,7 @@ void main() {
 
         // Wait for at least an initial emission (+ one update when available).
         await completer.future.timeout(
-          const Duration(seconds: 6),
+          const Duration(milliseconds: 250),
           onTimeout: () {
             subscription.cancel();
             expect(values.length, greaterThanOrEqualTo(1));
@@ -207,7 +215,7 @@ void main() {
         );
 
         // Wait for initial value
-        await Future.delayed(const Duration(seconds: 1));
+        await Future.delayed(const Duration(milliseconds: 80));
         await subscription.cancel();
 
         // Should have received at least initial value without errors
@@ -240,7 +248,7 @@ void main() {
         });
 
         // Wait for at least 2 emissions
-        await Future.delayed(const Duration(seconds: 2));
+        await Future.delayed(const Duration(milliseconds: 120));
 
         // Cancel if still listening
         await subscription.cancel();
@@ -265,7 +273,7 @@ void main() {
         );
 
         // Wait for initial value and at least one periodic update
-        await Future.delayed(const Duration(seconds: 2));
+        await Future.delayed(const Duration(milliseconds: 120));
         await subscription.cancel();
 
         // Should have received values despite any internal errors
@@ -287,7 +295,7 @@ void main() {
         );
 
         // Wait for initial value and at least one periodic update
-        await Future.delayed(const Duration(seconds: 2));
+        await Future.delayed(const Duration(milliseconds: 120));
         await subscription.cancel();
 
         // Should have received values despite any internal errors
@@ -307,7 +315,7 @@ void main() {
         final sub1 = stream1.listen((_) => subscription1Count++);
         final sub2 = stream2.listen((_) => subscription2Count++);
 
-        await Future.delayed(const Duration(seconds: 1));
+        await Future.delayed(const Duration(milliseconds: 80));
 
         await sub1.cancel();
         await sub2.cancel();
@@ -328,7 +336,7 @@ void main() {
         final sub1 = stream1.listen((_) => subscription1Count++);
         final sub2 = stream2.listen((_) => subscription2Count++);
 
-        await Future.delayed(const Duration(seconds: 1));
+        await Future.delayed(const Duration(milliseconds: 80));
 
         await sub1.cancel();
         await sub2.cancel();

@@ -20,9 +20,9 @@ import 'package:avrai_quantum/services/quantum/quantum_entanglement_service.dart
 import 'package:avrai_core/services/atomic_clock_service.dart';
 import 'package:avrai_runtime_os/services/expertise/expertise_event_service.dart';
 import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
-import 'package:avrai_runtime_os/services/ai_infrastructure/llm_service.dart';
 import 'package:avrai_runtime_os/ai/personality_learning.dart';
 import 'package:avrai_runtime_os/services/ai_infrastructure/ai_search_suggestions_service.dart';
+import 'package:avrai_runtime_os/services/language/language_runtime_service.dart';
 import 'package:avrai_runtime_os/services/reservation/reservation_service.dart';
 // Phase 6.2 Enhancement: Knot Theory Integration
 import 'package:avrai_knot/services/knot/personality_knot_service.dart';
@@ -99,7 +99,8 @@ class ReservationRecommendationService {
   final ExpertiseEventService? _eventService;
   // ignore: unused_field - Reserved for future agentId resolution
   final AgentIdService? _agentIdService;
-  final LLMService? _llmService; // Phase 6.2: AI-powered suggestions
+  final LanguageRuntimeService?
+      _languageRuntimeService; // Phase 6.2: language suggestions
   final PersonalityLearning?
       _personalityLearning; // Phase 6.2: User preferences
   final AISearchSuggestionsService?
@@ -108,8 +109,8 @@ class ReservationRecommendationService {
   // Phase 6.2 Enhancement: Knot Theory Integration
   final PersonalityKnotService? _knotService; // Knot generation/retrieval
   // ignore: unused_field - Reserved for future group reservation optimization
-  final KnotEvolutionStringService?
-      _stringService; // Individual user evolution strings
+  final KnotEvolutionStringService? _stringService;
+  // Individual user evolution strings
   // ignore: unused_field - Reserved for future group reservation optimization
   final KnotFabricService? _fabricService; // Group fabric stability
   // ignore: unused_field - Reserved for future group reservation optimization
@@ -124,7 +125,7 @@ class ReservationRecommendationService {
     QuantumEntanglementService? entanglementService,
     ExpertiseEventService? eventService,
     AgentIdService? agentIdService,
-    LLMService? llmService,
+    LanguageRuntimeService? languageRuntimeService,
     PersonalityLearning? personalityLearning,
     AISearchSuggestionsService? aiSearchService,
     ReservationService? reservationService,
@@ -140,7 +141,7 @@ class ReservationRecommendationService {
         _entanglementService = entanglementService,
         _eventService = eventService,
         _agentIdService = agentIdService,
-        _llmService = llmService,
+        _languageRuntimeService = languageRuntimeService,
         _personalityLearning = personalityLearning,
         _aiSearchService = aiSearchService,
         _reservationService = reservationService,
@@ -311,7 +312,7 @@ class ReservationRecommendationService {
   ///   - Community activity (via AISearchSuggestionsService)
   ///
   /// **Integration:**
-  /// - `LLMService` - AI suggestions
+  /// - `LanguageRuntimeService` - language suggestions
   /// - `PersonalityLearning` - User preferences
   /// - `AISearchSuggestionsService` - Suggestion engine
   /// - `ReservationService` - Past reservations
@@ -506,9 +507,9 @@ class ReservationRecommendationService {
     required String userId,
     required int limit,
   }) async {
-    if (_llmService == null) {
+    if (_languageRuntimeService == null) {
       developer.log(
-        'LLMService not available, returning quantum-matched recommendations',
+        'Language runtime not available, returning quantum-matched recommendations',
         name: _logName,
       );
       return recommendations.take(limit).toList();
@@ -519,7 +520,7 @@ class ReservationRecommendationService {
       final prompt = _buildAIPrompt(recommendations, userContext);
 
       // Get AI response
-      final aiResponse = await _llmService.generateWithContext(
+      final aiResponse = await _languageRuntimeService.generateWithContext(
         query: prompt,
         userId: userId,
         temperature: 0.7,

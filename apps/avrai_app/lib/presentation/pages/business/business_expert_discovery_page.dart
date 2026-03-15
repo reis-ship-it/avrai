@@ -4,7 +4,7 @@ import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/presentation/pages/business/business_expert_chat_page.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Business Expert Discovery Page
 ///
@@ -157,7 +157,7 @@ class _BusinessExpertDiscoveryPageState
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Discover Experts',
       backgroundColor: AppColors.grey50,
       appBarBackgroundColor: Colors.transparent,

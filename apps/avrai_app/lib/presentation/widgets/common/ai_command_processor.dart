@@ -1,737 +1,325 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:avrai_runtime_os/services/ai_infrastructure/llm_service.dart'
-    as llm
-    show
-        LLMService,
-        ChatMessage,
-        ChatRole,
-        LLMContext,
-        LLMDispatchPolicy,
-        OfflineException,
-        DataCenterFailureException;
-import 'package:avrai_core/models/personality_profile.dart';
-import 'package:avrai_core/models/user/user_vibe.dart';
-import 'package:avrai_core/models/quantum/connection_metrics.dart';
-import 'package:avrai_runtime_os/ai/personality_learning.dart' as pl;
-import 'package:avrai_runtime_os/ai/vibe_analysis_engine.dart';
-import 'package:avrai_runtime_os/ai2ai/connection_orchestrator.dart';
-import 'package:avrai_runtime_os/ai/action_parser.dart';
-import 'package:avrai_runtime_os/ai/action_executor.dart';
-import 'package:avrai_runtime_os/ai/action_models.dart';
-import 'package:avrai_runtime_os/services/misc/action_history_service.dart';
-import 'package:avrai_runtime_os/services/misc/action_error_handler.dart';
+import 'dart:developer' as developer;
+
 import 'package:avrai/presentation/widgets/common/action_confirmation_dialog.dart';
 import 'package:avrai/presentation/widgets/common/action_error_dialog.dart';
 import 'package:avrai/presentation/widgets/common/action_success_widget.dart';
 import 'package:avrai/presentation/widgets/common/ai_thinking_indicator.dart';
 import 'package:avrai/presentation/widgets/common/streaming_response_widget.dart';
 import 'package:avrai/theme/colors.dart';
-import 'package:get_it/get_it.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:avrai_core/models/boundary/boundary_models.dart';
+import 'package:avrai_core/models/expression/expression_models.dart';
+import 'package:avrai_runtime_os/ai/action_executor.dart';
+import 'package:avrai_runtime_os/ai/action_models.dart';
+import 'package:avrai_runtime_os/ai/action_parser.dart';
+import 'package:avrai_runtime_os/kernel/language/language_kernel_orchestrator_service.dart';
+import 'package:avrai_runtime_os/services/misc/action_error_handler.dart';
+import 'package:avrai_runtime_os/services/misc/action_history_service.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'dart:developer' as developer;
+import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:get_it/get_it.dart';
 
 class AICommandProcessor {
   static const String _logName = 'AICommandProcessor';
 
-  final llm.LLMService? _llmService;
-
-  AICommandProcessor({llm.LLMService? llmService}) : _llmService = llmService;
-
-  /// Process a command using LLM if available, fallback to rule-based
-  /// Automatically handles offline scenarios by checking connectivity first
-  /// Fully integrated with AI/ML systems (personality, vibe, AI2AI)
-  /// Phase 5: Now supports action execution
-  /// Phase 1.3: Enhanced with AI thinking states, streaming responses, and rich success feedback
+  /// Process a command using the language-kernel stack and deterministic action
+  /// execution. Dynamic app-authored text is rendered through the
+  /// `ExpressionKernel`, not through a freeform model response.
   static Future<String> processCommand(
     String command,
     BuildContext context, {
-    llm.LLMContext? userContext,
-    llm.LLMService? llmService,
     String? userId,
     Position? currentLocation,
     bool useStreaming = true,
     bool showThinkingIndicator = true,
     Connectivity? connectivity,
   }) async {
-    // Phase 5: Try to parse and execute actions first
-    // Phase 7 Week 33: Enhanced action intent parsing
-    // Phase 7 Week 35: Show thinking indicator during action parsing
+    final connectivityInstance = connectivity ?? Connectivity();
+    final connectivityResult = await connectivityInstance.checkConnectivity();
+    final isOffline = connectivityResult.contains(ConnectivityResult.none);
+    developer.log(
+      'Processing command surface (${useStreaming ? "streaming_ui" : "single_turn"})',
+      name: _logName,
+    );
+    final humanLanguageTurn = await _processHumanCommand(
+      command: command,
+      userId: userId,
+    );
+
     if (userId != null) {
       OverlayEntry? thinkingOverlay;
       try {
-        // Show thinking indicator during action parsing
-        if (showThinkingIndicator && context.mounted) {
+        if (context.mounted &&
+            showThinkingIndicator &&
+            _canShowOverlay(context)) {
           thinkingOverlay = _showThinkingIndicator(context);
         }
 
-        try {
-          final actionParser =
-              ActionParser(llmService: llmService ?? _tryGetLLMService());
-          final intent = await actionParser.parseAction(
-            command,
-            userId: userId,
-            currentLocation: currentLocation,
+        final actionParser = ActionParser();
+        final intent = await actionParser.parseAction(
+          command,
+          userId: userId,
+          currentLocation: currentLocation,
+        );
+
+        thinkingOverlay?.remove();
+        thinkingOverlay = null;
+
+        if (intent != null) {
+          developer.log(
+            'Action intent detected: ${intent.type} (confidence: ${intent.confidence})',
+            name: _logName,
           );
 
-          // Remove thinking indicator after parsing
+          if (context.mounted &&
+              showThinkingIndicator &&
+              _canShowOverlay(context)) {
+            thinkingOverlay = _showThinkingIndicator(context);
+          }
+
+          final canExecute = await actionParser.canExecute(intent);
           thinkingOverlay?.remove();
           thinkingOverlay = null;
 
-          if (intent != null) {
-            developer.log(
-                'Action intent detected: ${intent.type} (confidence: ${intent.confidence})',
-                name: _logName);
+          if (canExecute) {
+            if (!context.mounted) {
+              return _renderGroundedResponse(
+                command: command,
+                userId: userId,
+                humanLanguageTurn: humanLanguageTurn,
+                spec: _buildActionPreviewSpec(intent),
+              );
+            }
 
-            // Show thinking indicator during action execution check
-            if (showThinkingIndicator && context.mounted) {
+            final confirmed = await _showConfirmationDialog(context, intent);
+            if (!confirmed) {
+              return _renderGroundedResponse(
+                command: command,
+                userId: userId,
+                humanLanguageTurn: humanLanguageTurn,
+                spec: _buildCancelledSpec(intent),
+              );
+            }
+
+            if (context.mounted &&
+                showThinkingIndicator &&
+                _canShowOverlay(context)) {
               thinkingOverlay = _showThinkingIndicator(context);
             }
 
-            // Check if action can be executed
-            final canExecute = await actionParser.canExecute(intent);
-
-            // Remove thinking indicator after check
-            thinkingOverlay?.remove();
-            thinkingOverlay = null;
-
-            if (canExecute) {
-              // Show confirmation dialog before executing
-              if (!context.mounted) return 'Context lost';
-
-              // Generate preview for user feedback
-              final preview = _generateActionPreview(intent);
-              developer.log('Action preview: $preview', name: _logName);
-
-              final confirmed = await _showConfirmationDialog(context, intent);
-              if (!confirmed) {
-                developer.log('Action cancelled by user', name: _logName);
-                return 'Action cancelled';
-              }
-
-              // Show thinking indicator during action execution
-              if (showThinkingIndicator && context.mounted) {
-                thinkingOverlay = _showThinkingIndicator(context);
-              }
-
-              try {
-                // Execute the action with retry support
-                if (!context.mounted) return '';
-                final serviceForAction = llmService ?? _tryGetLLMService();
-                final result = await _executeActionWithUI(
-                  context,
-                  intent,
-                  serviceForAction,
-                  userContext,
-                  command,
+            try {
+              if (!context.mounted) {
+                return _renderGroundedResponse(
+                  command: command,
+                  userId: userId,
+                  humanLanguageTurn: humanLanguageTurn,
+                  spec: _buildActionPreviewSpec(intent),
                 );
-
-                // Remove thinking indicator after execution
-                thinkingOverlay?.remove();
-                return result;
-              } catch (e) {
-                // Remove thinking indicator on error
-                thinkingOverlay?.remove();
-                rethrow;
               }
-            } else {
-              developer.log(
-                  'Action cannot be executed: missing required fields',
-                  name: _logName);
-              return 'I understand you want to ${_generateActionPreview(intent).toLowerCase()}, but I need more information to complete this action.';
+              final result = await _executeActionWithUI(
+                context,
+                intent,
+                command,
+                userId,
+                humanLanguageTurn,
+              );
+              thinkingOverlay?.remove();
+              return result;
+            } catch (e) {
+              thinkingOverlay?.remove();
+              rethrow;
             }
           }
-        } catch (e) {
-          // Remove thinking indicator on error
-          thinkingOverlay?.remove();
-          rethrow;
+
+          return _renderGroundedResponse(
+            command: command,
+            userId: userId,
+            humanLanguageTurn: humanLanguageTurn,
+            spec: _buildNeedsMoreInfoSpec(intent),
+          );
         }
       } catch (e, stackTrace) {
-        // Ensure thinking indicator is removed on any error
         thinkingOverlay?.remove();
         developer.log('Error in action execution: $e', name: _logName);
         developer.log('Stack trace: $stackTrace', name: _logName);
-        // Continue to normal processing if action execution fails
       }
     }
 
-    // Check connectivity first to avoid unnecessary attempts
-    final connectivityInstance = connectivity ?? Connectivity();
-    final connectivityResult = await connectivityInstance.checkConnectivity();
-    // connectivity_plus always returns List<ConnectivityResult>
-    final isOnline = !connectivityResult.contains(ConnectivityResult.none);
-
-    // Try to get LLM service from GetIt if not provided
-    // Note: _llmService instance field is not used in static context
-    // It's kept for future instance-based usage
-    final service = llmService ?? _tryGetLLMService();
-
-    // Use LLM if available and online
-    if (service != null && isOnline) {
-      try {
-        developer.log('Processing command with LLM: $command', name: _logName);
-
-        // Phase 1 Integration: Show thinking indicator if requested
-        OverlayEntry? thinkingOverlay;
-        if (showThinkingIndicator && context.mounted) {
-          thinkingOverlay = _showThinkingIndicator(context);
-        }
-
-        try {
-          // Enhance context with AI/ML system data if userId provided
-          llm.LLMContext? enhancedContext = userContext;
-          if (userId != null) {
-            enhancedContext = await _buildEnhancedContext(
-              userId: userId,
-              baseContext: userContext,
-              currentLocation: currentLocation,
-            );
-          }
-
-          String response = '';
-          final commandMessages = _buildCommandMessages(command);
-
-          if (useStreaming) {
-            final stream = service.chatStream(
-              messages: commandMessages,
-              context: enhancedContext,
-            );
-
-            await for (final chunk in stream) {
-              response = chunk;
-            }
-          } else {
-            response = await service.chat(
-              messages: commandMessages,
-              context: enhancedContext,
-              dispatchPolicy: const llm.LLMDispatchPolicy.standard(),
-            );
-          }
-
-          return response;
-        } finally {
-          // Remove thinking indicator
-          thinkingOverlay?.remove();
-        }
-      } catch (e) {
-        // Handle different failure types gracefully
-        if (e is llm.OfflineException) {
-          developer.log('Device is offline, using rule-based processing',
-              name: _logName);
-        } else if (e is llm.DataCenterFailureException) {
-          developer.log(
-              'AI data center failure, using rule-based processing: $e',
-              name: _logName);
-        } else if (e is TimeoutException) {
-          developer.log('AI request timed out, using rule-based processing: $e',
-              name: _logName);
-        } else {
-          developer.log('LLM processing failed, falling back to rules: $e',
-              name: _logName);
-        }
-        // Fall through to rule-based processing - app continues to function
+    OverlayEntry? thinkingOverlay;
+    try {
+      if (context.mounted &&
+          showThinkingIndicator &&
+          _canShowOverlay(context)) {
+        thinkingOverlay = _showThinkingIndicator(context);
       }
-    } else if (!isOnline) {
-      developer.log('Device is offline, using rule-based processing',
-          name: _logName);
+      return _renderGroundedResponse(
+        command: command,
+        userId: userId,
+        humanLanguageTurn: humanLanguageTurn,
+        spec: _buildRuleBasedSpec(
+          command,
+          isOffline: isOffline,
+          humanLanguageTurn: humanLanguageTurn,
+        ),
+      );
+    } finally {
+      thinkingOverlay?.remove();
     }
-
-    // Fallback to rule-based processing (works offline)
-    return _processRuleBased(command);
   }
 
-  /// Build enhanced LLM context with AI/ML system data
-  static Future<llm.LLMContext> _buildEnhancedContext({
-    required String userId,
-    llm.LLMContext? baseContext,
-    Position? currentLocation,
+  static Future<HumanLanguageKernelTurn?> _processHumanCommand({
+    required String command,
+    required String? userId,
   }) async {
     try {
+      return await _resolveLanguageKernelOrchestrator().processHumanText(
+        actorAgentId: userId ?? 'local_command_surface',
+        rawText: command,
+        consentScopes: userId == null
+            ? const <String>{}
+            : const <String>{'user_runtime_learning'},
+        privacyMode: BoundaryPrivacyMode.localSovereign,
+        shareRequested: false,
+        userId: userId,
+        chatType: 'agent',
+        surface: 'command',
+        channel: 'ai_command_processor',
+      );
+    } catch (e, st) {
       developer.log(
-          'Building enhanced LLM context with AI/ML data for: $userId',
-          name: _logName);
-
-      // Get AI/ML services from DI
-      PersonalityProfile? personality;
-      UserVibe? vibe;
-      List<pl.AI2AILearningInsight>? ai2aiInsights;
-      ConnectionMetrics? connectionMetrics;
-
-      try {
-        // Get personality learning service
-        final personalityLearning = _tryGetPersonalityLearning();
-        if (personalityLearning != null) {
-          personality = await personalityLearning.initializePersonality(userId);
-          developer.log(
-              'Loaded personality: ${personality.archetype}, generation ${personality.evolutionGeneration}',
-              name: _logName);
-        }
-
-        // Get vibe analyzer
-        final vibeAnalyzer = _tryGetVibeAnalyzer();
-        if (vibeAnalyzer != null && personality != null) {
-          vibe = await vibeAnalyzer.compileUserVibe(userId, personality);
-          developer.log('Compiled vibe: ${vibe.getVibeArchetype()}',
-              name: _logName);
-        }
-
-        // Get AI2AI insights (recent learning)
-        try {
-          final ai2aiLearning = _tryGetAI2AILearning();
-          if (ai2aiLearning != null && personality != null) {
-            // Get recent insights from personality learning
-            // Note: This would fetch insights from AI2AI interactions
-            // For now, we'll get insights from PersonalityLearning if available
-            final recentInsights =
-                await _getRecentAI2AIInsights(userId, personality);
-            if (recentInsights.isNotEmpty) {
-              ai2aiInsights = recentInsights;
-              developer.log('Loaded ${recentInsights.length} AI2AI insights',
-                  name: _logName);
-            }
-          }
-        } catch (e) {
-          developer.log('Error fetching AI2AI insights: $e', name: _logName);
-          // Continue without insights
-        }
-
-        // Get connection metrics from orchestrator
-        final orchestrator = _tryGetConnectionOrchestrator();
-        if (orchestrator != null && personality != null) {
-          try {
-            // Get active connections for this user
-            final activeConnections = await orchestrator
-                .discoverNearbyAIPersonalities(userId, personality);
-            if (activeConnections.isNotEmpty) {
-              developer.log(
-                  'Found ${activeConnections.length} active AI2AI connections',
-                  name: _logName);
-              // Note: ConnectionMetrics would come from active connections
-              // For now, we'll leave it null - can be enhanced to fetch actual metrics
-            }
-          } catch (e) {
-            developer.log('Error fetching connection metrics: $e',
-                name: _logName);
-          }
-        }
-      } catch (e) {
-        developer.log('Error fetching AI/ML data, using base context: $e',
-            name: _logName);
-      }
-
-      // Build enhanced context
-      return llm.LLMContext(
-        userId: baseContext?.userId ?? userId,
-        location: baseContext?.location ?? currentLocation,
-        preferences: baseContext?.preferences,
-        recentSpots: baseContext?.recentSpots,
-        // AI/ML Integration
-        personality: personality ?? baseContext?.personality,
-        vibe: vibe ?? baseContext?.vibe,
-        ai2aiInsights: ai2aiInsights ?? baseContext?.ai2aiInsights,
-        connectionMetrics: connectionMetrics ?? baseContext?.connectionMetrics,
+        'Command interpretation failed; using grounded fallback',
+        name: _logName,
+        error: e,
+        stackTrace: st,
       );
-    } catch (e) {
-      developer.log('Error building enhanced context: $e', name: _logName);
-      return baseContext ??
-          llm.LLMContext(userId: userId, location: currentLocation);
-    }
-  }
-
-  /// Try to get PersonalityLearning from DI
-  static pl.PersonalityLearning? _tryGetPersonalityLearning() {
-    try {
-      // PersonalityLearning is not registered in DI, create instance
-      // Using in-memory version for now (no SharedPreferences dependency)
-      return pl.PersonalityLearning();
-    } catch (e) {
       return null;
     }
   }
 
-  /// Try to get AI2AI Learning service from DI
-  static dynamic _tryGetAI2AILearning() {
-    try {
-      // AI2AIChatAnalyzer requires SharedPreferences, so we'll use PersonalityLearning
-      // which can provide insights through its learning history
-      return _tryGetPersonalityLearning();
-    } catch (e) {
-      return null;
+  static LanguageKernelOrchestratorService
+      _resolveLanguageKernelOrchestrator() {
+    final sl = GetIt.instance;
+    if (sl.isRegistered<LanguageKernelOrchestratorService>()) {
+      return sl<LanguageKernelOrchestratorService>();
     }
+    return LanguageKernelOrchestratorService();
   }
 
-  /// Get recent AI2AI insights from personality learning
-  static Future<List<pl.AI2AILearningInsight>> _getRecentAI2AIInsights(
-    String userId,
-    PersonalityProfile personality,
-  ) async {
-    try {
-      final insights = <pl.AI2AILearningInsight>[];
+  static String _renderGroundedResponse({
+    required String command,
+    required String? userId,
+    required HumanLanguageKernelTurn? humanLanguageTurn,
+    required _GroundedCommandResponseSpec spec,
+  }) {
+    final evidenceRefs = <String>[
+      ...spec.evidenceRefs,
+      'command_len:${command.trim().length}',
+      if (humanLanguageTurn != null)
+        'interpretation:${humanLanguageTurn.interpretation.intent.toWireValue()}',
+      if (humanLanguageTurn != null)
+        'boundary:${humanLanguageTurn.boundary.disposition.toWireValue()}',
+    ];
+    final claims = <String>[
+      ...spec.claims,
+      if (humanLanguageTurn != null &&
+          humanLanguageTurn
+              .boundary.sanitizedArtifact.safePreferenceSignals.isNotEmpty)
+        'I can keep your local preference signal around ${humanLanguageTurn.boundary.sanitizedArtifact.safePreferenceSignals.first.value} in mind while staying grounded.',
+    ];
 
-      // Extract insights from personality learning history
-      final learningHistory = personality.learningHistory;
-      if (learningHistory.containsKey('recent_insights')) {
-        final recentInsightsData = learningHistory['recent_insights'] as List?;
-        if (recentInsightsData != null) {
-          for (final insightData in recentInsightsData) {
-            if (insightData is Map) {
-              try {
-                final insight = pl.AI2AILearningInsight(
-                  type: pl.AI2AIInsightType.values.firstWhere(
-                    (t) =>
-                        t.toString().split('.').last ==
-                        (insightData['type'] as String? ?? 'unknown'),
-                    orElse: () => pl.AI2AIInsightType.compatibilityLearning,
-                  ),
-                  dimensionInsights: Map<String, double>.from(
-                      insightData['dimensionInsights'] as Map? ?? {}),
-                  learningQuality:
-                      (insightData['learningQuality'] as num?)?.toDouble() ??
-                          0.5,
-                  timestamp: insightData['timestamp'] != null
-                      ? DateTime.parse(insightData['timestamp'] as String)
-                      : DateTime.now(),
-                );
-                insights.add(insight);
-              } catch (e) {
-                developer.log('Error parsing insight: $e', name: _logName);
-              }
-            }
-          }
-        }
-      }
-
-      return insights;
-    } catch (e) {
-      developer.log('Error getting AI2AI insights: $e', name: _logName);
-      return [];
-    }
-  }
-
-  /// Try to get UserVibeAnalyzer from DI
-  static UserVibeAnalyzer? _tryGetVibeAnalyzer() {
-    try {
-      return GetIt.instance<UserVibeAnalyzer>();
-    } catch (e) {
-      return null;
-    }
-  }
-
-  /// Try to get VibeConnectionOrchestrator from DI
-  static VibeConnectionOrchestrator? _tryGetConnectionOrchestrator() {
-    try {
-      return GetIt.instance<VibeConnectionOrchestrator>();
-    } catch (e) {
-      return null;
-    }
-  }
-
-  /// Show confirmation dialog for action execution
-  /// Phase 7 Week 33: Enhanced with action preview
-  static Future<bool> _showConfirmationDialog(
-      BuildContext context, ActionIntent intent) async {
-    bool confirmed = false;
-
-    // Generate preview text for logging
-    final preview = _generateActionPreview(intent);
-    developer.log('Showing confirmation for action: $preview', name: _logName);
-
-    await showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => ActionConfirmationDialog(
-        intent: intent,
-        showConfidence: intent.confidence < 0.8, // Show confidence if low
-        onConfirm: () {
-          confirmed = true;
-        },
-        onCancel: () {
-          confirmed = false;
-        },
-      ),
+    final rendered = _resolveLanguageKernelOrchestrator().renderGroundedOutput(
+      speechAct: spec.speechAct,
+      audience: ExpressionAudience.userSafe,
+      surfaceShape: ExpressionSurfaceShape.chatTurn,
+      subjectLabel: spec.subjectLabel,
+      allowedClaims: claims.take(4).toList(growable: false),
+      evidenceRefs: evidenceRefs,
+      confidenceBand:
+          humanLanguageTurn?.interpretation.needsClarification ?? false
+              ? 'medium'
+              : 'high',
+      toneProfile: 'grounded_direct',
+      uncertaintyNotice: (humanLanguageTurn
+                  ?.interpretation.needsClarification ??
+              false)
+          ? 'I can stay more grounded if you narrow the action, place type, or timing.'
+          : null,
+      cta: spec.cta,
+      adaptationProfileRef: userId,
     );
-    return confirmed;
+    return rendered.text;
   }
 
-  /// Generate human-readable action preview
-  /// Phase 7 Week 33: Action preview generation
-  static String _generateActionPreview(ActionIntent intent) {
-    if (intent is CreateSpotIntent) {
-      return 'Create spot "${intent.name}" (${intent.category}) at ${intent.latitude.toStringAsFixed(4)}, ${intent.longitude.toStringAsFixed(4)}';
-    } else if (intent is CreateListIntent) {
-      return 'Create list "${intent.title}" (${intent.isPublic ? "public" : "private"})';
-    } else if (intent is AddSpotToListIntent) {
-      final spotName = intent.metadata['spotName'] as String? ?? intent.spotId;
-      final listName = intent.metadata['listName'] as String? ?? intent.listId;
-      return 'Add spot "$spotName" to list "$listName"';
-    } else if (intent is CreateEventIntent) {
-      return 'Create event "${intent.title ?? intent.templateId ?? "event"}"${intent.startTime != null ? " at ${intent.startTime}" : ""}';
-    } else {
-      return 'Execute action: ${intent.type}';
-    }
-  }
-
-  /// Execute action with UI dialogs and history storage
-  /// Phase 7 Week 33: Enhanced error handling and preview
-  static Future<String> _executeActionWithUI(
-    BuildContext context,
-    ActionIntent intent,
-    llm.LLMService? llmService,
-    llm.LLMContext? userContext,
-    String command,
-  ) async {
-    // Log action preview
-    final preview = _generateActionPreview(intent);
-    developer.log('Executing action: $preview', name: _logName);
-
-    final executor = ActionExecutor.fromDI();
-    ActionResult result;
-
-    try {
-      result = await executor.execute(intent);
-    } catch (e, stackTrace) {
-      developer.log('Error executing action: $e', name: _logName);
-      developer.log('Stack trace: $stackTrace', name: _logName);
-      result = ActionResult.failure(
-        error: 'Unexpected error: $e',
-        intent: intent,
-      );
-    }
-
-    if (result.success) {
-      // Store in action history
-      try {
-        // Use dependency injection instead of direct instantiation
-        final historyService = GetIt.instance<ActionHistoryService>();
-        await historyService.addAction(intent: intent, result: result);
-        developer.log('Action stored in history', name: _logName);
-      } catch (e) {
-        developer.log('Failed to save action history: $e', name: _logName);
-        // Don't fail the action if history save fails
-      }
-
-      // Phase 7 Week 35: Show ActionSuccessWidget after successful action
-      if (context.mounted) {
-        final successMsg =
-            result.successMessage ?? 'Action completed successfully';
-        developer.log('Action succeeded: $successMsg', name: _logName);
-
-        // Show success widget
-        await _showActionSuccessWidget(
-          context,
-          result,
-          intent,
-        );
-
-        // Try to get LLM response for more natural language
-        final connectivity = Connectivity();
-        final connectivityResult = await connectivity.checkConnectivity();
-        // connectivity_plus always returns List<ConnectivityResult>
-        final isOnline = !connectivityResult.contains(ConnectivityResult.none);
-
-        final service = llmService ?? _tryGetLLMService();
-        if (service != null && isOnline) {
-          try {
-            // Get a natural language response about the action
-            final llmResponse = await service.chat(
-              messages: _buildActionFollowupMessages(command, successMsg),
-              context: userContext,
-              dispatchPolicy: const llm.LLMDispatchPolicy.standard(),
-            );
-            // Combine action result with LLM response
-            return '$successMsg\n\n$llmResponse';
-          } catch (e) {
-            developer.log('LLM response failed, using success message: $e',
-                name: _logName);
-            // If LLM fails, just return success message
-            return successMsg;
-          }
-        }
-
-        return successMsg;
-      }
-
-      return result.successMessage ?? 'Action completed successfully';
-    } else {
-      // Action failed, show error dialog with retry option
-      // Use ActionErrorHandler for consistent error logging
-      ActionErrorHandler.logError(
-        result.errorMessage,
-        result,
-        intent,
-        context: 'AICommandProcessor._executeActionWithUI',
-      );
-
-      if (!context.mounted) {
-        return result.errorMessage ?? 'Failed to execute action';
-      }
-
-      return await _showErrorDialogWithRetry(
-        context,
-        intent,
-        result,
-        llmService,
-        userContext,
-        command,
-      );
-    }
-  }
-
-  /// Show error dialog with retry option
-  /// Phase 7 Week 33: Enhanced with technical details and better error handling
-  static Future<String> _showErrorDialogWithRetry(
-    BuildContext context,
-    ActionIntent intent,
-    ActionResult result,
-    llm.LLMService? llmService,
-    llm.LLMContext? userContext,
-    String command,
-  ) async {
-    bool retry = false;
-
-    // Get technical error details (original error message)
-    final technicalDetails = result.errorMessage ?? 'Unknown error occurred';
-
-    await showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => ActionErrorDialog(
-        error:
-            technicalDetails, // Will be translated to user-friendly in the dialog
-        intent: intent,
-        technicalDetails:
-            technicalDetails, // Pass technical details for View Details
-        onDismiss: () {},
-        onRetry: () {
-          retry = true;
-        },
-      ),
-    );
-
-    if (retry) {
-      developer.log('Retrying action after error', name: _logName);
-      // Retry the action
-      if (!context.mounted) return '';
-      return await _executeActionWithUI(
-        context,
-        intent,
-        llmService,
-        userContext,
-        command,
-      );
-    }
-
-    // User dismissed, return error message
-    return result.errorMessage ?? 'Failed to execute action';
-  }
-
-  /// Try to get LLM service from GetIt (may not be registered)
-  /// Note: _llmService instance field is not accessible in static context
-  /// It's kept for future instance-based usage when processCommand becomes non-static
-  static llm.LLMService? _tryGetLLMService() {
-    try {
-      return GetIt.instance<llm.LLMService>();
-    } catch (e) {
-      return null;
-    }
-  }
-
-  /// Get LLM service from instance field (for future instance-based usage)
-  /// Currently unused since processCommand is static
-  llm.LLMService? get llmService => _llmService;
-
-  /// Rule-based command processing (fallback)
-  static String _processRuleBased(String command) {
+  static _GroundedCommandResponseSpec _buildRuleBasedSpec(
+    String command, {
+    required bool isOffline,
+    required HumanLanguageKernelTurn? humanLanguageTurn,
+  }) {
     final lowerCommand = command.toLowerCase();
 
-    // Create list commands
     if (lowerCommand.contains('create') && lowerCommand.contains('list')) {
-      return _handleCreateList(command);
+      return _buildCreateListSpec(command);
     }
 
-    // Add spot to list commands
     if (lowerCommand.contains('add') &&
-        (lowerCommand.contains('spot') || lowerCommand.contains('location'))) {
-      return _handleAddSpotToList(command);
+        lowerCommand.contains('to') &&
+        (lowerCommand.contains('spot') ||
+            lowerCommand.contains('location') ||
+            lowerCommand.contains('list'))) {
+      return _buildAddSpotSpec(command);
     }
 
-    // Find/search commands
-    if (lowerCommand.contains('find') ||
-        lowerCommand.contains('search') ||
-        lowerCommand.contains('show me')) {
-      return _handleFindCommand(command);
-    }
-
-    // Event commands
     if (lowerCommand.contains('event') ||
         lowerCommand.contains('weekend') ||
         lowerCommand.contains('upcoming')) {
-      return _handleEventCommand(command);
+      return _buildEventSpec(command, isOffline: isOffline);
     }
 
-    // User discovery commands
     if (lowerCommand.contains('user') || lowerCommand.contains('people')) {
-      return _handleUserCommand(command);
+      return _buildUserDiscoverySpec(command);
     }
 
-    // Discovery/help commands
     if (lowerCommand.contains('help') ||
         lowerCommand.contains('discover') ||
         lowerCommand.contains('new places')) {
-      return _handleDiscoveryCommand(command);
+      return _buildDiscoverySpec(isOffline: isOffline);
     }
 
-    // Trip/planning commands
     if (lowerCommand.contains('trip') ||
         lowerCommand.contains('plan') ||
         lowerCommand.contains('adventure')) {
-      return _handleTripCommand(command);
+      return _buildTripSpec();
     }
 
-    // Trending/popular commands
     if (lowerCommand.contains('trending') || lowerCommand.contains('popular')) {
-      return _handleTrendingCommand(command);
+      return _buildTrendingSpec(isOffline: isOffline);
     }
 
-    // Default response
-    return _handleDefaultCommand(command);
+    if (lowerCommand.contains('find') ||
+        lowerCommand.contains('search') ||
+        lowerCommand.contains('show me')) {
+      return _buildFindSpec(command, isOffline: isOffline);
+    }
+
+    if (humanLanguageTurn?.interpretation.needsClarification ?? false) {
+      return const _GroundedCommandResponseSpec(
+        speechAct: ExpressionSpeechAct.clarify,
+        subjectLabel: 'your command',
+        claims: <String>[
+          'Your command is still broad enough that I should not pretend I know the exact next action.',
+          'I can help once you narrow the place type, list name, timing, or action you want.',
+        ],
+        cta:
+            'Try something like "create a coffee list", "find quiet cafes", or "show weekend events".',
+      );
+    }
+
+    return _buildDefaultSpec();
   }
 
-  static List<llm.ChatMessage> _buildCommandMessages(String command) {
-    return [
-      llm.ChatMessage(
-        role: llm.ChatRole.system,
-        content: 'You are AVRAI\'s action assistant. Help with explicit app '
-            'commands, task clarification, and action-oriented responses. '
-            'Prefer concrete next steps over open-ended conversation. '
-            'Do not behave like the main world-model companion chat.',
-      ),
-      llm.ChatMessage(role: llm.ChatRole.user, content: command),
-    ];
-  }
-
-  static List<llm.ChatMessage> _buildActionFollowupMessages(
-    String originalCommand,
-    String successMessage,
-  ) {
-    return [
-      llm.ChatMessage(
-        role: llm.ChatRole.system,
-        content: 'You are AVRAI\'s action assistant. Explain completed actions '
-            'briefly and clearly without adding unrelated conversational fluff.',
-      ),
-      llm.ChatMessage(
-        role: llm.ChatRole.user,
-        content:
-            'Original command: $originalCommand\nResult: $successMessage\nExplain the result briefly and suggest one reasonable next step if helpful.',
-      ),
-    ];
-  }
-
-  static String _handleCreateList(String command) {
-    // Extract list name from command
-    String listName = '';
+  static _GroundedCommandResponseSpec _buildCreateListSpec(String command) {
+    var listName = 'New List';
     if (command.contains('"')) {
       final start = command.indexOf('"') + 1;
       final end = command.lastIndexOf('"');
@@ -750,18 +338,23 @@ class AICommandProcessor {
       }
     }
 
-    if (listName.isEmpty) {
-      listName = 'New List';
-    }
-
-    return "I'll create a new list called \"$listName\" for you! The list has been created and is ready for you to add spots. You can now say things like \"Add Central Park to my $listName list\" or \"Find coffee shops to add to $listName\".";
+    return _GroundedCommandResponseSpec(
+      speechAct: ExpressionSpeechAct.confirm,
+      subjectLabel: listName,
+      claims: <String>[
+        'I can create a list called "$listName".',
+        'That list can hold spots you want to save or compare later.',
+      ],
+      cta:
+          'Say "add Central Park to my $listName list" or ask me to find places for it.',
+      evidenceRefs: const <String>['command:create_list'],
+    );
   }
 
-  static String _handleAddSpotToList(String command) {
-    String spotName = '';
-    String listName = '';
+  static _GroundedCommandResponseSpec _buildAddSpotSpec(String command) {
+    var spotName = 'this spot';
+    var listName = 'your list';
 
-    // Extract spot name
     if (command.contains('add') && command.contains('to')) {
       final addIndex = command.indexOf('add');
       final toIndex = command.indexOf('to');
@@ -770,7 +363,6 @@ class AICommandProcessor {
       }
     }
 
-    // Extract list name
     if (command.contains('to my') && command.contains('list')) {
       final toMyIndex = command.indexOf('to my');
       final listIndex = command.indexOf('list', toMyIndex);
@@ -779,73 +371,456 @@ class AICommandProcessor {
       }
     }
 
-    if (spotName.isEmpty) spotName = 'this location';
-    if (listName.isEmpty) listName = 'your list';
-
-    return "Perfect! I've added $spotName to your \"$listName\" list. The spot is now saved and you can view it anytime. You can also say \"Show me my $listName list\" to see all the spots you've added.";
+    return _GroundedCommandResponseSpec(
+      speechAct: ExpressionSpeechAct.confirm,
+      subjectLabel: listName,
+      claims: <String>[
+        'I can add $spotName to "$listName".',
+        'Once it is saved, you can open that list to review or share it later.',
+      ],
+      cta:
+          'If you want, tell me another spot to save or ask me to show the list.',
+      evidenceRefs: const <String>['command:add_spot_to_list'],
+    );
   }
 
-  static String _handleFindCommand(String command) {
-    if (command.contains('restaurant') || command.contains('food')) {
-      return "I found some great restaurants for you! Here are some recommendations: Joe's Pizza (casual), The French Laundry (fine dining), and Chelsea Market (food court). Would you like me to add any of these to a list or get more specific recommendations?";
+  static _GroundedCommandResponseSpec _buildFindSpec(
+    String command, {
+    required bool isOffline,
+  }) {
+    final lowerCommand = command.toLowerCase();
+    if (lowerCommand.contains('restaurant') || lowerCommand.contains('food')) {
+      return _GroundedCommandResponseSpec(
+        speechAct: ExpressionSpeechAct.recommend,
+        subjectLabel: 'restaurant options',
+        claims: <String>[
+          'You are asking for restaurant options.',
+          isOffline
+              ? 'While you are offline, I can help narrow the kind of place you want and save the search for later.'
+              : 'I can narrow the recommendations by vibe, price, distance, or neighborhood.',
+        ],
+        cta: 'Tell me casual, date-night, quick, cheap, or a neighborhood.',
+        evidenceRefs: const <String>['command:find_restaurants'],
+      );
     }
 
-    if (command.contains('coffee') || command.contains('cafe')) {
-      return "I found excellent coffee shops nearby! Try Blue Bottle Coffee, Stumptown Coffee Roasters, or Intelligentsia. All have great wifi and atmosphere. Would you like me to create a coffee shop list for you?";
+    if (lowerCommand.contains('coffee') || lowerCommand.contains('cafe')) {
+      return _GroundedCommandResponseSpec(
+        speechAct: ExpressionSpeechAct.recommend,
+        subjectLabel: 'coffee options',
+        claims: <String>[
+          'You are asking for coffee or cafe options.',
+          isOffline
+              ? 'I can help define the kind of cafe you want now, and live lookups can resume when you reconnect.'
+              : 'I can narrow the options by wifi, quietness, distance, or atmosphere.',
+        ],
+        cta: 'Tell me quiet, good wifi, quick stop, or best atmosphere.',
+        evidenceRefs: const <String>['command:find_coffee'],
+      );
     }
 
-    if (command.contains('park') || command.contains('outdoor')) {
-      return "I found beautiful outdoor spots! Central Park is always a classic, Prospect Park has great trails, and Brooklyn Bridge Park offers amazing views. Would you like me to add these to an outdoor spots list?";
+    if (lowerCommand.contains('park') || lowerCommand.contains('outdoor')) {
+      return _GroundedCommandResponseSpec(
+        speechAct: ExpressionSpeechAct.recommend,
+        subjectLabel: 'outdoor options',
+        claims: <String>[
+          'You are asking for outdoor spots.',
+          'I can narrow the options by walking distance, views, trails, or how social you want it to feel.',
+        ],
+        cta: 'Tell me walkable, scenic, social, or quiet.',
+        evidenceRefs: const <String>['command:find_outdoors'],
+      );
     }
 
-    if (command.contains('study') || command.contains('quiet')) {
-      return "I found perfect study spots! Try the New York Public Library, Brooklyn Public Library, or quiet coffee shops like Think Coffee. All have good wifi and quiet atmosphere.";
-    }
-
-    return "I can help you find restaurants, coffee shops, parks, study spots, and more! Just tell me what you're looking for and I'll find the best options for you.";
+    return _GroundedCommandResponseSpec(
+      speechAct: ExpressionSpeechAct.explain,
+      subjectLabel: 'place search',
+      claims: <String>[
+        'I can help with place searches across restaurants, cafes, parks, study spots, and other local categories.',
+        isOffline
+            ? 'While you are offline, I can narrow the search and save the intent for later.'
+            : 'I can narrow the search by vibe, price, distance, timing, or category.',
+      ],
+      cta:
+          'Tell me what kind of place you want and one constraint that matters most.',
+      evidenceRefs: const <String>['command:find_generic'],
+    );
   }
 
-  static String _handleEventCommand(String command) {
-    if (command.contains('weekend')) {
-      return "Here are some great events this weekend: Brooklyn Flea Market (Saturday), Central Park Concert Series (Sunday), and Food Truck Festival (both days). Would you like me to create an events list for you?";
+  static _GroundedCommandResponseSpec _buildEventSpec(
+    String command, {
+    required bool isOffline,
+  }) {
+    final lowerCommand = command.toLowerCase();
+    if (lowerCommand.contains('weekend')) {
+      return _GroundedCommandResponseSpec(
+        speechAct: ExpressionSpeechAct.recommend,
+        subjectLabel: 'weekend events',
+        claims: <String>[
+          'You are asking about weekend events.',
+          isOffline
+              ? 'I can narrow the kind of event you want now, but live event freshness depends on reconnecting.'
+              : 'I can help narrow by music, food, outdoors, social energy, or budget.',
+        ],
+        cta:
+            'Tell me low-key, social, music, food, outdoors, or family-friendly.',
+        evidenceRefs: const <String>['command:weekend_events'],
+      );
     }
 
-    if (command.contains('upcoming')) {
-      return "I found upcoming events: Jazz in the Park (next Friday), Art Walk (next Saturday), and Farmers Market (every Sunday). I can add these to your events list if you'd like!";
+    return _GroundedCommandResponseSpec(
+      speechAct: ExpressionSpeechAct.recommend,
+      subjectLabel: 'events',
+      claims: <String>[
+        'I can help you discover events by timing, category, and energy level.',
+        isOffline
+            ? 'I can hold the event intent locally and refine it now.'
+            : 'I can help narrow the event search before you choose.',
+      ],
+      cta: 'Tell me the day, vibe, or kind of event you want.',
+      evidenceRefs: const <String>['command:events_generic'],
+    );
+  }
+
+  static _GroundedCommandResponseSpec _buildUserDiscoverySpec(String command) {
+    final lowerCommand = command.toLowerCase();
+    return _GroundedCommandResponseSpec(
+      speechAct: ExpressionSpeechAct.explain,
+      subjectLabel: 'people discovery',
+      claims: <String>[
+        lowerCommand.contains('area')
+            ? 'You are asking about people in your area.'
+            : 'You are asking about people with a shared interest.',
+        'I can help narrow the kind of connection you want without exposing more than AVRAI should share.',
+      ],
+      cta:
+          'Tell me the interest, location range, or kind of connection you want.',
+      evidenceRefs: const <String>['command:people_discovery'],
+    );
+  }
+
+  static _GroundedCommandResponseSpec _buildDiscoverySpec({
+    required bool isOffline,
+  }) {
+    return _GroundedCommandResponseSpec(
+      speechAct: ExpressionSpeechAct.recommend,
+      subjectLabel: 'discovery help',
+      claims: <String>[
+        'I can help you discover places, events, and lists that fit what you want right now.',
+        isOffline
+            ? 'While offline, I can still help narrow the discovery path and hold it locally.'
+            : 'The quickest way to get a strong result is to name the vibe, price, or distance you want.',
+      ],
+      cta:
+          'Try "find quiet coffee shops", "show weekend events", or "create a food list".',
+      evidenceRefs: const <String>['command:discovery_help'],
+    );
+  }
+
+  static _GroundedCommandResponseSpec _buildTripSpec() {
+    return const _GroundedCommandResponseSpec(
+      speechAct: ExpressionSpeechAct.explain,
+      subjectLabel: 'trip planning',
+      claims: <String>[
+        'I can help structure a trip around places, timing, and saved lists.',
+        'The most useful next step is to say whether this is a weekend trip, city exploration, or something outdoors.',
+      ],
+      cta:
+          'Tell me the trip type and one thing you want the plan to optimize for.',
+      evidenceRefs: <String>['command:trip_planning'],
+    );
+  }
+
+  static _GroundedCommandResponseSpec _buildTrendingSpec({
+    required bool isOffline,
+  }) {
+    return _GroundedCommandResponseSpec(
+      speechAct: ExpressionSpeechAct.recommend,
+      subjectLabel: 'trending places',
+      claims: <String>[
+        'You are asking for what is trending or popular.',
+        isOffline
+            ? 'Community freshness can lag while offline, but I can still help narrow what kind of popular place you want.'
+            : 'I can narrow trending places by food, nightlife, outdoors, or social energy.',
+      ],
+      cta: 'Tell me the category or vibe you want from the trending results.',
+      evidenceRefs: const <String>['command:trending'],
+    );
+  }
+
+  static _GroundedCommandResponseSpec _buildDefaultSpec() {
+    return const _GroundedCommandResponseSpec(
+      speechAct: ExpressionSpeechAct.explain,
+      subjectLabel: 'command help',
+      claims: <String>[
+        'I can help create lists, save spots, find places, discover events, surface people, and structure trips.',
+        'The clearest commands usually say the action plus one concrete thing you want.',
+      ],
+      cta:
+          'Try "create a coffee list", "find restaurants near me", or "show weekend events".',
+      evidenceRefs: <String>['command:help'],
+    );
+  }
+
+  static _GroundedCommandResponseSpec _buildActionPreviewSpec(
+    ActionIntent intent,
+  ) {
+    final preview = _generateActionPreview(intent);
+    return _GroundedCommandResponseSpec(
+      speechAct: ExpressionSpeechAct.confirm,
+      subjectLabel: intent.type,
+      claims: <String>[
+        'You asked me to $preview.',
+        'I am ready to execute that action once you confirm it.',
+      ],
+      cta: 'Confirm to continue or cancel to stop here.',
+      evidenceRefs: const <String>['action:preview'],
+    );
+  }
+
+  static _GroundedCommandResponseSpec _buildCancelledSpec(ActionIntent intent) {
+    return _GroundedCommandResponseSpec(
+      speechAct: ExpressionSpeechAct.confirm,
+      subjectLabel: intent.type,
+      claims: <String>[
+        'I did not execute ${intent.type}.',
+        'The action stayed local and nothing changed.',
+      ],
+      cta: 'If you want, edit the command and try again.',
+      evidenceRefs: const <String>['action:cancelled'],
+    );
+  }
+
+  static _GroundedCommandResponseSpec _buildNeedsMoreInfoSpec(
+    ActionIntent intent,
+  ) {
+    return _GroundedCommandResponseSpec(
+      speechAct: ExpressionSpeechAct.clarify,
+      subjectLabel: intent.type,
+      claims: <String>[
+        'I understand the action direction, but I do not have enough grounded detail to execute ${intent.type}.',
+        'I should ask for the missing detail instead of guessing.',
+      ],
+      cta:
+          'Add the missing place, list name, location, or timing and try again.',
+      evidenceRefs: const <String>['action:needs_more_info'],
+    );
+  }
+
+  static _GroundedCommandResponseSpec _buildActionSuccessSpec({
+    required ActionIntent intent,
+    required ActionResult result,
+  }) {
+    final successMessage = result.successMessage ?? 'The action completed.';
+    return _GroundedCommandResponseSpec(
+      speechAct: ExpressionSpeechAct.confirm,
+      subjectLabel: intent.type,
+      claims: <String>[
+        successMessage,
+        'The action completed inside AVRAI without needing a freeform reply model.',
+      ],
+      cta: _buildActionSuccessCta(intent),
+      evidenceRefs: const <String>['action:success'],
+    );
+  }
+
+  static _GroundedCommandResponseSpec _buildActionFailureSpec({
+    required ActionIntent intent,
+    required ActionResult result,
+  }) {
+    return _GroundedCommandResponseSpec(
+      speechAct: ExpressionSpeechAct.warn,
+      subjectLabel: intent.type,
+      claims: <String>[
+        result.errorMessage ?? 'The action did not complete.',
+        'I should not pretend the action succeeded when it did not.',
+      ],
+      cta:
+          'Try again with a more specific command or adjust the missing detail.',
+      evidenceRefs: const <String>['action:failure'],
+    );
+  }
+
+  static String? _buildActionSuccessCta(ActionIntent intent) {
+    if (intent is CreateListIntent) {
+      return 'Tell me a spot to add to "${intent.title}" or ask me to find places for it.';
+    }
+    if (intent is CreateSpotIntent) {
+      return 'If you want, ask me to add this spot to a list next.';
+    }
+    if (intent is CreateEventIntent) {
+      return 'If you want, tell me how you want to refine or share the event.';
+    }
+    return 'If you want, tell me the next action to take.';
+  }
+
+  /// Show confirmation dialog for action execution.
+  static Future<bool> _showConfirmationDialog(
+    BuildContext context,
+    ActionIntent intent,
+  ) async {
+    var confirmed = false;
+    final preview = _generateActionPreview(intent);
+    developer.log('Showing confirmation for action: $preview', name: _logName);
+
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => ActionConfirmationDialog(
+        intent: intent,
+        showConfidence: intent.confidence < 0.8,
+        onConfirm: () {
+          confirmed = true;
+        },
+        onCancel: () {
+          confirmed = false;
+        },
+      ),
+    );
+    return confirmed;
+  }
+
+  static String _generateActionPreview(ActionIntent intent) {
+    if (intent is CreateSpotIntent) {
+      return 'create spot "${intent.name}" (${intent.category}) at ${intent.latitude.toStringAsFixed(4)}, ${intent.longitude.toStringAsFixed(4)}';
+    }
+    if (intent is CreateListIntent) {
+      return 'create list "${intent.title}" (${intent.isPublic ? "public" : "private"})';
+    }
+    if (intent is AddSpotToListIntent) {
+      final spotName = intent.metadata['spotName'] as String? ?? intent.spotId;
+      final listName = intent.metadata['listName'] as String? ?? intent.listId;
+      return 'add spot "$spotName" to list "$listName"';
+    }
+    if (intent is CreateEventIntent) {
+      return 'create event "${intent.title ?? intent.templateId ?? "event"}"${intent.startTime != null ? " at ${intent.startTime}" : ""}';
+    }
+    return 'execute action: ${intent.type}';
+  }
+
+  static Future<String> _executeActionWithUI(
+    BuildContext context,
+    ActionIntent intent,
+    String command,
+    String? userId,
+    HumanLanguageKernelTurn? humanLanguageTurn,
+  ) async {
+    final preview = _generateActionPreview(intent);
+    developer.log('Executing action: $preview', name: _logName);
+
+    final executor = ActionExecutor.fromDI();
+    ActionResult result;
+
+    try {
+      result = await executor.execute(intent);
+    } catch (e, stackTrace) {
+      developer.log('Error executing action: $e', name: _logName);
+      developer.log('Stack trace: $stackTrace', name: _logName);
+      result = ActionResult.failure(
+        error: 'Unexpected error: $e',
+        intent: intent,
+      );
     }
 
-    return "I can show you events happening this weekend, upcoming events, or help you discover new activities. What type of events are you interested in?";
-  }
+    if (result.success) {
+      try {
+        final historyService = GetIt.instance<ActionHistoryService>();
+        await historyService.addAction(intent: intent, result: result);
+        developer.log('Action stored in history', name: _logName);
+      } catch (e) {
+        developer.log('Failed to save action history: $e', name: _logName);
+      }
 
-  static String _handleUserCommand(String command) {
-    if (command.contains('hiking')) {
-      return "I found users who love hiking! Sarah (likes mountain trails), Mike (prefers city parks), and Emma (adventure seeker). Would you like to connect with any of them?";
+      if (context.mounted) {
+        await _showActionSuccessWidget(context, result, intent);
+      }
+
+      return _renderGroundedResponse(
+        command: command,
+        userId: userId,
+        humanLanguageTurn: humanLanguageTurn,
+        spec: _buildActionSuccessSpec(intent: intent, result: result),
+      );
     }
 
-    if (command.contains('area')) {
-      return "I found users in your area! There are 15 users within 2 miles who share similar interests. Would you like me to show you their profiles or help you connect?";
+    ActionErrorHandler.logError(
+      result.errorMessage,
+      result,
+      intent,
+      context: 'AICommandProcessor._executeActionWithUI',
+    );
+
+    if (!context.mounted) {
+      return _renderGroundedResponse(
+        command: command,
+        userId: userId,
+        humanLanguageTurn: humanLanguageTurn,
+        spec: _buildActionFailureSpec(intent: intent, result: result),
+      );
     }
 
-    return "I can help you find users with similar interests, users in your area, or help you discover new connections. What type of users are you looking for?";
+    return _showErrorDialogWithRetry(
+      context,
+      intent,
+      result,
+      command,
+      userId,
+      humanLanguageTurn,
+    );
   }
 
-  static String _handleDiscoveryCommand(String command) {
-    return "I'd love to help you discover new places! Based on your preferences, I recommend checking out: Brooklyn Bridge Park (amazing views), Chelsea Market (food paradise), and High Line (unique urban walk). Would you like me to create a discovery list for you?";
+  static Future<String> _showErrorDialogWithRetry(
+    BuildContext context,
+    ActionIntent intent,
+    ActionResult result,
+    String command,
+    String? userId,
+    HumanLanguageKernelTurn? humanLanguageTurn,
+  ) async {
+    var retry = false;
+    final technicalDetails = result.errorMessage ?? 'Unknown error occurred';
+
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => ActionErrorDialog(
+        error: technicalDetails,
+        intent: intent,
+        technicalDetails: technicalDetails,
+        onDismiss: () {},
+        onRetry: () {
+          retry = true;
+        },
+      ),
+    );
+
+    if (retry) {
+      developer.log('Retrying action after error', name: _logName);
+      if (!context.mounted) {
+        return _renderGroundedResponse(
+          command: command,
+          userId: userId,
+          humanLanguageTurn: humanLanguageTurn,
+          spec: _buildActionFailureSpec(intent: intent, result: result),
+        );
+      }
+      return _executeActionWithUI(
+        context,
+        intent,
+        command,
+        userId,
+        humanLanguageTurn,
+      );
+    }
+
+    return _renderGroundedResponse(
+      command: command,
+      userId: userId,
+      humanLanguageTurn: humanLanguageTurn,
+      spec: _buildActionFailureSpec(intent: intent, result: result),
+    );
   }
 
-  static String _handleTripCommand(String command) {
-    return "I can help you plan an amazing trip! I'll create a comprehensive list with transportation, accommodation, activities, and local recommendations. What type of trip are you planning? Weekend getaway, city exploration, or outdoor adventure?";
-  }
-
-  static String _handleTrendingCommand(String command) {
-    return "Here are the trending spots right now: Brooklyn Bridge Park (amazing sunset views), Chelsea Market (foodie paradise), and High Line (unique urban experience). These are getting lots of love from the community!";
-  }
-
-  static String _handleDefaultCommand(String command) {
-    return "I can help you with many things! Try asking me to:\n• Create lists (\"Create a coffee shop list\")\n• Add spots (\"Add Central Park to my list\")\n• Find places (\"Find restaurants near me\")\n• Discover events (\"Show me weekend events\")\n• Find users (\"Find hikers in my area\")\n• Plan trips (\"Help me plan a weekend trip\")";
-  }
-
-  /// Phase 1 Integration: Show thinking indicator overlay
   static OverlayEntry _showThinkingIndicator(BuildContext context) {
     final overlayEntry = OverlayEntry(
       builder: (context) => Container(
@@ -863,7 +838,14 @@ class AICommandProcessor {
     return overlayEntry;
   }
 
-  /// Phase 7 Week 35: Show ActionSuccessWidget after successful action
+  static bool _canShowOverlay(BuildContext context) {
+    try {
+      return context.mounted && Overlay.maybeOf(context) != null;
+    } catch (_) {
+      return false;
+    }
+  }
+
   static Future<void> _showActionSuccessWidget(
     BuildContext context,
     ActionResult result,
@@ -871,11 +853,9 @@ class AICommandProcessor {
   ) async {
     if (!context.mounted) return;
 
-    // Determine if undo is available (for now, only for list/spot creation)
     VoidCallback? onUndo;
     if (intent is CreateListIntent || intent is CreateSpotIntent) {
-      // TODO: Implement undo functionality when action history supports it
-      // For now, we'll leave it null
+      onUndo = null;
     }
 
     await showDialog(
@@ -885,17 +865,18 @@ class AICommandProcessor {
         result: result,
         onUndo: onUndo,
         onViewResult: () {
-          // Navigate to the created item if possible
           if (intent is CreateListIntent) {
-            // TODO: Navigate to list details page
             final listId = result.data['listId'] as String?;
-            developer.log('Navigate to list: ${listId ?? intent.title}',
-                name: _logName);
+            developer.log(
+              'Navigate to list: ${listId ?? intent.title}',
+              name: _logName,
+            );
           } else if (intent is CreateSpotIntent) {
-            // TODO: Navigate to spot details page
             final spotId = result.data['spotId'] as String?;
-            developer.log('Navigate to spot: ${spotId ?? intent.name}',
-                name: _logName);
+            developer.log(
+              'Navigate to spot: ${spotId ?? intent.name}',
+              name: _logName,
+            );
           }
         },
         autoDismiss: false,
@@ -903,7 +884,6 @@ class AICommandProcessor {
     );
   }
 
-  /// Phase 1 Integration: Show streaming response in bottom sheet
   static Future<void> showStreamingResponse(
     BuildContext context,
     Stream<String> textStream, {
@@ -922,7 +902,7 @@ class AICommandProcessor {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'AI Response',
+                  'AVRAI Response',
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 IconButton(
@@ -936,9 +916,7 @@ class AICommandProcessor {
               child: StreamingResponseWidget(
                 textStream: textStream,
                 onComplete: onComplete,
-                onStop: () {
-                  // User stopped streaming
-                },
+                onStop: () {},
               ),
             ),
           ],
@@ -946,4 +924,20 @@ class AICommandProcessor {
       ),
     );
   }
+}
+
+class _GroundedCommandResponseSpec {
+  const _GroundedCommandResponseSpec({
+    required this.speechAct,
+    required this.subjectLabel,
+    required this.claims,
+    this.cta,
+    this.evidenceRefs = const <String>[],
+  });
+
+  final ExpressionSpeechAct speechAct;
+  final String subjectLabel;
+  final List<String> claims;
+  final String? cta;
+  final List<String> evidenceRefs;
 }

@@ -4,6 +4,8 @@
 **Status:** Canonical implementation blueprint  
 **Purpose:** Single reference architecture and execution contract for AVRAI runtime systems, including Event Ops, Business Ops, Expert Services, and future kernel/runtime types.
 
+**Companion doctrine/spec:** `docs/plans/architecture/AVRAI_COGNITIVE_OS_DOCTRINE_2026-03-06.md`, `docs/plans/architecture/AVRAI_RECURSIVE_GOVERNANCE_ARCHITECTURE_SPEC_2026-03-06.md`
+
 ---
 
 ## 1. Why This Exists
@@ -27,6 +29,7 @@ It establishes one reusable pattern:
    - **Prong 2:** Runtime Execution (ingestion, orchestration, adapters, action execution)
    - **Prong 3:** Trust Governance (policy, conviction gates, canary, rollback, lineage, compliance)
 4. **Kernel Type / Runtime Type:** A domain instantiation of URK (e.g., `user_runtime`, `event_ops_runtime`, `business_ops_runtime`, `expert_services_runtime`).
+5. **Governance Strata:** recursive oversight layers inside AVRAI: `personal`, `locality`, `world`, `universal`.
 
 ---
 
@@ -49,6 +52,13 @@ It establishes one reusable pattern:
    - **Atomic time:** precise synchronized timestamp + uncertainty metadata.
    - **Semantic time:** human bands (`dawn`, `morning`, `noon`, `afternoon`, `dusk`, `golden_hour`, `night`).
 3. Runtime decisions can use either or both depending on confidence and action criticality.
+
+### 3.4 Recursive governance is required
+
+1. Runtime governance must be layered, not flat.
+2. Lower layers may see more detail; higher layers should normally receive summaries, conviction deltas, anomaly signals, and provenance references.
+3. Human oversight must remain possible at every governance stratum through explicit audited governance pathways.
+4. The reality-model layer governs primarily through abstract truthful convictions, not routine raw omniscience.
 
 ### 3.3 Privacy modes are first-class runtime policy
 
@@ -141,6 +151,8 @@ Mandatory components:
 6. `LineageAudit`
 7. `HumanOverride`
 8. `NoEgressGate` (required for `local_sovereign`)
+9. `GovernanceObservationGateway`
+10. `BreakGlassController`
 
 No prong may bypass Prong 3 for production-affecting actions.
 
@@ -200,9 +212,22 @@ AI2AI must be **always available** but not permanently high-frequency active. Us
 
 ## 9. Temporal Model (Atomic + Semantic)
 
+For doctrine-governed cognitive-OS paths, governance is expected to operate through six kernel surfaces:
+
+1. `who`
+2. `what`
+3. `when`
+4. `where`
+5. `why`
+6. `how`
+
+`when` remains the coherence substrate for the other five.
+
 ## 9.1 Atomic time contract
 
 Use synchronized atomic timestamps as canonical ordering and replay basis.
+
+For cognitive-OS paths governed by the March 6 doctrine/spec, treat this as **quantum atomic time**: the authoritative temporal substrate for coherence, causality, escalation, and truth reconciliation across all governance strata.
 
 Required fields:
 
@@ -230,6 +255,7 @@ Required enum (minimum):
 1. High-criticality sequencing uses atomic time.
 2. User-facing planning and low-confidence scheduling can use semantic bands.
 3. Both can be stored per action for explainability and replay.
+4. Cross-stratum governance escalation and multi-node conflict resolution must fail closed when timing uncertainty exceeds policy thresholds.
 
 ---
 

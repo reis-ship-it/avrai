@@ -1,0 +1,202 @@
+{
+  "packId": "bham-official-arts-museums-extension-2023",
+  "replayYear": 2023,
+  "generatedAtUtc": "2026-03-12T17:59:48.479199Z",
+  "datasets": [
+    {
+      "sourceName": "City of Birmingham Play Pages",
+      "records": [
+        {
+          "record_id": "city-play-alabama-sports-hall-of-fame-2023",
+          "entity_type": "venue",
+          "entity_id": "venue:alabama_sports_hall_of_fame",
+          "title": "Alabama Sports Hall of Fame",
+          "name": "Alabama Sports Hall of Fame",
+          "locality": "bham_uptown",
+          "observed_at": "2023-01-01T00:00:00.000Z",
+          "published_at": "2023-01-01T00:00:00.000Z",
+          "valid_from": "2023-01-01T00:00:00.000Z",
+          "valid_to": "2023-12-31T23:59:59.000Z",
+          "last_verified_at": "2026-03-12T23:55:00Z",
+          "category": "official_cultural_venue_anchor",
+          "historical_admissibility": "year_valid_structural_snapshot",
+          "historical_capture_method": "official_city_arts_museums_page",
+          "historical_validation_note": "Promoted from the official City of Birmingham Arts & Museums page as a stable civic cultural venue valid throughout 2023.",
+          "historical_source_url": "https://www.birminghamal.gov/play/arts-museums",
+          "source_host": "birminghamal.gov",
+          "source_page_title": "Arts & Museums",
+          "source_row_basis": [
+            "city-arts-museums-1"
+          ],
+          "confidence": 0.76,
+          "uncertainty_minutes": 4320
+        },
+        {
+          "record_id": "city-play-arlington-historic-house-2023",
+          "entity_type": "venue",
+          "entity_id": "venue:arlington_historic_house",
+          "title": "Arlington Historic House",
+          "name": "Arlington Historic House",
+          "locality": "bham_citywide",
+          "observed_at": "2023-01-01T00:00:00.000Z",
+          "published_at": "2023-01-01T00:00:00.000Z",
+          "valid_from": "2023-01-01T00:00:00.000Z",
+          "valid_to": "2023-12-31T23:59:59.000Z",
+          "last_verified_at": "2026-03-12T23:55:00Z",
+          "category": "official_cultural_venue_anchor",
+          "historical_admissibility": "year_valid_structural_snapshot",
+          "historical_capture_method": "official_city_arts_museums_page",
+          "historical_validation_note": "Promoted from the official City of Birmingham Arts & Museums page as a stable historical venue anchor valid throughout 2023.",
+          "historical_source_url": "https://www.birminghamal.gov/play/arts-museums",
+          "source_host": "birminghamal.gov",
+          "source_page_title": "Arts & Museums",
+          "source_row_basis": [
+            "city-arts-museums-2"
+          ],
+          "confidence": 0.72,
+          "uncertainty_minutes": 4320
+        },
+        {
+          "record_id": "city-play-barber-museum-2023",
+          "entity_type": "venue",
+          "entity_id": "venue:barber_vintage_motorsports_museum",
+          "title": "Barber Vintage Motorsports Museum",
+          "name": "Barber Vintage Motorsports Museum",
+          "locality": "bham_metro_regional",
+          "observed_at": "2023-01-01T00:00:00.000Z",
+          "published_at": "2023-01-01T00:00:00.000Z",
+          "valid_from": "2023-01-01T00:00:00.000Z",
+          "valid_to": "2023-12-31T23:59:59.000Z",
+          "last_verified_at": "2026-03-12T23:55:00Z",
+          "category": "official_cultural_venue_anchor",
+          "historical_admissibility": "year_valid_structural_snapshot",
+          "historical_capture_method": "official_city_arts_museums_page",
+          "historical_validation_note": "Promoted from the official City of Birmingham Arts & Museums page as a stable regional destination venue valid throughout 2023.",
+          "historical_source_url": "https://www.birminghamal.gov/play/arts-museums",
+          "source_host": "birminghamal.gov",
+          "source_page_title": "Arts & Museums",
+          "source_row_basis": [
+            "city-arts-museums-3"
+          ],
+          "confidence": 0.76,
+          "uncertainty_minutes": 4320
+        },
+        {
+          "record_id": "city-play-negro-southern-league-museum-2023",
+          "entity_type": "venue",
+          "entity_id": "venue:birmingham_negro_southern_league_museum",
+          "title": "Birmingham Negro Southern League Museum",
+          "name": "Birmingham Negro Southern League Museum",
+          "locality": "bham_downtown",
+          "observed_at": "2023-01-01T00:00:00.000Z",
+          "published_at": "2023-01-01T00:00:00.000Z",
+          "valid_from": "2023-01-01T00:00:00.000Z",
+          "valid_to": "2023-12-31T23:59:59.000Z",
+          "last_verified_at": "2026-03-12T23:55:00Z",
+          "category": "official_cultural_venue_anchor",
+          "historical_admissibility": "year_valid_structural_snapshot",
+          "historical_capture_method": "official_city_arts_museums_page",
+          "historical_validation_note": "Promoted from the official City of Birmingham Arts & Museums page as a stable cultural and historical venue valid throughout 2023.",
+          "historical_source_url": "https://www.birminghamal.gov/play/arts-museums",
+          "source_host": "birminghamal.gov",
+          "source_page_title": "Arts & Museums",
+          "source_row_basis": [
+            "city-arts-museums-4"
+          ],
+          "confidence": 0.76,
+          "uncertainty_minutes": 4320
+        },
+        {
+          "record_id": "city-play-birmingham-zoo-2023",
+          "entity_type": "venue",
+          "entity_id": "venue:birmingham_zoo",
+          "title": "Birmingham Zoo",
+          "name": "Birmingham Zoo",
+          "locality": "bham_lane_park",
+          "observed_at": "2023-01-01T00:00:00.000Z",
+          "published_at": "2023-01-01T00:00:00.000Z",
+          "valid_from": "2023-01-01T00:00:00.000Z",
+          "valid_to": "2023-12-31T23:59:59.000Z",
+          "last_verified_at": "2026-03-12T23:55:00Z",
+          "category": "official_cultural_venue_anchor",
+          "historical_admissibility": "year_valid_structural_snapshot",
+          "historical_capture_method": "official_city_arts_museums_page",
+          "historical_validation_note": "Promoted from the official City of Birmingham Arts & Museums page as a stable public destination venue valid throughout 2023.",
+          "historical_source_url": "https://www.birminghamal.gov/play/arts-museums",
+          "source_host": "birminghamal.gov",
+          "source_page_title": "Arts & Museums",
+          "source_row_basis": [
+            "city-arts-museums-5"
+          ],
+          "confidence": 0.76,
+          "uncertainty_minutes": 4320
+        },
+        {
+          "record_id": "city-play-mcwane-science-center-2023",
+          "entity_type": "venue",
+          "entity_id": "venue:mcwane_science_center",
+          "title": "McWane Science Center",
+          "name": "McWane Science Center",
+          "locality": "bham_downtown",
+          "observed_at": "2023-01-01T00:00:00.000Z",
+          "published_at": "2023-01-01T00:00:00.000Z",
+          "valid_from": "2023-01-01T00:00:00.000Z",
+          "valid_to": "2023-12-31T23:59:59.000Z",
+          "last_verified_at": "2026-03-12T23:55:00Z",
+          "category": "official_cultural_venue_anchor",
+          "historical_admissibility": "year_valid_structural_snapshot",
+          "historical_capture_method": "official_city_arts_museums_page",
+          "historical_validation_note": "Promoted from the official City of Birmingham Arts & Museums page as a stable downtown museum/science venue valid throughout 2023.",
+          "historical_source_url": "https://www.birminghamal.gov/play/arts-museums",
+          "source_host": "birminghamal.gov",
+          "source_page_title": "Arts & Museums",
+          "source_row_basis": [
+            "city-arts-museums-6"
+          ],
+          "confidence": 0.76,
+          "uncertainty_minutes": 4320
+        },
+        {
+          "record_id": "city-play-southern-museum-of-flight-2023",
+          "entity_type": "venue",
+          "entity_id": "venue:southern_museum_of_flight",
+          "title": "Southern Museum of Flight",
+          "name": "Southern Museum of Flight",
+          "locality": "bham_metro_regional",
+          "observed_at": "2023-01-01T00:00:00.000Z",
+          "published_at": "2023-01-01T00:00:00.000Z",
+          "valid_from": "2023-01-01T00:00:00.000Z",
+          "valid_to": "2023-12-31T23:59:59.000Z",
+          "last_verified_at": "2026-03-12T23:55:00Z",
+          "category": "official_cultural_venue_anchor",
+          "historical_admissibility": "year_valid_structural_snapshot",
+          "historical_capture_method": "official_city_arts_museums_page",
+          "historical_validation_note": "Promoted from the official City of Birmingham Arts & Museums page as a stable aviation-history venue valid throughout 2023.",
+          "historical_source_url": "https://www.birminghamal.gov/play/arts-museums",
+          "source_host": "birminghamal.gov",
+          "source_page_title": "Arts & Museums",
+          "source_row_basis": [
+            "city-arts-museums-7"
+          ],
+          "confidence": 0.73,
+          "uncertainty_minutes": 4320
+        }
+      ],
+      "metadata": {
+        "status": "historicalized_extension",
+        "historicalPromotionPolicy": "official_city_structural_venues_only",
+        "normalizationTargets": [
+          "venue"
+        ]
+      }
+    }
+  ],
+  "notes": [
+    "This pack extends the official City of Birmingham cultural venue layer with stable arts-and-museums anchors that were valid throughout 2023.",
+    "These are structural venue anchors, not dated event-instance rows."
+  ],
+  "metadata": {
+    "sourceBasis": "official_city_arts_museums_page",
+    "extensionKind": "official_cultural_place_truth"
+  }
+}

@@ -3,6 +3,7 @@ import 'package:avrai_runtime_os/cloud/microservices_manager.dart';
 import 'package:avrai_runtime_os/cloud/realtime_sync_manager.dart';
 import 'package:avrai_runtime_os/cloud/edge_computing_manager.dart';
 import 'package:avrai_runtime_os/deployment/production_manager.dart';
+import 'package:avrai_runtime_os/kernel/os/kernel_incident_recorder.dart';
 
 /// OUR_GUTS.md: "Production-ready deployment with complete system integration"
 /// Comprehensive production readiness manager for SPOTS platform
@@ -13,6 +14,7 @@ class ProductionReadinessManager {
   final RealTimeSyncManager _syncManager;
   final EdgeComputingManager _edgeManager;
   final ProductionDeploymentManager _deploymentManager;
+  final KernelIncidentRecorder? _kernelIncidentRecorder;
 
   // Production readiness thresholds
   static const double _minHealthScore = 0.95;
@@ -31,10 +33,12 @@ class ProductionReadinessManager {
     required RealTimeSyncManager syncManager,
     required EdgeComputingManager edgeManager,
     required ProductionDeploymentManager deploymentManager,
+    KernelIncidentRecorder? kernelIncidentRecorder,
   })  : _microservicesManager = microservicesManager,
         _syncManager = syncManager,
         _edgeManager = edgeManager,
-        _deploymentManager = deploymentManager;
+        _deploymentManager = deploymentManager,
+        _kernelIncidentRecorder = kernelIncidentRecorder;
 
   /// Perform comprehensive production readiness assessment
   /// OUR_GUTS.md: "Complete system validation before production deployment"
@@ -353,6 +357,12 @@ class ProductionReadinessManager {
       developer.log(
           'Automated recovery completed: ${recoveryActions.length} actions, ${recoveryResult.overallSuccess}',
           name: _logName);
+      if (_kernelIncidentRecorder != null) {
+        await _kernelIncidentRecorder.recordProductionRecovery(
+          healthReport: healthReport,
+          recoveryResult: recoveryResult,
+        );
+      }
       return recoveryResult;
     } catch (e) {
       developer.log('Error performing automated recovery: $e', name: _logName);

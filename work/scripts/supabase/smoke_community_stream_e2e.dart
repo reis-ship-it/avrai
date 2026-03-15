@@ -99,10 +99,12 @@ Future<void> main() async {
   // Ensure realtime sockets have the current JWT before subscribing (best-effort).
   final tokenA = clientA.auth.currentSession?.accessToken;
   final tokenB = clientB.auth.currentSession?.accessToken;
-  if (tokenA != null && tokenA.isNotEmpty)
+  if (tokenA != null && tokenA.isNotEmpty) {
     await clientA.realtime.setAuth(tokenA);
-  if (tokenB != null && tokenB.isNotEmpty)
+  }
+  if (tokenB != null && tokenB.isNotEmpty) {
     await clientB.realtime.setAuth(tokenB);
+  }
 
   // ===== Key epoch 1 setup =====
   final keyId1 = uuid.v4(); // UUID string

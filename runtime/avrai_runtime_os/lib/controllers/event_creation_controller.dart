@@ -5,6 +5,7 @@ import 'package:avrai_runtime_os/controllers/base/workflow_controller.dart';
 import 'package:avrai_runtime_os/controllers/base/controller_result.dart';
 import 'package:avrai_runtime_os/controllers/conviction_shadow_gate.dart';
 import 'package:avrai_runtime_os/ai/knowledge_lifecycle/claim_lifecycle_contract.dart';
+import 'package:avrai_core/models/events/event_planning.dart';
 import 'package:avrai_runtime_os/services/expertise/expertise_event_service.dart';
 import 'package:avrai_runtime_os/services/geographic/geo_hierarchy_service.dart';
 import 'package:avrai_runtime_os/services/geographic/geographic_scope_service.dart';
@@ -23,6 +24,8 @@ import 'package:avrai_knot/services/knot/knot_evolution_string_service.dart';
 import 'package:avrai_quantum/services/quantum/location_timing_quantum_state_service.dart';
 import 'package:avrai_quantum/services/quantum/quantum_entanglement_service.dart';
 import 'package:avrai_runtime_os/services/quantum/quantum_matching_ai_learning_service.dart';
+import 'package:avrai_runtime_os/services/events/event_learning_signal_service.dart';
+import 'package:avrai_runtime_os/services/events/event_planning_telemetry_service.dart';
 import 'package:get_it/get_it.dart';
 
 /// Event Creation Controller
@@ -92,6 +95,8 @@ class EventCreationController
   final LocationTimingQuantumStateService? _locationTimingService;
   final QuantumEntanglementService? _quantumEntanglementService;
   final QuantumMatchingAILearningService? _aiLearningService;
+  final EventLearningSignalService? _eventLearningSignalService;
+  final EventPlanningTelemetryService? _eventPlanningTelemetryService;
   final ConvictionGateEvaluator _convictionGateEvaluator;
 
   EventCreationController({
@@ -107,6 +112,8 @@ class EventCreationController
     LocationTimingQuantumStateService? locationTimingService,
     QuantumEntanglementService? quantumEntanglementService,
     QuantumMatchingAILearningService? aiLearningService,
+    EventLearningSignalService? eventLearningSignalService,
+    EventPlanningTelemetryService? eventPlanningTelemetryService,
     ConvictionGateEvaluator? convictionGateEvaluator,
   })  : _eventService = eventService ?? GetIt.instance<ExpertiseEventService>(),
         _geographicScopeService =
@@ -148,6 +155,14 @@ class EventCreationController
         _aiLearningService = aiLearningService ??
             (GetIt.instance.isRegistered<QuantumMatchingAILearningService>()
                 ? GetIt.instance<QuantumMatchingAILearningService>()
+                : null),
+        _eventLearningSignalService = eventLearningSignalService ??
+            (GetIt.instance.isRegistered<EventLearningSignalService>()
+                ? GetIt.instance<EventLearningSignalService>()
+                : null),
+        _eventPlanningTelemetryService = eventPlanningTelemetryService ??
+            (GetIt.instance.isRegistered<EventPlanningTelemetryService>()
+                ? GetIt.instance<EventPlanningTelemetryService>()
                 : null),
         _convictionGateEvaluator =
             convictionGateEvaluator ?? resolveDefaultConvictionGateEvaluator();
@@ -330,6 +345,7 @@ class EventCreationController
           maxAttendees: formData.maxAttendees,
           price: formData.price,
           isPublic: formData.isPublic,
+          planningSnapshot: formData.planningSnapshot,
         );
         _logger.info('✅ Event created successfully: ${createdEvent.id}',
             tag: _logName);
@@ -511,6 +527,44 @@ class EventCreationController
         }
       }
 
+      // 7.8: Learn from the sanitized planning snapshot (mandatory path when provided)
+      if (_eventLearningSignalService != null &&
+          formData.planningSnapshot != null) {
+        try {
+          await _eventLearningSignalService.recordEventCreated(
+            event: createdEvent,
+            snapshot: formData.planningSnapshot!,
+          );
+          _logger.debug(
+            '✅ Event planning learning recorded via air-gapped snapshot',
+            tag: _logName,
+          );
+        } catch (e) {
+          _logger.warn(
+            '⚠️ Event planning learning failed (non-blocking): $e',
+            tag: _logName,
+          );
+        }
+      }
+
+      if (_eventPlanningTelemetryService != null &&
+          createdEvent.planningSnapshot != null) {
+        try {
+          await _eventPlanningTelemetryService.recordEventCreated(
+            event: createdEvent,
+          );
+          _logger.debug(
+            '✅ Event planning telemetry recorded for created event',
+            tag: _logName,
+          );
+        } catch (e) {
+          _logger.warn(
+            '⚠️ Event planning telemetry failed (non-blocking): $e',
+            tag: _logName,
+          );
+        }
+      }
+
       // STEP 8: Return success result
       return EventCreationResult.success(
         event: createdEvent,
@@ -593,6 +647,19 @@ class EventCreationController
     // Price validation (optional, but if provided must be valid)
     if (data.price != null && data.price! < 0) {
       fieldErrors['price'] = 'Price cannot be negative';
+    }
+
+    final planningSnapshot = data.planningSnapshot;
+    if (planningSnapshot != null) {
+      try {
+        EventPlanningBoundaryGuard.ensureSanitizedSnapshot(
+          planningSnapshot,
+          context: 'event_publish_validation',
+        );
+      } on FormatException {
+        fieldErrors['planningSnapshot'] =
+            'Event planning must cross the air gap before publish';
+      }
     }
 
     if (fieldErrors.isNotEmpty || generalErrors.isNotEmpty) {
@@ -688,6 +755,7 @@ class EventFormData {
   final int maxAttendees;
   final double? price;
   final bool isPublic;
+  final EventPlanningSnapshot? planningSnapshot;
   final ClaimLifecycleState claimState;
   final bool isHighImpactAction;
   final bool policyChecksPassed;
@@ -708,6 +776,7 @@ class EventFormData {
     this.maxAttendees = 20,
     this.price,
     this.isPublic = true,
+    this.planningSnapshot,
     this.claimState = ClaimLifecycleState.canonical,
     this.isHighImpactAction = false,
     this.policyChecksPassed = true,

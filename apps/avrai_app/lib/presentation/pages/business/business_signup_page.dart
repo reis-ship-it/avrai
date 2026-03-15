@@ -7,7 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'package:avrai_core/models/user/unified_user.dart';
 import 'package:avrai/presentation/pages/business/business_onboarding_page.dart';
 import 'package:uuid/uuid.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Business Signup Page
 ///
@@ -158,7 +158,7 @@ class _BusinessSignupPageState extends State<BusinessSignupPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Create Business Account',
       backgroundColor: AppColors.grey50,
       appBarBackgroundColor: Colors.transparent,

@@ -804,13 +804,12 @@ In **Settings → Business Setup**:
 #### How do I contact support?
 
 - **In-app**: Settings → Support → Contact Us
-- **Email**: business-support@avrai.app
-- **Help Center**: help.avrai.app
+- **Support**: https://avrai.org/support
 
 #### Where can I learn more?
 
 - **Documentation**: See API and Developer guides
-- **Help Center**: help.avrai.app
+- **Help Center**: https://avrai.org/support
 - **Business Resources**: business.avrai.app
 
 ---
@@ -823,12 +822,9 @@ In **Settings → Business Setup**:
 - Settings → Support → Contact Us
 - Submit support tickets directly from app
 
-**Email Support:**
-- business-support@avrai.app
+**Support Portal:**
+- https://avrai.org/support
 - Response time: 24-48 hours
-
-**Help Center:**
-- help.avrai.app
 - Searchable knowledge base
 - Video tutorials
 

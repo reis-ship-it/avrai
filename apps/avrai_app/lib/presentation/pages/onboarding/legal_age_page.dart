@@ -1,32 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:avrai/theme/colors.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
-
+import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
+import 'package:avrai/presentation/schemas/pages/legal_age_page_schema.dart';
+import 'package:avrai/theme/colors.dart';
+import 'package:avrai/theme/tokens/theme_tokens.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-/// Step 1: Legal & Age verification page.
-///
-/// Collects:
-/// - Birthday (validates 18+)
-/// - Terms of Service acceptance
-/// - Privacy Policy acceptance
+/// Step 1: Legal and age verification page.
 class LegalAgePage extends StatefulWidget {
-  /// Currently selected birthday (if any)
   final DateTime? initialBirthday;
-
-  /// Whether ToS is already accepted
   final bool initialTosAccepted;
-
-  /// Whether Privacy Policy is already accepted
   final bool initialPrivacyAccepted;
-
-  /// Callback when birthday changes
   final ValueChanged<DateTime?> onBirthdayChanged;
-
-  /// Callback when ToS acceptance changes
   final ValueChanged<bool> onTosAcceptedChanged;
-
-  /// Callback when Privacy acceptance changes
   final ValueChanged<bool> onPrivacyAcceptedChanged;
 
   const LegalAgePage({
@@ -107,14 +93,14 @@ class _LegalAgePageState extends State<LegalAgePage> {
   }
 
   Future<void> _openTermsOfService() async {
-    const url = 'https://avrai.com/terms';
+    const url = 'https://avrai.org/terms';
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
     }
   }
 
   Future<void> _openPrivacyPolicy() async {
-    const url = 'https://avrai.com/privacy';
+    const url = 'https://avrai.org/privacy';
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
     }
@@ -122,151 +108,89 @@ class _LegalAgePageState extends State<LegalAgePage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return SingleChildScrollView(
+    return AppSchemaPage(
       padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header
-          Text(
-            'Welcome to avrai',
-            style: theme.textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            "Let's get you set up. First, we need to verify a few things.",
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: AppColors.textSecondary,
-            ),
-          ),
-          const SizedBox(height: 32),
+      schema: buildLegalAgePageSchema(
+        birthdayField: _buildBirthdayField(context),
+        agreements: _buildAgreementSection(context),
+        ageValidationMessage: _selectedBirthday == null || _isAgeValid
+            ? null
+            : _buildAgeError(context),
+      ),
+    );
+  }
 
-          // Birthday Section
-          Text(
-            'Your Birthday',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'You must be 18 or older to use avrai.',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: AppColors.textSecondary,
-            ),
-          ),
-          const SizedBox(height: 16),
+  Widget _buildBirthdayField(BuildContext context) {
+    final spacing = context.spacing;
+    final radius = context.radius;
 
-          // Birthday Picker Button
-          InkWell(
-            onTap: _selectBirthday,
-            borderRadius: BorderRadius.circular(12),
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: _selectedBirthday != null
-                      ? (_isAgeValid ? AppColors.success : AppColors.error)
-                      : AppColors.grey300,
-                  width: 1.5,
-                ),
-                borderRadius: BorderRadius.circular(12),
+    return AppSurface(
+      padding: EdgeInsets.zero,
+      borderColor: _selectedBirthday != null
+          ? (_isAgeValid ? AppColors.success : AppColors.error)
+          : AppColors.borderSubtle,
+      child: InkWell(
+        onTap: _selectBirthday,
+        borderRadius: BorderRadius.circular(radius.md),
+        child: Padding(
+          padding: EdgeInsets.all(spacing.md),
+          child: Row(
+            children: [
+              Icon(
+                Icons.cake_outlined,
+                color: _selectedBirthday != null
+                    ? (_isAgeValid ? AppColors.success : AppColors.error)
+                    : AppColors.textSecondary,
               ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.cake_outlined,
-                    color: _selectedBirthday != null
-                        ? (_isAgeValid ? AppColors.success : AppColors.error)
-                        : AppColors.textSecondary,
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _selectedBirthday != null
-                              ? _formatDate(_selectedBirthday!)
-                              : 'Select your birthday',
-                          style: theme.textTheme.bodyLarge?.copyWith(
+              SizedBox(width: spacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _selectedBirthday != null
+                          ? _formatDate(_selectedBirthday!)
+                          : 'Select your birthday',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                             color: _selectedBirthday != null
                                 ? null
                                 : AppColors.textSecondary,
                           ),
-                        ),
-                        if (_calculatedAge != null) ...[
-                          const SizedBox(height: 4),
-                          Text(
-                            '$_calculatedAge years old',
-                            style: theme.textTheme.bodySmall?.copyWith(
+                    ),
+                    if (_calculatedAge != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        '$_calculatedAge years old',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: _isAgeValid
                                   ? AppColors.success
                                   : AppColors.error,
                             ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  Icon(
-                    Icons.calendar_today,
-                    color: AppColors.textSecondary,
-                  ),
-                ],
+                      ),
+                    ],
+                  ],
+                ),
               ),
-            ),
-          ),
-
-          // Age validation message
-          if (_selectedBirthday != null && !_isAgeValid)
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    color: AppColors.error,
-                    size: 16,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'You must be at least 18 years old to use avrai.',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: AppColors.error,
-                    ),
-                  ),
-                ],
+              const Icon(
+                Icons.calendar_today,
+                color: AppColors.textSecondary,
               ),
-            ),
-
-          const SizedBox(height: 40),
-
-          // Legal Agreements Section
-          Text(
-            'Legal Agreements',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+            ],
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Please review and accept our terms to continue.',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: AppColors.textSecondary,
-            ),
-          ),
-          const SizedBox(height: 16),
+        ),
+      ),
+    );
+  }
 
-          // Terms of Service
+  Widget _buildAgreementSection(BuildContext context) {
+    return AppSurface(
+      padding: EdgeInsets.zero,
+      child: Column(
+        children: [
           _buildAgreementTile(
             context: context,
             title: 'Terms of Service',
-            subtitle: 'Rules for using avrai',
+            subtitle: 'Rules for using AVRAI',
             isAccepted: _tosAccepted,
             onTap: () {
               setState(() {
@@ -276,14 +200,11 @@ class _LegalAgePageState extends State<LegalAgePage> {
             },
             onReadMore: _openTermsOfService,
           ),
-
           const SizedBox(height: 12),
-
-          // Privacy Policy
           _buildAgreementTile(
             context: context,
             title: 'Privacy Policy',
-            subtitle: 'How we protect your data',
+            subtitle: 'How AVRAI handles your data',
             isAccepted: _privacyAccepted,
             onTap: () {
               setState(() {
@@ -293,53 +214,29 @@ class _LegalAgePageState extends State<LegalAgePage> {
             },
             onReadMore: _openPrivacyPolicy,
           ),
-
-          const SizedBox(height: 32),
-
-          // Privacy info card
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppColors.primaryLight.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: AppColors.primaryLight.withValues(alpha: 0.3),
-              ),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(
-                  Icons.shield_outlined,
-                  color: AppColors.primary,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Your Privacy Matters',
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'avrai uses on-device AI to personalize your experience. '
-                        'Your data stays on your device and is never shared without your consent.',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
+    );
+  }
+
+  Widget _buildAgeError(BuildContext context) {
+    return Row(
+      children: [
+        const Icon(
+          Icons.error_outline,
+          color: AppColors.error,
+          size: 16,
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            'You must be at least 18 years old to use AVRAI.',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.error,
+                ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -355,7 +252,7 @@ class _LegalAgePageState extends State<LegalAgePage> {
 
     return AppSurface(
       padding: EdgeInsets.zero,
-      borderColor: isAccepted ? AppColors.success : AppColors.grey300,
+      borderColor: isAccepted ? AppColors.success : AppColors.borderSubtle,
       child: ListTile(
         onTap: onTap,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

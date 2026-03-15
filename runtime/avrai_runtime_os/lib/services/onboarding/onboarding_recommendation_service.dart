@@ -1,4 +1,6 @@
 import 'dart:developer' as developer;
+import 'package:avrai_runtime_os/kernel/os/functional_kernel_models.dart';
+import 'package:avrai_runtime_os/kernel/os/headless_avrai_os_host.dart';
 import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
 import 'package:get_it/get_it.dart';
 
@@ -13,10 +15,16 @@ class OnboardingRecommendationService {
   static const String _logName = 'OnboardingRecommendationService';
 
   final AgentIdService _agentIdService;
+  final HeadlessAvraiOsHost? _headlessOsHost;
 
   OnboardingRecommendationService({
     AgentIdService? agentIdService,
-  }) : _agentIdService = agentIdService ?? GetIt.instance<AgentIdService>();
+    HeadlessAvraiOsHost? headlessOsHost,
+  })  : _agentIdService = agentIdService ?? GetIt.instance<AgentIdService>(),
+        _headlessOsHost = headlessOsHost ??
+            (GetIt.instance.isRegistered<HeadlessAvraiOsHost>()
+                ? GetIt.instance<HeadlessAvraiOsHost>()
+                : null);
 
   /// Get recommended lists to follow based on onboarding
   ///
@@ -39,9 +47,13 @@ class OnboardingRecommendationService {
       );
 
       // Convert userId → agentId for privacy-protected operations
-      // agentId reserved for future privacy-protected matching operations
-      // ignore: unused_local_variable
       final agentId = await _agentIdService.getUserAgentId(userId);
+      final kernelArtifact = await _buildKernelArtifact(
+        agentId: agentId,
+        onboardingData: onboardingData,
+        personalityDimensions: personalityDimensions,
+        recommendationKind: 'list',
+      );
 
       final recommendations = <ListRecommendation>[];
 
@@ -49,6 +61,7 @@ class OnboardingRecommendationService {
       final prefLists = _findListsByPreferences(
         onboardingData,
         personalityDimensions,
+        kernelArtifact: kernelArtifact,
         maxRecommendations: maxRecommendations ~/ 3,
       );
       recommendations.addAll(prefLists);
@@ -58,6 +71,7 @@ class OnboardingRecommendationService {
         final homebaseLists = _findListsByHomebase(
           onboardingData,
           personalityDimensions,
+          kernelArtifact: kernelArtifact,
           maxRecommendations: maxRecommendations ~/ 3,
         );
         recommendations.addAll(homebaseLists);
@@ -67,6 +81,7 @@ class OnboardingRecommendationService {
       if (recommendations.length < maxRecommendations) {
         final archetypeLists = _findListsByArchetype(
           personalityDimensions,
+          kernelArtifact: kernelArtifact,
           maxRecommendations: maxRecommendations - recommendations.length,
         );
         recommendations.addAll(archetypeLists);
@@ -113,10 +128,13 @@ class OnboardingRecommendationService {
         name: _logName,
       );
 
-      // Convert userId → agentId for privacy-protected operations
-      // agentId reserved for future privacy-protected matching operations
-      // ignore: unused_local_variable
       final agentId = await _agentIdService.getUserAgentId(userId);
+      final kernelArtifact = await _buildKernelArtifact(
+        agentId: agentId,
+        onboardingData: onboardingData,
+        personalityDimensions: personalityDimensions,
+        recommendationKind: 'account',
+      );
 
       final recommendations = <AccountRecommendation>[];
 
@@ -124,6 +142,7 @@ class OnboardingRecommendationService {
       final interestAccounts = _findAccountsByInterests(
         onboardingData,
         personalityDimensions,
+        kernelArtifact: kernelArtifact,
         maxRecommendations: maxRecommendations ~/ 2,
       );
       recommendations.addAll(interestAccounts);
@@ -133,6 +152,7 @@ class OnboardingRecommendationService {
         final locationAccounts = _findAccountsByLocation(
           onboardingData,
           personalityDimensions,
+          kernelArtifact: kernelArtifact,
           maxRecommendations: maxRecommendations - recommendations.length,
         );
         recommendations.addAll(locationAccounts);
@@ -200,56 +220,390 @@ class OnboardingRecommendationService {
   List<ListRecommendation> _findListsByPreferences(
     Map<String, dynamic> onboardingData,
     Map<String, double> personalityDimensions, {
+    _OnboardingKernelArtifact? kernelArtifact,
     int maxRecommendations = 5,
   }) {
-    // TODO: Implement actual list search/matching
-    // For now, return empty list
-    // This can be implemented when list data source is available
-    return [];
+    final preferences =
+        Map<String, dynamic>.from(onboardingData['preferences'] as Map? ?? {});
+    if (preferences.isEmpty || maxRecommendations <= 0) {
+      return [];
+    }
+
+    final recommendations = <ListRecommendation>[];
+    preferences.forEach((category, values) {
+      if (recommendations.length >= maxRecommendations) {
+        return;
+      }
+      final interests = (values as List?)
+              ?.map((entry) => entry.toString())
+              .where((entry) => entry.isNotEmpty)
+              .toList(growable: false) ??
+          const <String>[];
+      if (interests.isEmpty) {
+        return;
+      }
+      final categoryScore = _dimensionAverage(
+          personalityDimensions,
+          const <String>[
+            'curation_tendency',
+            'exploration_eagerness',
+          ],
+          fallback: 0.62);
+      recommendations.add(
+        ListRecommendation(
+          listId: 'list_${_slug(category)}',
+          listName: '$category Local Circuit',
+          curatorName: '${interests.first} Collective',
+          description: 'A starter list for ${interests.take(2).join(' and ')}.',
+          compatibilityScore: categoryScore,
+          matchingReasons: <String>[
+            'Built from your $category onboarding preferences',
+            if (kernelArtifact?.localityContainedInWhere == true)
+              'Locality stayed inside the where kernel during bootstrap',
+          ],
+          metadata: _metadataFor(
+            base: <String, dynamic>{
+              'source': 'onboarding_preferences',
+              'category': category,
+              'interests': interests,
+            },
+            kernelArtifact: kernelArtifact,
+          ),
+        ),
+      );
+    });
+    return recommendations.take(maxRecommendations).toList(growable: false);
   }
 
   /// Find lists by homebase
   List<ListRecommendation> _findListsByHomebase(
     Map<String, dynamic> onboardingData,
     Map<String, double> personalityDimensions, {
+    _OnboardingKernelArtifact? kernelArtifact,
     int maxRecommendations = 5,
   }) {
-    // TODO: Implement actual list search by location
-    // For now, return empty list
-    return [];
+    final homebase = onboardingData['homebase']?.toString().trim();
+    if (homebase == null || homebase.isEmpty || maxRecommendations <= 0) {
+      return [];
+    }
+
+    return <ListRecommendation>[
+      ListRecommendation(
+        listId: 'list_homebase_${_slug(homebase)}',
+        listName: '$homebase Starter Radius',
+        curatorName: 'AVRAI Locality Bootstrap',
+        description: 'Places and rituals anchored around your homebase.',
+        compatibilityScore: _dimensionAverage(
+          personalityDimensions,
+          const <String>['location_adventurousness', 'community_orientation'],
+          fallback: 0.66,
+        ),
+        matchingReasons: <String>[
+          'Anchored to your onboarding homebase',
+          if (kernelArtifact?.governanceSummary case final summary?) summary,
+        ],
+        metadata: _metadataFor(
+          base: <String, dynamic>{
+            'source': 'onboarding_homebase',
+            'homebase': homebase,
+          },
+          kernelArtifact: kernelArtifact,
+        ),
+      ),
+    ];
   }
 
   /// Find lists by archetype
   List<ListRecommendation> _findListsByArchetype(
     Map<String, double> personalityDimensions, {
+    _OnboardingKernelArtifact? kernelArtifact,
     int maxRecommendations = 5,
   }) {
-    // TODO: Implement actual list search by archetype
-    // For now, return empty list
-    return [];
+    if (maxRecommendations <= 0 || personalityDimensions.isEmpty) {
+      return [];
+    }
+    final archetype = _inferArchetype(personalityDimensions);
+    return <ListRecommendation>[
+      ListRecommendation(
+        listId: 'list_archetype_${_slug(archetype)}',
+        listName: '$archetype Weekly Trail',
+        curatorName: '$archetype Guides',
+        description: 'A starter trail tuned to your early personality signals.',
+        compatibilityScore: _dimensionAverage(
+          personalityDimensions,
+          personalityDimensions.keys,
+          fallback: 0.58,
+        ),
+        matchingReasons: <String>[
+          'Derived from your early personality dimensions',
+        ],
+        metadata: _metadataFor(
+          base: <String, dynamic>{
+            'source': 'onboarding_archetype',
+            'archetype': archetype,
+          },
+          kernelArtifact: kernelArtifact,
+        ),
+      ),
+    ];
   }
 
   /// Find accounts by interests
   List<AccountRecommendation> _findAccountsByInterests(
     Map<String, dynamic> onboardingData,
     Map<String, double> personalityDimensions, {
+    _OnboardingKernelArtifact? kernelArtifact,
     int maxRecommendations = 5,
   }) {
-    // TODO: Implement actual account search by interests
-    // For now, return empty list
-    return [];
+    final preferences =
+        Map<String, dynamic>.from(onboardingData['preferences'] as Map? ?? {});
+    if (preferences.isEmpty || maxRecommendations <= 0) {
+      return [];
+    }
+
+    final recommendations = <AccountRecommendation>[];
+    preferences.forEach((category, values) {
+      if (recommendations.length >= maxRecommendations) {
+        return;
+      }
+      final interests = (values as List?)
+              ?.map((entry) => entry.toString())
+              .where((entry) => entry.isNotEmpty)
+              .toList(growable: false) ??
+          const <String>[];
+      if (interests.isEmpty) {
+        return;
+      }
+      recommendations.add(
+        AccountRecommendation(
+          accountId: 'account_${_slug(interests.first)}',
+          accountName: '@${_slug(interests.first)}_daily',
+          displayName: '${interests.first} Daily',
+          description:
+              'A recommended voice for ${interests.take(2).join(' and ')}.',
+          compatibilityScore: _dimensionAverage(
+            personalityDimensions,
+            const <String>['community_orientation', 'curation_tendency'],
+            fallback: 0.64,
+          ),
+          matchingReasons: <String>[
+            'Matches your expressed onboarding interests',
+          ],
+          metadata: _metadataFor(
+            base: <String, dynamic>{
+              'source': 'onboarding_interests',
+              'category': category,
+              'interests': interests,
+            },
+            kernelArtifact: kernelArtifact,
+          ),
+        ),
+      );
+    });
+    return recommendations.take(maxRecommendations).toList(growable: false);
   }
 
   /// Find accounts by location
   List<AccountRecommendation> _findAccountsByLocation(
     Map<String, dynamic> onboardingData,
     Map<String, double> personalityDimensions, {
+    _OnboardingKernelArtifact? kernelArtifact,
     int maxRecommendations = 5,
   }) {
-    // TODO: Implement actual account search by location
-    // For now, return empty list
-    return [];
+    final homebase = onboardingData['homebase']?.toString().trim();
+    if (homebase == null || homebase.isEmpty || maxRecommendations <= 0) {
+      return [];
+    }
+
+    return <AccountRecommendation>[
+      AccountRecommendation(
+        accountId: 'account_local_${_slug(homebase)}',
+        accountName: '@${_slug(homebase)}_signal',
+        displayName: '$homebase Signal',
+        description: 'Local pulse and trusted threads near your homebase.',
+        compatibilityScore: _dimensionAverage(
+          personalityDimensions,
+          const <String>['community_orientation', 'location_adventurousness'],
+          fallback: 0.67,
+        ),
+        matchingReasons: <String>[
+          'Anchored to your homebase onboarding signal',
+          if (kernelArtifact?.localityContainedInWhere == true)
+            'Spatial grounding stayed within the where kernel',
+        ],
+        metadata: _metadataFor(
+          base: <String, dynamic>{
+            'source': 'onboarding_location',
+            'homebase': homebase,
+          },
+          kernelArtifact: kernelArtifact,
+        ),
+      ),
+    ];
   }
+
+  Future<_OnboardingKernelArtifact?> _buildKernelArtifact({
+    required String agentId,
+    required Map<String, dynamic> onboardingData,
+    required Map<String, double> personalityDimensions,
+    required String recommendationKind,
+  }) async {
+    final host = _headlessOsHost;
+    if (host == null) {
+      return null;
+    }
+
+    try {
+      await host.start();
+      final now = DateTime.now().toUtc();
+      final envelope = KernelEventEnvelope(
+        eventId:
+            'onboarding_recommendation:$recommendationKind:$agentId:${now.microsecondsSinceEpoch}',
+        agentId: agentId,
+        userId: agentId,
+        occurredAtUtc: now,
+        sourceSystem: 'onboarding_recommendation_service',
+        eventType: 'onboarding_recommendation_requested',
+        actionType: 'recommend_$recommendationKind',
+        entityId: onboardingData['homebase']?.toString() ?? agentId,
+        entityType: recommendationKind,
+        context: <String, dynamic>{
+          'homebase': onboardingData['homebase'],
+          'preferences_count':
+              (onboardingData['preferences'] as Map?)?.length ?? 0,
+        },
+        predictionContext: <String, dynamic>{
+          'recommendation_kind': recommendationKind,
+          'dimension_count': personalityDimensions.length,
+        },
+        runtimeContext: const <String, dynamic>{
+          'workflow_stage': 'onboarding',
+          'execution_path': 'onboarding_recommendation_service',
+        },
+      );
+      final runtimeBundle =
+          await host.resolveRuntimeExecution(envelope: envelope);
+      final whyRequest = KernelWhyRequest(
+        bundle: runtimeBundle.withoutWhy(),
+        goal: 'bootstrap_onboarding_recommendations',
+        predictedOutcome: 'recommendation_candidates',
+        predictedConfidence: 0.72,
+        actualOutcome: 'generated',
+        actualOutcomeScore: 1.0,
+        coreSignals: <WhySignal>[
+          WhySignal(
+            label: 'preferences_present',
+            weight:
+                ((onboardingData['preferences'] as Map?)?.isNotEmpty ?? false)
+                    ? 0.9
+                    : 0.3,
+            source: 'onboarding',
+            durable: true,
+          ),
+          WhySignal(
+            label: 'personality_dimensions',
+            weight: personalityDimensions.isEmpty ? 0.2 : 0.75,
+            source: 'onboarding',
+            durable: true,
+          ),
+        ],
+      );
+      final modelTruth = await host.buildModelTruth(
+          envelope: envelope, whyRequest: whyRequest);
+      final governance = await host.inspectGovernance(
+          envelope: envelope, whyRequest: whyRequest);
+      return _OnboardingKernelArtifact(
+        eventId: envelope.eventId,
+        localityContainedInWhere: modelTruth.localityContainedInWhere,
+        governanceSummary: governance.projections.isEmpty
+            ? null
+            : governance.projections.first.summary,
+        governanceDomains:
+            governance.projections.map((entry) => entry.domain.name).toList(),
+        modelTruthReady: true,
+      );
+    } catch (e, stackTrace) {
+      developer.log(
+        'Headless onboarding recommendation artifact failed: $e',
+        name: _logName,
+        error: e,
+        stackTrace: stackTrace,
+      );
+      return null;
+    }
+  }
+
+  Map<String, dynamic> _metadataFor({
+    required Map<String, dynamic> base,
+    required _OnboardingKernelArtifact? kernelArtifact,
+  }) {
+    return <String, dynamic>{
+      ...base,
+      if (kernelArtifact != null) ...<String, dynamic>{
+        'kernelEventId': kernelArtifact.eventId,
+        'modelTruthReady': kernelArtifact.modelTruthReady,
+        'localityContainedInWhere': kernelArtifact.localityContainedInWhere,
+        if (kernelArtifact.governanceSummary != null)
+          'governanceSummary': kernelArtifact.governanceSummary,
+        'governanceDomains': kernelArtifact.governanceDomains,
+      },
+    };
+  }
+
+  double _dimensionAverage(
+    Map<String, double> dimensions,
+    Iterable<String> keys, {
+    required double fallback,
+  }) {
+    final values = keys
+        .map((key) => dimensions[key])
+        .whereType<double>()
+        .toList(growable: false);
+    if (values.isEmpty) {
+      return fallback;
+    }
+    final sum = values.fold<double>(0.0, (total, value) => total + value);
+    return (sum / values.length).clamp(0.0, 1.0);
+  }
+
+  String _inferArchetype(Map<String, double> dimensions) {
+    final exploration = dimensions['exploration_eagerness'] ?? 0.5;
+    final curation = dimensions['curation_tendency'] ?? 0.5;
+    final community = dimensions['community_orientation'] ?? 0.5;
+    if (exploration >= 0.7) {
+      return 'Explorer';
+    }
+    if (community >= 0.7) {
+      return 'Connector';
+    }
+    if (curation >= 0.65) {
+      return 'Curator';
+    }
+    return 'Waypoint';
+  }
+
+  String _slug(String value) {
+    return value
+        .toLowerCase()
+        .replaceAll(RegExp(r'[^a-z0-9]+'), '_')
+        .replaceAll(RegExp(r'^_+|_+$'), '');
+  }
+}
+
+class _OnboardingKernelArtifact {
+  const _OnboardingKernelArtifact({
+    required this.eventId,
+    required this.modelTruthReady,
+    required this.localityContainedInWhere,
+    required this.governanceDomains,
+    this.governanceSummary,
+  });
+
+  final String eventId;
+  final bool modelTruthReady;
+  final bool localityContainedInWhere;
+  final String? governanceSummary;
+  final List<String> governanceDomains;
 }
 
 /// List Recommendation

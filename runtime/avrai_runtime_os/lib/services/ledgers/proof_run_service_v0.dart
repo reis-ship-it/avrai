@@ -7,11 +7,14 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 
+import 'package:avrai_runtime_os/services/background/background_wake_execution_run_record_store.dart';
 import 'package:avrai_runtime_os/services/ledgers/ledger_domain_v0.dart';
 import 'package:avrai_runtime_os/services/ledgers/ledger_recorder_service_v0.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
+import 'package:avrai_runtime_os/services/passive_collection/passive_dwell_reality_learning_service.dart';
 import 'package:avrai_runtime_os/services/infrastructure/supabase_service.dart';
+import 'package:avrai_runtime_os/services/validation/domain_execution_field_scenario_proof_store.dart';
 
 /// Debug-only: Skeptic-proof “proof run” receipts + export.
 ///
@@ -34,15 +37,24 @@ class ProofRunServiceV0 {
   final SupabaseService _supabase;
   final SharedPreferencesCompat _prefs;
   final Uuid _uuid;
+  final BackgroundWakeExecutionRunRecordStore? _backgroundWakeRunRecordStore;
+  final DomainExecutionFieldScenarioProofStore? _fieldScenarioProofStore;
+  final AmbientSocialRealityLearningService? _ambientSocialLearningService;
 
   ProofRunServiceV0({
     required LedgerRecorderServiceV0 ledger,
     required SupabaseService supabase,
     required SharedPreferencesCompat prefs,
+    BackgroundWakeExecutionRunRecordStore? backgroundWakeRunRecordStore,
+    DomainExecutionFieldScenarioProofStore? fieldScenarioProofStore,
+    AmbientSocialRealityLearningService? ambientSocialLearningService,
     Uuid? uuid,
   })  : _ledger = ledger,
         _supabase = supabase,
         _prefs = prefs,
+        _backgroundWakeRunRecordStore = backgroundWakeRunRecordStore,
+        _fieldScenarioProofStore = fieldScenarioProofStore,
+        _ambientSocialLearningService = ambientSocialLearningService,
         _uuid = uuid ?? const Uuid();
 
   String? getActiveRunId() => _prefs.getString(_prefsKeyActiveRunId);
@@ -220,6 +232,12 @@ class ProofRunServiceV0 {
 
     final jsonl = File(p.join(outDir.path, 'ledger_rows.jsonl'));
     final csv = File(p.join(outDir.path, 'ledger_rows.csv'));
+    final backgroundRunsJson =
+        File(p.join(outDir.path, 'background_wake_runs.json'));
+    final fieldProofsJson =
+        File(p.join(outDir.path, 'field_validation_proofs.json'));
+    final ambientDiagnosticsJson =
+        File(p.join(outDir.path, 'ambient_social_diagnostics.json'));
 
     final sink = jsonl.openWrite();
     try {
@@ -254,6 +272,40 @@ class ProofRunServiceV0 {
       }),
     ];
     await csv.writeAsString(csvLines.join('\n'), flush: true);
+    await backgroundRunsJson.writeAsString(
+      _backgroundWakeRunRecordStore?.exportRecentRuns(limit: 12) ??
+          '{"exported_at_utc":"${DateTime.now().toUtc().toIso8601String()}","runs":[]}',
+      flush: true,
+    );
+    await fieldProofsJson.writeAsString(
+      _fieldScenarioProofStore?.exportRecentProofBundles(limit: 12) ??
+          '{"exported_at_utc":"${DateTime.now().toUtc().toIso8601String()}","proofs":[]}',
+      flush: true,
+    );
+    await ambientDiagnosticsJson.writeAsString(
+      const JsonEncoder.withIndent('  ').convert(
+        (_ambientSocialLearningService
+                    ?.snapshot(capturedAtUtc: DateTime.now().toUtc())
+                    .toJson() ??
+                <String, dynamic>{
+                  'captured_at_utc': DateTime.now().toUtc().toIso8601String(),
+                  'normalized_observation_count': 0,
+                  'candidate_copresence_observation_count': 0,
+                  'confirmed_interaction_promotion_count': 0,
+                  'duplicate_merge_count': 0,
+                  'rejected_interaction_promotion_count': 0,
+                  'crowd_upgrade_count': 0,
+                  'what_ingestion_count': 0,
+                  'locality_vibe_update_count': 0,
+                  'personal_dna_authorized_count': 0,
+                  'personal_dna_applied_count': 0,
+                  'latest_nearby_peer_count': 0,
+                  'latest_confirmed_interactive_peer_count': 0,
+                  'recent_promotion_traces': const <dynamic>[],
+                }),
+      ),
+      flush: true,
+    );
 
     developer.log(
       'Exported proof run receipts for runId=$runId to ${outDir.path}',

@@ -2,7 +2,7 @@
 
 **Purpose:** File-level architecture mapping for keep/update/refactor/delete decisions aligned to `docs/MASTER_PLAN.md`.
 **Coverage:** All tracked non-doc files under runtime/source/tooling roots (`lib/`, `packages/`, `native/`, `scripts/`, `supabase/`, `test/`, `tool/`, `assets/`, platform dirs).
-**Total mapped files:** 3180
+**Total mapped files:** 531
 **Generated artifact:** `docs/plans/architecture/generated/codebase_master_plan_mapping_2026-02-15.csv`
 **Method:** Deterministic path-to-phase rules with explicit confidence values and strict per-file dependency-graph payloads (`dependency_graph`).
 
@@ -10,98 +10,61 @@
 
 | Disposition | File Count |
 |---|---:|
-| keep_update | 2758 |
-| keep_review | 393 |
-| refactor_planned | 29 |
+| keep_review | 378 |
+| keep_update | 153 |
 
 ## Domain Summary
 
 | Domain | File Count |
 |---|---:|
-| testing-quality | 908 |
-| core-services-general | 408 |
-| presentation | 342 |
-| tooling-ops | 340 |
-| package-modules | 207 |
-| core-models | 142 |
-| supabase-infra | 126 |
-| world-model-ai-core | 118 |
-| runtime-os-prong | 111 |
-| platform-runtime | 62 |
-| ai2ai-network | 61 |
-| data-layer | 55 |
-| apps-prong | 47 |
-| assets | 27 |
-| ml-legacy-and-transition | 25 |
-| native-modules | 24 |
-| workflow-controllers | 23 |
-| security-signal-ffi | 21 |
-| domain-layer | 19 |
-| config-and-theme | 15 |
-| app-composition-root | 14 |
-| security-signal | 14 |
-| security-services | 12 |
-| monitoring-observability | 10 |
-| quantum-package | 7 |
+| tooling-ops | 378 |
+| supabase-infra | 147 |
 | data-platform-sql | 6 |
-| cloud-integration | 5 |
-| tooling-dev | 5 |
-| bootstrap-boundary | 3 |
-| bootstrap-registrars | 3 |
-| crypto-core | 3 |
-| legal-domain | 3 |
-| search-retrieval | 3 |
-| core-utils | 2 |
-| deployment-sync | 2 |
-| legacy-advanced-services | 2 |
-| legacy-p2p | 2 |
-| supabase-integration-entrypoints | 2 |
-| places-location-intelligence | 1 |
 
 ## Highest-Volume Buckets (Top 40)
 
 | Bucket | File Count |
 |---|---:|
-| lib/core/services | 421 |
-| test/unit/services | 202 |
-| lib/presentation/widgets | 188 |
-| lib/presentation/pages | 150 |
-| lib/core/models | 142 |
-| lib/core/ai | 118 |
-| lib/runtime/avrai_runtime_os | 111 |
-| test/widget/widgets | 90 |
-| packages/avrai_knot/lib | 84 |
-| packages/avrai_network/lib | 67 |
-| lib/core/ai2ai | 61 |
-| test/unit/models | 57 |
-| test/widget/pages | 55 |
-| test/unit/ai | 54 |
-| lib/apps/admin_app | 40 |
-| packages/avrai_core/lib | 34 |
 | scripts/ecommerce_experiments/results | 28 |
-| android/app | 27 |
-| test/unit/controllers | 27 |
-| lib/data/datasources | 26 |
-| lib/core/ml | 25 |
-| test/core/services | 24 |
-| lib/core/controllers | 23 |
-| test/unit/data | 20 |
-| test/integration/ai | 19 |
-| test/unit/ai2ai | 19 |
-| lib/core/crypto | 17 |
-| test/integration/controllers | 17 |
-| lib/domain/usecases | 15 |
-| native/knot_math/src | 15 |
-| test/unit/domain | 14 |
-| lib/data/repositories | 13 |
-| test/core/crypto | 13 |
-| test/unit/ml | 13 |
-| test/integration/infrastructure | 12 |
-| test/integration/services | 12 |
-| assets/three_js/lib | 10 |
-| lib/core/monitoring | 10 |
-| lib/core/theme | 10 |
-| lib/data/database | 10 |
+| supabase/functions/ecommerce-enrichment | 6 |
+| scripts/personality_data/converters | 5 |
+| scripts/personality_data/processors | 4 |
+| scripts/personality_data/utils | 4 |
+| scripts/autopilot/hitl | 3 |
+| scripts/autopilot/queue | 3 |
+| scripts/ci/baselines | 3 |
+| scripts/personality_data/cli | 3 |
+| scripts/personality_data/loaders | 3 |
+| scripts/personality_data/registry | 3 |
+| scripts/autopilot/templates | 2 |
+| supabase/functions/atomic-timing-orchestrator | 2 |
+| supabase/functions/geo-place-insights-v1 | 2 |
+| supabase/functions/llm-chat-stream | 2 |
+| scripts/EXECUTE_SPOTS_DEVELOPMENT.sh | 1 |
+| scripts/README_ADMIN_BACKEND_TEST.md | 1 |
+| scripts/README_DESIGN_TOKEN_FIX.md | 1 |
+| scripts/README_INTEGRATION_TESTING.md | 1 |
+| scripts/README_TEST_FIX_AUTOMATION.md | 1 |
+| scripts/add_admin_credential.dart | 1 |
+| scripts/add_business_credential.dart | 1 |
+| scripts/ai_list_generator.sh | 1 |
+| scripts/ai_list_optimizer.sh | 1 |
+| scripts/analyze_test_coverage.sh | 1 |
+| scripts/analyze_test_failures.py | 1 |
+| scripts/analyze_test_quality.py | 1 |
+| scripts/analyze_unused_imports.py | 1 |
+| scripts/android_build_fix.sh | 1 |
+| scripts/android_version_manager.sh | 1 |
+| scripts/audit_test_headers.sh | 1 |
+| scripts/autopilot/README.md | 1 |
+| scripts/autopilot/config.json | 1 |
+| scripts/autopilot/milestones | 1 |
+| scripts/autopilot/orchestrator.py | 1 |
+| scripts/autopilot/run.sh | 1 |
+| scripts/autopilot/snapshots | 1 |
+| scripts/autopilot/state | 1 |
+| scripts/background_agent_cleanup_integration.sh | 1 |
+| scripts/background_agent_main.sh | 1 |
 
 ## Delete Candidates
 

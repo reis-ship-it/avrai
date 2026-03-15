@@ -1,7 +1,7 @@
 // MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
+import 'package:avrai_network/network/mesh_packet_models.dart';
 import 'package:avrai_runtime_os/services/transport/mesh/mesh_packet_forwarder.dart';
 import 'package:avrai_runtime_os/services/transport/mesh/mesh_forwarding_context.dart';
-import 'package:avrai_network/avra_network.dart';
 
 class LearningInsightMeshForwarder {
   const LearningInsightMeshForwarder._();
@@ -21,10 +21,13 @@ class LearningInsightMeshForwarder {
     return MeshPacketForwarder.forwardToCandidates(
       candidatePeerIds: candidatePeerIds,
       discovery: context.discovery,
-      protocol: context.protocol,
+      packetCodec: context.packetCodec ??
+          (throw StateError(
+            'GovernedMeshPacketCodec is required for mesh forwarding context.',
+          )),
       senderNodeId: senderNodeId,
       peerNodeIdByDeviceId: peerNodeIdByDeviceId,
-      messageType: MessageType.learningInsight,
+      messageType: MeshPacketType.learningInsight,
       payload: payload,
       geographicScope: geographicScope,
       fireAndForgetSend: fireAndForgetSend,

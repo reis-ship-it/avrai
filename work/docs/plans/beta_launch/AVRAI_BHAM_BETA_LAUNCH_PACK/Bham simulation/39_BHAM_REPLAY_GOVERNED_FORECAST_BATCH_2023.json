@@ -1,0 +1,1197 @@
+{
+  "runContext": {
+    "canonicalReplayYear": 2023,
+    "replayYear": 2023,
+    "branchId": "canonical",
+    "runId": "wave8_bham_truth_year_forecast",
+    "seed": 2023,
+    "divergencePolicy": "none",
+    "branchPurpose": "authoritative_bham_truth_year_governed_forecast_batch",
+    "parentRunId": null,
+    "parentBranchId": null,
+    "metadata": {}
+  },
+  "evaluatedCount": 87,
+  "dispositionCounts": {
+    "admittedWithCaution": 48,
+    "admitted": 39
+  },
+  "entityTypeCounts": {
+    "community": 25,
+    "event": 25,
+    "venue": 25,
+    "movement_flow": 6,
+    "club": 5,
+    "economic_signal": 1
+  },
+  "sourceCounts": {
+    "Birmingham Public Library Archives": 25,
+    "IN Birmingham (CVB Calendar)": 12,
+    "Birmingham Public Library Network": 8,
+    "City of Birmingham Play Pages": 7,
+    "Bhamwiki": 6,
+    "Eventbrite / Meetup": 6,
+    "BJCC / Legacy Arena / Protective Stadium Calendars": 5,
+    "ALDOT Long-Term Construction Projects": 3,
+    "OpenStreetMap POI Data": 3,
+    "UAB Academic, Clinical, and Event Calendars": 3,
+    "ALDOT Traffic Data": 2,
+    "City of Birmingham OpenGov": 2,
+    "Neighborhood Association Calendars": 2,
+    "BEA / U.S. Census Bureau Economic Series": 1,
+    "Birmingham365.org": 1,
+    "Jefferson / Shelby / Regional GIS and Assessors": 1
+  },
+  "items": [
+    {
+      "sequenceNumber": 1,
+      "observationId": "obs:osm-node-4839324598",
+      "subjectId": "club:sammy-s",
+      "entityType": "club",
+      "primarySourceName": "OpenStreetMap POI Data",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.7730000000000001,
+      "actionabilityScore": 0.7774365576923078,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 2,
+      "observationId": "obs:osm-node-6184063657",
+      "subjectId": "club:el-mega-sol",
+      "entityType": "club",
+      "primarySourceName": "OpenStreetMap POI Data",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.7730000000000001,
+      "actionabilityScore": 0.7774365576923078,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 3,
+      "observationId": "obs:osm-node-8990649961",
+      "subjectId": "club:el-sol",
+      "entityType": "club",
+      "primarySourceName": "OpenStreetMap POI Data",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.7730000000000001,
+      "actionabilityScore": 0.7774365576923078,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 4,
+      "observationId": "obs:bham365-citywide-culture-network-seed-2026",
+      "subjectId": "community:birmingham365",
+      "entityType": "community",
+      "primarySourceName": "Birmingham365.org",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "uncertain",
+      "confidence": 0.5975,
+      "actionabilityScore": 0.6809115576923077,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 5,
+      "observationId": "obs:bhamwiki-east-avondale-neighborhood-association-2023",
+      "subjectId": "community:east-avondale-neighborhood-association",
+      "entityType": "community",
+      "primarySourceName": "Bhamwiki",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.669,
+      "actionabilityScore": 0.7202365576923078,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 6,
+      "observationId": "obs:bhamwiki-eastwood-neighborhood-2023",
+      "subjectId": "community:eastwood-neighborhood-association",
+      "entityType": "community",
+      "primarySourceName": "Bhamwiki",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.6559999999999999,
+      "actionabilityScore": 0.7130865576923078,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 7,
+      "observationId": "obs:bhamwiki-glen-iris-neighborhood-association-2023",
+      "subjectId": "community:glen-iris-neighborhood-association",
+      "entityType": "community",
+      "primarySourceName": "Bhamwiki",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.6950000000000001,
+      "actionabilityScore": 0.7345365576923077,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 8,
+      "observationId": "obs:bhamwiki-wylam-neighborhood-association-2023",
+      "subjectId": "community:wylam-neighborhood-association",
+      "entityType": "community",
+      "primarySourceName": "Bhamwiki",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.6819999999999999,
+      "actionabilityScore": 0.7273865576923078,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 9,
+      "observationId": "obs:evtmeet-hist-1",
+      "subjectId": "community:birmingham-net-meetup-birmingham-al-1242-members",
+      "entityType": "community",
+      "primarySourceName": "Eventbrite / Meetup",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "uncertain",
+      "confidence": 0.591,
+      "actionabilityScore": 0.6773365576923077,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 10,
+      "observationId": "obs:evtmeet-hist-2",
+      "subjectId": "community:bham-language-exchange-birmingham-al-941-members",
+      "entityType": "community",
+      "primarySourceName": "Eventbrite / Meetup",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "uncertain",
+      "confidence": 0.591,
+      "actionabilityScore": 0.6773365576923077,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 11,
+      "observationId": "obs:evtmeet-hist-3",
+      "subjectId": "community:birmingham-dining-experience-group-birmingham-al-559-members",
+      "entityType": "community",
+      "primarySourceName": "Eventbrite / Meetup",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "uncertain",
+      "confidence": 0.591,
+      "actionabilityScore": 0.6773365576923077,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 12,
+      "observationId": "obs:evtmeet-hist-4",
+      "subjectId": "community:mocha-girls-read-birmingham-birmingham-al-549-members",
+      "entityType": "community",
+      "primarySourceName": "Eventbrite / Meetup",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "uncertain",
+      "confidence": 0.591,
+      "actionabilityScore": 0.6773365576923077,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 13,
+      "observationId": "obs:evtmeet-hist-5",
+      "subjectId": "community:cloud-security-alliance-alabama-chapter-birmingham-al-479-members",
+      "entityType": "community",
+      "primarySourceName": "Eventbrite / Meetup",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "uncertain",
+      "confidence": 0.591,
+      "actionabilityScore": 0.6773365576923077,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 14,
+      "observationId": "obs:evtmeet-hist-6",
+      "subjectId": "community:gurdjieff-found-of-ala-red-mtn-study-grp-birmingham-al-301-members",
+      "entityType": "community",
+      "primarySourceName": "Eventbrite / Meetup",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "uncertain",
+      "confidence": 0.591,
+      "actionabilityScore": 0.6773365576923077,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 15,
+      "observationId": "obs:inbham-hist-avondale-crestwood-2023",
+      "subjectId": "community:avondale-crestwood",
+      "entityType": "community",
+      "primarySourceName": "IN Birmingham (CVB Calendar)",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.6559999999999999,
+      "actionabilityScore": 0.7130865576923078,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 16,
+      "observationId": "obs:inbham-hist-bessemer-2023",
+      "subjectId": "community:bessemer",
+      "entityType": "community",
+      "primarySourceName": "IN Birmingham (CVB Calendar)",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.6559999999999999,
+      "actionabilityScore": 0.7130865576923078,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 17,
+      "observationId": "obs:inbham-hist-downtown-2023",
+      "subjectId": "community:downtown",
+      "entityType": "community",
+      "primarySourceName": "IN Birmingham (CVB Calendar)",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.6559999999999999,
+      "actionabilityScore": 0.7130865576923078,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 18,
+      "observationId": "obs:inbham-hist-fultondale-2023",
+      "subjectId": "community:fultondale",
+      "entityType": "community",
+      "primarySourceName": "IN Birmingham (CVB Calendar)",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.6365,
+      "actionabilityScore": 0.7023615576923077,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 19,
+      "observationId": "obs:inbham-hist-gardendale-2023",
+      "subjectId": "community:gardendale",
+      "entityType": "community",
+      "primarySourceName": "IN Birmingham (CVB Calendar)",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.6365,
+      "actionabilityScore": 0.7023615576923077,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 20,
+      "observationId": "obs:inbham-hist-homewood-2023",
+      "subjectId": "community:homewood",
+      "entityType": "community",
+      "primarySourceName": "IN Birmingham (CVB Calendar)",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.6559999999999999,
+      "actionabilityScore": 0.7130865576923078,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 21,
+      "observationId": "obs:inbham-hist-hoover-2023",
+      "subjectId": "community:hoover",
+      "entityType": "community",
+      "primarySourceName": "IN Birmingham (CVB Calendar)",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.6559999999999999,
+      "actionabilityScore": 0.7130865576923078,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 22,
+      "observationId": "obs:inbham-hist-irondale-2023",
+      "subjectId": "community:irondale",
+      "entityType": "community",
+      "primarySourceName": "IN Birmingham (CVB Calendar)",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.6559999999999999,
+      "actionabilityScore": 0.7130865576923078,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 23,
+      "observationId": "obs:inbham-hist-leeds-2023",
+      "subjectId": "community:leeds",
+      "entityType": "community",
+      "primarySourceName": "IN Birmingham (CVB Calendar)",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.6365,
+      "actionabilityScore": 0.7023615576923077,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 24,
+      "observationId": "obs:inbham-hist-mountain-brook-2023",
+      "subjectId": "community:mountain-brook",
+      "entityType": "community",
+      "primarySourceName": "IN Birmingham (CVB Calendar)",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.643,
+      "actionabilityScore": 0.7059365576923078,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 25,
+      "observationId": "obs:inbham-hist-trussville-2023",
+      "subjectId": "community:trussville",
+      "entityType": "community",
+      "primarySourceName": "IN Birmingham (CVB Calendar)",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.6365,
+      "actionabilityScore": 0.7023615576923077,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 26,
+      "observationId": "obs:inbham-hist-vestavia-2023",
+      "subjectId": "community:vestavia",
+      "entityType": "community",
+      "primarySourceName": "IN Birmingham (CVB Calendar)",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.6365,
+      "actionabilityScore": 0.7023615576923077,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 27,
+      "observationId": "obs:nhcal-east-avondale-neighborhood-association-2023",
+      "subjectId": "community:east-avondale-neighborhood-association",
+      "entityType": "community",
+      "primarySourceName": "Neighborhood Association Calendars",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.6885000000000001,
+      "actionabilityScore": 0.7309615576923079,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 28,
+      "observationId": "obs:nhcal-glen-iris-neighborhood-association-2023",
+      "subjectId": "community:glen-iris-neighborhood-association",
+      "entityType": "community",
+      "primarySourceName": "Neighborhood Association Calendars",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.708,
+      "actionabilityScore": 0.7416865576923077,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 393,
+      "observationId": "obs:rpcgb-hist-regional-transportation-plan-2023",
+      "subjectId": "movement_flow:regional-transportation-plan",
+      "entityType": "movement_flow",
+      "primarySourceName": "Jefferson / Shelby / Regional GIS and Assessors",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.6365,
+      "actionabilityScore": 0.7023615576923077,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 394,
+      "observationId": "obs:bpl-archive-0",
+      "subjectId": "venue:archives-explore-our-archives-for-rare-documents-photos-and-local-history-treasures",
+      "entityType": "venue",
+      "primarySourceName": "Birmingham Public Library Archives",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.643,
+      "actionabilityScore": 0.7059365576923078,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 395,
+      "observationId": "obs:bpl-archive-1",
+      "subjectId": "venue:genealogy-explore-your-family-history-with-our-genealogy-resources",
+      "entityType": "venue",
+      "primarySourceName": "Birmingham Public Library Archives",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.643,
+      "actionabilityScore": 0.7059365576923078,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 396,
+      "observationId": "obs:bpl-archive-13",
+      "subjectId": "venue:civil-rights-movement-and-race-relations-in-alabama",
+      "entityType": "venue",
+      "primarySourceName": "Birmingham Public Library Archives",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.643,
+      "actionabilityScore": 0.7059365576923078,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 397,
+      "observationId": "obs:bpl-archive-15",
+      "subjectId": "venue:education",
+      "entityType": "venue",
+      "primarySourceName": "Birmingham Public Library Archives",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.643,
+      "actionabilityScore": 0.7059365576923078,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 398,
+      "observationId": "obs:bpl-archive-16",
+      "subjectId": "venue:environmental-history",
+      "entityType": "venue",
+      "primarySourceName": "Birmingham Public Library Archives",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.643,
+      "actionabilityScore": 0.7059365576923078,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 399,
+      "observationId": "obs:bpl-archive-17",
+      "subjectId": "venue:everyday-life",
+      "entityType": "venue",
+      "primarySourceName": "Birmingham Public Library Archives",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.643,
+      "actionabilityScore": 0.7059365576923078,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 400,
+      "observationId": "obs:bpl-archive-18",
+      "subjectId": "venue:industrial-history",
+      "entityType": "venue",
+      "primarySourceName": "Birmingham Public Library Archives",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.643,
+      "actionabilityScore": 0.7059365576923078,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 401,
+      "observationId": "obs:bpl-archive-19",
+      "subjectId": "venue:jefferson-county-alabama-archives",
+      "entityType": "venue",
+      "primarySourceName": "Birmingham Public Library Archives",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.643,
+      "actionabilityScore": 0.7059365576923078,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 402,
+      "observationId": "obs:bpl-archive-20",
+      "subjectId": "venue:jewish-history-and-life",
+      "entityType": "venue",
+      "primarySourceName": "Birmingham Public Library Archives",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.643,
+      "actionabilityScore": 0.7059365576923078,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 403,
+      "observationId": "obs:bpl-archive-21",
+      "subjectId": "venue:labor-movement-in-alabama",
+      "entityType": "venue",
+      "primarySourceName": "Birmingham Public Library Archives",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.643,
+      "actionabilityScore": 0.7059365576923078,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 404,
+      "observationId": "obs:bpl-archive-22",
+      "subjectId": "venue:lgbtq-history-in-alabama",
+      "entityType": "venue",
+      "primarySourceName": "Birmingham Public Library Archives",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.643,
+      "actionabilityScore": 0.7059365576923078,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 405,
+      "observationId": "obs:bpl-archive-23",
+      "subjectId": "venue:literature-and-journalism",
+      "entityType": "venue",
+      "primarySourceName": "Birmingham Public Library Archives",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.643,
+      "actionabilityScore": 0.7059365576923078,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 406,
+      "observationId": "obs:bpl-archive-24",
+      "subjectId": "venue:methodist-church-in-alabama",
+      "entityType": "venue",
+      "primarySourceName": "Birmingham Public Library Archives",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.643,
+      "actionabilityScore": 0.7059365576923078,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 407,
+      "observationId": "obs:bpl-archive-25",
+      "subjectId": "venue:music-drama-and-theater",
+      "entityType": "venue",
+      "primarySourceName": "Birmingham Public Library Archives",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.643,
+      "actionabilityScore": 0.7059365576923078,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 408,
+      "observationId": "obs:bpl-archive-26",
+      "subjectId": "venue:presbyterian-church-in-alabama",
+      "entityType": "venue",
+      "primarySourceName": "Birmingham Public Library Archives",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.643,
+      "actionabilityScore": 0.7059365576923078,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 409,
+      "observationId": "obs:bpl-archive-27",
+      "subjectId": "venue:television-radio-and-the-movies",
+      "entityType": "venue",
+      "primarySourceName": "Birmingham Public Library Archives",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.643,
+      "actionabilityScore": 0.7059365576923078,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 410,
+      "observationId": "obs:bpl-archive-28",
+      "subjectId": "venue:tourism-travel-and-migration",
+      "entityType": "venue",
+      "primarySourceName": "Birmingham Public Library Archives",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.643,
+      "actionabilityScore": 0.7059365576923078,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 411,
+      "observationId": "obs:bpl-archive-29",
+      "subjectId": "venue:white-supremacy",
+      "entityType": "venue",
+      "primarySourceName": "Birmingham Public Library Archives",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.643,
+      "actionabilityScore": 0.7059365576923078,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 412,
+      "observationId": "obs:bpl-archive-3",
+      "subjectId": "venue:archives-manuscripts",
+      "entityType": "venue",
+      "primarySourceName": "Birmingham Public Library Archives",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.643,
+      "actionabilityScore": 0.7059365576923078,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 413,
+      "observationId": "obs:bpl-archive-30",
+      "subjectId": "venue:women-s-history-individuals-and-families",
+      "entityType": "venue",
+      "primarySourceName": "Birmingham Public Library Archives",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.643,
+      "actionabilityScore": 0.7059365576923078,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 414,
+      "observationId": "obs:bpl-archive-31",
+      "subjectId": "venue:women-s-history-organizations-clubs-and-research-collections",
+      "entityType": "venue",
+      "primarySourceName": "Birmingham Public Library Archives",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.643,
+      "actionabilityScore": 0.7059365576923078,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 415,
+      "observationId": "obs:bpl-archive-32",
+      "subjectId": "venue:world-war-i",
+      "entityType": "venue",
+      "primarySourceName": "Birmingham Public Library Archives",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.643,
+      "actionabilityScore": 0.7059365576923078,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 416,
+      "observationId": "obs:bpl-archive-33",
+      "subjectId": "venue:world-war-ii",
+      "entityType": "venue",
+      "primarySourceName": "Birmingham Public Library Archives",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.643,
+      "actionabilityScore": 0.7059365576923078,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 417,
+      "observationId": "obs:bpl-archive-34",
+      "subjectId": "venue:online",
+      "entityType": "venue",
+      "primarySourceName": "Birmingham Public Library Archives",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.643,
+      "actionabilityScore": 0.7059365576923078,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 418,
+      "observationId": "obs:bpl-archive-35",
+      "subjectId": "venue:online",
+      "entityType": "venue",
+      "primarySourceName": "Birmingham Public Library Archives",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.643,
+      "actionabilityScore": 0.7059365576923078,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 869,
+      "observationId": "obs:uab-new-years-holiday-2023",
+      "subjectId": "event:new-year-s-holiday",
+      "entityType": "event",
+      "primarySourceName": "UAB Academic, Clinical, and Event Calendars",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.812,
+      "actionabilityScore": 0.7988865576923078,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 870,
+      "observationId": "obs:uab-academic-spring-2023-term",
+      "subjectId": "event:uab-spring-2023-academic-term",
+      "entityType": "event",
+      "primarySourceName": "UAB Academic, Clinical, and Event Calendars",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.7989999999999999,
+      "actionabilityScore": 0.7917365576923077,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 871,
+      "observationId": "obs:city-i-heart-art-2023",
+      "subjectId": "event:i-heart-art",
+      "entityType": "event",
+      "primarySourceName": "City of Birmingham Play Pages",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.7665,
+      "actionabilityScore": 0.7738615576923078,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 1250,
+      "observationId": "obs:uab-academic-fall-2023-term",
+      "subjectId": "event:uab-fall-2023-academic-term",
+      "entityType": "event",
+      "primarySourceName": "UAB Academic, Clinical, and Event Calendars",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.7989999999999999,
+      "actionabilityScore": 0.7917365576923077,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 1251,
+      "observationId": "obs:bjcc-fantasia-joe-2023",
+      "subjectId": "event:fantasia-and-joe",
+      "entityType": "event",
+      "primarySourceName": "BJCC / Legacy Arena / Protective Stadium Calendars",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.76,
+      "actionabilityScore": 0.7702865576923077,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 1252,
+      "observationId": "obs:aldot-construction-13th-street-south-uab-2023",
+      "subjectId": "movement_flow:13th-street-south-bike-lanes-and-streetscape-improvements",
+      "entityType": "movement_flow",
+      "primarySourceName": "ALDOT Long-Term Construction Projects",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.6495,
+      "actionabilityScore": 0.7095115576923077,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 1253,
+      "observationId": "obs:aldot-construction-19th-street-ensley-2023",
+      "subjectId": "movement_flow:19th-street-ensley-streetscape-and-drainage-improvements",
+      "entityType": "movement_flow",
+      "primarySourceName": "ALDOT Long-Term Construction Projects",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.669,
+      "actionabilityScore": 0.7202365576923078,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 1254,
+      "observationId": "obs:aldot-construction-pratt-highway-black-creek-2023",
+      "subjectId": "movement_flow:pratt-highway-bridge-replacement-at-black-creek-near-sandusky",
+      "entityType": "movement_flow",
+      "primarySourceName": "ALDOT Long-Term Construction Projects",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.6559999999999999,
+      "actionabilityScore": 0.7130865576923078,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 1255,
+      "observationId": "obs:bjcc-elevation-nights-2023",
+      "subjectId": "event:elevation-nights",
+      "entityType": "event",
+      "primarySourceName": "BJCC / Legacy Arena / Protective Stadium Calendars",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.76,
+      "actionabilityScore": 0.7702865576923077,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 1256,
+      "observationId": "obs:city-food-culture-fest-2023",
+      "subjectId": "event:food-culture-fest",
+      "entityType": "event",
+      "primarySourceName": "City of Birmingham Play Pages",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.76,
+      "actionabilityScore": 0.7702865576923077,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 1257,
+      "observationId": "obs:bjcc-mean-girls-2023",
+      "subjectId": "event:mean-girls",
+      "entityType": "event",
+      "primarySourceName": "BJCC / Legacy Arena / Protective Stadium Calendars",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.7730000000000001,
+      "actionabilityScore": 0.7774365576923078,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 1258,
+      "observationId": "obs:city-awaken-2023",
+      "subjectId": "event:awaken-2023-lifting-voices",
+      "entityType": "event",
+      "primarySourceName": "City of Birmingham Play Pages",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.7989999999999999,
+      "actionabilityScore": 0.7917365576923077,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 1259,
+      "observationId": "obs:city-magic-city-classic-2023",
+      "subjectId": "event:magic-city-classic",
+      "entityType": "event",
+      "primarySourceName": "City of Birmingham Play Pages",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.7925,
+      "actionabilityScore": 0.7881615576923078,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 1260,
+      "observationId": "obs:city-black-gospel-celebration-2023",
+      "subjectId": "event:black-gospel-celebration",
+      "entityType": "event",
+      "primarySourceName": "City of Birmingham Play Pages",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.7470000000000001,
+      "actionabilityScore": 0.7631365576923078,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 1261,
+      "observationId": "obs:bjcc-pentatonix-2023",
+      "subjectId": "event:pentatonix",
+      "entityType": "event",
+      "primarySourceName": "BJCC / Legacy Arena / Protective Stadium Calendars",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.76,
+      "actionabilityScore": 0.7702865576923077,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 1262,
+      "observationId": "obs:bjcc-trans-siberian-orchestra-2023",
+      "subjectId": "event:trans-siberian-orchestra",
+      "entityType": "event",
+      "primarySourceName": "BJCC / Legacy Arena / Protective Stadium Calendars",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.76,
+      "actionabilityScore": 0.7702865576923077,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 1263,
+      "observationId": "obs:bhamwiki-iron-city-2023",
+      "subjectId": "club:iron-city",
+      "entityType": "club",
+      "primarySourceName": "Bhamwiki",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.6950000000000001,
+      "actionabilityScore": 0.7345365576923077,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 1264,
+      "observationId": "obs:bhamwiki-saturn-2023",
+      "subjectId": "club:saturn",
+      "entityType": "club",
+      "primarySourceName": "Bhamwiki",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.7210000000000001,
+      "actionabilityScore": 0.7488365576923077,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 1268,
+      "observationId": "obs:bea-2023-01073-CAINC1-line-3",
+      "subjectId": "economic_signal:jefferson-personal-income-per-capita",
+      "entityType": "economic_signal",
+      "primarySourceName": "BEA / U.S. Census Bureau Economic Series",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.76,
+      "actionabilityScore": 0.7702865576923077,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 1269,
+      "observationId": "obs:bham-opengov-civic-locality-and-finance-2023",
+      "subjectId": "event:city-of-birmingham-civic-locality-and-finance-datasets-2023",
+      "entityType": "event",
+      "primarySourceName": "City of Birmingham OpenGov",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.7925,
+      "actionabilityScore": 0.7881615576923078,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 1270,
+      "observationId": "obs:aldot-traffic-bham-core-bottlenecks-2023",
+      "subjectId": "movement_flow:birmingham-core-freight-and-commuter-bottlenecks-2023",
+      "entityType": "movement_flow",
+      "primarySourceName": "ALDOT Traffic Data",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "uncertain",
+      "confidence": 0.552,
+      "actionabilityScore": 0.6558865576923077,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 1271,
+      "observationId": "obs:aldot-traffic-bham-valleydale-acton-pressure-2023",
+      "subjectId": "movement_flow:valleydale-and-acton-growth-pressure-corridor-2023",
+      "entityType": "movement_flow",
+      "primarySourceName": "ALDOT Traffic Data",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "uncertain",
+      "confidence": 0.5715,
+      "actionabilityScore": 0.6666115576923077,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 1273,
+      "observationId": "obs:bham-opengov-public-safety-snapshot-dec-2023",
+      "subjectId": "event:birmingham-public-safety-precinct-snapshot-december-2023",
+      "entityType": "event",
+      "primarySourceName": "City of Birmingham OpenGov",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.76,
+      "actionabilityScore": 0.7702865576923077,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 1274,
+      "observationId": "obs:bpl-avondale-branch-seed-2026",
+      "subjectId": "event:avondale-library",
+      "entityType": "event",
+      "primarySourceName": "Birmingham Public Library Network",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.6299999999999999,
+      "actionabilityScore": 0.6987865576923077,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 1275,
+      "observationId": "obs:bpl-avondale-branch-seed-2026",
+      "subjectId": "event:avondale-library",
+      "entityType": "event",
+      "primarySourceName": "Birmingham Public Library Network",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.6299999999999999,
+      "actionabilityScore": 0.6987865576923077,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 1276,
+      "observationId": "obs:bpl-central-branch-seed-2026",
+      "subjectId": "event:birmingham-public-library-central-branch",
+      "entityType": "event",
+      "primarySourceName": "Birmingham Public Library Network",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.6559999999999999,
+      "actionabilityScore": 0.7130865576923078,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 1277,
+      "observationId": "obs:bpl-central-branch-seed-2026",
+      "subjectId": "event:birmingham-public-library-central-branch",
+      "entityType": "event",
+      "primarySourceName": "Birmingham Public Library Network",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.6559999999999999,
+      "actionabilityScore": 0.7130865576923078,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 1278,
+      "observationId": "obs:bpl-southside-branch-seed-2026",
+      "subjectId": "event:southside-branch-library",
+      "entityType": "event",
+      "primarySourceName": "Birmingham Public Library Network",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.643,
+      "actionabilityScore": 0.7059365576923078,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 1279,
+      "observationId": "obs:bpl-southside-branch-seed-2026",
+      "subjectId": "event:southside-branch-library",
+      "entityType": "event",
+      "primarySourceName": "Birmingham Public Library Network",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.643,
+      "actionabilityScore": 0.7059365576923078,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 1280,
+      "observationId": "obs:bpl-springville-road-branch-seed-2026",
+      "subjectId": "event:springville-road-branch-library",
+      "entityType": "event",
+      "primarySourceName": "Birmingham Public Library Network",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.6234999999999999,
+      "actionabilityScore": 0.6952115576923077,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 1281,
+      "observationId": "obs:bpl-springville-road-branch-seed-2026",
+      "subjectId": "event:springville-road-branch-library",
+      "entityType": "event",
+      "primarySourceName": "Birmingham Public Library Network",
+      "disposition": "admittedWithCaution",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.6234999999999999,
+      "actionabilityScore": 0.6952115576923077,
+      "governanceReasons": [
+        "forecast confidence is below actionable threshold"
+      ]
+    },
+    {
+      "sequenceNumber": 1282,
+      "observationId": "obs:city-play-alabama-jazz-hall-of-fame-seed-2026",
+      "subjectId": "event:alabama-jazz-hall-of-fame",
+      "entityType": "event",
+      "primarySourceName": "City of Birmingham Play Pages",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.6625000000000001,
+      "actionabilityScore": 0.7166615576923078,
+      "governanceReasons": []
+    },
+    {
+      "sequenceNumber": 1283,
+      "observationId": "obs:city-play-alabama-theatre-seed-2026",
+      "subjectId": "event:alabama-theatre",
+      "entityType": "event",
+      "primarySourceName": "City of Birmingham Play Pages",
+      "disposition": "admitted",
+      "predictedOutcome": "moderate-confidence-positive",
+      "confidence": 0.669,
+      "actionabilityScore": 0.7202365576923078,
+      "governanceReasons": []
+    }
+  ],
+  "metadata": {
+    "forecast_kernel_counts": {
+      "native_forecast_kernel": 87
+    },
+    "forecast_kernel_execution_mode_counts": {
+      "native": 87
+    },
+    "selected_forecast_kernel_id": "native_forecast_kernel",
+    "selected_forecast_kernel_execution_mode": "native"
+  }
+}

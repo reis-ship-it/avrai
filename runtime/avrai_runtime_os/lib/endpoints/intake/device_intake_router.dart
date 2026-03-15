@@ -1,5 +1,6 @@
 import 'package:avrai_core/contracts/air_gap_contract.dart';
 import 'package:avrai_core/schemas/semantic_tuple.dart';
+import 'package:avrai_runtime_os/kernel/what/what_runtime_ingestion_service.dart';
 import 'dart:developer' as developer;
 
 class DeviceNotificationPayload extends RawDataPayload {
@@ -22,8 +23,12 @@ class DeviceNotificationPayload extends RawDataPayload {
 /// The Router deliberately does NOT return or keep the raw data.
 class DeviceIntakeRouter {
   final AirGapContract _airGap;
+  final WhatRuntimeIngestionService? _whatIngestion;
 
-  DeviceIntakeRouter(this._airGap);
+  DeviceIntakeRouter(
+    this._airGap, {
+    WhatRuntimeIngestionService? whatIngestion,
+  }) : _whatIngestion = whatIngestion;
 
   /// Simulates catching an OS notification and immediately burning it in the Air Gap.
   Future<void> onNotificationReceived(String osNotificationText) async {
@@ -48,6 +53,22 @@ class DeviceIntakeRouter {
       developer.log(
           'DeviceIntakeRouter: Successfully received ${tuples.length} abstract semantic tuples from Air Gap.',
           name: 'IntakeRouter');
+      if (_whatIngestion != null && tuples.isNotEmpty) {
+        await _whatIngestion.ingestSemanticTuples(
+          source: 'device_intake_router',
+          entityRef: DefaultWhatRuntimeIngestionService.deterministicEntityRef(
+            'device_intake',
+            <String, Object?>{
+              'sourceId': payload.sourceId,
+              'capturedAt': payload.capturedAt.toIso8601String(),
+              'size': osNotificationText.length,
+            },
+          ),
+          tuples: tuples,
+          lineageRef:
+              'device_notification:${payload.sourceId}:${payload.capturedAt.microsecondsSinceEpoch}',
+        );
+      }
 
       // In a full implementation, the Router would merely confirm ingestion to the OS,
       // and the Engine would have stored the tuples.

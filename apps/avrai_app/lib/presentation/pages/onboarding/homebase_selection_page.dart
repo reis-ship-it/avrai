@@ -2,15 +2,17 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:get_it/get_it.dart';
+import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
-import 'package:avrai_runtime_os/kernel/locality/locality_state.dart';
-import 'package:avrai_runtime_os/kernel/locality/locality_syscall_contract.dart';
-import 'package:avrai/theme/colors.dart';
-import 'package:avrai/theme/app_theme.dart';
+import 'package:avrai_runtime_os/kernel/where/where_kernel_models.dart';
+import 'package:avrai_runtime_os/kernel/where/where_kernel_contract.dart';
 import 'package:avrai_runtime_os/services/geographic/geo_hierarchy_service.dart';
 import 'package:avrai_runtime_os/services/geographic/geo_city_pack_service.dart';
-import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart';
+import 'package:avrai/theme/colors.dart';
+import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
+import 'package:avrai/presentation/schemas/pages/homebase_selection_page_schema.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
@@ -18,7 +20,6 @@ import 'package:geocoding/geocoding.dart'
     if (dart.library.html) 'package:avrai/presentation/pages/onboarding/web_geocoding_nominatim.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart';
-import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 class HomebaseSelectionPage extends StatefulWidget {
   final String? selectedHomebase;
@@ -565,16 +566,16 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
       String? localityCode;
       String? cityCode;
       final sl = GetIt.instance;
-      final localityKernel = sl.isRegistered<LocalityKernelContract>()
-          ? sl<LocalityKernelContract>()
+      final whereKernel = sl.isRegistered<WhereKernelContract>()
+          ? sl<WhereKernelContract>()
           : null;
-      if (localityKernel != null) {
-        final resolution = await localityKernel.resolvePoint(
-          LocalityPointQuery(
+      if (whereKernel != null) {
+        final resolution = await whereKernel.resolvePoint(
+          WherePointQuery(
             latitude: center.latitude,
             longitude: center.longitude,
             occurredAtUtc: DateTime.now().toUtc(),
-            audience: LocalityProjectionAudience.admin,
+            audience: WhereProjectionAudience.admin,
             includeGeometry: true,
           ),
         );
@@ -613,8 +614,8 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
             _geoPolygons = [
               Polygon(
                 points: outer,
-                color: AppTheme.primaryColor.withValues(alpha: 0.12),
-                borderColor: AppTheme.primaryColor.withValues(alpha: 0.9),
+                color: AppColors.textPrimary.withValues(alpha: 0.08),
+                borderColor: AppColors.textPrimary.withValues(alpha: 0.5),
                 borderStrokeWidth: 2,
               ),
             ];
@@ -648,287 +649,266 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
 
   @override
   Widget build(BuildContext context) {
+    return AppSchemaPage(
+      schema: buildHomebaseSelectionPageSchema(
+        mapSection: _buildMapSection(),
+      ),
+      padding: const EdgeInsets.all(16),
+    );
+  }
+
+  Widget _buildMapSection() {
     final isFlutterTest = _isWidgetTestBinding;
 
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header
-          Text(
-            'What\'s your local?',
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppTheme.primaryColor,
-                ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Position the marker over your neighborhood. Only the location name will appear on your profile.',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AppColors.grey600,
-                ),
-          ),
-          const SizedBox(height: 24),
-
-          // Map Container
-          Expanded(
-            child: AppSurface(
-              padding: EdgeInsets.zero,
-              radius: 16,
-              borderColor: AppColors.grey300,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Stack(
+    return SizedBox(
+      height: 420,
+      child: AppSurface(
+        padding: EdgeInsets.zero,
+        radius: 16,
+        borderColor: AppColors.borderSubtle,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Stack(
+            children: [
+              // Map
+              if (isFlutterTest)
+                // In `flutter test`, avoid network tile fetches and plugin-driven map behavior.
+                // This keeps widget tests deterministic and prevents HttpClient exceptions.
+                Container(
+                  color: AppColors.grey200,
+                  child: const Center(
+                    child: Icon(
+                      Icons.map,
+                      color: AppColors.grey600,
+                      size: 48,
+                    ),
+                  ),
+                )
+              else
+                FlutterMap(
+                  mapController: _mapController,
+                  options: MapOptions(
+                    initialCenter:
+                        _currentLocation ?? const LatLng(40.7128, -74.0060),
+                    initialZoom: 15,
+                    minZoom: 10,
+                    maxZoom: 15,
+                    onMapEvent: (event) {
+                      if (event is MapEventMove) {
+                        _onMapMoved();
+                        _onMapZoomChanged();
+                      }
+                    },
+                    onMapReady: () {
+                      _logger.debug('HomebaseSelectionPage: Map is ready');
+                    },
+                  ),
                   children: [
-                    // Map
-                    if (isFlutterTest)
-                      // In `flutter test`, avoid network tile fetches and plugin-driven map behavior.
-                      // This keeps widget tests deterministic and prevents HttpClient exceptions.
-                      Container(
-                        color: AppColors.grey200,
-                        child: const Center(
-                          child: Icon(
-                            Icons.map,
-                            color: AppColors.grey600,
-                            size: 48,
-                          ),
-                        ),
-                      )
-                    else
-                      FlutterMap(
-                        mapController: _mapController,
-                        options: MapOptions(
-                          initialCenter: _currentLocation ??
-                              const LatLng(40.7128, -74.0060),
-                          initialZoom: 15,
-                          minZoom: 10,
-                          maxZoom: 15,
-                          onMapEvent: (event) {
-                            if (event is MapEventMove) {
-                              _onMapMoved();
-                              _onMapZoomChanged();
-                            }
-                          },
-                          onMapReady: () {
-                            _logger
-                                .debug('HomebaseSelectionPage: Map is ready');
-                          },
-                        ),
-                        children: [
-                          TileLayer(
-                            urlTemplate:
-                                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                            userAgentPackageName: 'app.avrai',
-                            maxZoom: 18,
-                          ),
-                          if (_geoPolygons.isNotEmpty)
-                            PolygonLayer(
-                              polygons: _geoPolygons,
-                            ),
-                        ],
-                      ),
+                    TileLayer(
+                      urlTemplate:
+                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      userAgentPackageName: 'app.avrai',
+                      maxZoom: 18,
+                    ),
+                    if (_geoPolygons.isNotEmpty)
+                      PolygonLayer(polygons: _geoPolygons),
+                  ],
+                ),
 
-                    // Fixed center marker (always in center of map)
-                    Center(
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: AppTheme.primaryColor,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: AppColors.white,
-                            width: 3,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.black.withValues(alpha: 0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
+              // Fixed center marker (always in center of map)
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: AppColors.textPrimary,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: AppColors.white,
+                      width: 3,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.black.withValues(alpha: 0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.location_on,
+                    color: AppColors.white,
+                    size: 20,
+                  ),
+                ),
+              ),
+
+              // Loading overlay
+              if (_isLoadingLocation || !_mapLoaded)
+                Container(
+                  color: AppColors.black.withValues(alpha: 0.3),
+                  child: const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(
+                          color: AppColors.white,
                         ),
-                        child: const Icon(
+                        SizedBox(height: 16),
+                        Text(
+                          'Loading map...',
+                          style: TextStyle(
+                            color: AppColors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+              // Selected neighborhood indicator
+              if (_selectedNeighborhood != null)
+                Positioned(
+                  top: 16,
+                  left: 16,
+                  right: 16,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.textPrimary,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.black.withValues(alpha: 0.2),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
                           Icons.location_on,
+                          color: AppColors.white,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Text(
+                            _selectedNeighborhood!,
+                            style: const TextStyle(
+                              color: AppColors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+              // Location permission warning
+              if (!_hasLocationPermission)
+                Positioned(
+                  bottom: 16,
+                  left: 16,
+                  right: 16,
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.warning,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.location_off,
                           color: AppColors.white,
                           size: 20,
                         ),
-                      ),
+                        const SizedBox(width: 8),
+                        const Expanded(
+                          child: Text(
+                            'Location access needed to find your neighborhood',
+                            style: TextStyle(
+                              color: AppColors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: _getCurrentLocation,
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: const Text(
+                            'Enable',
+                            style: TextStyle(
+                              color: AppColors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-
-                    // Loading overlay
-                    if (_isLoadingLocation || !_mapLoaded)
-                      Container(
-                        color: AppColors.black.withValues(alpha: 0.3),
-                        child: const Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              CircularProgressIndicator(
-                                color: AppColors.white,
-                              ),
-                              SizedBox(height: 16),
-                              Text(
-                                'Loading map...',
-                                style: TextStyle(
-                                  color: AppColors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                    // Selected neighborhood indicator
-                    if (_selectedNeighborhood != null)
-                      Positioned(
-                        top: 16,
-                        left: 16,
-                        right: 16,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppTheme.primaryColor,
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.black.withValues(alpha: 0.2),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(
-                                Icons.location_on,
-                                color: AppColors.white,
-                                size: 16,
-                              ),
-                              const SizedBox(width: 8),
-                              Flexible(
-                                child: Text(
-                                  _selectedNeighborhood!,
-                                  style: const TextStyle(
-                                    color: AppColors.white,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                    // Location permission warning
-                    if (!_hasLocationPermission)
-                      Positioned(
-                        bottom: 16,
-                        left: 16,
-                        right: 16,
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: AppColors.warning.withValues(alpha: 0.9),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.location_off,
-                                color: AppColors.white,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 8),
-                              const Expanded(
-                                child: Text(
-                                  'Location access needed to find your neighborhood',
-                                  style: TextStyle(
-                                    color: AppColors.white,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: _getCurrentLocation,
-                                style: TextButton.styleFrom(
-                                  padding:
-                                      const EdgeInsets.symmetric(horizontal: 8),
-                                  minimumSize: Size.zero,
-                                  tapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap,
-                                ),
-                                child: const Text(
-                                  'Enable',
-                                  style: TextStyle(
-                                    color: AppColors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                    // Retry button for location issues
-                    if (_selectedNeighborhood == null && !_isLoadingLocation)
-                      Positioned(
-                        bottom: 16,
-                        left: 16,
-                        right: 16,
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: AppColors.grey600.withValues(alpha: 0.9),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.refresh,
-                                color: AppColors.white,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 8),
-                              const Expanded(
-                                child: Text(
-                                  'Tap to refresh location',
-                                  style: TextStyle(
-                                    color: AppColors.white,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: _getCurrentLocation,
-                                child: const Text(
-                                  'Retry',
-                                  style: TextStyle(
-                                    color: AppColors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
+
+              // Retry button for location issues
+              if (_selectedNeighborhood == null && !_isLoadingLocation)
+                Positioned(
+                  bottom: 16,
+                  left: 16,
+                  right: 16,
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.grey800,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.refresh,
+                          color: AppColors.white,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        const Expanded(
+                          child: Text(
+                            'Tap to refresh location',
+                            style: TextStyle(
+                              color: AppColors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: _getCurrentLocation,
+                          child: const Text(
+                            'Retry',
+                            style: TextStyle(
+                              color: AppColors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

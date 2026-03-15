@@ -29,6 +29,8 @@ class MockVibeConnectionOrchestrator extends Mock
     implements VibeConnectionOrchestrator {}
 
 void main() {
+  const shortAsyncSettle = Duration(milliseconds: 100);
+
   group('AuthBloc', () {
     late AuthBloc authBloc;
     late MockSignInUseCase mockSignInUseCase;
@@ -154,7 +156,7 @@ void main() {
           return authBloc;
         },
         act: (bloc) => bloc.add(SignInRequested(testEmail, testPassword)),
-        wait: const Duration(milliseconds: 1000),
+        wait: shortAsyncSettle,
         expect: () => [
           isA<AuthLoading>(),
           isA<Authenticated>(),
@@ -178,7 +180,7 @@ void main() {
           return authBloc;
         },
         act: (bloc) => bloc.add(SignInRequested(testEmail, testPassword)),
-        wait: const Duration(milliseconds: 1000),
+        wait: shortAsyncSettle,
         expect: () => [
           isA<AuthLoading>(),
           isA<Authenticated>(),
@@ -201,8 +203,7 @@ void main() {
           return authBloc;
         },
         act: (bloc) => bloc.add(SignInRequested(testEmail, testPassword)),
-        wait: const Duration(
-            milliseconds: 1000), // Allow async operations to complete
+        wait: shortAsyncSettle,
         expect: () => [
           isA<AuthLoading>(),
           isA<Authenticated>()
@@ -225,8 +226,7 @@ void main() {
           return authBloc;
         },
         act: (bloc) => bloc.add(SignInRequested(testEmail, testPassword)),
-        wait: const Duration(
-            milliseconds: 1000), // Allow async operations to complete
+        wait: shortAsyncSettle,
         expect: () => [
           isA<AuthLoading>(),
           isA<Authenticated>()
@@ -761,8 +761,7 @@ void main() {
           return authBloc;
         },
         act: (bloc) => bloc.add(SignInRequested('test@test.com', 'password')),
-        wait: const Duration(
-            milliseconds: 1000), // Allow async operations to complete
+        wait: shortAsyncSettle,
         expect: () => [
           isA<AuthLoading>(),
           isA<Authenticated>()
@@ -780,8 +779,7 @@ void main() {
           return authBloc;
         },
         act: (bloc) => bloc.add(SignInRequested('test@test.com', 'password')),
-        wait: const Duration(
-            milliseconds: 1000), // Allow async operations to complete
+        wait: shortAsyncSettle,
         expect: () => [
           isA<AuthLoading>(),
           isA<Authenticated>()
@@ -821,8 +819,7 @@ void main() {
         },
         act: (bloc) =>
             bloc.add(UpdatePasswordRequested(currentPassword, newPassword)),
-        wait: const Duration(
-            milliseconds: 1000), // Allow async operations to complete
+        wait: shortAsyncSettle,
         // Note: Re-encryption may fail in unit tests (GetIt not initialized),
         // but password update should still succeed
         expect: () => [
@@ -846,8 +843,7 @@ void main() {
         },
         act: (bloc) =>
             bloc.add(UpdatePasswordRequested(currentPassword, newPassword)),
-        wait: const Duration(
-            milliseconds: 500), // Allow state emissions to complete
+        wait: shortAsyncSettle,
         expect: () => [
           isA<AuthLoading>(),
           isA<AuthError>().having((state) => state.message, 'message',
@@ -880,8 +876,7 @@ void main() {
         },
         act: (bloc) =>
             bloc.add(UpdatePasswordRequested(currentPassword, newPassword)),
-        wait: const Duration(
-            milliseconds: 1000), // Allow async operations to complete
+        wait: shortAsyncSettle,
         expect: () => [
           isA<AuthLoading>(),
           // Re-encryption may fail first (GetIt not initialized), but then password update fails
@@ -918,8 +913,7 @@ void main() {
         },
         act: (bloc) =>
             bloc.add(UpdatePasswordRequested(currentPassword, newPassword)),
-        wait: const Duration(
-            milliseconds: 1000), // Allow async operations to complete
+        wait: shortAsyncSettle,
         expect: () => [
           isA<AuthLoading>(),
           isA<Authenticated>()

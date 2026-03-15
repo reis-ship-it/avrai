@@ -1,0 +1,572 @@
+{
+  "bundleId": "bham-priority-manual-import-2023-4",
+  "replayYear": 2023,
+  "generatedAtUtc": "2026-03-11T20:04:45.365872Z",
+  "entries": [
+    {
+      "sourceName": "ALDOT Long-Term Construction Projects",
+      "rawOutputKey": "aldot_long_term_construction_projects",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "project_timeline",
+        "closures",
+        "detours",
+        "affected_segments"
+      ],
+      "dedupeKeys": [
+        "project_id",
+        "segment_id"
+      ],
+      "normalizationTargets": [
+        "event",
+        "locality",
+        "movement_flow"
+      ],
+      "requiresReview": false,
+      "templateRecord": {
+        "record_id": "<required>",
+        "entity_type": "event",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "project_timeline": "<required>",
+        "closures": "<required>",
+        "detours": "<required>",
+        "affected_segments": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "records": [
+        {
+          "record_id": "aldot-construction-pratt-highway-black-creek-2023",
+          "entity_type": "movement_flow",
+          "entity_id": "aldot_project_pratt_highway_black_creek_bridge",
+          "observed_at": "2023-10-01T00:00:00Z",
+          "published_at": "2023-10-01T00:00:00Z",
+          "project_timeline": {
+            "program_window": "2023-10-01/2027-09-30",
+            "program_document": "ALDOT STIP 2024 Original",
+            "construction_fiscal_year": 2026,
+            "extracted_at": "2026-03-11T00:00:00Z"
+          },
+          "closures": "Bridge replacement friction on Pratt Highway at Black Creek near Sandusky in Birmingham; route pressure expected during active replacement and approach work.",
+          "detours": "Expect rerouting around the Pratt Highway and Black Creek crossing during active bridge and approach closures; exact lane closure windows still pending direct ALDOT export.",
+          "affected_segments": [
+            "Pratt Highway",
+            "Black Creek crossing near Sandusky",
+            "western Birmingham freight and commuter approach lanes"
+          ],
+          "locality": "bham_west_sandusky",
+          "name": "Pratt Highway bridge replacement at Black Creek near Sandusky",
+          "title": "Pratt Highway bridge replacement at Black Creek near Sandusky",
+          "event_name": "Pratt Highway bridge replacement at Black Creek near Sandusky",
+          "starts_at": "2023-10-01T00:00:00Z",
+          "ends_at": "2027-09-30T23:59:59Z",
+          "confidence": 0.74,
+          "uncertainty_minutes": 1440,
+          "source_excerpt": "BRIDGE REPLACEMENT (BIN# 000282) ON PRATT HIGHWAY AT BLACK CREEK NEAR SANDUSKY IN BIRMINGHAM"
+        },
+        {
+          "record_id": "aldot-construction-19th-street-ensley-2023",
+          "entity_type": "movement_flow",
+          "entity_id": "aldot_project_19th_street_ensley_streetscape",
+          "observed_at": "2023-10-01T00:00:00Z",
+          "published_at": "2023-10-01T00:00:00Z",
+          "project_timeline": {
+            "program_window": "2023-10-01/2027-09-30",
+            "program_document": "ALDOT STIP 2024 Original",
+            "construction_fiscal_year": 2024,
+            "extracted_at": "2026-03-11T00:00:00Z"
+          },
+          "closures": "Street improvements on 19th Street Ensley introduce paving, sidewalk, curb, gutter, and storm-drainage work across the Ensley corridor.",
+          "detours": "Construction activity may narrow or reroute segments between Ensley Avenue and Bush Boulevard while preserving neighborhood access through staged work.",
+          "affected_segments": [
+            "19th Street Ensley",
+            "Ensley Avenue",
+            "Bush Boulevard"
+          ],
+          "locality": "bham_ensley",
+          "name": "19th Street Ensley streetscape and drainage improvements",
+          "title": "19th Street Ensley streetscape and drainage improvements",
+          "event_name": "19th Street Ensley streetscape and drainage improvements",
+          "starts_at": "2023-10-01T00:00:00Z",
+          "ends_at": "2027-09-30T23:59:59Z",
+          "confidence": 0.76,
+          "uncertainty_minutes": 1440,
+          "source_excerpt": "STREET IMPROVEMENTS ON 19TH STREET ENSLEY FROM ENSLEY AVENUE TO BUSH BOULEVARD PAVING, SIDEWALKS, CURB AND GUTTER, AND STORM DRAINAGE"
+        },
+        {
+          "record_id": "aldot-construction-13th-street-south-uab-2023",
+          "entity_type": "movement_flow",
+          "entity_id": "aldot_project_13th_street_south_uab_bike_lanes",
+          "observed_at": "2023-10-01T00:00:00Z",
+          "published_at": "2023-10-01T00:00:00Z",
+          "project_timeline": {
+            "program_window": "2023-10-01/2027-09-30",
+            "program_document": "ALDOT STIP 2024 Original",
+            "construction_fiscal_year": 2027,
+            "utilities_fiscal_year": 2026,
+            "extracted_at": "2026-03-11T00:00:00Z"
+          },
+          "closures": "Bike-lane and streetscape work on 13th Street South introduces corridor friction across the UAB and Southside movement zone.",
+          "detours": "Expect staged lane and curbside adjustments between 4th Avenue South and 10th Avenue South during utility and construction phases.",
+          "affected_segments": [
+            "13th Street South",
+            "4th Avenue South",
+            "10th Avenue South",
+            "UAB Southside movement corridor"
+          ],
+          "locality": "bham_southside_uab",
+          "name": "13th Street South bike lanes and streetscape improvements",
+          "title": "13th Street South bike lanes and streetscape improvements",
+          "event_name": "13th Street South bike lanes and streetscape improvements",
+          "starts_at": "2023-10-01T00:00:00Z",
+          "ends_at": "2027-09-30T23:59:59Z",
+          "confidence": 0.73,
+          "uncertainty_minutes": 1440,
+          "source_excerpt": "ADD BIKE LANES AND STREETSCAPE IMPROVEMENTS ALONG 13TH STREET SOUTH FROM 4TH AVE SOUTH TO 10TH AVE SOUTH"
+        }
+      ],
+      "notes": [
+        "Eligible to seed governed replay/entity priors.",
+        "Populated from ALDOT STIP 2024 Original pages covering the 2023-10-01 through 2027-09-30 Birmingham urban-area project window.",
+        "These are historical replay imports and should remain lower-confidence than direct lane-closure exports."
+      ],
+      "status": "populated"
+    },
+    {
+      "sourceName": "ALDOT Traffic Data",
+      "rawOutputKey": "aldot_traffic_data",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "counts",
+        "travel_speed",
+        "artery_load"
+      ],
+      "dedupeKeys": [
+        "segment_id",
+        "date"
+      ],
+      "normalizationTargets": [
+        "locality",
+        "movement_flow"
+      ],
+      "requiresReview": false,
+      "templateRecord": {
+        "record_id": "<required>",
+        "entity_type": "locality",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "counts": "<required>",
+        "travel_speed": "<required>",
+        "artery_load": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "records": [
+        {
+          "record_id": "aldot-traffic-bham-core-bottlenecks-2023",
+          "entity_type": "movement_flow",
+          "entity_id": "bham_core_freight_and_commuter_bottlenecks_2023",
+          "observed_at": "2023-12-31T00:00:00Z",
+          "published_at": "2023-12-31T00:00:00Z",
+          "counts": {
+            "availability": "summary_only",
+            "source_documents": [
+              "ALDOT Birmingham freight chokepoints PDF",
+              "ALDOT projected traffic volumes 2040 PDF"
+            ],
+            "segments": [
+              "I-65/I-20/I-59 central interchange",
+              "US-280 commuter corridor",
+              "I-459 connectors into greater Birmingham"
+            ],
+            "count_status": "Exact 2023 daily counts still pending direct ALDOT export."
+          },
+          "travel_speed": {
+            "summary": "Freight and commuter bottlenecks are documented across Birmingham core corridors, implying recurrent peak-speed degradation rather than free-flow operation.",
+            "speed_status": "qualitative"
+          },
+          "artery_load": {
+            "classification": "high",
+            "load_driver": "freight and commuter convergence",
+            "segments": [
+              "I-65/I-20/I-59 central interchange",
+              "US-280",
+              "I-459"
+            ]
+          },
+          "locality": "bham_core",
+          "name": "Birmingham core freight and commuter bottlenecks 2023",
+          "confidence": 0.58,
+          "uncertainty_minutes": 10080
+        },
+        {
+          "record_id": "aldot-traffic-bham-valleydale-acton-pressure-2023",
+          "entity_type": "movement_flow",
+          "entity_id": "bham_valleydale_acton_growth_pressure_2023",
+          "observed_at": "2023-12-31T00:00:00Z",
+          "published_at": "2023-12-31T00:00:00Z",
+          "counts": {
+            "availability": "summary_only",
+            "segments": [
+              "Valleydale Road",
+              "Acton Road",
+              "Heatherwood Drive",
+              "Cahaba River bridge approach"
+            ],
+            "count_status": "Exact 2023 count extraction still pending direct ALDOT traffic lane export."
+          },
+          "travel_speed": {
+            "summary": "Growth-pressure corridor around Valleydale and Acton indicates lower peak travel reliability under widening and bridge-replacement planning conditions.",
+            "speed_status": "qualitative"
+          },
+          "artery_load": {
+            "classification": "high",
+            "load_driver": "suburban commute growth and bridge-constrained throughput",
+            "segments": [
+              "CR-17 Valleydale Road",
+              "CR-29 to Acton Road",
+              "Cahaba River bridge replacement zone"
+            ]
+          },
+          "locality": "bham_south_east_corridor",
+          "name": "Valleydale and Acton growth-pressure corridor 2023",
+          "confidence": 0.61,
+          "uncertainty_minutes": 10080
+        }
+      ],
+      "notes": [
+        "Eligible to seed governed replay/entity priors.",
+        "Current traffic rows are planning-grade summary imports until direct ALDOT count exports are available."
+      ],
+      "status": "populated"
+    },
+    {
+      "sourceName": "City of Birmingham OpenGov",
+      "rawOutputKey": "city_of_birmingham_opengov",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "neighborhood_polygons",
+        "districts",
+        "civic_datasets",
+        "budget_reports",
+        "crime_precinct_exports",
+        "planning_archives",
+        "civic_contracts"
+      ],
+      "dedupeKeys": [
+        "dataset_id",
+        "neighborhood_name",
+        "revision_date"
+      ],
+      "normalizationTargets": [
+        "community",
+        "event",
+        "locality"
+      ],
+      "requiresReview": false,
+      "templateRecord": {
+        "record_id": "<required>",
+        "entity_type": "community",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "neighborhood_polygons": "<required>",
+        "districts": "<required>",
+        "civic_datasets": "<required>",
+        "budget_reports": "<required>",
+        "crime_precinct_exports": "<required>",
+        "planning_archives": "<required>",
+        "civic_contracts": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "records": [
+        {
+          "record_id": "bham-opengov-civic-locality-and-finance-2023",
+          "entity_type": "locality",
+          "entity_id": "birmingham_civic_locality_and_finance_2023",
+          "observed_at": "2023-12-31T00:00:00Z",
+          "published_at": "2023-12-31T00:00:00Z",
+          "neighborhood_polygons": {
+            "status": "available_via_opengov_portal",
+            "note": "Neighborhood and civic boundary exports remain pending direct geometry pull from the Birmingham OpenGov dataset portal."
+          },
+          "districts": [
+            "city council districts",
+            "police precinct geographies",
+            "neighborhood-aligned civic areas"
+          ],
+          "civic_datasets": [
+            "Annual Comprehensive Financial Reports",
+            "FY23 official operating budget",
+            "budget by revenue type monthly reports",
+            "precinct crime exports",
+            "planning commission archive 2019-2023",
+            "Magic City Classic contract 2023-2026"
+          ],
+          "budget_reports": {
+            "acfr_2023_url": "https://data.birminghamal.gov/dataset/comprehensive-annual-financial-reports",
+            "fy23_operating_budget_url": "https://s3.amazonaws.com/og-production-open-data-birminghamal-892364687672/resources/9113d270-945f-4d8b-bf9a-1fc116445763/fy23-official-operating-budget-final.pdf",
+            "january_2023": {
+              "sales_tax_ytd": 87366784.63,
+              "occupational_tax_ytd": 68965780.36,
+              "municipal_court_fines_ytd": 458296.84
+            },
+            "may_2023": {
+              "sales_tax_ytd": 134050766.72,
+              "occupational_tax_ytd": 109376032.45,
+              "municipal_court_fines_ytd": 756928.69
+            }
+          },
+          "crime_precinct_exports": {
+            "header_fields": [
+              "Block",
+              "Street",
+              "Case Address Latitude",
+              "Case Address Longitude",
+              "Case Address Zip",
+              "Case Number",
+              "Case Occurred From Date",
+              "Case Offense Statute Description",
+              "Reporting District"
+            ],
+            "precincts_logged": [
+              "east",
+              "north",
+              "south",
+              "west"
+            ],
+            "note": "South precinct export has sparse trailing columns but carries the same core public safety fields."
+          },
+          "planning_archives": [
+            "https://data.birminghamal.gov/dataset/birmingham-planning-commission-archive-2023-2019"
+          ],
+          "civic_contracts": [
+            "https://data.birminghamal.gov/dataset/magic-city-classic-contract-2023-2026/resource/0383f73c-486d-45a8-a593-9ecf184a1602"
+          ],
+          "locality": "birmingham_city",
+          "name": "City of Birmingham civic locality and finance datasets 2023",
+          "confidence": 0.95,
+          "uncertainty_minutes": 60
+        },
+        {
+          "record_id": "bham-opengov-public-safety-snapshot-dec-2023",
+          "entity_type": "community",
+          "entity_id": "birmingham_precinct_public_safety_snapshot_dec_2023",
+          "observed_at": "2023-12-31T23:59:59Z",
+          "published_at": "2023-12-31T23:59:59Z",
+          "neighborhood_polygons": {
+            "status": "pending_geometry_pull",
+            "note": "Precinct CSVs can be spatially mapped once boundary geometry is exported from OpenGov."
+          },
+          "districts": [
+            "east precinct",
+            "north precinct",
+            "south precinct",
+            "west precinct"
+          ],
+          "civic_datasets": [
+            "east precinct crime export December 2023",
+            "north precinct crime export December 2023",
+            "south precinct crime export December 2023",
+            "west precinct crime export December 2023"
+          ],
+          "budget_reports": {
+            "context": "Public safety snapshot should be interpreted with FY23 budget and monthly revenue reports, not as a standalone fiscal signal."
+          },
+          "crime_precinct_exports": {
+            "east_example": "12/31/2023 theft and auto-theft incidents with lat/lng and reporting district fields present.",
+            "north_example": "12/31/2023 domestic strangulation and vehicle-parts theft examples on Graymont Ave W and 9th St N.",
+            "south_example": "12/31/2023 theft incidents around 2nd Ave S and 5th Ave S in district S329.",
+            "west_example": "12/31/2023 firearm discharge and theft incidents around Grant Ave SW and 23rd St SW."
+          },
+          "planning_archives": [
+            "https://data.birminghamal.gov/dataset/birmingham-planning-commission-archive-2023-2019"
+          ],
+          "civic_contracts": [
+            "https://data.birminghamal.gov/dataset/magic-city-classic-contract-2023-2026/resource/0383f73c-486d-45a8-a593-9ecf184a1602"
+          ],
+          "locality": "birmingham_city",
+          "name": "Birmingham public safety precinct snapshot December 2023",
+          "confidence": 0.9,
+          "uncertainty_minutes": 120
+        }
+      ],
+      "notes": [
+        "Eligible to seed governed replay/entity priors.",
+        "OpenGov record population now includes real FY23 finance metrics, crime export structure, planning archive references, and a civic contract lane."
+      ],
+      "status": "populated"
+    },
+    {
+      "sourceName": "UAB Academic, Clinical, and Event Calendars",
+      "rawOutputKey": "uab_academic_clinical_and_event_calendars",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "academic_calendar",
+        "event_calendar",
+        "clinical_schedule"
+      ],
+      "dedupeKeys": [
+        "calendar_uid",
+        "event_start",
+        "campus_location"
+      ],
+      "normalizationTargets": [
+        "community",
+        "event",
+        "locality",
+        "movement_flow",
+        "venue"
+      ],
+      "requiresReview": false,
+      "templateRecord": {
+        "record_id": "<required>",
+        "entity_type": "community",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "academic_calendar": "<required>",
+        "event_calendar": "<required>",
+        "clinical_schedule": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "records": [
+        {
+          "record_id": "uab-academic-spring-2023-term",
+          "entity_type": "event",
+          "entity_id": "uab_spring_2023_term",
+          "observed_at": "2023-01-09T00:00:00Z",
+          "published_at": "2023-01-09T00:00:00Z",
+          "academic_calendar": {
+            "term": "Spring 2023",
+            "classes_begin": "2023-01-09",
+            "spring_break": "2023-03-13/2023-03-19",
+            "final_exams": "2023-04-24/2023-04-28",
+            "commencement": "2023-04-28/2023-04-29"
+          },
+          "event_calendar": {
+            "source_pages": [
+              "https://calendar.uab.edu/calendar/day/2023/1/1?card_size=small&order=date&days=366&experience=",
+              "https://www.uab.edu/students/academics/academic-calendar/2022-2023"
+            ],
+            "gravity": "semester-scale academic movement across UAB campus and Southside"
+          },
+          "clinical_schedule": {
+            "status": "partial",
+            "note": "Clinical-specific schedules were not separately extracted in this slice; UAB campus and academic rhythm is used as the current institutional gravity proxy."
+          },
+          "locality": "bham_southside_uab",
+          "title": "UAB Spring 2023 academic term",
+          "name": "UAB Spring 2023 academic term",
+          "event_name": "UAB Spring 2023 academic term",
+          "venue_name": "University of Alabama at Birmingham campus",
+          "community_name": "UAB",
+          "starts_at": "2023-01-09T00:00:00Z",
+          "ends_at": "2023-04-29T23:59:59Z",
+          "confidence": 0.96,
+          "uncertainty_minutes": 60
+        },
+        {
+          "record_id": "uab-academic-fall-2023-term",
+          "entity_type": "event",
+          "entity_id": "uab_fall_2023_term",
+          "observed_at": "2023-08-21T00:00:00Z",
+          "published_at": "2023-08-21T00:00:00Z",
+          "academic_calendar": {
+            "term": "Fall 2023",
+            "classes_begin": "2023-08-21",
+            "labor_day": "2023-09-04",
+            "thanksgiving_break": "2023-11-20/2023-11-26",
+            "final_exams": "2023-12-04/2023-12-08",
+            "commencement": "2023-12-08"
+          },
+          "event_calendar": {
+            "source_pages": [
+              "https://calendar.uab.edu/calendar/day/2023/1/1?card_size=small&order=date&days=366&experience=",
+              "https://www.uab.edu/students/academics/academic-calendar/2023-2024"
+            ],
+            "gravity": "fall semester return-to-campus and year-end exam movement pressure"
+          },
+          "clinical_schedule": {
+            "status": "partial",
+            "note": "Clinical-specific schedules remain pending separate extraction; medical campus operations are represented indirectly by academic and public event timing."
+          },
+          "locality": "bham_southside_uab",
+          "title": "UAB Fall 2023 academic term",
+          "name": "UAB Fall 2023 academic term",
+          "event_name": "UAB Fall 2023 academic term",
+          "venue_name": "University of Alabama at Birmingham campus",
+          "community_name": "UAB",
+          "starts_at": "2023-08-21T00:00:00Z",
+          "ends_at": "2023-12-08T23:59:59Z",
+          "confidence": 0.96,
+          "uncertainty_minutes": 60
+        },
+        {
+          "record_id": "uab-new-years-holiday-2023",
+          "entity_type": "event",
+          "entity_id": "uab_new_years_holiday_2023",
+          "observed_at": "2023-01-02T00:00:00Z",
+          "published_at": "2023-01-02T00:00:00Z",
+          "academic_calendar": {
+            "term_context": "Winter break / holiday operations"
+          },
+          "event_calendar": {
+            "event_url": "https://calendar.uab.edu/event/new_years_holiday_9579",
+            "ics_url": "https://calendar.uab.edu/event/new_years_holiday_9579.ics",
+            "description": "Designated holiday. University offices closed."
+          },
+          "clinical_schedule": {
+            "status": "partial",
+            "note": "Holiday operating conditions imply reduced campus office and routine traffic. Clinical schedule specifics remain pending."
+          },
+          "locality": "bham_southside_uab",
+          "title": "UAB New Year's Holiday 2023",
+          "name": "New Year's Holiday",
+          "event_name": "New Year's Holiday",
+          "venue_name": "University of Alabama at Birmingham campus",
+          "community_name": "UAB",
+          "starts_at": "2023-01-02T00:00:00Z",
+          "ends_at": "2023-01-02T23:59:59Z",
+          "confidence": 0.98,
+          "uncertainty_minutes": 15
+        }
+      ],
+      "notes": [
+        "Eligible to seed governed replay/entity priors.",
+        "Academic term dates and one concrete campus event are now populated from 2023 UAB public calendars."
+      ],
+      "status": "populated"
+    }
+  ],
+  "notes": [
+    "Priority manual-import scaffold for BHAM replay year 2023.",
+    "Populate entry records with governed raw source rows before converting to a replay source pack.",
+    "On 2026-03-11 the bundle was materially populated with real 2023 ALDOT, Birmingham OpenGov, and UAB source rows."
+  ],
+  "metadata": {
+    "prioritySources": [
+      "ALDOT Traffic Data",
+      "ALDOT Long-Term Construction Projects",
+      "City of Birmingham OpenGov",
+      "UAB Academic, Clinical, and Event Calendars"
+    ]
+  }
+}

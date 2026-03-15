@@ -39,6 +39,9 @@ void main() {
       // Avoid path_provider / GetStorage.init in tests.
       await setupTestStorage();
 
+      // Integration suites can leave GetIt dirty across files; force a clean graph.
+      await di.sl.reset();
+
       // Initialize dependency injection
       await di.init();
 
@@ -49,6 +52,10 @@ void main() {
       di.sl.registerLazySingleton<LegalDocumentService>(
         () => _AlwaysAcceptedLegalDocumentService(),
       );
+    });
+
+    tearDownAll(() async {
+      await di.sl.reset();
     });
 
     setUp(() async {

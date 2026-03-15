@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+import 'package:avrai_core/avra_core.dart';
 import 'package:avrai_network/network/ai2ai_protocol.dart' show ProtocolMessage;
 
 /// Message ordering buffer for out-of-order message processing (AI2AI-specific)
@@ -21,6 +22,13 @@ class MessageOrderingBuffer {
 
   /// Per-peer buffers (keyed by AI agent ID)
   final Map<String, _PeerBuffer> _buffers = {};
+  final TemporalOrderingPolicy _orderingPolicy;
+
+  MessageOrderingBuffer({
+    TemporalOrderingPolicy orderingPolicy = const TemporalOrderingPolicy(
+      maxSequenceGap: maxGap,
+    ),
+  }) : _orderingPolicy = orderingPolicy;
 
   /// Add message to buffer
   ///
@@ -40,7 +48,10 @@ class MessageOrderingBuffer {
     buffer.add(sequenceNumber, message);
 
     // Get ready messages (in order)
-    final ready = buffer.getReadyMessages();
+    final ready = buffer.getReadyMessages(
+      orderingPolicy: _orderingPolicy,
+      now: DateTime.now().toUtc(),
+    );
 
     if (ready.isNotEmpty) {
       developer.log(
@@ -84,7 +95,7 @@ class _PeerBuffer {
   int nextExpectedSequence = 0;
 
   /// Buffered messages (sequence number -> message)
-  final Map<int, ProtocolMessage> _buffer = {};
+  final Map<int, _BufferedProtocolMessage> _buffer = {};
 
   /// Add message to buffer
   void add(int sequenceNumber, ProtocolMessage message) {
@@ -105,7 +116,10 @@ class _PeerBuffer {
     }
 
     // Add to buffer
-    _buffer[normalizedSeq] = message;
+    _buffer[normalizedSeq] = _BufferedProtocolMessage(
+      message: message,
+      bufferedAt: DateTime.now().toUtc(),
+    );
 
     // Prevent buffer overflow
     if (_buffer.length > MessageOrderingBuffer.maxBufferSize) {
@@ -121,14 +135,17 @@ class _PeerBuffer {
   }
 
   /// Get ready messages (in order, up to first gap)
-  List<ProtocolMessage> getReadyMessages() {
+  List<ProtocolMessage> getReadyMessages({
+    required TemporalOrderingPolicy orderingPolicy,
+    required DateTime now,
+  }) {
     final ready = <ProtocolMessage>[];
 
     // Process messages in order
     while (_buffer.containsKey(nextExpectedSequence)) {
-      final message = _buffer.remove(nextExpectedSequence);
-      if (message != null) {
-        ready.add(message);
+      final entry = _buffer.remove(nextExpectedSequence);
+      if (entry != null) {
+        ready.add(entry.message);
       }
       nextExpectedSequence++;
 
@@ -143,15 +160,23 @@ class _PeerBuffer {
       final sorted = _buffer.keys.toList()..sort();
       final firstBuffered = sorted.first;
       final gap = firstBuffered - nextExpectedSequence;
+      final bufferedEntry = _buffer[firstBuffered];
+      final oldestBufferedAge = bufferedEntry == null
+          ? Duration.zero
+          : now.difference(bufferedEntry.bufferedAt);
 
-      if (gap > MessageOrderingBuffer.maxGap) {
+      if (gap > orderingPolicy.maxSequenceGap ||
+          oldestBufferedAge > orderingPolicy.maxBufferedAge) {
         // Gap is too large, process from first buffered message
         developer.log(
-          'Large sequence gap detected: $gap, processing from sequence $firstBuffered',
+          'Large/stale sequence gap detected: gap=$gap age=${oldestBufferedAge.inMilliseconds}ms, processing from sequence $firstBuffered',
           name: MessageOrderingBuffer._logName,
         );
         nextExpectedSequence = firstBuffered;
-        return getReadyMessages(); // Recursive call to process
+        return getReadyMessages(
+          orderingPolicy: orderingPolicy,
+          now: now,
+        ); // Recursive call to process
       }
     }
 
@@ -160,4 +185,14 @@ class _PeerBuffer {
 
   /// Get count of buffered messages
   int get bufferedCount => _buffer.length;
+}
+
+class _BufferedProtocolMessage {
+  const _BufferedProtocolMessage({
+    required this.message,
+    required this.bufferedAt,
+  });
+
+  final ProtocolMessage message;
+  final DateTime bufferedAt;
 }

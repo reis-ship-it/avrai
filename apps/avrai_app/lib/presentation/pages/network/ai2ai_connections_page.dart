@@ -1,17 +1,6 @@
 /// AI2AI Connections Page
 ///
-/// Part of Feature Matrix Phase 1: Critical UI/UX
-/// Section 1.2: Device Discovery UI - Integration with Connection Orchestrator
-///
-/// Comprehensive page showing all AI2AI networking features:
-/// - Device discovery status and controls
-/// - Discovered devices list
-/// - Active AI2AI connections
-/// - Discovery settings access
-///
-/// Integrates with Connection Orchestrator for real-time status synchronization.
-///
-/// Uses AppColors and AppTheme for consistent styling per design token requirements.
+/// Provides AI2AI discovery status, device visibility, and connection controls.
 library;
 
 import 'dart:async';
@@ -25,7 +14,7 @@ import 'package:avrai/presentation/widgets/network/discovered_devices_widget.dar
 import 'package:avrai/presentation/widgets/network/ai2ai_connection_view_widget.dart';
 import 'package:avrai/presentation/pages/settings/discovery_settings_page.dart';
 import 'package:get_it/get_it.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Comprehensive page for AI2AI networking and device discovery
@@ -162,7 +151,7 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const AdaptivePlatformPageScaffold(
+      return const AppFlowScaffold(
         title: 'AI2AI Network',
         constrainBody: false,
         body: Center(
@@ -171,11 +160,12 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
       );
     }
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'AI2AI Network',
       appBarBackgroundColor: AppColors.background,
       appBarForegroundColor: AppColors.textPrimary,
       constrainBody: false,
+      backgroundColor: AppColors.background,
       actions: [
         IconButton(
           icon: const Icon(Icons.settings),
@@ -190,8 +180,8 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
       ],
       materialBottom: TabBar(
         controller: _tabController,
-        indicatorColor: AppColors.primary,
-        labelColor: AppColors.primary,
+        indicatorColor: AppColors.textPrimary,
+        labelColor: AppColors.textPrimary,
         unselectedLabelColor: AppColors.textSecondary,
         tabs: const [
           Tab(icon: Icon(Icons.radar), text: 'Discovery'),
@@ -232,7 +222,7 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
     return AppSurface(
       margin: const EdgeInsets.all(16),
       radius: 16,
-      color: _isScanning ? AppColors.primary.withValues(alpha: 0.08) : null,
+      color: _isScanning ? AppColors.surfaceMuted : null,
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
@@ -241,15 +231,15 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: _isScanning
-                      ? AppColors.primary.withValues(alpha: 0.2)
-                      : AppColors.grey200,
+                  color:
+                      _isScanning ? AppColors.surfaceMuted : AppColors.grey200,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   _isScanning ? Icons.radar : Icons.radar_outlined,
-                  color:
-                      _isScanning ? AppColors.primary : AppColors.textSecondary,
+                  color: _isScanning
+                      ? AppColors.textSecondary
+                      : AppColors.textSecondary,
                   size: 36,
                 ),
               ),
@@ -297,8 +287,8 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
                 label: Text(_isScanning ? 'Stop Discovery' : 'Start Discovery'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
-                      _isScanning ? AppColors.error : AppColors.primary,
-                  foregroundColor: AppColors.white,
+                      _isScanning ? AppColors.error : AppColors.surfaceMuted,
+                  foregroundColor: AppColors.textPrimary,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -340,19 +330,19 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
                 Icons.devices,
                 '${_discoveredDevices.length}',
                 'Discovered',
-                AppColors.primary,
+                AppColors.textPrimary,
               ),
               _buildStatItem(
                 Icons.link,
                 '${activeConnections.length}',
                 'Connected',
-                AppColors.primary,
+                AppColors.textPrimary,
               ),
               _buildStatItem(
                 Icons.psychology,
                 '${_discoveredDevices.where((d) => d.personalityData != null).length}',
                 'AI Enabled',
-                AppColors.primary,
+                AppColors.textPrimary,
               ),
             ],
           ),
@@ -368,7 +358,7 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.1),
+            color: AppColors.surfaceMuted,
             shape: BoxShape.circle,
           ),
           child: Icon(
@@ -383,7 +373,7 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: color,
+            color: AppColors.textPrimary,
           ),
         ),
         const SizedBox(height: 4),
@@ -409,12 +399,12 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.1),
+                color: AppColors.surfaceMuted,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(
                 Icons.settings,
-                color: AppColors.primary,
+                color: AppColors.textSecondary,
               ),
             ),
             title: const Text('Discovery Settings'),
@@ -427,12 +417,12 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.1),
+                color: AppColors.surfaceMuted,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(
                 Icons.info_outline,
-                color: AppColors.primary,
+                color: AppColors.textSecondary,
               ),
             ),
             title: const Text('How Discovery Works'),
@@ -449,7 +439,7 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
     return AppSurface(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       radius: 12,
-      color: AppColors.primary.withValues(alpha: 0.05),
+      color: AppColors.surfaceMuted,
       padding: const EdgeInsets.all(16),
       child: Semantics(
         label: 'AI2AI privacy and consent summary',
@@ -458,7 +448,7 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
           children: [
             const Row(
               children: [
-                Icon(Icons.privacy_tip, color: AppColors.primary),
+                Icon(Icons.privacy_tip, color: AppColors.textSecondary),
                 SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -542,8 +532,8 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
                 icon: const Icon(Icons.play_arrow),
                 label: const Text('Start Discovery'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: AppColors.white,
+                  backgroundColor: AppColors.surfaceMuted,
+                  foregroundColor: AppColors.textPrimary,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                 ),
@@ -588,7 +578,7 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
           children: [
             Icon(
               Icons.psychology,
-              color: AppColors.primary,
+              color: AppColors.textSecondary,
             ),
             SizedBox(width: 12),
             Text('AI2AI Discovery'),
@@ -623,14 +613,14 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.1),
+                  color: AppColors.surfaceMuted,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Row(
                   children: [
                     Icon(
                       Icons.verified_user,
-                      color: AppColors.primary,
+                      color: AppColors.textSecondary,
                       size: 20,
                     ),
                     SizedBox(width: 8),
@@ -668,7 +658,7 @@ class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
           const Icon(
             Icons.check_circle,
             size: 18,
-            color: AppColors.primary,
+            color: AppColors.textSecondary,
           ),
           const SizedBox(width: 8),
           Expanded(

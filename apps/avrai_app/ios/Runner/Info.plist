@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Avrai</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>avrai</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.avrai.app.oauth</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>avrai</string>
+			</array>
+		</dict>
+	</array>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+		<key>CFBundleVersion</key>
+		<string>$(FLUTTER_BUILD_NUMBER)</string>
+		<key>NSBluetoothAlwaysUsageDescription</key>
+		<string>AVRAI uses Bluetooth to discover nearby AVRAI devices for beta AI2AI exchange.</string>
+		<key>NSBluetoothPeripheralUsageDescription</key>
+		<string>AVRAI uses Bluetooth to share nearby discovery signals during the beta.</string>
+		<key>NSCameraUsageDescription</key>
+		<string>AVRAI uses the camera for profile photos, QR scanning, and dispute evidence during the beta.</string>
+		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+		<string>AVRAI uses location in the background to improve local recommendations and nearby beta discovery.</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>AVRAI uses your location to personalize Birmingham recommendations and maps.</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>AVRAI uses your photo library when you choose profile photos or upload dispute evidence.</string>
+		<key>LSRequiresIPhoneOS</key>
+		<true/>
+		<key>NSLocalNetworkUsageDescription</key>
+		<string>AVRAI uses your local network for nearby beta AI2AI discovery on supported transports.</string>
+		<key>UILaunchStoryboardName</key>
+		<string>LaunchScreen</string>
+		<key>UIMainStoryboardFile</key>
+		<string>Main</string>
+		<key>UIBackgroundModes</key>
+		<array>
+			<string>location</string>
+			<string>bluetooth-central</string>
+			<string>bluetooth-peripheral</string>
+			<string>remote-notification</string>
+		</array>
+		<key>BGTaskSchedulerPermittedIdentifiers</key>
+		<array>
+			<string>com.avrai.app.background_runtime_refresh</string>
+		</array>
+		<key>UISupportedInterfaceOrientations</key>
+		<array>
+			<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+		<key>UIApplicationSupportsIndirectInputEvents</key>
+		<true/>
+	</dict>
+</plist>

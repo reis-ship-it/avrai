@@ -9,10 +9,12 @@ import 'package:avrai_core/models/signatures/signature_match_result.dart';
 import 'package:avrai_core/models/user/unified_user.dart';
 import 'package:avrai_runtime_os/services/community/community_service.dart';
 import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
-import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
+import 'package:avrai/presentation/schemas/pages/communities_discover_page_schema.dart';
+import 'package:avrai/presentation/widgets/common/app_status_pill.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Community discovery page (join/discover ranking)
 ///
@@ -113,12 +115,41 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
   @override
   Widget build(BuildContext context) {
     final authState = context.watch<AuthBloc>().state;
+    final resultsHeight =
+        (MediaQuery.sizeOf(context).height * 0.42).clamp(280.0, 520.0).toDouble();
 
-    return AdaptivePlatformPageScaffold(
-      title: 'Discover Communities',
+    return AppSchemaPage(
+      schema: buildCommunitiesDiscoverPageSchema(
+        content: SizedBox(
+          height: resultsHeight,
+          child: RefreshIndicator(
+            onRefresh: _load,
+            color: AppColors.textPrimary,
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : authState is! Authenticated
+                    ? _buildSignedOutState()
+                    : _error != null
+                        ? _buildErrorState(_error!)
+                        : _communities.isEmpty
+                            ? _buildEmptyState()
+                            : ListView.separated(
+                                padding: const EdgeInsets.all(16),
+                                itemCount: _communities.length,
+                                separatorBuilder: (_, __) =>
+                                    const SizedBox(height: 12),
+                                itemBuilder: (context, index) {
+                                  final community = _communities[index];
+                                  return _buildCommunityCard(
+                                    community,
+                                    authState.user.id,
+                                  );
+                                },
+                              ),
+          ),
+        ),
+      ),
       showNavigationBar: widget.showAppBar,
-      constrainBody: false,
-      backgroundColor: AppColors.background,
       actions: [
         IconButton(
           tooltip: 'Refresh',
@@ -126,29 +157,6 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
           onPressed: _isLoading ? null : _load,
         ),
       ],
-      body: RefreshIndicator(
-        onRefresh: _load,
-        color: AppColors.primary,
-        child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : authState is! Authenticated
-                ? _buildSignedOutState()
-                : _error != null
-                    ? _buildErrorState(_error!)
-                    : _communities.isEmpty
-                        ? _buildEmptyState()
-                        : ListView.separated(
-                            padding: const EdgeInsets.all(16),
-                            itemCount: _communities.length,
-                            separatorBuilder: (_, __) =>
-                                const SizedBox(height: 12),
-                            itemBuilder: (context, index) {
-                              final community = _communities[index];
-                              return _buildCommunityCard(
-                                  community, authState.user.id);
-                            },
-                          ),
-      ),
     );
   }
 
@@ -168,13 +176,10 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
         : breakdownText;
     final isJoining = _joiningCommunityIds.contains(community.id);
 
-    return Container(
+    return AppSurface(
+      color: AppColors.surface,
+      borderColor: AppColors.borderSubtle,
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.grey200),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -189,21 +194,9 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
                       ),
                 ),
               ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                decoration: BoxDecoration(
-                  color: AppColors.grey100,
-                  borderRadius: BorderRadius.circular(999),
-                  border: Border.all(color: AppColors.grey300),
-                ),
-                child: Text(
-                  scoreText,
-                  style: const TextStyle(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+              AppStatusPill(
+                label: scoreText,
+                color: AppColors.textSecondary,
               ),
             ],
           ),
@@ -243,7 +236,7 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
                 child: OutlinedButton(
                   onPressed: () => _viewCommunity(community, userId),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.white,
+                    foregroundColor: AppColors.textPrimary,
                     side: const BorderSide(color: AppColors.grey300),
                   ),
                   child: const Text(
@@ -261,8 +254,8 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
                           ? null
                           : () => _joinCommunity(community, userId),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryColor,
-                    foregroundColor: AppColors.white,
+                    backgroundColor: AppColors.selection,
+                    foregroundColor: AppColors.textInverse,
                     elevation: 0,
                   ),
                   child: isJoining
@@ -386,7 +379,7 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Joined ${community.name}'),
-          backgroundColor: AppTheme.primaryColor,
+          backgroundColor: AppColors.success,
         ),
       );
 
@@ -459,7 +452,7 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
         ),
         const SizedBox(height: 8),
         Text(
-          'We rank communities using your true compatibility (quantum + knot topology + weave fit).',
+          'We rank communities using your compatibility signals so your recommendations stay personal and relevant.',
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: AppColors.textSecondary,
@@ -469,7 +462,7 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
         OutlinedButton(
           onPressed: () => context.push('/login'),
           style: OutlinedButton.styleFrom(
-            foregroundColor: AppColors.white,
+            foregroundColor: AppColors.textPrimary,
             side: const BorderSide(color: AppColors.grey300),
           ),
           child: const Text(
@@ -543,7 +536,7 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
         ElevatedButton(
           onPressed: _load,
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppTheme.primaryColor,
+            backgroundColor: AppColors.selection,
             foregroundColor: AppColors.white,
           ),
           child: const Text('Retry'),

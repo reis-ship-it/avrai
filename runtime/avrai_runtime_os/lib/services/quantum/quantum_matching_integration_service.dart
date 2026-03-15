@@ -20,7 +20,6 @@ import 'package:avrai_knot/services/knot/knot_evolution_string_service.dart';
 import 'package:avrai_knot/services/knot/knot_fabric_service.dart';
 import 'package:avrai_knot/services/knot/knot_worldsheet_service.dart';
 import 'package:avrai_runtime_os/services/security/hybrid_encryption_service.dart';
-import 'package:avrai_runtime_os/ai2ai/anonymous_communication.dart';
 import 'dart:async';
 
 /// Service for integrating quantum entanglement matching with existing systems
@@ -66,8 +65,6 @@ class QuantumMatchingIntegrationService {
   final KnotWorldsheetService? _worldsheetService;
   // ignore: unused_field
   final HybridEncryptionService? _encryptionService;
-  // ignore: unused_field
-  final AnonymousCommunicationProtocol? _ai2aiProtocol;
 
   QuantumMatchingIntegrationService({
     required QuantumMatchingController quantumController,
@@ -77,15 +74,13 @@ class QuantumMatchingIntegrationService {
     KnotFabricService? fabricService,
     KnotWorldsheetService? worldsheetService,
     HybridEncryptionService? encryptionService,
-    AnonymousCommunicationProtocol? ai2aiProtocol,
   })  : _quantumController = quantumController,
         _featureFlags = featureFlags,
         _aiLearningService = aiLearningService,
         _stringService = stringService,
         _fabricService = fabricService,
         _worldsheetService = worldsheetService,
-        _encryptionService = encryptionService,
-        _ai2aiProtocol = ai2aiProtocol;
+        _encryptionService = encryptionService;
 
   /// Calculate compatibility using quantum matching (if enabled) or fallback
   ///

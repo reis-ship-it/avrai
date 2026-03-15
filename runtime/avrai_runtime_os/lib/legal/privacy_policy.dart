@@ -24,7 +24,7 @@ class PrivacyPolicy {
 
   /// Privacy Policy content
   static const String content = '''
-SPOTS Privacy Policy
+AVRAI Privacy Policy
 
 Last Updated: December 1, 2025
 
@@ -38,7 +38,7 @@ We collect information you provide directly, including:
 
 2. HOW WE USE YOUR INFORMATION
 We use your information to:
-- Provide and improve the SPOTS platform
+- Provide and improve the AVRAI platform
 - Process payments and transactions
 - Send you event recommendations and updates
 - Enable AI-powered matching and discovery
@@ -46,7 +46,7 @@ We use your information to:
 - Comply with legal obligations
 
 3. AI2AI LEARNING
-SPOTS uses AI2AI learning to improve recommendations:
+AVRAI uses AI2AI learning to improve recommendations:
 - Your data is anonymized before AI learning
 - No personal information is shared between AI agents
 - You can opt out of AI learning in settings
@@ -83,7 +83,7 @@ We use cookies and similar technologies to:
 - Improve user experience
 
 8. CHILDREN'S PRIVACY
-SPOTS is not intended for users under 18. We do not knowingly collect data from children.
+AVRAI is not intended for users under 18. We do not knowingly collect data from children.
 
 9. INTERNATIONAL USERS
 If you are outside the United States, your data may be transferred to and processed in the United States.
@@ -92,7 +92,7 @@ If you are outside the United States, your data may be transferred to and proces
 We may update this policy. We will notify you of material changes. Continued use constitutes acceptance.
 
 11. CONTACT US
-For privacy questions, contact: privacy@avrai.app
+For privacy questions, visit: https://avrai.org/support
 ''';
 
   /// Get current Privacy Policy instance

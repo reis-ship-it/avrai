@@ -1,27 +1,28 @@
 // Knot Discovery Page
 //
-// Onboarding page for discovering knot tribes and onboarding groups
-// Part of Patent #31: Topological Knot Theory for Personality Representation
-// Phase 3: Onboarding Integration
-
+// Onboarding page for discovering knot tribes and onboarding groups.
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
 import 'package:avrai_core/models/personality_knot.dart';
 import 'package:avrai_core/models/personality_profile.dart';
-import 'package:avrai_runtime_os/runtime_api.dart';
 import 'package:avrai_runtime_os/ai/personality_learning.dart';
+import 'package:avrai_runtime_os/runtime_api.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/theme/tokens/theme_tokens.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
+import 'package:avrai/presentation/schemas/pages/knot_discovery_page_schema.dart';
+import 'package:avrai/presentation/widgets/common/app_button_primary.dart';
+import 'package:avrai/presentation/widgets/common/app_button_secondary.dart';
 import 'package:avrai/presentation/widgets/onboarding/knot_tribe_finder_widget.dart';
 import 'package:avrai/presentation/widgets/onboarding/onboarding_knot_group_widget.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
-/// Onboarding page for knot discovery
+/// Onboarding page for knot discovery.
 ///
-/// Shows user's personality knot, finds knot tribes, and suggests onboarding groups
+/// Shows the user's personality knot, finds knot tribes, and suggests
+/// onboarding groups.
 class KnotDiscoveryPage extends StatefulWidget {
   final PersonalityProfile? personalityProfile;
   final String? userId;
@@ -52,6 +53,7 @@ class _KnotDiscoveryPageState extends State<KnotDiscoveryPage> {
   final PersonalityLearning _personalityLearning =
       GetIt.instance<PersonalityLearning>();
 
+  bool _hasShownKnotBirthFallbackNotice = false;
   PersonalityKnot? _userKnot;
   List<KnotCommunity> _tribes = [];
   List<PersonalityProfile> _onboardingGroup = [];
@@ -73,14 +75,13 @@ class _KnotDiscoveryPageState extends State<KnotDiscoveryPage> {
     });
 
     try {
-      // Load personality profile if not provided
       PersonalityProfile? profile = widget.personalityProfile;
       if (profile == null && widget.userId != null) {
         try {
           profile =
               await _personalityLearning.getCurrentPersonality(widget.userId!);
         } catch (e) {
-          // Profile might not exist yet, continue with knot loading
+          // Profile might not exist yet; continue with knot loading.
         }
       }
 
@@ -93,8 +94,6 @@ class _KnotDiscoveryPageState extends State<KnotDiscoveryPage> {
       }
 
       final agentId = profile.agentId;
-
-      // Try to load existing knot
       final knot = await _knotStorageService.loadKnot(agentId);
 
       if (knot != null) {
@@ -102,11 +101,9 @@ class _KnotDiscoveryPageState extends State<KnotDiscoveryPage> {
           _userKnot = knot;
           _isLoadingKnot = false;
         });
-        // Load tribes and group after knot is loaded
-        _loadTribes();
-        _loadOnboardingGroup(profile);
+        await _loadTribes();
+        await _loadOnboardingGroup(profile);
       } else {
-        // Generate knot if it doesn't exist
         try {
           final newKnot = await _personalityKnotService.generateKnot(profile);
           await _knotStorageService.saveKnot(agentId, newKnot);
@@ -114,11 +111,9 @@ class _KnotDiscoveryPageState extends State<KnotDiscoveryPage> {
             _userKnot = newKnot;
             _isLoadingKnot = false;
           });
-          // Load tribes and group after knot is generated
-          _loadTribes();
-          _loadOnboardingGroup(profile);
+          await _loadTribes();
+          await _loadOnboardingGroup(profile);
         } catch (e, st) {
-          // Knot generation is best-effort; onboarding must stay unblocked.
           developer.log(
             'Knot runtime unavailable; continuing without knot: $e',
             name: _logName,
@@ -130,8 +125,7 @@ class _KnotDiscoveryPageState extends State<KnotDiscoveryPage> {
             _isLoadingKnot = false;
             _error = null;
           });
-          // Group is optional and may still work without a knot.
-          _loadOnboardingGroup(profile);
+          await _loadOnboardingGroup(profile);
         }
       }
     } catch (e) {
@@ -159,7 +153,6 @@ class _KnotDiscoveryPageState extends State<KnotDiscoveryPage> {
     } catch (e) {
       setState(() {
         _isLoadingTribes = false;
-        // Don't set error - tribes are optional
       });
     }
   }
@@ -179,13 +172,11 @@ class _KnotDiscoveryPageState extends State<KnotDiscoveryPage> {
     } catch (e) {
       setState(() {
         _isLoadingGroup = false;
-        // Don't set error - group is optional
       });
     }
   }
 
   void _handleContinue() {
-    // Navigate to home
     context.go('/home');
   }
 
@@ -193,33 +184,66 @@ class _KnotDiscoveryPageState extends State<KnotDiscoveryPage> {
     context.go('/world-planes');
   }
 
+  void _showFallbackNotice() {
+    if (_hasShownKnotBirthFallbackNotice) return;
+    _hasShownKnotBirthFallbackNotice = true;
+
+    if (!mounted) return;
+    if (widget.knotBirthOutcome == null ||
+        widget.knotBirthOutcome == 'completed') {
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Knot birth used fallback mode (${widget.knotBirthReason ?? widget.knotBirthOutcome}).',
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      if (widget.knotBirthOutcome == null ||
-          widget.knotBirthOutcome == 'completed') {
-        return;
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Knot birth used fallback mode (${widget.knotBirthReason ?? widget.knotBirthOutcome}).',
-          ),
-        ),
-      );
+      _showFallbackNotice();
     });
 
-    return AdaptivePlatformPageScaffold(
-      title: 'Your Personality Knot',
-      automaticallyImplyLeading: false,
-      body: _isLoadingKnot
-          ? const Center(child: CircularProgressIndicator())
-          : _error != null
-              ? _buildErrorState()
-              : _userKnot == null
-                  ? _buildNoKnotState()
-                  : _buildContent(),
+    final pageContent = _isLoadingKnot
+        ? _buildLoadingState()
+        : _error != null
+            ? _buildErrorState()
+            : _userKnot == null
+                ? _buildNoKnotState()
+                : _buildContent();
+
+    return AppSchemaPage(
+      schema: buildKnotDiscoveryPageSchema(content: pageContent),
+      padding: const EdgeInsets.all(16),
+    );
+  }
+
+  Widget _buildLoadingState() {
+    final spacing = context.spacing;
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(spacing.lg),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const CircularProgressIndicator(color: AppColors.textSecondary),
+            SizedBox(height: spacing.md),
+            Text(
+              'Finding your knot profile',
+              textAlign: TextAlign.center,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyLarge
+                  ?.copyWith(color: AppColors.textSecondary),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -239,20 +263,22 @@ class _KnotDiscoveryPageState extends State<KnotDiscoveryPage> {
             SizedBox(height: spacing.md),
             Text(
               'Error Loading Knot',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: AppColors.textPrimary,
-                  ),
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(color: AppColors.textPrimary),
             ),
             SizedBox(height: spacing.xs),
             Text(
               _error ?? 'Unknown error',
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: AppColors.textSecondary),
             ),
             SizedBox(height: spacing.lg),
-            ElevatedButton(
+            AppButtonSecondary(
               onPressed: _handleContinue,
               child: const Text('Continue Anyway'),
             ),
@@ -278,20 +304,22 @@ class _KnotDiscoveryPageState extends State<KnotDiscoveryPage> {
             SizedBox(height: spacing.md),
             Text(
               'Knot Not Available',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: AppColors.textPrimary,
-                  ),
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(color: AppColors.textPrimary),
             ),
             SizedBox(height: spacing.xs),
             Text(
               'Your personality knot will be generated soon',
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: AppColors.textSecondary),
             ),
             SizedBox(height: spacing.lg),
-            ElevatedButton(
+            AppButtonPrimary(
               onPressed: _handleContinue,
               child: const Text('Continue'),
             ),
@@ -302,117 +330,106 @@ class _KnotDiscoveryPageState extends State<KnotDiscoveryPage> {
   }
 
   Widget _buildContent() {
-    final spacing = context.spacing;
     return Column(
       children: [
-        // Tab bar for switching between tribes and group
-        DefaultTabController(
-          length: 2,
-          child: Column(
-            children: [
-              const TabBar(
-                tabs: [
-                  Tab(text: 'Knot Tribes', icon: Icon(Icons.group)),
-                  Tab(text: 'Onboarding Group', icon: Icon(Icons.people)),
-                ],
-              ),
-              Expanded(
-                child: TabBarView(
-                  children: [
-                    // Tribes tab
-                    KnotTribeFinderWidget(
-                      userKnot: _userKnot!,
-                      tribes: _tribes,
-                      isLoading: _isLoadingTribes,
-                      onRefresh: _loadTribes,
-                      onTribeSelected: (tribe) {
-                        // TODO: Navigate to community page or show details
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Selected: ${tribe.community.name}'),
-                          ),
-                        );
-                      },
-                    ),
-                    // Group tab
-                    _onboardingGroup.isEmpty && !_isLoadingGroup
-                        ? Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(32.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(
-                                    Icons.people_outline,
-                                    size: 64,
-                                    color: AppColors.textSecondary,
-                                  ),
-                                  SizedBox(height: spacing.md),
-                                  Text(
-                                    'No onboarding group yet',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium
-                                        ?.copyWith(
-                                          color: AppColors.textSecondary,
-                                        ),
-                                  ),
-                                  SizedBox(height: spacing.xs),
-                                  Text(
-                                    'Your onboarding group will be created as more people join',
-                                    textAlign: TextAlign.center,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.copyWith(
-                                          color: AppColors.textSecondary,
-                                        ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          )
-                        : _isLoadingGroup
-                            ? const Center(child: CircularProgressIndicator())
-                            : OnboardingKnotGroupWidget(
-                                groupMembers: _onboardingGroup,
-                                currentUserId: widget.userId,
-                              ),
-                  ],
-                ),
-              ),
-            ],
+        _buildTabSection(),
+        const SizedBox(height: 16),
+        SizedBox(
+          width: double.infinity,
+          child: AppButtonPrimary(
+            onPressed: _handleContinue,
+            child: const Text('Continue to avrai'),
           ),
         ),
-
-        // Continue button
-        Padding(
-          padding: EdgeInsets.all(spacing.md),
-          child: Column(
-            children: [
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _handleContinue,
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: spacing.md),
-                  ),
-                  child: const Text('Continue to avrai'),
-                ),
-              ),
-              SizedBox(height: spacing.xs),
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton.icon(
-                  onPressed: _handleExploreWorldPlanes,
-                  icon: const Icon(Icons.auto_awesome),
-                  label: const Text('Explore World Planes'),
-                ),
-              ),
-            ],
+        const SizedBox(height: 8),
+        SizedBox(
+          width: double.infinity,
+          child: AppButtonSecondary(
+            onPressed: _handleExploreWorldPlanes,
+            child: const Text('Explore World Planes'),
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildTabSection() {
+    return DefaultTabController(
+      length: 2,
+      child: Column(
+        children: [
+          const TabBar(
+            tabs: [
+              Tab(text: 'Knot Tribes', icon: Icon(Icons.group)),
+              Tab(text: 'Onboarding Group', icon: Icon(Icons.people)),
+            ],
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            height: 470,
+            child: TabBarView(
+              children: [
+                KnotTribeFinderWidget(
+                  userKnot: _userKnot!,
+                  tribes: _tribes,
+                  isLoading: _isLoadingTribes,
+                  onRefresh: _loadTribes,
+                  onTribeSelected: (tribe) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Selected: ${tribe.community.name}'),
+                      ),
+                    );
+                  },
+                ),
+                _onboardingGroup.isEmpty && !_isLoadingGroup
+                    ? Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(32.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.people_outline,
+                                size: 64,
+                                color: AppColors.textSecondary,
+                              ),
+                              SizedBox(height: context.spacing.md),
+                              Text(
+                                'No onboarding group yet',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(color: AppColors.textSecondary),
+                              ),
+                              SizedBox(height: context.spacing.xs),
+                              Text(
+                                'Your onboarding group will be created as more people join',
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(color: AppColors.textSecondary),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : _isLoadingGroup
+                        ? const Center(
+                            child: CircularProgressIndicator(
+                              color: AppColors.textSecondary,
+                            ),
+                          )
+                        : OnboardingKnotGroupWidget(
+                            groupMembers: _onboardingGroup,
+                            currentUserId: widget.userId,
+                          ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

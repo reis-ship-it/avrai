@@ -685,24 +685,58 @@ Zero trust replaces perimeter security with four principles:
 
 ---
 
+### Decision 30: Truth Surfaces and Scope Ontology
+
+**Phase:** Cross-cutting (forecasting, governance, security, APIs, and Phase 12 OS work)  
+**Why:** AVRAI now spans multiple adaptive surfaces: forecast kernels, recursive governance strata, autonomous security, quantum/topological modeling, and external API products. Without a formal ontology, terms like `sphere`, `family`, `agent class`, `tenant`, and even "confidence" drift into each other. That creates false authority, learning leakage, privacy leakage, and un-auditable decision paths.
+
+**The decision:** Every adaptive subsystem must declare both:
+1. its **truth surface**: the bounded evidence domain that can actually validate or falsify its claims, and
+2. its **scope ontology**: the governance stratum, operational sphere, family, agent class, and tenant scope within which that truth is allowed to learn and act.
+
+**The core reasoning:**
+- A model is not trustworthy because it is mathematically sophisticated. Quantum, knot, string, or worldsheet representations may improve prediction, but they are still representation layers. Trust comes from realized outcomes, calibration, contradiction handling, signed evidence, and governed review.
+- A `sphere` is an operational namespace, not an automatic physics claim. It is the domain over which AVRAI buckets learning and truth evaluation, such as journey, venue demand, security posture, or mesh health.
+- Scope must be explicit so AVRAI can separate: personal truth from locality truth, business truth from consumer truth, AVRAI-native truth from partner truth, and internal governed truth from outside-buyer aggregate outputs.
+- Security and forecasting need the same discipline. A security agent that observes a threat is not automatically authorized to mutate production. A forecast that looks sharp is not automatically strong enough to act on. Evidence domain and action authority are separate.
+
+**What it covers:**
+- Forecast kernel learning buckets and admin views
+- Per-agent-type and per-tenant truth isolation
+- Security immune-system evidence, promotion, and propagation boundaries
+- External API capability classes and output contracts
+- Compression rules between personal, locality, world, and universal strata
+- The distinction between representation surfaces and truth surfaces
+
+**What breaks if ignored:** Forecast families contaminate each other across incompatible domains. Tenant-private learning leaks into shared logic. "Sphere" gets reinterpreted ad hoc as domain, plane, market, or topology object. Quantum/topological elegance gets mistaken for confidence. Security drifts toward a panopticon that centralizes raw truth. Outside-facing APIs overreach into internal governed truth. Auditing becomes impossible because no one can say what evidence justified which action at what scope.
+
+**Connection to existing decisions:**
+- Decision #9 (preserve quantum/knot/fabric systems): those systems remain first-class representation layers, but they do not bypass outcome-based truth validation.
+- Decision #19 (third-party data pipeline): outside-buyer products remain aggregate-only truth surfaces, not internal agent or mesh truth.
+- Decision #22 (cognitive kernel as OS layer): OS authority requires explicit capability and truth boundaries, not implicit centralization.
+- Decision #25 (Air Gap): truth surfaces cannot justify raw-data centralization or Air Gap bypass.
+- Decision #29 (zero trust): scope ontology gives zero trust a domain model for who can query, observe, and intervene where.
+
+---
+
 ## Quick Reference: Key Decisions by Phase Relevance
 
 | Phase | Most Relevant Decisions |
 |------:|------------------------|
 | 1 | #1 (intelligence-first), #5 (Drift over ObjectBox), #7 (chat-as-accelerator), #8 (AI2AI only -- organic discovery mesh), #12 (doors -- discovered locations) |
 | 2 | #4 (on-device/privacy), #15 (post-quantum), #25 (air gap as privacy physics), #29 (zero trust -- credential vault, continuous verification) |
-| 3 | #2 (energy-based), #6 (ONNX), #9 (preserve quantum systems), #13 (lists as entities), #26 (transport backend abstraction), #29 (zero trust -- prompt injection hardening) |
+| 3 | #2 (energy-based), #6 (ONNX), #9 (preserve quantum systems), #13 (lists as entities), #26 (transport backend abstraction), #29 (zero trust -- prompt injection hardening), #30 (representation vs truth surface boundary) |
 | 4 | #2 (energy-based), #3 (VICReg), #11 (feature flag replacement), #14 (bilateral energy) |
 | 5 | #3 (VICReg), #4 (on-device), #7 (chat-as-accelerator) |
 | 6 | #7 (chat-as-accelerator), #12 (doors philosophy), #4 (on-device/offline), #29 (zero trust -- action gateway, tool registry) |
-| 7 | #10 (device tiers), #9 (preserve quantum systems), #17 (model lifecycle/OTA), #18 (multi-device), #27 (subsystem isolation) |
+| 7 | #10 (device tiers), #9 (preserve quantum systems), #17 (model lifecycle/OTA), #18 (multi-device), #27 (subsystem isolation), #30 (forecast family and scope isolation) |
 | 8 | #4 (on-device/privacy), #8 (AI2AI only), #16 (locality happiness advisory), #26 (transport abstraction for hybrid sync), #28 (connection capability model) |
-| 9 | #14 (bilateral energy), #12 (doors philosophy), #19 (third-party data pipeline) |
-| 10 | #5 (Drift over ObjectBox), #9 (preserve quantum systems), #20 (accessibility as doors), #21 (internationalization), #27 (subsystem isolation for 10.9 self-healing), #29 (zero trust -- audit persistence, engine boundaries, BLE hardening, compliance dashboard) |
+| 9 | #14 (bilateral energy), #12 (doors philosophy), #19 (third-party data pipeline), #30 (tenant and API truth-surface separation) |
+| 10 | #5 (Drift over ObjectBox), #9 (preserve quantum systems), #20 (accessibility as doors), #21 (internationalization), #27 (subsystem isolation for 10.9 self-healing), #29 (zero trust -- audit persistence, engine boundaries, BLE hardening, compliance dashboard), #30 (forecasting/security truth governance) |
 | 11 | #6 (ONNX/quantum-ready), #3 (VICReg for JEPA) |
-| 12 | #22 (cognitive kernel as OS layer), #23 (delegation = OS authority), #24 (beta before OS), #25 (air gap permeability), #4 (on-device/privacy), #6 (ONNX/quantum-ready), #8 (AI2AI only), #26 (transport interface informs Rust kernel), #29 (zero trust -- external caller auth uses credential vault) |
+| 12 | #22 (cognitive kernel as OS layer), #23 (delegation = OS authority), #24 (beta before OS), #25 (air gap permeability), #4 (on-device/privacy), #6 (ONNX/quantum-ready), #8 (AI2AI only), #26 (transport interface informs Rust kernel), #29 (zero trust -- external caller auth uses credential vault), #30 (scope ontology and truth boundaries as kernel law) |
 
 ---
 
-**Last Updated:** March 5, 2026  
-**Version:** 1.8 (added Decision #29: Zero Trust as Security Architecture. Previous: 1.7 Decisions #26-#28)
+**Last Updated:** March 14, 2026  
+**Version:** 1.9 (added Decision #30: Truth Surfaces and Scope Ontology. Previous: 1.8 Decision #29: Zero Trust as Security Architecture)

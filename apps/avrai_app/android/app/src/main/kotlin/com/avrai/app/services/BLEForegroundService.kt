@@ -14,6 +14,13 @@ import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothProfile
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.IBinder
 import android.os.ParcelUuid
@@ -24,6 +31,7 @@ import android.bluetooth.le.AdvertiseData
 import android.bluetooth.le.AdvertiseSettings
 import android.bluetooth.le.BluetoothLeAdvertiser
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.avrai.app.R
 import java.util.UUID
 
@@ -36,6 +44,13 @@ import java.util.UUID
  */
 class BLEForegroundService : Service() {
   private var wakeLock: PowerManager.WakeLock? = null
+  private var locationManager: LocationManager? = null
+  private var connectivityManager: ConnectivityManager? = null
+  private var networkCallback: ConnectivityManager.NetworkCallback? = null
+  private var lastEncounterWakeMs: Long = 0L
+  private var lastSignificantLocationWakeMs: Long = 0L
+  private var lastWifiWakeMs: Long = 0L
+  private var lastKnownWakeLocation: Location? = null
 
   // BLE peripheral runtime (advertising + GATT server)
   private var bluetoothManager: BluetoothManager? = null
@@ -73,9 +88,12 @@ class BLEForegroundService : Service() {
 
     bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager
     bluetoothAdapter = bluetoothManager?.adapter
+    locationManager = getSystemService(Context.LOCATION_SERVICE) as? LocationManager
+    connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
 
     BleInboxStore.init(applicationContext)
     BleAckStore.init(applicationContext)
+    BackgroundWakeStore.init(applicationContext)
   }
 
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -144,6 +162,8 @@ class BLEForegroundService : Service() {
       acquireWakeLock()
       val notification = buildNotification()
       startForeground(NOTIFICATION_ID, notification)
+      startPassiveLocationMonitoring()
+      startConnectivityMonitoring()
       Log.i(LOG_TAG, "BLE foreground service started")
     } catch (e: Exception) {
       Log.e(LOG_TAG, "Failed to start BLE foreground service", e)
@@ -155,6 +175,8 @@ class BLEForegroundService : Service() {
   private fun stopForegroundRuntime() {
     try {
       stopPeripheral()
+      stopPassiveLocationMonitoring()
+      stopConnectivityMonitoring()
       releaseWakeLock()
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
         stopForeground(STOP_FOREGROUND_REMOVE)
@@ -489,6 +511,9 @@ class BLEForegroundService : Service() {
         else -> "state=$newState"
       }
       Log.i(LOG_TAG, "GATT client ${device.address} $state (status=$status)")
+      if (newState == BluetoothProfile.STATE_CONNECTED) {
+        triggerBleEncounterWake(platformSource = "android_ble_gatt_connected")
+      }
     }
 
     override fun onCharacteristicReadRequest(
@@ -561,6 +586,7 @@ class BLEForegroundService : Service() {
               val isDup = isDuplicateAndMarkSeen(senderId, partial.msgId, System.currentTimeMillis())
               if (!isDup) {
                 BleInboxStore.add(senderId = senderId, data = partial.buffer)
+                triggerBleEncounterWake(platformSource = "android_ble_message_received")
               }
               partialMessages.remove(key)
               Log.i(LOG_TAG, "Received full BLE message from $senderId msgId=${partial.msgId} (len=${partial.totalLen}) dup=$isDup")
@@ -627,11 +653,188 @@ class BLEForegroundService : Service() {
     }
   }
 
+  private fun startPassiveLocationMonitoring() {
+    val manager = locationManager ?: return
+    if (!hasLocationPermission()) {
+      Log.i(LOG_TAG, "Location permission unavailable; passive location monitoring disabled")
+      return
+    }
+    try {
+      if (manager.isProviderEnabled(LocationManager.PASSIVE_PROVIDER)) {
+        manager.requestLocationUpdates(
+          LocationManager.PASSIVE_PROVIDER,
+          SIGNIFICANT_LOCATION_MIN_TIME_MS,
+          SIGNIFICANT_LOCATION_MIN_DISTANCE_METERS,
+          passiveLocationListener,
+        )
+      }
+      if (manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+        manager.requestLocationUpdates(
+          LocationManager.NETWORK_PROVIDER,
+          SIGNIFICANT_LOCATION_MIN_TIME_MS,
+          SIGNIFICANT_LOCATION_MIN_DISTANCE_METERS,
+          passiveLocationListener,
+        )
+      }
+    } catch (e: SecurityException) {
+      Log.w(LOG_TAG, "Missing permission for passive location monitoring", e)
+    } catch (e: Exception) {
+      Log.w(LOG_TAG, "Failed to start passive location monitoring", e)
+    }
+  }
+
+  private fun stopPassiveLocationMonitoring() {
+    val manager = locationManager ?: return
+    try {
+      manager.removeUpdates(passiveLocationListener)
+    } catch (e: Exception) {
+      Log.w(LOG_TAG, "Failed to stop passive location monitoring", e)
+    }
+  }
+
+  private fun hasLocationPermission(): Boolean {
+    val fine = ContextCompat.checkSelfPermission(
+      this,
+      android.Manifest.permission.ACCESS_FINE_LOCATION,
+    ) == PackageManager.PERMISSION_GRANTED
+    val coarse = ContextCompat.checkSelfPermission(
+      this,
+      android.Manifest.permission.ACCESS_COARSE_LOCATION,
+    ) == PackageManager.PERMISSION_GRANTED
+    return fine || coarse
+  }
+
+  private fun startConnectivityMonitoring() {
+    val manager = connectivityManager ?: return
+    if (networkCallback != null) {
+      return
+    }
+    val callback = object : ConnectivityManager.NetworkCallback() {
+      override fun onAvailable(network: Network) {
+        if (isWifiNetwork(network)) {
+          triggerConnectivityWifiWake("android_wifi_available")
+        }
+      }
+
+      override fun onCapabilitiesChanged(
+        network: Network,
+        networkCapabilities: NetworkCapabilities,
+      ) {
+        if (networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+          triggerConnectivityWifiWake("android_wifi_capabilities_changed")
+        }
+      }
+    }
+    networkCallback = callback
+    try {
+      manager.registerDefaultNetworkCallback(callback)
+      if (isWifiAvailable()) {
+        triggerConnectivityWifiWake("android_wifi_monitor_started")
+      }
+    } catch (e: SecurityException) {
+      Log.w(LOG_TAG, "Missing permission for connectivity monitoring", e)
+      networkCallback = null
+    } catch (e: Exception) {
+      Log.w(LOG_TAG, "Failed to start connectivity monitoring", e)
+      networkCallback = null
+    }
+  }
+
+  private fun stopConnectivityMonitoring() {
+    val manager = connectivityManager ?: return
+    val callback = networkCallback ?: return
+    try {
+      manager.unregisterNetworkCallback(callback)
+    } catch (e: Exception) {
+      Log.w(LOG_TAG, "Failed to stop connectivity monitoring", e)
+    } finally {
+      networkCallback = null
+    }
+  }
+
+  private fun isWifiNetwork(network: Network): Boolean {
+    val manager = connectivityManager ?: return false
+    val capabilities = manager.getNetworkCapabilities(network) ?: return false
+    return capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+  }
+
+  private fun isWifiAvailable(): Boolean {
+    val manager = connectivityManager ?: return false
+    val network = manager.activeNetwork ?: return false
+    return isWifiNetwork(network)
+  }
+
+  private val passiveLocationListener = object : LocationListener {
+    override fun onLocationChanged(location: Location) {
+      val lastLocation = lastKnownWakeLocation
+      lastKnownWakeLocation = location
+      if (lastLocation == null) {
+        return
+      }
+      val nowMs = System.currentTimeMillis()
+      if (nowMs - lastSignificantLocationWakeMs <
+        SIGNIFICANT_LOCATION_WAKE_COOLDOWN_MS
+      ) {
+        return
+      }
+      val movedMeters = lastLocation.distanceTo(location)
+      if (movedMeters < SIGNIFICANT_LOCATION_WAKE_DISTANCE_METERS) {
+        return
+      }
+      lastSignificantLocationWakeMs = nowMs
+      BackgroundWakeStore.enqueueInvocation(
+        reason = "significant_location",
+        platformSource = "android_significant_location_update",
+        wakeTimestampUtcMs = nowMs,
+      )
+      BackgroundWakeRuntimeHost.executeNow(applicationContext)
+    }
+
+    override fun onProviderEnabled(provider: String) = Unit
+
+    override fun onProviderDisabled(provider: String) = Unit
+  }
+
+  private fun triggerBleEncounterWake(platformSource: String) {
+    val nowMs = System.currentTimeMillis()
+    if (nowMs - lastEncounterWakeMs < ENCOUNTER_WAKE_COOLDOWN_MS) {
+      return
+    }
+    lastEncounterWakeMs = nowMs
+    BackgroundWakeStore.enqueueInvocation(
+      reason = "ble_encounter",
+      platformSource = platformSource,
+      wakeTimestampUtcMs = nowMs,
+    )
+    BackgroundWakeRuntimeHost.executeNow(applicationContext)
+  }
+
+  private fun triggerConnectivityWifiWake(platformSource: String) {
+    val nowMs = System.currentTimeMillis()
+    if (nowMs - lastWifiWakeMs < WIFI_WAKE_COOLDOWN_MS) {
+      return
+    }
+    lastWifiWakeMs = nowMs
+    BackgroundWakeStore.enqueueInvocation(
+      reason = "connectivity_wifi",
+      platformSource = platformSource,
+      isWifiAvailable = true,
+      wakeTimestampUtcMs = nowMs,
+    )
+    BackgroundWakeRuntimeHost.executeNow(applicationContext)
+  }
+
   companion object {
     private const val LOG_TAG = "BLEForegroundService"
 
     private const val NOTIFICATION_CHANNEL_ID = "spots_ble_foreground"
     private const val NOTIFICATION_ID = 4242
+    private const val ENCOUNTER_WAKE_COOLDOWN_MS = 15_000L
+    private const val WIFI_WAKE_COOLDOWN_MS = 30_000L
+    private const val SIGNIFICANT_LOCATION_MIN_TIME_MS = 5 * 60 * 1000L
+    private const val SIGNIFICANT_LOCATION_MIN_DISTANCE_METERS = 200f
+    private const val SIGNIFICANT_LOCATION_WAKE_DISTANCE_METERS = 250f
+    private const val SIGNIFICANT_LOCATION_WAKE_COOLDOWN_MS = 2 * 60 * 1000L
 
     private val SPOTS_SERVICE_UUID: UUID =
       UUID.fromString("0000ff00-0000-1000-8000-00805f9b34fb")
@@ -670,4 +873,3 @@ class BLEForegroundService : Service() {
     const val EXTRA_SERVICE_DATA_FRAME_V1_BYTES = "serviceDataFrameV1Bytes"
   }
 }
-

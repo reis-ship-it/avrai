@@ -12,15 +12,14 @@ import 'package:avrai/presentation/widgets/expertise/expertise_display_widget.da
 import 'package:avrai/presentation/widgets/expertise/expertise_progress_widget.dart';
 import 'package:avrai/presentation/widgets/expertise/partnership_expertise_boost_widget.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
+import 'package:avrai_runtime_os/config/bham_beta_defaults.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:go_router/go_router.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Expertise Dashboard Page
 /// Shows user's complete expertise profile with all categories and progress
-/// OUR_GUTS.md: "Pins, Not Badges" - Visual recognition without gamification
-///
 /// **Usage Example:**
 /// ```dart
 /// Navigator.push(
@@ -299,7 +298,7 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Expertise Dashboard',
       backgroundColor: AppColors.background,
       appBarBackgroundColor: AppTheme.primaryColor,
@@ -424,7 +423,8 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
           const SizedBox(height: 24),
 
           // Partnership Boost Section (Phase 4.5)
-          _buildPartnershipBoostSection(),
+          if (BhamBetaDefaults.enablePartnershipSurfaces)
+            _buildPartnershipBoostSection(),
           const SizedBox(height: 24),
 
           // Category Breakdown
@@ -642,6 +642,10 @@ class _ExpertiseDashboardPageState extends State<ExpertiseDashboardPage> {
   }
 
   Widget _buildPartnershipBoostSection() {
+    if (!BhamBetaDefaults.enablePartnershipSurfaces) {
+      return const SizedBox.shrink();
+    }
+
     // TODO: Replace with actual PartnershipProfileService and ExpertiseCalculationService
     // once Agent 1 completes them
     // Example:

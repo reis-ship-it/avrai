@@ -3,8 +3,13 @@ import 'package:avrai_core/constants/vibe_constants.dart';
 import 'package:avrai_core/models/personality_profile.dart';
 import 'package:avrai_core/models/user/user_vibe.dart';
 import 'package:avrai_core/models/user/unified_user.dart';
+import 'package:avrai_core/models/vibe/vibe_models.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart';
 import 'package:avrai_runtime_os/services/matching/age_compatibility_filter.dart';
+import 'package:avrai_runtime_os/services/vibe/canonical_vibe_projection_service.dart';
+import 'package:avrai_runtime_os/services/vibe/canonical_vibe_signal.dart';
+import 'package:get_it/get_it.dart';
+import 'package:reality_engine/reality_engine.dart';
 
 /// OUR_GUTS.md: "Anonymous vibe compilation that preserves privacy while enabling AI2AI personality matching"
 /// Comprehensive vibe analysis engine that creates privacy-preserving vibe signatures
@@ -18,36 +23,72 @@ class UserVibeAnalyzer {
   static const String _vibeAnalyticsKey = 'vibe_analytics';
 
   final SharedPreferences _prefs;
+  final CanonicalVibeProjectionService _canonicalVibeProjectionService;
   final Map<String, UserVibe> _vibeCache = {};
   bool _isAnalyzing = false;
 
-  UserVibeAnalyzer({required SharedPreferences prefs}) : _prefs = prefs;
+  UserVibeAnalyzer({
+    required SharedPreferences prefs,
+    CanonicalVibeProjectionService? canonicalVibeProjectionService,
+  })  : _prefs = prefs,
+        _canonicalVibeProjectionService =
+            canonicalVibeProjectionService ?? CanonicalVibeProjectionService();
+
+  VibeKernel _resolveVibeKernel() {
+    try {
+      final sl = GetIt.instance;
+      if (sl.isRegistered<VibeKernel>()) {
+        return sl<VibeKernel>();
+      }
+    } catch (_) {}
+    return VibeKernel();
+  }
 
   /// Compile comprehensive user vibe from personality profile and recent behavior
   Future<UserVibe> compileUserVibe(
       String userId, PersonalityProfile personality) async {
+    final canonicalPersonality =
+        await _canonicalVibeProjectionService.canonicalizeUserProfile(
+      userId: userId,
+      profile: personality,
+    );
     if (_isAnalyzing) {
       developer.log('Vibe analysis already in progress, returning cached vibe',
           name: _logName);
       return _vibeCache[userId] ??
-          UserVibe.fromPersonalityProfile(userId, personality.dimensions);
+          UserVibe.fromPersonalityProfile(
+            userId,
+            canonicalPersonality.dimensions,
+          );
     }
 
     _isAnalyzing = true;
 
     try {
       developer.log(
-          'Compiling user vibe for personality generation ${personality.evolutionGeneration}',
+          'Compiling user vibe for personality generation ${canonicalPersonality.evolutionGeneration}',
           name: _logName);
 
+      final canonicalSnapshot = _resolveVibeKernel().getUserSnapshot(
+        canonicalPersonality.agentId,
+      );
+      final canonicalDimensions = _dimensionsFromCanonicalSnapshot(
+        canonicalSnapshot,
+        canonicalPersonality.dimensions,
+      );
+
       // Analyze current personality state
-      final personalityInsights = await _analyzePersonalityState(personality);
+      final personalityInsights = await _analyzePersonalityState(
+        canonicalPersonality,
+        canonicalDimensions,
+      );
 
       // Analyze recent behavioral patterns
       final behavioralInsights = await _analyzeRecentBehavior(userId);
 
       // Analyze social dynamics
-      final socialInsights = await _analyzeSocialDynamics(userId, personality);
+      final socialInsights =
+          await _analyzeSocialDynamics(userId, canonicalPersonality);
 
       // Analyze relationship patterns
       final relationshipInsights = await _analyzeRelationshipPatterns(userId);
@@ -67,7 +108,7 @@ class UserVibeAnalyzer {
       // Create anonymized vibe signature
       final userVibe = UserVibe.fromPersonalityProfile(
         userId,
-        vibeDimensions,
+        canonicalDimensions.isEmpty ? vibeDimensions : canonicalDimensions,
         contextualSalt: await _generateContextualSalt(userId),
       );
 
@@ -75,7 +116,7 @@ class UserVibeAnalyzer {
       _vibeCache[userId] = userVibe;
 
       // Store vibe analytics (privacy-preserving)
-      await _storeVibeAnalytics(userId, userVibe, personality);
+      await _storeVibeAnalytics(userId, userVibe, canonicalPersonality);
 
       developer.log('User vibe compiled: ${userVibe.getVibeArchetype()}',
           name: _logName);
@@ -88,13 +129,34 @@ class UserVibeAnalyzer {
       developer.log('Error compiling user vibe: $e', name: _logName);
 
       // Fallback to basic vibe from personality
-      final fallbackVibe =
-          UserVibe.fromPersonalityProfile(userId, personality.dimensions);
+      final fallbackVibe = UserVibe.fromPersonalityProfile(
+        userId,
+        canonicalPersonality.dimensions,
+      );
       _vibeCache[userId] = fallbackVibe;
       return fallbackVibe;
     } finally {
       _isAnalyzing = false;
     }
+  }
+
+  Map<String, double> _dimensionsFromCanonicalSnapshot(
+    VibeStateSnapshot snapshot,
+    Map<String, double> fallbackDimensions,
+  ) {
+    if (!hasCanonicalVibeSignal(snapshot)) {
+      return fallbackDimensions;
+    }
+    final merged = Map<String, double>.from(snapshot.coreDna.dimensions);
+    snapshot.pheromones.vectors.forEach((key, value) {
+      final dimensionKey = key.startsWith('style:') ? key.substring(6) : key;
+      if (!merged.containsKey(dimensionKey)) {
+        return;
+      }
+      final current = merged[dimensionKey] ?? 0.5;
+      merged[dimensionKey] = (current * 0.82 + value * 0.18).clamp(0.0, 1.0);
+    });
+    return merged;
   }
 
   /// Analyze vibe compatibility between two users for AI2AI connections
@@ -308,13 +370,26 @@ class UserVibeAnalyzer {
 
   // Private analysis methods
   Future<PersonalityVibeInsights> _analyzePersonalityState(
-      PersonalityProfile personality) async {
+    PersonalityProfile personality,
+    Map<String, double> canonicalDimensions,
+  ) async {
     developer.log('Analyzing personality state for vibe compilation',
         name: _logName);
 
+    final effectiveDimensions = canonicalDimensions.isEmpty
+        ? personality.dimensions
+        : canonicalDimensions;
+
     final insights = PersonalityVibeInsights(
-      dominantTraits: personality.getDominantTraits(),
-      personalityStrength: personality.isWellDeveloped ? 1.0 : 0.6,
+      dominantTraits: effectiveDimensions.entries
+          .where((entry) => entry.value >= 0.65)
+          .map((entry) => entry.key)
+          .take(4)
+          .toList(),
+      personalityStrength: effectiveDimensions.values.isNotEmpty &&
+              effectiveDimensions.values.every((value) => value >= 0.35)
+          ? 1.0
+          : 0.6,
       evolutionMomentum: _calculateEvolutionMomentum(personality),
       authenticityLevel: personality.authenticity,
       confidenceLevel: personality.dimensionConfidence.values.isNotEmpty

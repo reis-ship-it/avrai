@@ -20,7 +20,7 @@ import 'package:avrai_runtime_os/ai/action_models.dart';
 import 'package:avrai_runtime_os/services/misc/action_history_service.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/presentation/widgets/actions/action_history_item_widget.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Page that displays action execution history
 ///
@@ -181,7 +181,7 @@ class _ActionHistoryPageState extends State<ActionHistoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Action History',
       appBarBackgroundColor: AppColors.black,
       appBarForegroundColor: AppColors.white,

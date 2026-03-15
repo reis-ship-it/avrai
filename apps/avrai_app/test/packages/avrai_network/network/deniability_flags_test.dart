@@ -4,15 +4,15 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:avrai_network/network/binary_packet_codec.dart';
-import 'package:avrai_network/network/ai2ai_protocol.dart';
+import 'package:avrai_network/network/mesh_packet_models.dart';
 import 'dart:typed_data';
 
 void main() {
   group('Binary Packet Codec - Deniability Flags', () {
     test('should encode deniability flag in binary packet', () {
-      final message = ProtocolMessage(
+      final message = MeshPacketEnvelope(
         version: '2.0',
-        type: MessageType.learningInsight,
+        type: MeshPacketType.learningInsight,
         senderId: 'test_sender',
         recipientId: null,
         timestamp: DateTime.now(),
@@ -34,9 +34,9 @@ void main() {
     });
 
     test('should not set deniability flag when false', () {
-      final message = ProtocolMessage(
+      final message = MeshPacketEnvelope(
         version: '2.0',
-        type: MessageType.heartbeat,
+        type: MeshPacketType.heartbeat,
         senderId: 'test_sender',
         recipientId: null,
         timestamp: DateTime.now(),
@@ -57,9 +57,9 @@ void main() {
     });
 
     test('should default deniability flag to false', () {
-      final message = ProtocolMessage(
+      final message = MeshPacketEnvelope(
         version: '2.0',
-        type: MessageType.heartbeat,
+        type: MeshPacketType.heartbeat,
         senderId: 'test_sender',
         recipientId: null,
         timestamp: DateTime.now(),
@@ -81,9 +81,9 @@ void main() {
 
     test('should handle round-trip encoding/decoding with deniability flag',
         () {
-      final message = ProtocolMessage(
+      final message = MeshPacketEnvelope(
         version: '2.0',
-        type: MessageType.learningExchange,
+        type: MeshPacketType.learningExchange,
         senderId: 'test_sender',
         recipientId: 'test_recipient',
         timestamp: DateTime(2020, 1, 1, 12, 0, 0),
@@ -103,16 +103,16 @@ void main() {
       final decoded = BinaryPacketCodec.decode(packet);
 
       expect(decoded.isDeniable, isTrue);
-      expect(decoded.message.type, MessageType.learningExchange);
+      expect(decoded.message.type, MeshPacketType.learningExchange);
       expect(decoded.encryptedPayload.length, encryptedPayload.length);
     });
 
     test('should set deniability flag for learning insight messages', () {
       // This tests the integration in ai2ai_protocol.dart
       // Learning insights should be marked as deniable
-      final message = ProtocolMessage(
+      final message = MeshPacketEnvelope(
         version: '2.0',
-        type: MessageType.learningInsight,
+        type: MeshPacketType.learningInsight,
         senderId: 'test_sender',
         recipientId: null,
         timestamp: DateTime.now(),
@@ -122,8 +122,8 @@ void main() {
       final encryptedPayload = Uint8List.fromList([1, 2, 3, 4, 5]);
 
       // Simulate what ai2ai_protocol.dart does: mark learning insights as deniable
-      final isDeniable = message.type == MessageType.learningInsight ||
-          message.type == MessageType.learningExchange;
+      final isDeniable = message.type == MeshPacketType.learningInsight ||
+          message.type == MeshPacketType.learningExchange;
 
       expect(isDeniable, isTrue);
 
@@ -136,13 +136,13 @@ void main() {
       final decoded = BinaryPacketCodec.decode(packet);
 
       expect(decoded.isDeniable, isTrue);
-      expect(decoded.message.type, MessageType.learningInsight);
+      expect(decoded.message.type, MeshPacketType.learningInsight);
     });
 
     test('should not set deniability flag for non-learning messages', () {
-      final message = ProtocolMessage(
+      final message = MeshPacketEnvelope(
         version: '2.0',
-        type: MessageType.heartbeat,
+        type: MeshPacketType.heartbeat,
         senderId: 'test_sender',
         recipientId: null,
         timestamp: DateTime.now(),
@@ -152,8 +152,8 @@ void main() {
       final encryptedPayload = Uint8List.fromList([1, 2, 3, 4, 5]);
 
       // Non-learning messages should not be deniable
-      final isDeniable = message.type == MessageType.learningInsight ||
-          message.type == MessageType.learningExchange;
+      final isDeniable = message.type == MeshPacketType.learningInsight ||
+          message.type == MeshPacketType.learningExchange;
 
       expect(isDeniable, isFalse);
 
@@ -169,9 +169,9 @@ void main() {
     });
 
     test('should preserve all flags when deniability flag is set', () {
-      final message = ProtocolMessage(
+      final message = MeshPacketEnvelope(
         version: '2.0',
-        type: MessageType.learningInsight,
+        type: MeshPacketType.learningInsight,
         senderId: 'test_sender',
         recipientId: 'test_recipient',
         timestamp: DateTime.now(),
@@ -195,7 +195,7 @@ void main() {
       // The decoded message will have hashed IDs (not original strings)
       expect(decoded.message.senderId, isA<String>());
       expect(decoded.message.senderId.length, 16); // 8 bytes = 16 hex chars
-      expect(decoded.message.type, MessageType.learningInsight);
+      expect(decoded.message.type, MeshPacketType.learningInsight);
     });
   });
 }

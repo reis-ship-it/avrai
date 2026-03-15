@@ -10,7 +10,6 @@ import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai_core/models/misc/reservation.dart';
 import 'package:avrai/presentation/pages/reservations/user_reservation_analytics_page.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
-import 'package:avrai_runtime_os/services/reservation/reservation_analytics_models.dart';
 import 'package:avrai_runtime_os/services/reservation/reservation_analytics_service.dart';
 import '../../helpers/widget_test_helpers.dart' as helpers;
 import '../../../helpers/bloc_test_helpers.dart';

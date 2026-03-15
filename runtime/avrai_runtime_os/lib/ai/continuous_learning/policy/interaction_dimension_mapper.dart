@@ -65,6 +65,18 @@ class InteractionDimensionMapper {
         updates['social_dynamics'] = 0.05;
         break;
 
+      case 'event_planning_created':
+        updates['community_evolution'] = 0.05;
+        updates['location_intelligence'] = 0.03;
+        updates['personalization_depth'] = 0.03;
+        break;
+
+      case 'event_planning_outcome_recorded':
+        updates['community_evolution'] = 0.06;
+        updates['recommendation_accuracy'] = 0.04;
+        updates['location_intelligence'] = 0.03;
+        break;
+
       case 'organic_spot_discovered':
         updates['location_intelligence'] = 0.08;
         updates['user_preference_understanding'] = 0.05;

@@ -16,7 +16,7 @@ import 'package:avrai/theme/colors.dart';
 import 'package:avrai/presentation/blocs/group_matching_bloc.dart';
 import 'package:avrai_core/models/quantum/group_matching_result.dart';
 import 'package:avrai/presentation/pages/spots/spot_details_page.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Group Results Page
@@ -40,7 +40,7 @@ class _GroupResultsPageState extends State<GroupResultsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Group Matches',
       appBarBackgroundColor: AppColors.primary,
       appBarForegroundColor: AppColors.white,

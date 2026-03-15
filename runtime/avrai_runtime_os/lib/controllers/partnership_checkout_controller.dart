@@ -75,9 +75,6 @@ class PartnershipCheckoutController
   final PartnershipService _partnershipService;
   final ExpertiseEventService _eventService;
   final SalesTaxService _salesTaxService;
-  // ignore: unused_field
-  final AtomicClockService
-      _atomicClock; // Reserved for future timestamp-based purchase tracking
 
   // AVRAI Core System Integration (optional, graceful degradation)
   final KnotFabricService? _knotFabricService;
@@ -105,10 +102,6 @@ class PartnershipCheckoutController
             partnershipService ?? GetIt.instance<PartnershipService>(),
         _eventService = eventService ?? GetIt.instance<ExpertiseEventService>(),
         _salesTaxService = salesTaxService ?? GetIt.instance<SalesTaxService>(),
-        _atomicClock = atomicClock ??
-            (GetIt.instance.isRegistered<AtomicClockService>()
-                ? GetIt.instance<AtomicClockService>()
-                : AtomicClockService()),
         _knotFabricService = knotFabricService ??
             (GetIt.instance.isRegistered<KnotFabricService>()
                 ? GetIt.instance<KnotFabricService>()

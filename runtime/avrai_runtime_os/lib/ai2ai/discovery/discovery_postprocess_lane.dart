@@ -1,6 +1,7 @@
 // MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
 import 'package:avrai_runtime_os/ai/vibe_analysis_engine.dart';
 import 'package:avrai_runtime_os/ai2ai/aipersonality_node.dart';
+import 'package:avrai_runtime_os/ai2ai/canonical_peer_resolution_service.dart';
 import 'package:avrai_runtime_os/ai2ai/discovery/node_compatibility_analyzer.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 import 'package:avrai_core/models/personality_profile.dart';
@@ -37,6 +38,8 @@ class DiscoveryPostprocessLane {
       vibeAnalyzer: vibeAnalyzer,
       localVibe: localVibe,
       nodes: nodes,
+      localPersonality: personality,
+      canonicalPeerResolutionService: CanonicalPeerResolutionService(),
     );
 
     final worthyNodes = nodes.where((node) {

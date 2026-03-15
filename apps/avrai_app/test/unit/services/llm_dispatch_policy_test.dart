@@ -1,13 +1,14 @@
 import 'package:avrai_runtime_os/services/ai_infrastructure/llm_service.dart';
+import 'package:avrai_runtime_os/services/language/language_runtime_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-final class _ThrowingBackend implements LlmBackend {
+final class _ThrowingBackend implements LanguageBackend {
   @override
   Future<String> chat({
     required LLMService service,
-    required List<ChatMessage> messages,
-    required LLMContext? context,
+    required List<LanguageTurnMessage> messages,
+    required LanguageRuntimeContext? context,
     required double temperature,
     required int maxTokens,
     required Duration timeout,
@@ -19,8 +20,8 @@ final class _ThrowingBackend implements LlmBackend {
   @override
   Stream<String> chatStream({
     required LLMService service,
-    required List<ChatMessage> messages,
-    required LLMContext? context,
+    required List<LanguageTurnMessage> messages,
+    required LanguageRuntimeContext? context,
     required double temperature,
     required int maxTokens,
     required bool useRealSse,
@@ -30,14 +31,14 @@ final class _ThrowingBackend implements LlmBackend {
   }
 }
 
-final class _RecordingBackend implements LlmBackend {
+final class _RecordingBackend implements LanguageBackend {
   int chatCalls = 0;
 
   @override
   Future<String> chat({
     required LLMService service,
-    required List<ChatMessage> messages,
-    required LLMContext? context,
+    required List<LanguageTurnMessage> messages,
+    required LanguageRuntimeContext? context,
     required double temperature,
     required int maxTokens,
     required Duration timeout,
@@ -50,8 +51,8 @@ final class _RecordingBackend implements LlmBackend {
   @override
   Stream<String> chatStream({
     required LLMService service,
-    required List<ChatMessage> messages,
-    required LLMContext? context,
+    required List<LanguageTurnMessage> messages,
+    required LanguageRuntimeContext? context,
     required double temperature,
     required int maxTokens,
     required bool useRealSse,
@@ -62,11 +63,11 @@ final class _RecordingBackend implements LlmBackend {
 }
 
 void main() {
-  group('LLMDispatchPolicy', () {
+  group('LanguageRoutingPolicy', () {
     test('human chat policy blocks silent cloud fallback on local failure',
         () async {
       final cloud = _RecordingBackend();
-      final service = LLMService(
+      final service = LanguageRuntimeService(
         SupabaseClient('http://localhost', 'anon'),
         cloudBackend: cloud,
         localBackend: _ThrowingBackend(),
@@ -77,9 +78,12 @@ void main() {
       await expectLater(
         () => service.chat(
           messages: [
-            ChatMessage(role: ChatRole.user, content: 'hello'),
+            LanguageTurnMessage(
+              role: LanguageTurnRole.user,
+              content: 'hello',
+            ),
           ],
-          dispatchPolicy: const LLMDispatchPolicy.humanChat(),
+          dispatchPolicy: const LanguageRoutingPolicy.humanChat(),
         ),
         throwsA(isA<Exception>()),
       );
@@ -88,7 +92,7 @@ void main() {
 
     test('standard policy allows cloud fallback on local failure', () async {
       final cloud = _RecordingBackend();
-      final service = LLMService(
+      final service = LanguageRuntimeService(
         SupabaseClient('http://localhost', 'anon'),
         cloudBackend: cloud,
         localBackend: _ThrowingBackend(),
@@ -98,7 +102,10 @@ void main() {
 
       final response = await service.chat(
         messages: [
-          ChatMessage(role: ChatRole.user, content: 'hello'),
+          LanguageTurnMessage(
+            role: LanguageTurnRole.user,
+            content: 'hello',
+          ),
         ],
       );
 

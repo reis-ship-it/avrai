@@ -63,6 +63,9 @@ export 'package:avrai_knot/services/knot/worldsheet_analytics_service.dart';
 export 'package:avrai_knot/services/knot/worldsheet_comparison_service.dart';
 
 // Reality Engine Data
+export 'package:reality_engine/forecast/baseline_forecast_kernel.dart';
+export 'package:reality_engine/forecast/forecast_kernel.dart';
+export 'package:reality_engine/forecast/native_forecast_kernel.dart';
 export 'package:reality_engine/memory/air_gap/tuple_extraction_engine.dart';
 export 'package:reality_engine/memory/semantic_knowledge_store.dart';
 
@@ -76,4 +79,5 @@ export 'package:avrai_quantum/services/quantum/quantum_entanglement_service.dart
 export 'package:avrai_runtime_os/ai2ai/models/community_chat_message.dart';
 export 'package:avrai_runtime_os/ai2ai/models/friend_chat_message.dart';
 export 'package:avrai_runtime_os/ai2ai/services/ai2ai_broadcast_service.dart';
+export 'package:avrai_runtime_os/services/messaging/messaging.dart';
 export 'package:avrai_ai/services/contextual_personality_service.dart';

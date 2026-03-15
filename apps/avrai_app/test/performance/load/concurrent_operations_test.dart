@@ -26,11 +26,24 @@ import 'package:avrai_runtime_os/services/ai_infrastructure/ai_search_suggestion
 import 'package:geolocator/geolocator.dart';
 import 'dart:async';
 import 'dart:math' as math;
+import '../../helpers/platform_channel_helper.dart';
 import '../../helpers/test_helpers.dart';
+import '../../helpers/test_storage_helper.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   group('Phase 9: Load Testing & Concurrent Operations', () {
+    setUpAll(() async {
+      await setupTestStorage();
+      await TestStorageHelper.initTestStorage();
+      TestStorageHelper.getBox('search_cache');
+    });
+
+    tearDownAll(() async {
+      await cleanupTestStorage();
+      await TestStorageHelper.clearTestStorage();
+    });
+
     group('Database Concurrent Load Testing', () {
       test('should handle concurrent spot creation efficiently', () async {
         // Arrange
@@ -222,7 +235,7 @@ void main() {
     group('Cache System Load Testing', () {
       test('should handle concurrent cache operations efficiently', () async {
         // Arrange
-        final cacheService = SearchCacheService();
+        final cacheService = _createTestSearchCacheService();
         const concurrentCacheOps = 500;
 
         // Act - Concurrent cache operations (reads/writes)
@@ -267,7 +280,7 @@ void main() {
 
       test('should maintain cache hit rate under load', () async {
         // Arrange
-        final cacheService = SearchCacheService();
+        final cacheService = _createTestSearchCacheService();
 
         // Pre-populate cache
         for (int i = 0; i < 100; i++) {
@@ -746,7 +759,7 @@ Future<void> _simulateResourceIntensiveDBOperation(int operationIndex) async {
 
 Future<void> _simulateResourceIntensiveCacheOperation(
     int operationIndex) async {
-  final cacheService = SearchCacheService();
+  final cacheService = _createTestSearchCacheService();
 
   // Multiple cache operations
   for (int i = 0; i < 10; i++) {
@@ -1007,9 +1020,13 @@ HybridSearchBloc _createMockHybridSearchBloc() {
 
   return HybridSearchBloc(
     hybridSearchUseCase: usecase,
-    cacheService: SearchCacheService(),
+    cacheService: _createTestSearchCacheService(),
     suggestionsService: _FakeAISearchSuggestionsService(),
   );
+}
+
+SearchCacheService _createTestSearchCacheService() {
+  return SearchCacheService(box: TestStorageHelper.getBox('search_cache'));
 }
 
 /// Real fake implementation with actual learning and suggestion behavior

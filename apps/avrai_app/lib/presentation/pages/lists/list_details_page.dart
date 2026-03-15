@@ -17,7 +17,7 @@ import 'package:flutter/services.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai_runtime_os/ai/event_logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 class ListDetailsPage extends StatefulWidget {
@@ -104,7 +104,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: widget.list.title,
       actions: [
         PopupMenuButton<String>(

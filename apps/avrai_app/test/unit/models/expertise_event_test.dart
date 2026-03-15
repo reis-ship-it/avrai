@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:avrai_core/models/events/event_planning.dart';
 import 'package:avrai_core/models/expertise/expertise_event.dart';
 import 'package:avrai_core/models/user/unified_user.dart';
 import 'package:avrai_core/models/spots/spot.dart';
@@ -206,6 +207,38 @@ void main() {
           location: '123 Main St',
           price: 25.0,
           isPaid: true,
+          planningSnapshot: EventPlanningSnapshot(
+            docket: EventDocketLite(
+              intentTags: const ['spring', 'music'],
+              vibeTags: const ['joyful'],
+              audienceTags: const ['neighbors'],
+              candidateLocalityLabel: 'Avondale',
+              candidateLocalityCode: 'bham_avondale',
+              preferredStartDate: startTime,
+              preferredEndDate: endTime,
+              sizeIntent: EventSizeIntent.standard,
+              priceIntent: EventPriceIntent.lowCost,
+              hostGoal: EventHostGoal.celebration,
+              airGapProvenance: EventAirGapProvenance(
+                crossingId: 'crossing-expertise-event-test',
+                crossedAt: testDate,
+                sourceKind: EventPlanningSourceKind.human,
+                tupleRefs: const ['tuple-1'],
+                confidence: EventPlanningConfidence.high,
+              ),
+            ),
+            acceptedSuggestion: EventCreationSuggestion(
+              suggestedStartTime: startTime,
+              suggestedEndTime: endTime,
+              suggestedLocalityLabel: 'Avondale',
+              suggestedMaxAttendees: 18,
+              suggestedPrice: 25.0,
+              predictedAttendanceFillBand: EventAttendanceFillBand.medium,
+              confidence: EventPlanningConfidence.medium,
+              explanation: 'Medium confidence based on locality fit.',
+            ),
+            createdAt: testDate,
+          ),
           createdAt: testDate,
           updatedAt: testDate,
           status: EventStatus.upcoming,
@@ -218,6 +251,14 @@ void main() {
         expect(restored.canUserAttend('user-new'),
             equals(event.canUserAttend('user-new')));
         expect(restored.isFull, equals(event.isFull));
+        expect(restored.planningSnapshot, equals(event.planningSnapshot));
+        expect(json['planningSnapshot'], isA<Map<String, dynamic>>());
+        expect(
+          (json['planningSnapshot'] as Map<String, dynamic>)
+              .toString()
+              .contains('purposeText'),
+          isFalse,
+        );
       });
     });
 

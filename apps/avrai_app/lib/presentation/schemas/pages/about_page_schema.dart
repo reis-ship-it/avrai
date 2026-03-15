@@ -46,7 +46,7 @@ PageSchema buildAboutPageSchema({
         actions: [
           ActionSchema(
             title: 'Website',
-            subtitle: 'avrai.app',
+            subtitle: 'avrai.org',
             icon: Icons.language,
             onTap: openWebsite,
           ),

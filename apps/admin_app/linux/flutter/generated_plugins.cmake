@@ -4,12 +4,8 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   audioplayers_linux
-  file_selector_linux
   flutter_secure_storage_x_linux
   gtk
-  objectbox_flutter_libs
-  printing
-  sqlite3_flutter_libs
   url_launcher_linux
 )
 

@@ -9,6 +9,21 @@ class ConnectionSummaryOrchestrationLane {
     Iterable<ConnectionMetrics> activeConnections,
   ) {
     return activeConnections.map((connection) {
+      final canonicalReasonCodes =
+          ((connection.learningOutcomes['canonical_reason_codes'] as List?) ??
+                  const <dynamic>[])
+              .map((entry) => entry.toString())
+              .toList(growable: false);
+      final sharedGeographicLevels =
+          ((connection.learningOutcomes['shared_geographic_levels'] as List?) ??
+                  const <dynamic>[])
+              .map((entry) => entry.toString())
+              .toList(growable: false);
+      final sharedScopedContextIds =
+          ((connection.learningOutcomes['shared_scoped_context_ids'] as List?) ??
+                  const <dynamic>[])
+              .map((entry) => entry.toString())
+              .toList(growable: false);
       return ConnectionSummary(
         connectionId: connection.connectionId,
         duration: connection.connectionDuration,
@@ -19,6 +34,17 @@ class ConnectionSummaryOrchestrationLane {
         status: connection.status,
         interactionCount: connection.interactionHistory.length,
         dimensionsEvolved: connection.dimensionEvolution.keys.length,
+        canonicalReasonCodes: canonicalReasonCodes,
+        peerConfidence:
+            (connection.learningOutcomes['peer_confidence'] as num?)
+                ?.toDouble(),
+        peerFreshnessHours:
+            (connection.learningOutcomes['peer_freshness_hours'] as num?)
+                ?.toDouble(),
+        sharedGeographicLevels: sharedGeographicLevels,
+        sharedScopedContextIds: sharedScopedContextIds,
+        peerWhySummary:
+            connection.learningOutcomes['peer_why_summary'] as String?,
       );
     }).toList();
   }

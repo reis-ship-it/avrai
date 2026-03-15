@@ -8,6 +8,7 @@ import 'package:avrai_runtime_os/ml/model_version_registry.dart';
 import 'package:avrai_runtime_os/ml/model_version_info.dart';
 import 'package:avrai_runtime_os/services/ai_infrastructure/kernel_governance_gate.dart';
 import 'package:avrai_runtime_os/services/ai_infrastructure/model_safety_supervisor.dart';
+import 'package:avrai_runtime_os/services/security/security_kernel_release_gate_service.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
 
@@ -19,10 +20,13 @@ class ModelVersionManager {
   static const String _logName = 'ModelVersionManager';
   SharedPreferencesCompat? _prefs;
   final KernelGovernanceGate? _kernelGovernanceGate;
+  final SecurityKernelReleaseGateService? _securityReleaseGateService;
 
   ModelVersionManager({
     KernelGovernanceGate? kernelGovernanceGate,
-  }) : _kernelGovernanceGate = kernelGovernanceGate;
+    SecurityKernelReleaseGateService? securityReleaseGateService,
+  })  : _kernelGovernanceGate = kernelGovernanceGate,
+        _securityReleaseGateService = securityReleaseGateService;
 
   Future<SharedPreferencesCompat> _getPrefs() async {
     _prefs ??= await SharedPreferencesCompat.getInstance();
@@ -36,7 +40,10 @@ class ModelVersionManager {
   ///
   /// **Returns:**
   /// True if switch was successful, false if version doesn't exist
-  Future<bool> switchCallingScoreVersion(String newVersion) async {
+  Future<bool> switchCallingScoreVersion(
+    String newVersion, {
+    bool operatorApproved = false,
+  }) async {
     if (!ModelVersionRegistry.hasVersion(newVersion,
         modelType: 'calling_score')) {
       developer.log(
@@ -66,6 +73,19 @@ class ModelVersionManager {
       );
       return false;
     }
+    final securityGateDecision = await _evaluateSecurityReleaseGate(
+      modelType: 'calling_score',
+      toVersion: newVersion,
+      operatorApproved: operatorApproved,
+    );
+    if (!securityGateDecision.servingAllowed) {
+      developer.log(
+        'Blocked calling_score switch by security release gate: '
+        '${securityGateDecision.reasonCodes.join(",")}',
+        name: _logName,
+      );
+      return false;
+    }
     final success =
         ModelVersionRegistry.setActiveCallingScoreVersion(newVersion);
 
@@ -80,6 +100,7 @@ class ModelVersionManager {
         await ModelSafetySupervisor(
           prefs: prefs,
           kernelGovernanceGate: _kernelGovernanceGate,
+          securityReleaseGateService: _securityReleaseGateService,
         ).startRolloutCandidate(
           modelType: 'calling_score',
           fromVersion: previousVersion,
@@ -103,7 +124,10 @@ class ModelVersionManager {
   ///
   /// **Returns:**
   /// True if switch was successful, false if version doesn't exist
-  Future<bool> switchOutcomeVersion(String newVersion) async {
+  Future<bool> switchOutcomeVersion(
+    String newVersion, {
+    bool operatorApproved = false,
+  }) async {
     if (!ModelVersionRegistry.hasVersion(newVersion, modelType: 'outcome')) {
       developer.log(
         'Outcome prediction version $newVersion not found in registry',
@@ -132,6 +156,19 @@ class ModelVersionManager {
       );
       return false;
     }
+    final securityGateDecision = await _evaluateSecurityReleaseGate(
+      modelType: 'outcome',
+      toVersion: newVersion,
+      operatorApproved: operatorApproved,
+    );
+    if (!securityGateDecision.servingAllowed) {
+      developer.log(
+        'Blocked outcome switch by security release gate: '
+        '${securityGateDecision.reasonCodes.join(",")}',
+        name: _logName,
+      );
+      return false;
+    }
     final success = ModelVersionRegistry.setActiveOutcomeVersion(newVersion);
 
     if (success) {
@@ -145,6 +182,7 @@ class ModelVersionManager {
         await ModelSafetySupervisor(
           prefs: prefs,
           kernelGovernanceGate: _kernelGovernanceGate,
+          securityReleaseGateService: _securityReleaseGateService,
         ).startRolloutCandidate(
           modelType: 'outcome',
           fromVersion: previousVersion,
@@ -180,7 +218,8 @@ class ModelVersionManager {
     }
 
     // Rollback to v1.0-hybrid as safe fallback
-    final success = await switchCallingScoreVersion('v1.0-hybrid');
+    final success =
+        await switchCallingScoreVersion('v1.0-hybrid', operatorApproved: true);
     return success ? 'v1.0-hybrid' : null;
   }
 
@@ -199,7 +238,8 @@ class ModelVersionManager {
       return null;
     }
 
-    final success = await switchOutcomeVersion('v1.0-hybrid');
+    final success =
+        await switchOutcomeVersion('v1.0-hybrid', operatorApproved: true);
     return success ? 'v1.0-hybrid' : null;
   }
 
@@ -269,6 +309,7 @@ class ModelVersionManager {
     String version,
     double trafficPercentage, {
     String modelType = 'calling_score',
+    bool operatorApproved = false,
   }) async {
     trafficPercentage = trafficPercentage.clamp(0.0, 1.0);
     final correlationId =
@@ -288,6 +329,19 @@ class ModelVersionManager {
       developer.log(
         'Blocked AB test start for $modelType/$version: '
         '${gateDecision.reasonCodes.join(",")} decision_id=${gateDecision.decisionId} corr=$correlationId',
+        name: _logName,
+      );
+      return;
+    }
+    final securityGateDecision = await _evaluateSecurityReleaseGate(
+      modelType: modelType,
+      toVersion: version,
+      operatorApproved: operatorApproved,
+    );
+    if (!securityGateDecision.servingAllowed) {
+      developer.log(
+        'Blocked AB test start for $modelType/$version by security release gate: '
+        '${securityGateDecision.reasonCodes.join(",")}',
         name: _logName,
       );
       return;
@@ -359,5 +413,30 @@ class ModelVersionManager {
       );
     }
     return _kernelGovernanceGate.evaluate(request);
+  }
+
+  Future<SecurityKernelReleaseGateSnapshot> _evaluateSecurityReleaseGate({
+    required String modelType,
+    required String toVersion,
+    required bool operatorApproved,
+  }) async {
+    final service = _securityReleaseGateService;
+    if (service == null) {
+      return SecurityKernelReleaseGateSnapshot(
+        generatedAt: DateTime.now().toUtc(),
+        servingAllowed: true,
+        degradedReleaseAllowed: false,
+        reasonCodes: const <String>['no_security_release_gate_configured'],
+        blockingCampaignIds: const <String>[],
+        hardStopRunIds: const <String>[],
+        blockingBundleIds: const <String>[],
+      );
+    }
+    return service.evaluateModelPromotion(
+      surfaceId: modelType,
+      version: toVersion,
+      operatorApproved: operatorApproved,
+      metadata: <String, dynamic>{'model_type': modelType},
+    );
   }
 }

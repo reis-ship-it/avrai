@@ -1,92 +1,127 @@
-# Proof Run (Skeptic Bundle) — iOS Simulator
+# Proof Run (Skeptic Bundle) — Simulator / Emulator
 
-This folder contains a **repeatable “proof run” artifact bundle** generator so you can hand a skeptic **video + logs + ledger rows + test outputs**, not “it works on my machine.”
+This folder contains **repeatable proof/smoke bundle tooling** so you can hand a skeptic **proof exports + headless wake records + validation summaries**, not “it works on my machine.”
 
 ## What you get
 
-Running the script produces:
+Running the simulated smoke script produces:
 
 - A timestamped folder under `reports/proof_runs/`
 - A single `.zip` of that folder for easy sharing
 
 Contents include:
 
-- **Screen recording** (`video/*.mp4`) captured via `xcrun simctl io booted recordVideo`
-- **Simulator log stream** (`logs/ios_simulator_log_stream.txt`)
-- **Ledger receipt export** pulled from the app container (`ledger/ledger_rows.csv` + `ledger_rows.jsonl`)
-- **`flutter analyze` output** (`tests/flutter_analyze.txt`)
-- **Focused BLE/Signal suite output** (`tests/ble_signal_suite.txt`) from `test/suites/ble_signal_suite.sh`
+- **Machine-readable smoke response** (`simulated_smoke_response.json`)
+- **Driver log** (`flutter_drive.log`)
+- **Exported proof bundle** pulled from the app container:
+  - `ledger_rows.csv`
+  - `ledger_rows.jsonl`
+  - `background_wake_runs.json`
+  - `field_validation_proofs.json`
+  - `ambient_social_diagnostics.json`
+- **Artifact manifest** (`manifest.json`) labeled as simulated
+- **Validator summary** (`validation_summary.json`)
 
 ## Prereqs
 
 - macOS with Xcode installed (for `xcrun`)
-- A **booted iOS Simulator**
+- An iOS simulator or Android emulator available locally
 - avrai app installed (bundle id defaults to `com.avrai.app`)
-- In-app: **Proof Run (debug)** page available (debug builds only)
+- Debug build only
 
 ## Run it
 
-From repo root:
+From repo root, the deterministic smoke entrypoint is:
+
+```bash
+./scripts/proof_run/run_simulated_headless_smoke.sh ios
+./scripts/proof_run/run_simulated_headless_smoke.sh android
+```
+
+This boots the simulator/emulator if needed, launches the app, runs the in-app automation service through `flutter drive`, pulls the exported proof bundle, validates it, and zips the final artifact.
+
+CI uses the same contract through:
+
+```text
+.github/workflows/simulated-headless-smoke-guard.yml
+```
+
+That workflow runs the Android emulator and iOS simulator smoke lanes against the same bundle validator and uploads the proof artifacts.
+
+Optional override (if bundle id changes):
+
+```bash
+APP_BUNDLE_ID=com.avrai.app ./scripts/proof_run/run_simulated_headless_smoke.sh ios
+```
+
+The manual page-driven capture flow still exists:
 
 ```bash
 ./scripts/proof_run/run_proof_run_bundle.sh
 ```
 
-Optional override (if bundle id changes):
+## Simulated smoke contract
+
+The automated smoke run always drives the same sequence:
+
+- `proof_run_started`
+- simulated AI2AI encounter
+- simulated wake reasons:
+  - `ble_encounter`
+  - `trusted_announce_refresh`
+  - `significant_location`
+  - `background_task_window`
+- controlled private-mesh validation
+- proof export
+- `proof_run_finished`
+
+## Bundle validation
+
+The validator is:
 
 ```bash
-APP_BUNDLE_ID=com.avrai.app ./scripts/proof_run/run_proof_run_bundle.sh
+dart run work/tools/validate_simulated_smoke_bundle.dart <bundle_dir>
 ```
 
-### Auto mode (non-interactive)
+It checks:
 
-If you want the capture to run for a fixed duration (useful when driving the simulator with automation):
+- required bundle files exist
+- background wake runs are present and include all required simulated wake reasons
+- field validation proofs include trust, AI2AI, and ambient-social scenarios
+- ambient-social diagnostics include candidate/confirmed counts, merge/rejection counts, and promotion lineage
+- the manifest explicitly labels the artifact as simulated
 
-```bash
-PROOF_RUN_AUTO=1 RECORD_SECONDS=720 ./scripts/proof_run/run_proof_run_bundle.sh
-```
+## Manual debug page
 
-### Run id selection
+The **Proof Run (debug)** page still exists for:
 
-By default the script will auto-detect the most recently exported run under:
+- manual milestone creation
+- one-off encounter simulation
+- ad hoc proof export
+- demo walkthroughs
 
-- `Documents/proof_runs/<run_id>/`
+It is no longer the primary simulated smoke automation surface.
 
-If you want to force a specific run id (recommended if multiple exports exist):
+## Where the proof bundle comes from
 
-```bash
-RUN_ID=<run_id> ./scripts/proof_run/run_proof_run_bundle.sh
-```
-
-## In-app recording checklist (3–7 minutes)
-
-The script will start capturing video + logs immediately. While it’s recording:
-
-1. **Onboarding**: walk through onboarding (or show it already complete)
-2. **Offline AI provisioning**: show the provisioning state/progress (Settings → On-Device AI)
-3. **One AI chat**: use Proof Run page chat OR Home → Explore → AI tab
-4. **One AI2AI encounter**: on iOS simulator this must be **simulated** (press “Simulate encounter” on Proof Run page)
-5. **Export receipts**: Proof Run page → **Export**
-
-When done, return to terminal and press ENTER to stop recording.
-
-## Where the ledger export comes from
-
-The app writes proof-run receipts to the v0 ledger (`ledger_events_v0`) with:
-
-- `entity_type = 'proof_run'`
-- `entity_id = <run_id>`
-
-The Proof Run page’s **Export** writes:
+The automated service still exports the existing proof bundle from:
 
 - `Documents/proof_runs/<run_id>/ledger_rows.csv`
 - `Documents/proof_runs/<run_id>/ledger_rows.jsonl`
+- `Documents/proof_runs/<run_id>/background_wake_runs.json`
+- `Documents/proof_runs/<run_id>/field_validation_proofs.json`
+- `Documents/proof_runs/<run_id>/ambient_social_diagnostics.json`
 
-The script pulls those files from the simulator container:
-
-- `xcrun simctl get_app_container booted com.avrai.app data`
+The smoke wrapper copies those files out of the simulator/emulator container and adds the manifest, response payload, and validation summary.
 
 ## Truth note (important)
 
-iOS simulator cannot do real BLE discovery, so the AI2AI encounter in this bundle is a **simulation of the orchestrator hot-path** (it is labeled as simulated in the ledger receipt payload and in the bundle manifest). For real BLE proof, use Android physical devices.
+Simulator/emulator bundles are explicitly **simulated encounter/wake** coverage. They are useful for validating:
 
+- startup
+- headless wake execution
+- proof export shape
+- ambient-social diagnostics
+- field proof persistence
+
+They are **not** a claim of physical BLE/radio validation. For real BLE proof, use physical devices.

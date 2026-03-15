@@ -19,9 +19,10 @@
   },
   "privileged_actions": {
     "step_up_auth_required": true,
-    "two_person_approval_for_break_glass": true
+    "two_person_approval_for_break_glass": true,
+    "two_person_approval_for_open_web_and_promotion": true
   },
-  "status": "starter",
-  "last_updated": "2026-02-28",
-  "notes": "Starter contract for mTLS and authorization policy gates pending PKI backend setup."
+  "status": "enforced",
+  "last_updated": "2026-03-14",
+  "notes": "mTLS-bound policy enforcement is mandatory for beta governed autoresearch hardening."
 }

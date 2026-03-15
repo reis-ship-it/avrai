@@ -13,6 +13,7 @@ import 'package:avrai_runtime_os/ai/quantum/location_compatibility_calculator.da
 import 'package:avrai_runtime_os/services/calling_score/calling_score_calculator.dart';
 import 'package:avrai_runtime_os/services/infrastructure/feature_flag_service.dart';
 import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
+import 'package:avrai_runtime_os/services/vibe/canonical_vibe_projection_service.dart';
 import 'package:avrai_knot/services/knot/entity_knot_service.dart';
 import 'package:avrai_knot/services/knot/personality_knot_service.dart';
 import 'package:geolocator/geolocator.dart';
@@ -45,6 +46,7 @@ class SpotVibeMatchingService {
   final EntitySignatureService? _entitySignatureService;
   final EntityKnotService? _entityKnotService;
   final PersonalityKnotService? _personalityKnotService;
+  final CanonicalVibeProjectionService _canonicalVibeProjectionService;
 
   SpotVibeMatchingService({
     required UserVibeAnalyzer vibeAnalyzer,
@@ -53,12 +55,15 @@ class SpotVibeMatchingService {
     EntitySignatureService? entitySignatureService,
     EntityKnotService? entityKnotService,
     PersonalityKnotService? personalityKnotService,
+    CanonicalVibeProjectionService? canonicalVibeProjectionService,
   })  : _vibeAnalyzer = vibeAnalyzer,
         _callingScoreCalculator = callingScoreCalculator,
         _featureFlags = featureFlags,
         _entitySignatureService = entitySignatureService,
         _entityKnotService = entityKnotService,
-        _personalityKnotService = personalityKnotService;
+        _personalityKnotService = personalityKnotService,
+        _canonicalVibeProjectionService =
+            canonicalVibeProjectionService ?? CanonicalVibeProjectionService();
 
   /// Calculate vibe compatibility between a user and a spot
   /// Returns compatibility score (0.0 to 1.0)
@@ -108,10 +113,14 @@ class SpotVibeMatchingService {
     UnifiedLocation? spotLocation,
     double? timingCompatibility,
   }) async {
+    final canonicalPersonality = await _canonicalizeUserPersonality(
+      user.id,
+      userPersonality,
+    );
     final legacyCompatibility = await _calculateLegacySpotUserCompatibility(
       user: user,
       spot: spot,
-      userPersonality: userPersonality,
+      userPersonality: canonicalPersonality,
       spotVibe: spotVibe,
       userLocation: userLocation,
       spotLocation: spotLocation,
@@ -138,7 +147,7 @@ class SpotVibeMatchingService {
         user: user,
         spot: spot,
         fallbackScore: legacyCompatibility,
-        personality: userPersonality,
+        personality: canonicalPersonality,
       );
     } catch (e, st) {
       developer.log(
@@ -250,11 +259,15 @@ class SpotVibeMatchingService {
     Position? currentLocation,
     double threshold = 0.7, // 70% calling score threshold
   }) async {
+    final canonicalPersonality = await _canonicalizeUserPersonality(
+      user.id,
+      userPersonality,
+    );
     // Use calling score calculator if available
     if (_callingScoreCalculator != null) {
       try {
         final userVibe =
-            await _vibeAnalyzer.compileUserVibe(user.id, userPersonality);
+            await _vibeAnalyzer.compileUserVibe(user.id, canonicalPersonality);
         final vibe = spotVibe ?? _inferSpotVibe(spot);
 
         final context = currentLocation != null
@@ -283,7 +296,7 @@ class SpotVibeMatchingService {
           opportunityVibe: vibe,
           context: context,
           timing: timing,
-          userPersonality: userPersonality,
+          userPersonality: canonicalPersonality,
           userId: user.id, // Phase 12: For data collection
         );
 
@@ -300,7 +313,7 @@ class SpotVibeMatchingService {
     final compatibility = await calculateSpotUserCompatibility(
       user: user,
       spot: spot,
-      userPersonality: userPersonality,
+      userPersonality: canonicalPersonality,
       spotVibe: spotVibe,
     );
 
@@ -318,10 +331,14 @@ class SpotVibeMatchingService {
     int maxResults = 20, // Maximum number of results
   }) async {
     try {
+      final canonicalPersonality = await _canonicalizeUserPersonality(
+        user.id,
+        userPersonality,
+      );
       // Get user vibe from AI2AI system
       final userVibe = await _vibeAnalyzer.compileUserVibe(
         user.id,
-        userPersonality,
+        canonicalPersonality,
       );
 
       final matches = <SpotMatch>[];
@@ -454,6 +471,16 @@ class SpotVibeMatchingService {
 
     return (0.6 * crossingSimilarity + 0.4 * polynomialSimilarity)
         .clamp(0.0, 1.0);
+  }
+
+  Future<PersonalityProfile> _canonicalizeUserPersonality(
+    String userId,
+    PersonalityProfile userPersonality,
+  ) {
+    return _canonicalVibeProjectionService.canonicalizeUserProfile(
+      userId: userId,
+      profile: userPersonality,
+    );
   }
 }
 

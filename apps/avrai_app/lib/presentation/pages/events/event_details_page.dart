@@ -13,8 +13,8 @@ import 'package:avrai_runtime_os/controllers/event_attendance_controller.dart';
 import 'package:avrai_runtime_os/services/intake/intake_models.dart';
 import 'package:avrai_runtime_os/services/intake/source_intake_orchestrator.dart';
 import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
+import 'package:avrai_runtime_os/config/bham_beta_defaults.dart';
 import 'package:avrai/theme/colors.dart';
-import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/pages/payment/checkout_page.dart';
 import 'package:avrai/presentation/pages/partnerships/partnership_proposal_page.dart';
@@ -26,22 +26,11 @@ import 'package:avrai/presentation/widgets/events/safety_checklist_widget.dart';
 import 'package:avrai_runtime_os/services/partnerships/partnership_service.dart';
 import 'package:avrai_runtime_os/services/fraud/fraud_detection_service.dart';
 import 'package:avrai/presentation/widgets/common/page_transitions.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_page_header.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_status_pill.dart';
 
-/// Event Details Page
-/// Agent 2: Event Discovery & Hosting UI (Phase 1, Section 1)
-///
-/// CRITICAL: Uses AppColors/AppTheme (100% adherence required)
-///
-/// Features:
-/// - Full event information display
-/// - Registration button (free events)
-/// - Purchase button (paid events)
-/// - Share event
-/// - Add to calendar
-/// - Host information with expertise pins
 class EventDetailsPage extends StatefulWidget {
   final ExpertiseEvent event;
 
@@ -85,7 +74,9 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
     _currentEvent = widget.event;
     unawaited(_recordEventViewSignal());
     _checkRegistrationStatus();
-    _checkPartnerships();
+    if (BhamBetaDefaults.enablePartnershipSurfaces) {
+      _checkPartnerships();
+    }
     _checkFraudStatus();
   }
 
@@ -125,6 +116,10 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
   }
 
   Future<void> _checkPartnerships() async {
+    if (!BhamBetaDefaults.enablePartnershipSurfaces) {
+      return;
+    }
+
     try {
       final partnerships =
           await _partnershipService.getPartnershipsForEvent(_currentEvent!.id);
@@ -197,7 +192,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Successfully registered for event!'),
-            backgroundColor: AppTheme.successColor,
+            backgroundColor: AppColors.success,
           ),
         );
       }
@@ -447,9 +442,8 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                 ? 'External sync saved. AVRAI will keep reading updates from that source.'
                 : 'Sync saved, but AVRAI needs a quick review before trusting updates automatically.',
           ),
-          backgroundColor: reviewItem == null
-              ? AppTheme.successColor
-              : AppTheme.warningColor,
+          backgroundColor:
+              reviewItem == null ? AppColors.success : AppColors.warning,
         ),
       );
     }
@@ -579,7 +573,7 @@ SPOTS - know you belong.''';
     final userId = authState is Authenticated ? authState.user.id : null;
     final canRegister = userId != null && event.canUserAttend(userId);
 
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Event Details',
       constrainBody: false,
       backgroundColor: AppColors.background,
@@ -607,8 +601,7 @@ SPOTS - know you belong.''';
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color:
-                                AppTheme.primaryColor.withValues(alpha: 0.12),
+                            color: AppColors.surfaceMuted,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
@@ -634,16 +627,16 @@ SPOTS - know you belong.''';
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: AppTheme.warningColor.withValues(alpha: 0.1),
+                          color: AppColors.warning.withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                              color:
-                                  AppTheme.warningColor.withValues(alpha: 0.3)),
+                            color: AppColors.warning.withValues(alpha: 0.2),
+                          ),
                         ),
                         child: const Row(
                           children: [
                             Icon(Icons.warning,
-                                color: AppTheme.warningColor, size: 20),
+                                color: AppColors.warning, size: 20),
                             SizedBox(width: 8),
                             Expanded(
                               child: Text(
@@ -814,7 +807,7 @@ SPOTS - know you belong.''';
                               child: ListTile(
                                 leading: const Icon(
                                   Icons.place,
-                                  color: AppTheme.primaryColor,
+                                  color: AppColors.textSecondary,
                                 ),
                                 title: Text(
                                   spot.name,
@@ -830,7 +823,7 @@ SPOTS - know you belong.''';
                                         ),
                                       )
                                     : null,
-                                tileColor: AppColors.grey100,
+                                tileColor: AppColors.surfaceMuted,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
@@ -860,15 +853,16 @@ SPOTS - know you belong.''';
             if (userId != null &&
                 event.host.id == userId &&
                 event.status == EventStatus.completed) ...[
-              Container(
+              AppSurface(
                 padding: const EdgeInsets.all(20),
                 color: AppColors.surface,
+                borderColor: AppColors.borderSubtle,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Row(
                       children: [
-                        Icon(Icons.analytics, color: AppTheme.primaryColor),
+                        Icon(Icons.analytics, color: AppColors.textSecondary),
                         SizedBox(width: 8),
                         Text(
                           'Event Success',
@@ -901,8 +895,8 @@ SPOTS - know you belong.''';
                       icon: const Icon(Icons.dashboard),
                       label: const Text('View Success Dashboard'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.primaryColor,
-                        foregroundColor: AppColors.white,
+                        backgroundColor: AppColors.surfaceMuted,
+                        foregroundColor: AppColors.textPrimary,
                         minimumSize: const Size(double.infinity, 48),
                       ),
                     ),
@@ -912,7 +906,9 @@ SPOTS - know you belong.''';
             ],
 
             // Partnership Section (for event hosts)
-            if (userId != null && _currentEvent!.host.id == userId) ...[
+            if (BhamBetaDefaults.enablePartnershipSurfaces &&
+                userId != null &&
+                _currentEvent!.host.id == userId) ...[
               Container(
                 padding: const EdgeInsets.all(20),
                 color: AppColors.surface,
@@ -921,7 +917,7 @@ SPOTS - know you belong.''';
                   children: [
                     const Row(
                       children: [
-                        Icon(Icons.handshake, color: AppTheme.primaryColor),
+                        Icon(Icons.handshake, color: AppColors.textSecondary),
                         SizedBox(width: 8),
                         Text(
                           'Partnerships',
@@ -970,9 +966,9 @@ SPOTS - know you belong.''';
                                 ? 'Add Partner'
                                 : 'Propose Partnership'),
                             style: OutlinedButton.styleFrom(
-                              foregroundColor: AppTheme.primaryColor,
+                              foregroundColor: AppColors.textPrimary,
                               side: const BorderSide(
-                                  color: AppTheme.primaryColor),
+                                  color: AppColors.borderSubtle),
                             ),
                           ),
                         ),
@@ -992,8 +988,8 @@ SPOTS - know you belong.''';
                               icon: const Icon(Icons.manage_accounts),
                               label: const Text('Manage'),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: AppTheme.primaryColor,
-                                foregroundColor: AppColors.white,
+                                backgroundColor: AppColors.surfaceMuted,
+                                foregroundColor: AppColors.textPrimary,
                               ),
                             ),
                           ),
@@ -1094,8 +1090,8 @@ SPOTS - know you belong.''';
                         'Purchase Ticket - \$${event.price?.toStringAsFixed(2) ?? '0.00'}',
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.primaryColor,
-                        foregroundColor: AppColors.white,
+                        backgroundColor: AppColors.surfaceMuted,
+                        foregroundColor: AppColors.textPrimary,
                         minimumSize: const Size(double.infinity, 48),
                       ),
                     )
@@ -1106,8 +1102,8 @@ SPOTS - know you belong.''';
                       icon: const Icon(Icons.event_available),
                       label: const Text('Register for Event'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.primaryColor,
-                        foregroundColor: AppColors.white,
+                        backgroundColor: AppColors.surfaceMuted,
+                        foregroundColor: AppColors.textPrimary,
                         minimumSize: const Size(double.infinity, 48),
                       ),
                     ),
@@ -1127,7 +1123,7 @@ SPOTS - know you belong.''';
                             : 'Manage External Sync',
                       ),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: AppTheme.primaryColor,
+                        foregroundColor: AppColors.textPrimary,
                         minimumSize: const Size(double.infinity, 48),
                       ),
                     ),
@@ -1254,11 +1250,11 @@ SPOTS - know you belong.''';
 
     switch (event.status) {
       case EventStatus.upcoming:
-        badgeColor = AppTheme.primaryColor;
+        badgeColor = AppColors.textPrimary;
         badgeText = 'Upcoming';
         break;
       case EventStatus.ongoing:
-        badgeColor = AppTheme.warningColor;
+        badgeColor = AppColors.warning;
         badgeText = 'Ongoing';
         break;
       case EventStatus.completed:
@@ -1271,21 +1267,9 @@ SPOTS - know you belong.''';
         break;
     }
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: badgeColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: badgeColor.withValues(alpha: 0.3)),
-      ),
-      child: Text(
-        badgeText,
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: badgeColor,
-        ),
-      ),
+    return AppStatusPill(
+      label: badgeText,
+      color: badgeColor,
     );
   }
 }

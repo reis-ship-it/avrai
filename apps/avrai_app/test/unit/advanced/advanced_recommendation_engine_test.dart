@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:avrai_runtime_os/advanced/advanced_recommendation_engine.dart';
-import 'package:avrai_runtime_os/ai2ai/anonymous_communication.dart';
 import 'package:avrai_runtime_os/p2p/federated_learning.dart';
+import 'package:avrai_runtime_os/services/transport/legacy/legacy_conversation_transport_adapter.dart';
 
 /// SPOTS Advanced Recommendation Engine Tests
 /// Date: November 20, 2025
@@ -16,13 +16,13 @@ import 'package:avrai_runtime_os/p2p/federated_learning.dart';
 ///
 /// Dependencies:
 /// - AdvancedRecommendationEngine: Core recommendation engine
-/// - Mock dependencies: RealTimeRecommendationEngine, AnonymousCommunicationProtocol, FederatedLearningSystem
+/// - Mock dependencies: RealTimeRecommendationEngine, LegacyConversationTransportAdapter, FederatedLearningSystem
 
 class MockRealTimeRecommendationEngine extends Mock
     implements RealTimeRecommendationEngine {}
 
-class MockAnonymousCommunicationProtocol extends Mock
-    implements AnonymousCommunicationProtocol {}
+class MockLegacyConversationTransportAdapter extends Mock
+    implements LegacyConversationTransportAdapter {}
 
 class MockFederatedLearningSystem extends Mock
     implements FederatedLearningSystem {}
@@ -31,17 +31,32 @@ void main() {
   group('AdvancedRecommendationEngine', () {
     late AdvancedRecommendationEngine engine;
     late MockRealTimeRecommendationEngine mockRealTimeEngine;
-    late MockAnonymousCommunicationProtocol mockAI2AIComm;
+    late MockLegacyConversationTransportAdapter
+        mockConversationTransportAdapter;
     late MockFederatedLearningSystem mockFederatedLearning;
 
     setUp(() {
       mockRealTimeEngine = MockRealTimeRecommendationEngine();
-      mockAI2AIComm = MockAnonymousCommunicationProtocol();
+      mockConversationTransportAdapter =
+          MockLegacyConversationTransportAdapter();
       mockFederatedLearning = MockFederatedLearningSystem();
+      when(
+        () => mockConversationTransportAdapter.sendDirectMessagePayload(
+          recipientAgentId: any(named: 'recipientAgentId'),
+          payload: any(named: 'payload'),
+          messageCategory: any(named: 'messageCategory'),
+        ),
+      ).thenAnswer(
+        (_) async => LegacyConversationTransportDispatch(
+          messageId: 'msg-1',
+          timestamp: DateTime.now().toUtc(),
+          messageCategory: 'recommendation_request',
+        ),
+      );
 
       engine = AdvancedRecommendationEngine(
         realTimeEngine: mockRealTimeEngine,
-        ai2aiComm: mockAI2AIComm,
+        conversationTransportAdapter: mockConversationTransportAdapter,
         federatedLearning: mockFederatedLearning,
       );
     });

@@ -58,6 +58,7 @@ class TestStorageHelper {
     'tax_profiles',
     'tax_documents',
     // Cache services
+    'search_cache',
     'apple_places_cache',
     'google_places_cache',
     'google_places_details',

@@ -30,7 +30,8 @@ class InterstitialGapFinder {
     // Determine what categories make sense for an interstitial gap
     // based on the time of day / state.
     // E.g., morning commute = coffee, breakfast. Evening = gym, bar, dinner.
-    Set<POICategory> relevantCategories = getRelevantCategories(human.currentState);
+    Set<POICategory> relevantCategories =
+        getRelevantCategories(human.currentState);
 
     // Get all POIs along the route
     final candidates = environment.findPOIsAlongRoute(
@@ -48,8 +49,9 @@ class InterstitialGapFinder {
 
       // Calculate a score
       // Higher quality is better. Swarm knowledge boosts quality.
-      double perceivedQuality = poi.baseQuality + knowledgeExchange.getSwarmConfidenceBoost(poi.id);
-      
+      double perceivedQuality =
+          poi.baseQuality + knowledgeExchange.getSwarmConfidenceBoost(poi.id);
+
       // Closer to the route is better (lower friction).
       double minDistanceToRoute = double.maxFinite;
       for (final point in route.allPoints) {
@@ -61,11 +63,13 @@ class InterstitialGapFinder {
 
       // Base friction from distance
       double friction = minDistanceToRoute * 0.5; // 1km = 0.5 friction penalty
-      
+
       // Financial friction
       double financialFriction = 0;
       if (poi.cost > human.finances.discretionaryBudget * 0.8) {
-        financialFriction = (poi.cost - (human.finances.discretionaryBudget * 0.8)) * human.finances.priceSensitivity;
+        financialFriction =
+            (poi.cost - (human.finances.discretionaryBudget * 0.8)) *
+                human.finances.priceSensitivity;
       }
       friction += financialFriction;
 

@@ -58,6 +58,22 @@ class AdminAccessControl {
     }
   }
 
+  /// Check if admin can modify AI data
+  /// Throws UnauthorizedException if denied
+  void requireModifyAIData() {
+    if (!_permissionChecker.canModifyAIData()) {
+      throw UnauthorizedException('Modify AI data permission required');
+    }
+  }
+
+  /// Check if admin can access audit logs
+  /// Throws UnauthorizedException if denied
+  void requireAccessAuditLogs() {
+    if (!_permissionChecker.canAccessAuditLogs()) {
+      throw UnauthorizedException('Access audit logs permission required');
+    }
+  }
+
   /// Get the permission checker (for direct access if needed)
   AdminPermissionChecker get permissionChecker => _permissionChecker;
 }

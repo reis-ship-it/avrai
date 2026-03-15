@@ -1,14 +1,48 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:avrai_core/contracts/air_gap_contract.dart';
+import 'package:avrai_core/models/events/event_planning.dart';
 import 'package:avrai_runtime_os/controllers/event_creation_controller.dart';
 import 'package:avrai_core/models/user/unified_user.dart';
 import 'package:avrai_core/models/expertise/expertise_event.dart';
+import 'package:avrai_core/schemas/semantic_tuple.dart';
 import 'package:avrai_runtime_os/services/expertise/expertise_event_service.dart';
+import 'package:avrai_runtime_os/services/events/event_learning_signal_service.dart';
 import 'package:avrai_runtime_os/services/geographic/geo_hierarchy_service.dart';
 import 'package:avrai_runtime_os/services/geographic/geographic_scope_service.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 
 import 'event_creation_controller_test.mocks.dart';
+
+class _NoopAirGap implements AirGapContract {
+  @override
+  Future<List<SemanticTuple>> scrubAndExtract(RawDataPayload payload) async =>
+      const <SemanticTuple>[];
+}
+
+class _FakeEventLearningSignalService extends EventLearningSignalService {
+  EventPlanningSnapshot? lastSnapshot;
+  ExpertiseEvent? lastEvent;
+
+  _FakeEventLearningSignalService() : super(airGap: _NoopAirGap());
+
+  @override
+  Future<EventCreationLearningSignal> recordEventCreated({
+    required ExpertiseEvent event,
+    required EventPlanningSnapshot snapshot,
+  }) async {
+    lastEvent = event;
+    lastSnapshot = snapshot;
+    return EventCreationLearningSignal(
+      signalId: 'signal-1',
+      eventId: event.id,
+      hostUserId: event.host.id,
+      kind: EventLearningSignalKind.eventCreated,
+      planningSnapshot: snapshot,
+      createdAt: DateTime.now(),
+    );
+  }
+}
 
 @GenerateMocks([
   ExpertiseEventService,
@@ -225,6 +259,48 @@ void main() {
         // Assert
         expect(result.isValid, isFalse);
         expect(result.fieldErrors['price'], equals('Price cannot be negative'));
+      });
+
+      test('should return invalid result for unsafe planning snapshot', () {
+        final formData = EventFormData(
+          title: 'Coffee Tour',
+          description: 'Explore local coffee shops in Greenpoint',
+          category: 'Coffee',
+          eventType: ExpertiseEventType.tour,
+          startTime: DateTime.now().add(const Duration(days: 1)),
+          endTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
+          planningSnapshot: EventPlanningSnapshot(
+            docket: EventDocketLite(
+              intentTags: const <String>['spring music celebration'],
+              vibeTags: const <String>['joyful'],
+              audienceTags: const <String>['families'],
+              candidateLocalityLabel: 'Greenpoint',
+              candidateLocalityCode: 'bham_greenpoint',
+              preferredStartDate: DateTime.now().add(const Duration(days: 3)),
+              preferredEndDate:
+                  DateTime.now().add(const Duration(days: 3, hours: 2)),
+              sizeIntent: EventSizeIntent.standard,
+              priceIntent: EventPriceIntent.lowCost,
+              hostGoal: EventHostGoal.celebration,
+              airGapProvenance: EventAirGapProvenance(
+                crossingId: 'crossing-invalid-planning-test',
+                crossedAt: DateTime.now(),
+                sourceKind: EventPlanningSourceKind.human,
+                tupleRefs: const <String>['tuple-1'],
+                confidence: EventPlanningConfidence.medium,
+              ),
+            ),
+            createdAt: DateTime.now().add(const Duration(minutes: 1)),
+          ),
+        );
+
+        final result = controller.validateForm(formData);
+
+        expect(result.isValid, isFalse);
+        expect(
+          result.fieldErrors['planningSnapshot'],
+          equals('Event planning must cross the air gap before publish'),
+        );
       });
     });
 
@@ -448,6 +524,7 @@ void main() {
           maxAttendees: anyNamed('maxAttendees'),
           price: anyNamed('price'),
           isPublic: anyNamed('isPublic'),
+          planningSnapshot: anyNamed('planningSnapshot'),
         )).thenAnswer((_) async => expectedEvent);
 
         // Act
@@ -473,6 +550,101 @@ void main() {
           maxAttendees: formData.maxAttendees,
           isPublic: formData.isPublic,
         )).called(1);
+      });
+
+      test('records sanitized planning learning when planning snapshot exists',
+          () async {
+        final fakeLearningService = _FakeEventLearningSignalService();
+        controller = EventCreationController(
+          eventService: mockEventService,
+          geographicScopeService: mockGeographicScopeService,
+          geoHierarchyService: GeoHierarchyService(),
+          eventLearningSignalService: fakeLearningService,
+        );
+
+        final planningSnapshot = EventPlanningSnapshot(
+          docket: EventDocketLite(
+            intentTags: const ['spring', 'music'],
+            vibeTags: const ['joyful'],
+            audienceTags: const ['neighbors'],
+            candidateLocalityLabel: 'Greenpoint',
+            candidateLocalityCode: 'bham_greenpoint',
+            preferredStartDate: DateTime.now().add(const Duration(days: 3)),
+            preferredEndDate:
+                DateTime.now().add(const Duration(days: 3, hours: 2)),
+            sizeIntent: EventSizeIntent.standard,
+            priceIntent: EventPriceIntent.lowCost,
+            hostGoal: EventHostGoal.celebration,
+            airGapProvenance: EventAirGapProvenance(
+              crossingId: 'crossing-event-creation-test',
+              crossedAt: DateTime.now(),
+              sourceKind: EventPlanningSourceKind.human,
+              tupleRefs: const ['tuple-1'],
+              confidence: EventPlanningConfidence.medium,
+            ),
+          ),
+          createdAt: DateTime.now(),
+        );
+
+        final formData = EventFormData(
+          title: 'Coffee Tour',
+          description: 'Explore local coffee shops in Greenpoint',
+          category: 'Coffee',
+          eventType: ExpertiseEventType.tour,
+          startTime: DateTime.now().add(const Duration(days: 1)),
+          endTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
+          location: 'Greenpoint, Brooklyn',
+          locality: 'Greenpoint',
+          planningSnapshot: planningSnapshot,
+        );
+
+        final expectedEvent = ExpertiseEvent(
+          id: 'event-2',
+          title: formData.title,
+          description: formData.description,
+          category: formData.category,
+          eventType: formData.eventType,
+          host: testUser,
+          startTime: formData.startTime,
+          endTime: formData.endTime,
+          location: formData.location,
+          planningSnapshot: planningSnapshot,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        );
+
+        when(mockGeographicScopeService.validateEventLocation(
+          userId: anyNamed('userId'),
+          user: anyNamed('user'),
+          category: anyNamed('category'),
+          eventLocality: anyNamed('eventLocality'),
+        )).thenReturn(true);
+        when(mockEventService.createEvent(
+          host: anyNamed('host'),
+          title: anyNamed('title'),
+          description: anyNamed('description'),
+          category: anyNamed('category'),
+          eventType: anyNamed('eventType'),
+          startTime: anyNamed('startTime'),
+          endTime: anyNamed('endTime'),
+          spots: anyNamed('spots'),
+          location: anyNamed('location'),
+          latitude: anyNamed('latitude'),
+          longitude: anyNamed('longitude'),
+          maxAttendees: anyNamed('maxAttendees'),
+          price: anyNamed('price'),
+          isPublic: anyNamed('isPublic'),
+          planningSnapshot: anyNamed('planningSnapshot'),
+        )).thenAnswer((_) async => expectedEvent);
+
+        final result = await controller.createEvent(
+          formData: formData,
+          host: testUser,
+        );
+
+        expect(result.isSuccess, isTrue);
+        expect(fakeLearningService.lastSnapshot, equals(planningSnapshot));
+        expect(fakeLearningService.lastEvent?.id, equals(expectedEvent.id));
       });
 
       test('should return failure result for invalid form data', () async {
@@ -513,6 +685,7 @@ void main() {
           maxAttendees: anyNamed('maxAttendees'),
           price: anyNamed('price'),
           isPublic: anyNamed('isPublic'),
+          planningSnapshot: anyNamed('planningSnapshot'),
         ));
       });
 
@@ -562,6 +735,7 @@ void main() {
           maxAttendees: anyNamed('maxAttendees'),
           price: anyNamed('price'),
           isPublic: anyNamed('isPublic'),
+          planningSnapshot: anyNamed('planningSnapshot'),
         ));
       });
 
@@ -612,6 +786,7 @@ void main() {
           maxAttendees: anyNamed('maxAttendees'),
           price: anyNamed('price'),
           isPublic: anyNamed('isPublic'),
+          planningSnapshot: anyNamed('planningSnapshot'),
         ));
       });
 
@@ -693,6 +868,7 @@ void main() {
           maxAttendees: anyNamed('maxAttendees'),
           price: anyNamed('price'),
           isPublic: anyNamed('isPublic'),
+          planningSnapshot: anyNamed('planningSnapshot'),
         )).thenThrow(Exception('Database connection failed'));
 
         // Act

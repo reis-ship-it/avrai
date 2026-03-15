@@ -11,7 +11,7 @@
 /// - Long response handling
 ///
 /// Dependencies:
-/// - LLMService: SSE streaming implementation
+/// - LanguageRuntimeService: SSE streaming implementation
 /// - Supabase Edge Function: llm-chat-stream endpoint
 library;
 
@@ -19,7 +19,7 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:http/http.dart' as http;
-import 'package:avrai_runtime_os/services/ai_infrastructure/llm_service.dart';
+import 'package:avrai_runtime_os/services/language/language_runtime_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'sse_streaming_integration_test.mocks.dart';
@@ -30,20 +30,23 @@ void main() {
 
   group('SSE Streaming Integration Tests', () {
     group('SSE Connection Establishment', () {
-      test('should have SSE streaming method in LLMService', () async {
-        // Test business logic: LLMService has SSE streaming capability
+      test('should have SSE streaming method in LanguageRuntimeService',
+          () async {
+        // Test business logic: the language runtime has SSE streaming capability
         // Arrange
         final mockSupabaseClient = MockSupabaseClient();
-        final llmService = LLMService(mockSupabaseClient);
+        final languageRuntimeService = LanguageRuntimeService(
+          mockSupabaseClient,
+        );
 
         // Act & Assert
         // Verify that chatStream method exists and can be called
         // The method signature should support SSE streaming
-        expect(llmService.chatStream, isA<Function>());
+        expect(languageRuntimeService.chatStream, isA<Function>());
 
         // Verify method accepts required parameters
-        final messages = <ChatMessage>[];
-        final stream = llmService.chatStream(
+        final messages = <LanguageTurnMessage>[];
+        final stream = languageRuntimeService.chatStream(
           messages: messages,
           temperature: 0.7,
           maxTokens: 1000,
@@ -57,11 +60,13 @@ void main() {
         // Test business logic: SSE streaming handles errors with retry/fallback logic
         // Arrange
         final mockSupabaseClient = MockSupabaseClient();
-        final llmService = LLMService(mockSupabaseClient);
-        final messages = <ChatMessage>[];
+        final languageRuntimeService = LanguageRuntimeService(
+          mockSupabaseClient,
+        );
+        final messages = <LanguageTurnMessage>[];
 
         // Act - Attempt to start stream (will fail without real connection, but should not crash)
-        final stream = llmService.chatStream(
+        final stream = languageRuntimeService.chatStream(
           messages: messages,
           temperature: 0.7,
           maxTokens: 1000,
@@ -93,7 +98,7 @@ void main() {
         // Arrange
         const sseChunk = 'data: {"text": "Hello", "done": false}\n\n';
 
-        // Act - Parse SSE chunk (simulating what LLMService does)
+        // Act - Parse SSE chunk (simulating what the language runtime does)
         final dataStart = sseChunk.indexOf('data: ');
         expect(dataStart, greaterThanOrEqualTo(0),
             reason: 'SSE chunk should start with "data: "');
@@ -177,13 +182,13 @@ void main() {
         const reconnectDelay = Duration(seconds: 2);
 
         // Act & Assert
-        // Verify retry configuration matches LLMService implementation
+        // Verify retry configuration matches the language runtime implementation
         expect(maxReconnectAttempts, equals(3),
             reason:
-                'Max reconnect attempts should be 3 per LLMService implementation');
+                'Max reconnect attempts should be 3 per language runtime implementation');
         expect(reconnectDelay, equals(const Duration(seconds: 2)),
             reason:
-                'Reconnect delay should be 2 seconds per LLMService implementation');
+                'Reconnect delay should be 2 seconds per language runtime implementation');
       });
 
       test('should fallback to non-streaming after max retries', () async {
@@ -236,10 +241,10 @@ void main() {
         const statusCode = 400;
         bool shouldFallback = false;
 
-        // Act - Simulate error handling logic from LLMService
+        // Act - Simulate error handling logic from the language runtime
         if (statusCode >= 400 && statusCode < 500) {
           shouldFallback =
-              true; // Don't retry, fallback immediately per LLMService
+              true; // Don't retry, fallback immediately per runtime rules
         }
 
         // Assert
@@ -256,7 +261,7 @@ void main() {
         int retryCount = 0;
         const maxRetries = 3;
 
-        // Act - Simulate retry logic from LLMService
+        // Act - Simulate retry logic from the language runtime
         if (statusCode >= 500) {
           while (retryCount < maxRetries) {
             retryCount++;
@@ -277,7 +282,7 @@ void main() {
         const errorMessage = 'SSE stream timeout';
         bool shouldFallback = false;
 
-        // Act - Simulate timeout error handling from LLMService
+        // Act - Simulate timeout error handling from the language runtime
         if (errorMessage.contains('timeout') ||
             errorMessage.contains('safety') ||
             errorMessage.contains('blocked')) {
@@ -296,7 +301,7 @@ void main() {
         const errorMessage = 'safety filter blocked';
         bool shouldFallback = false;
 
-        // Act - Simulate safety error handling from LLMService
+        // Act - Simulate safety error handling from the language runtime
         if (errorMessage.contains('safety') ||
             errorMessage.contains('blocked')) {
           shouldFallback = true; // No retry for safety errors
@@ -316,15 +321,16 @@ void main() {
         const streamTimeout = Duration(minutes: 5);
 
         // Act & Assert
-        // Verify timeout matches LLMService implementation
+        // Verify timeout matches the language runtime implementation
         expect(streamTimeout.inMinutes, equals(5),
             reason:
-                'Stream timeout should be 5 minutes per LLMService implementation');
+                'Stream timeout should be 5 minutes per language runtime implementation');
       });
 
       test('should handle chunk timeout', () async {
         // Test business logic: Chunk-level timeout is configured
-        // Note: LLMService uses streamTimeout for entire stream, not per-chunk
+        // Note: the language runtime uses streamTimeout for the entire stream,
+        // not per chunk.
         // But chunks can timeout individually within the stream
 
         // Arrange
@@ -360,7 +366,7 @@ void main() {
         String accumulatedText = '';
         final chunks = ['Hello', ' World', '!'];
 
-        // Act - Simulate text accumulation (as LLMService does)
+        // Act - Simulate text accumulation as the language runtime does
         for (final chunk in chunks) {
           accumulatedText += chunk;
         }
@@ -372,16 +378,18 @@ void main() {
       });
     });
 
-    group('Integration with LLMService', () {
+    group('Integration with LanguageRuntimeService', () {
       test('should use SSE when useRealSSE is true', () async {
-        // Test business logic: LLMService uses SSE when configured
+        // Test business logic: the language runtime uses SSE when configured
         // Arrange
         final mockSupabaseClient = MockSupabaseClient();
-        final llmService = LLMService(mockSupabaseClient);
-        final messages = <ChatMessage>[];
+        final languageRuntimeService = LanguageRuntimeService(
+          mockSupabaseClient,
+        );
+        final messages = <LanguageTurnMessage>[];
 
         // Act - Call chatStream (will attempt SSE if configured)
-        final stream = llmService.chatStream(
+        final stream = languageRuntimeService.chatStream(
           messages: messages,
           temperature: 0.7,
           maxTokens: 1000,
@@ -394,14 +402,16 @@ void main() {
       });
 
       test('should use simulated streaming when SSE fails', () async {
-        // Test business logic: LLMService falls back to simulated streaming
+        // Test business logic: the language runtime falls back to simulated streaming
         // Arrange
         final mockSupabaseClient = MockSupabaseClient();
-        final llmService = LLMService(mockSupabaseClient);
-        final messages = <ChatMessage>[];
+        final languageRuntimeService = LanguageRuntimeService(
+          mockSupabaseClient,
+        );
+        final messages = <LanguageTurnMessage>[];
 
         // Act - Call chatStream (will fallback to simulated if SSE fails)
-        final stream = llmService.chatStream(
+        final stream = languageRuntimeService.chatStream(
           messages: messages,
           temperature: 0.7,
           maxTokens: 1000,
@@ -418,13 +428,15 @@ void main() {
         // Test business logic: Auto-fallback occurs when SSE fails
         // Arrange
         final mockSupabaseClient = MockSupabaseClient();
-        final llmService = LLMService(mockSupabaseClient);
-        final messages = <ChatMessage>[];
+        final languageRuntimeService = LanguageRuntimeService(
+          mockSupabaseClient,
+        );
+        final messages = <LanguageTurnMessage>[];
         bool sseFailed = false;
 
         // Act - Attempt SSE stream (will fail without real connection)
         try {
-          final stream = llmService.chatStream(
+          final stream = languageRuntimeService.chatStream(
             messages: messages,
             temperature: 0.7,
             maxTokens: 1000,

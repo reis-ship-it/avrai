@@ -15,6 +15,8 @@ import android.os.Looper
 import androidx.core.content.ContextCompat
 import com.avrai.app.services.BleInboxStore
 import com.avrai.app.services.BLEForegroundService
+import com.avrai.app.services.BackgroundRuntimeChannelBindings
+import com.avrai.app.services.BackgroundWakeStore
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
@@ -30,6 +32,12 @@ class MainActivity: FlutterActivity() {
     super.configureFlutterEngine(flutterEngine)
 
     BleInboxStore.init(applicationContext)
+    BackgroundWakeStore.init(applicationContext)
+
+    BackgroundRuntimeChannelBindings.configure(
+      context = applicationContext,
+      binaryMessenger = flutterEngine.dartExecutor.binaryMessenger,
+    )
 
     MethodChannel(
       flutterEngine.dartExecutor.binaryMessenger,

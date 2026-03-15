@@ -13,10 +13,15 @@
 /// - Error Handling: Invalid inputs, encryption errors
 library;
 
-import 'dart:typed_data';
+import 'dart:io';
+import 'package:avrai_core/models/boundary/boundary_models.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/services.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:avrai_core/models/interpretation/interpretation_models.dart';
+import 'package:avrai_runtime_os/kernel/language/human_language_boundary_review_lane.dart';
+import 'package:avrai_runtime_os/kernel/language/language_kernel_orchestrator_service.dart';
 import 'package:avrai_runtime_os/services/community/community_chat_service.dart';
 import 'package:avrai_core/models/community/community.dart';
 import 'package:avrai_runtime_os/services/security/message_encryption_service.dart';
@@ -28,15 +33,149 @@ import '../../helpers/test_storage_helper.dart';
 class MockMessageEncryptionService extends Mock
     implements MessageEncryptionService {}
 
+typedef _BoundaryReviewFactory = HumanLanguageBoundaryReview Function({
+  required String rawText,
+  required bool egressRequested,
+  required BoundaryEgressPurpose egressPurpose,
+});
+
+class _FixedHumanLanguageBoundaryReviewLane
+    extends HumanLanguageBoundaryReviewLane {
+  _FixedHumanLanguageBoundaryReviewLane(this._reviewFactory);
+
+  final _BoundaryReviewFactory _reviewFactory;
+
+  @override
+  Future<HumanLanguageBoundaryReview> reviewOutboundText({
+    required String actorAgentId,
+    required String rawText,
+    required BoundaryEgressPurpose egressPurpose,
+    required bool egressRequested,
+    String? userId,
+    String chatType = 'agent',
+    String surface = 'chat',
+    String channel = 'in_app',
+    BoundaryPrivacyMode privacyMode = BoundaryPrivacyMode.localSovereign,
+    Set<String>? consentScopes,
+  }) async {
+    return _reviewFactory(
+      rawText: rawText,
+      egressRequested: egressRequested,
+      egressPurpose: egressPurpose,
+    );
+  }
+}
+
+HumanLanguageBoundaryReview _buildBoundaryReview({
+  required String rawText,
+  required BoundaryDecision decision,
+  bool egressRequested = false,
+  BoundaryEgressPurpose egressPurpose = BoundaryEgressPurpose.communityMessage,
+}) {
+  return HumanLanguageBoundaryReview(
+    rawText: rawText,
+    turn: HumanLanguageKernelTurn(
+      interpretation: InterpretationResult(
+        intent: InterpretationIntent.share,
+        normalizedText: rawText.toLowerCase(),
+        requestArtifact: InterpretationRequestArtifact(
+          summary: rawText,
+          asksForResponse: false,
+          asksForRecommendation: false,
+          asksForAction: false,
+          asksForExplanation: false,
+          referencedEntities: <String>[],
+          questions: <String>[],
+          preferenceSignals: <InterpretationPreferenceSignal>[],
+          shareIntent: true,
+        ),
+        learningArtifact: const InterpretationLearningArtifact(
+          vocabulary: <String>[],
+          phrases: <String>[],
+          toneMetrics: <String, double>{},
+          directnessPreference: 0.5,
+          brevityPreference: 0.5,
+        ),
+        privacySensitivity: InterpretationPrivacySensitivity.low,
+        confidence: 0.9,
+        ambiguityFlags: <String>[],
+        needsClarification: false,
+        safeForLearning: false,
+      ),
+      boundary: decision,
+    ),
+    egressRequested: egressRequested,
+    egressPurpose: egressPurpose,
+    chatType: 'community',
+    surface: 'chat',
+    channel: 'community_chat:test',
+  );
+}
+
+HumanLanguageBoundaryReview _allowCommunityBoundaryReview({
+  required String rawText,
+  bool egressRequested = false,
+  BoundaryEgressPurpose egressPurpose = BoundaryEgressPurpose.communityMessage,
+}) {
+  return _buildBoundaryReview(
+    rawText: rawText,
+    egressRequested: egressRequested,
+    egressPurpose: egressPurpose,
+    decision: BoundaryDecision(
+      accepted: true,
+      disposition: egressRequested
+          ? BoundaryDisposition.userAuthorizedEgress
+          : BoundaryDisposition.localOnly,
+      transcriptStorageAllowed: true,
+      storageAllowed: true,
+      learningAllowed: false,
+      egressAllowed: egressRequested,
+      airGapRequired: false,
+      reasonCodes: egressRequested
+          ? const <String>['community_message_allowed']
+          : const <String>['community_message_local_only'],
+      sanitizedArtifact: const BoundarySanitizedArtifact(
+        pseudonymousActorRef: 'anon_test',
+        summary: 'community-reviewed text',
+        safeClaims: <String>[],
+        safeQuestions: <String>[],
+        safePreferenceSignals: <InterpretationPreferenceSignal>[],
+        learningVocabulary: <String>[],
+        learningPhrases: <String>[],
+        redactedText: 'community-reviewed text',
+      ),
+      egressPurpose: egressPurpose,
+    ),
+  );
+}
+
 void main() {
+  late Directory storageRoot;
+
   // Register fallback values for mocktail
   setUpAll(() {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+      const MethodChannel('plugins.flutter.io/path_provider'),
+      (MethodCall methodCall) async {
+        if (methodCall.method == 'getApplicationDocumentsDirectory') {
+          return '.';
+        }
+        return null;
+      },
+    );
     registerFallbackValue(
       EncryptedMessage(
         encryptedContent: Uint8List(0),
         encryptionType: EncryptionType.aes256gcm,
       ),
     );
+  });
+
+  setUpAll(() async {
+    storageRoot = await Directory.systemTemp.createTemp('community_chat_test_');
+    await GetStorage('community_chat_messages', storageRoot.path).initStorage;
   });
 
   group('CommunityChatService Tests', () {
@@ -53,7 +192,6 @@ void main() {
 
     setUpAll(() async {
       await TestStorageHelper.initTestStorage();
-      await GetStorage.init('community_chat_messages');
       await GetStorage('community_chat_messages').erase();
     });
 
@@ -101,12 +239,21 @@ void main() {
       // Create service with mocks
       service = CommunityChatService(
         encryptionService: mockEncryptionService,
+        humanLanguageBoundaryReviewLane: _FixedHumanLanguageBoundaryReviewLane(
+          _allowCommunityBoundaryReview,
+        ),
       );
     });
 
     tearDown(() async {
       await Future<void>.delayed(const Duration(milliseconds: 100));
       TestHelpers.teardownTestEnvironment();
+    });
+
+    tearDownAll(() async {
+      if (storageRoot.existsSync()) {
+        await storageRoot.delete(recursive: true);
+      }
     });
 
     group('Initialization', () {
@@ -132,12 +279,78 @@ void main() {
         expect(chatMessage, isNotNull);
         expect(chatMessage.senderId, equals(testUserId));
         expect(chatMessage.communityId, equals(testCommunityId));
+        expect(chatMessage.metadata, isNotNull);
+        expect(
+          chatMessage.metadata![HumanLanguageBoundaryReview.metadataKey],
+          isA<Map<String, dynamic>>(),
+        );
+        expect(
+          chatMessage.metadata![HumanLanguageBoundaryReview.metadataKey]
+              ['egress_purpose'],
+          BoundaryEgressPurpose.communityMessage.toWireValue(),
+        );
+        expect(
+          chatMessage.metadata![HumanLanguageBoundaryReview.metadataKey]
+              ['egress_requested'],
+          isFalse,
+        );
 
         // Verify encryption was called with group identifier
         verify(() => mockEncryptionService.encrypt(
               message,
               'group_$testCommunityId',
             )).called(1);
+      });
+
+      test('should fail closed when transcript storage is denied', () async {
+        service = CommunityChatService(
+          encryptionService: mockEncryptionService,
+          humanLanguageBoundaryReviewLane:
+              _FixedHumanLanguageBoundaryReviewLane(
+            ({
+              required String rawText,
+              required bool egressRequested,
+              required BoundaryEgressPurpose egressPurpose,
+            }) =>
+                _buildBoundaryReview(
+                  rawText: rawText,
+                  egressRequested: egressRequested,
+                  egressPurpose: egressPurpose,
+                  decision: BoundaryDecision(
+                    accepted: false,
+                    disposition: BoundaryDisposition.block,
+                    transcriptStorageAllowed: false,
+                    storageAllowed: false,
+                    learningAllowed: false,
+                    egressAllowed: false,
+                    airGapRequired: false,
+                    reasonCodes: const <String>['policy_blocked'],
+                    sanitizedArtifact: const BoundarySanitizedArtifact(
+                      pseudonymousActorRef: 'anon_test',
+                      summary: 'blocked',
+                      safeClaims: <String>[],
+                      safeQuestions: <String>[],
+                      safePreferenceSignals: <InterpretationPreferenceSignal>[],
+                      learningVocabulary: <String>[],
+                      learningPhrases: <String>[],
+                      redactedText: 'blocked',
+                    ),
+                    egressPurpose: BoundaryEgressPurpose.communityMessage,
+                  ),
+                ),
+          ),
+        );
+
+        await expectLater(
+          () => service.sendGroupMessage(
+            testUserId,
+            testCommunityId,
+            'Blocked',
+            community: testCommunity,
+          ),
+          throwsA(isA<HumanLanguageBoundaryViolationException>()),
+        );
+        verifyNever(() => mockEncryptionService.encrypt(any(), any()));
       });
 
       test('should reject message from non-member', () async {

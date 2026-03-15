@@ -2,8 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer' as developer;
 
+import 'package:avrai_core/models/events/event_planning.dart';
+import 'package:avrai_core/models/events/event_template.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
+import 'package:avrai_runtime_os/services/events/event_template_service.dart';
 import 'package:avrai_runtime_os/services/recommendations/agent_happiness_service.dart';
 import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
 import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
@@ -21,15 +24,19 @@ class HumanChatController extends ChangeNotifier {
   final PersonalityAgentChatService _chatService;
   final AgentIdService _agentIdService;
   final EntitySignatureService? _entitySignatureService;
+  final EventTemplateService _eventTemplateService;
   final Future<SharedPreferencesCompat> Function() _prefsProvider;
   final Future<Position?> Function() _locationProvider;
+  final DateTime Function() _nowLocal;
 
   HumanChatController({
     PersonalityAgentChatService? chatService,
     AgentIdService? agentIdService,
     EntitySignatureService? entitySignatureService,
+    EventTemplateService? eventTemplateService,
     Future<SharedPreferencesCompat> Function()? prefsProvider,
     Future<Position?> Function()? locationProvider,
+    DateTime Function()? nowLocal,
   })  : _chatService =
             chatService ?? GetIt.instance<PersonalityAgentChatService>(),
         _agentIdService = agentIdService ?? GetIt.instance<AgentIdService>(),
@@ -37,9 +44,11 @@ class HumanChatController extends ChangeNotifier {
             (GetIt.instance.isRegistered<EntitySignatureService>()
                 ? GetIt.instance<EntitySignatureService>()
                 : null),
+        _eventTemplateService = eventTemplateService ?? EventTemplateService(),
         _prefsProvider =
             prefsProvider ?? (() => SharedPreferencesCompat.getInstance()),
-        _locationProvider = locationProvider ?? _defaultLocationProvider;
+        _locationProvider = locationProvider ?? _defaultLocationProvider,
+        _nowLocal = nowLocal ?? DateTime.now;
 
   List<HumanChatMessage> _messages = const [];
   bool _isLoading = false;
@@ -52,6 +61,8 @@ class HumanChatController extends ChangeNotifier {
   Timer? _overlayTimer;
   String? _signatureSummary;
   List<String> _signaturePrompts = const [];
+  PersonalityAgentChatResult? _lastChatKernelResult;
+  AgentEventPlanningDraft? _lastEventPlanningDraft;
 
   List<HumanChatMessage> get messages => _messages;
   bool get isLoading => _isLoading;
@@ -62,6 +73,16 @@ class HumanChatController extends ChangeNotifier {
   Map<String, double>? get recentDNAOverlay => _recentDNAOverlay;
   String? get signatureSummary => _signatureSummary;
   List<String> get signaturePrompts => _signaturePrompts;
+  PersonalityAgentChatResult? get lastChatKernelResult => _lastChatKernelResult;
+  AgentEventPlanningDraft? get lastEventPlanningDraft =>
+      _lastEventPlanningDraft;
+  String? get lastKernelEventId => _lastChatKernelResult?.kernelEventId;
+  bool get modelTruthReady => _lastChatKernelResult?.modelTruthReady ?? false;
+  bool get localityContainedInWhere =>
+      _lastChatKernelResult?.localityContainedInWhere ?? false;
+  String? get governanceSummary => _lastChatKernelResult?.governanceSummary;
+  List<String> get governanceDomains =>
+      _lastChatKernelResult?.governanceDomains ?? const <String>[];
 
   /// Initialize the chat session for the authenticated user.
   Future<void> initialize({required String userId}) async {
@@ -77,6 +98,8 @@ class HumanChatController extends ChangeNotifier {
     try {
       _prefs ??= await _prefsProvider();
       _agentId = await _agentIdService.getUserAgentId(userId);
+      _lastChatKernelResult = null;
+      _lastEventPlanningDraft = null;
       await _loadConversationHistory();
       await _refreshSignatureContext();
     } catch (e, st) {
@@ -115,14 +138,20 @@ class HumanChatController extends ChangeNotifier {
 
     try {
       _recordChatReflection(trimmedMessage);
-      final response = await _chatService.chat(
+      final result = await _chatService.chatWithKernelContext(
         _userId!,
         trimmedMessage,
         currentLocation: await _locationProvider(),
       );
+      final response = result.response;
 
       await _checkAspirationalDNA();
       await _refreshSignatureContext();
+      _lastChatKernelResult = result;
+      _lastEventPlanningDraft = _buildEventPlanningDraft(
+        userMessage: trimmedMessage,
+        agentResponse: response,
+      );
 
       _messages = [
         ..._messages,
@@ -341,6 +370,178 @@ class HumanChatController extends ChangeNotifier {
     }
   }
 
+  AgentEventPlanningDraft? _buildEventPlanningDraft({
+    required String userMessage,
+    required String agentResponse,
+  }) {
+    final String combined = '$userMessage $agentResponse'.trim().toLowerCase();
+    final EventTemplate? template = _suggestTemplate(combined);
+    final bool looksEventLike = template != null ||
+        _eventPlanningKeywords.any((String keyword) => combined.contains(keyword));
+    if (!looksEventLike) {
+      return null;
+    }
+
+    final DateTime? preferredStartDate = _derivePreferredStartDate(userMessage);
+    final RawEventPlanningInput input = RawEventPlanningInput(
+      sourceKind: EventPlanningSourceKind.personalAgent,
+      purposeText: _boundedText(userMessage, 220),
+      vibeText: _boundedText(_firstSentence(agentResponse), 220),
+      targetAudienceText: _boundedText(
+        _signatureSummary ??
+            'People who already fit this vibe and those close to it.',
+        220,
+      ),
+      candidateLocalityLabel: '',
+      preferredStartDate: preferredStartDate,
+      preferredEndDate: preferredStartDate == null || template == null
+          ? null
+          : preferredStartDate.add(template.defaultDuration),
+      sizeIntent: _sizeIntentForTemplate(template),
+      priceIntent: _priceIntentForTemplate(template),
+      hostGoal: _hostGoalForTemplate(template),
+    );
+
+    return AgentEventPlanningDraft(
+      planningInput: input,
+      suggestedTemplate: template,
+      summary: template == null
+          ? 'Drafted from your last personal-agent chat turn.'
+          : 'Drafted from your last personal-agent chat turn using ${template.name}.',
+    );
+  }
+
+  EventTemplate? _suggestTemplate(String combined) {
+    if (combined.contains('coffee')) {
+      return _eventTemplateService.getTemplate('coffee_tasting_tour');
+    }
+    if (combined.contains('music') ||
+        combined.contains('concert') ||
+        combined.contains('festival')) {
+      return _eventTemplateService.getTemplate('concert_meetup');
+    }
+    if (combined.contains('trivia')) {
+      return _eventTemplateService.getTemplate('trivia_night');
+    }
+    if (combined.contains('food')) {
+      return _eventTemplateService.getTemplate('food_tour');
+    }
+    if (combined.contains('book')) {
+      return _eventTemplateService.getTemplate('bookstore_walk');
+    }
+    if (combined.contains('museum') || combined.contains('art')) {
+      return _eventTemplateService.getTemplate('museum_tour');
+    }
+    if (combined.contains('bar') || combined.contains('crawl')) {
+      return _eventTemplateService.getTemplate('bar_crawl');
+    }
+
+    final List<EventTemplate> searchResults =
+        _eventTemplateService.searchTemplates(combined);
+    return searchResults.isEmpty ? null : searchResults.first;
+  }
+
+  EventHostGoal _hostGoalForTemplate(EventTemplate? template) {
+    final String templateId = template?.id ?? '';
+    if (templateId == 'concert_meetup') {
+      return EventHostGoal.celebration;
+    }
+    if (templateId == 'trivia_night') {
+      return EventHostGoal.networking;
+    }
+    if (templateId == 'coffee_tasting_tour' || templateId == 'museum_tour') {
+      return EventHostGoal.learning;
+    }
+    return EventHostGoal.community;
+  }
+
+  EventSizeIntent _sizeIntentForTemplate(EventTemplate? template) {
+    final int attendeeCap = template?.defaultMaxAttendees ?? 20;
+    if (attendeeCap >= 40) {
+      return EventSizeIntent.large;
+    }
+    if (attendeeCap <= 16) {
+      return EventSizeIntent.intimate;
+    }
+    return EventSizeIntent.standard;
+  }
+
+  EventPriceIntent _priceIntentForTemplate(EventTemplate? template) {
+    final double? price = template?.suggestedPrice;
+    if (price == null || price <= 0) {
+      return EventPriceIntent.free;
+    }
+    if (price <= 20) {
+      return EventPriceIntent.lowCost;
+    }
+    return EventPriceIntent.ticketed;
+  }
+
+  DateTime? _derivePreferredStartDate(String message) {
+    final String lower = message.toLowerCase();
+    if (lower.contains('next weekend')) {
+      return _nextWeekday(DateTime.saturday, weeksAhead: 1);
+    }
+    if (lower.contains('this weekend') || lower.contains('weekend')) {
+      return _nextWeekday(DateTime.saturday);
+    }
+    if (lower.contains('friday')) {
+      return _nextWeekday(DateTime.friday);
+    }
+    if (lower.contains('saturday')) {
+      return _nextWeekday(DateTime.saturday);
+    }
+    if (lower.contains('sunday')) {
+      return _nextWeekday(DateTime.sunday);
+    }
+    if (lower.contains('tonight')) {
+      final DateTime now = _nowLocal();
+      return DateTime(now.year, now.month, now.day, 19);
+    }
+    return null;
+  }
+
+  DateTime _nextWeekday(int weekday, {int weeksAhead = 0}) {
+    final DateTime now = _nowLocal();
+    final int daysUntil = (weekday - now.weekday + 7) % 7;
+    final DateTime target = now.add(
+      Duration(days: daysUntil == 0 ? 7 : daysUntil + (weeksAhead * 7)),
+    );
+    return DateTime(target.year, target.month, target.day, 18);
+  }
+
+  String _firstSentence(String text) {
+    final String trimmed = text.trim();
+    if (trimmed.isEmpty) {
+      return trimmed;
+    }
+    final Match? match = RegExp(r'^.*?[.!?](?:\s|$)').firstMatch(trimmed);
+    return match?.group(0)?.trim() ?? trimmed;
+  }
+
+  String _boundedText(String text, int maxChars) {
+    final String trimmed = text.trim().replaceAll(RegExp(r'\s+'), ' ');
+    if (trimmed.length <= maxChars) {
+      return trimmed;
+    }
+    return '${trimmed.substring(0, maxChars - 1).trimRight()}…';
+  }
+
+  static const List<String> _eventPlanningKeywords = <String>[
+    'event',
+    'festival',
+    'meetup',
+    'music',
+    'concert',
+    'tour',
+    'workshop',
+    'tasting',
+    'party',
+    'celebration',
+    'host',
+    'spring',
+  ];
+
   @override
   void dispose() {
     _overlayTimer?.cancel();
@@ -379,4 +580,16 @@ class HumanChatMessage {
       happinessRated: happinessRated ?? this.happinessRated,
     );
   }
+}
+
+class AgentEventPlanningDraft {
+  const AgentEventPlanningDraft({
+    required this.planningInput,
+    required this.suggestedTemplate,
+    required this.summary,
+  });
+
+  final RawEventPlanningInput planningInput;
+  final EventTemplate? suggestedTemplate;
+  final String summary;
 }

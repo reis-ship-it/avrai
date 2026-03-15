@@ -28,5 +28,10 @@
 		"dart.showSkippedTests": false,
 		"workbench.activityBar.location": "top",
 		"codeQL.createQuery.qlPackLocation": "/Users/reisgordon/AVRAI"
+	},
+	"extensions": {
+		"recommendations": [
+			"openai.chatgpt"
+		]
 	}
 }

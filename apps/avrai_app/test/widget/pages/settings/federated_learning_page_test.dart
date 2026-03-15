@@ -23,56 +23,62 @@ void main() {
       expect(find.byType(AppBar), findsOneWidget);
       final appBar = tester.widget<AppBar>(find.byType(AppBar));
       expect((appBar.title as Text).data, equals('Federated Learning'));
-      expect(find.text('Privacy-Preserving AI Training'), findsOneWidget);
-      expect(find.text('Help improve AI without sharing your data'),
-          findsOneWidget);
+      expect(find.text('Federated Learning'), findsWidgets);
+      expect(
+        find.textContaining(
+          'Contribute to shared models while keeping raw data on-device.',
+        ),
+        findsOneWidget,
+      );
       expect(find.text('Settings & Participation'), findsOneWidget);
       expect(find.byType(FederatedLearningSettingsSection), findsOneWidget);
-      expect(find.byType(ListView), findsOneWidget);
-      final listView = find.byType(ListView);
+      final scrollView =
+          find.byKey(const Key('federated_learning_page_scroll'));
+      expect(scrollView, findsOneWidget);
       final activeRoundsText = find.text('Active Learning Rounds');
       for (var i = 0; i < 10 && activeRoundsText.evaluate().isEmpty; i++) {
-        await tester.drag(listView, const Offset(0, -200));
+        await tester.drag(scrollView, const Offset(0, -200));
         await tester.pump();
       }
       expect(activeRoundsText, findsOneWidget);
       final statusWidget = find.byType(FederatedLearningStatusWidget);
       for (var i = 0; i < 10 && statusWidget.evaluate().isEmpty; i++) {
-        await tester.drag(listView, const Offset(0, -200));
+        await tester.drag(scrollView, const Offset(0, -200));
         await tester.pump();
       }
       expect(statusWidget, findsOneWidget);
       final privacyMetricsText = find.text('Your Privacy Metrics');
       for (var i = 0; i < 5 && privacyMetricsText.evaluate().isEmpty; i++) {
-        await tester.drag(listView, const Offset(0, -200));
+        await tester.drag(scrollView, const Offset(0, -200));
         await tester.pump();
       }
       expect(privacyMetricsText, findsOneWidget);
       final privacyWidget = find.byType(PrivacyMetricsWidget);
       for (var i = 0; i < 5 && privacyWidget.evaluate().isEmpty; i++) {
-        await tester.drag(listView, const Offset(0, -200));
+        await tester.drag(scrollView, const Offset(0, -200));
         await tester.pump();
       }
       expect(privacyWidget, findsOneWidget);
       final historyText = find.text('Participation History');
       for (var i = 0; i < 5 && historyText.evaluate().isEmpty; i++) {
-        await tester.drag(listView, const Offset(0, -200));
+        await tester.drag(scrollView, const Offset(0, -200));
         await tester.pump();
       }
       expect(historyText, findsWidgets);
       final historyWidget = find.byType(FederatedParticipationHistoryWidget);
       for (var i = 0; i < 5 && historyWidget.evaluate().isEmpty; i++) {
-        await tester.drag(listView, const Offset(0, -200));
+        await tester.drag(scrollView, const Offset(0, -200));
         await tester.pump();
       }
       expect(historyWidget, findsOneWidget);
-      final learnMoreFinder = find.text('Learn More');
+      final learnMoreFinder = find.byTooltip('Learn more');
       for (var i = 0; i < 15 && learnMoreFinder.evaluate().isEmpty; i++) {
-        await tester.drag(listView, const Offset(0, -200));
+        await tester.drag(scrollView, const Offset(0, -200));
         await tester.pump();
       }
       expect(learnMoreFinder, findsOneWidget);
-      expect(find.text('Your data never leaves your device'), findsOneWidget);
+      expect(find.textContaining('Your data stays on your device'),
+          findsOneWidget);
     });
   });
 }

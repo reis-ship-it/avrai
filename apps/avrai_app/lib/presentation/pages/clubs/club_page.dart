@@ -13,7 +13,7 @@ import 'package:avrai/presentation/widgets/clubs/expansion_timeline_widget.dart'
 import 'package:avrai/presentation/widgets/golden_expert_indicator.dart';
 import 'package:avrai/presentation/widgets/boundaries/border_visualization_widget.dart';
 import 'package:avrai/presentation/widgets/boundaries/border_management_widget.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Club Page
 /// Agent 2: Frontend & UX Specialist (Phase 6, Week 29)
@@ -238,7 +238,7 @@ class _ClubPageState extends State<ClubPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: _club?.name ?? 'Club',
       backgroundColor: AppColors.background,
       appBarBackgroundColor: AppTheme.primaryColor,

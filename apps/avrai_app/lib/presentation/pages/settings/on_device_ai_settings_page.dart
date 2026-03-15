@@ -13,6 +13,7 @@ import 'package:flutter/foundation.dart'
         TargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:avrai_core/models/user/language_profile_diagnostics.dart';
 import 'package:avrai_core/models/misc/local_llm_bootstrap_state.dart';
 import 'package:avrai_runtime_os/services/recommendations/agent_happiness_service.dart';
 import 'package:avrai_runtime_os/services/device/device_capability_service.dart';
@@ -23,13 +24,18 @@ import 'package:avrai_runtime_os/services/local_llm/local_llm_provisioning_state
 import 'package:avrai_runtime_os/services/local_llm/local_llm_post_install_bootstrap_service.dart';
 import 'package:avrai_runtime_os/services/ai_infrastructure/model_safety_supervisor.dart';
 import 'package:avrai_runtime_os/services/ai_infrastructure/on_device_ai_capability_gate.dart';
+import 'package:avrai_runtime_os/services/language/language_profile_diagnostics_service.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
 import 'package:avrai_runtime_os/ml/model_version_registry.dart';
 import 'package:avrai_runtime_os/services/local_llm/model_pack_manager.dart';
+import 'package:avrai_runtime_os/services/security/security_kernel_release_gate_service.dart';
 import 'package:avrai/theme/colors.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_loading_state.dart';
+import 'package:avrai/presentation/widgets/common/app_section.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
+import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
+import 'package:avrai/presentation/schemas/pages/on_device_ai_settings_page_schema.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class OnDeviceAiSettingsPage extends StatefulWidget {
@@ -63,6 +69,7 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
   LocalLlmModelPackStatus? _packStatus;
   LocalLlmBootstrapState? _bootstrap;
   List<LocalLlmRefinementPrompt> _pendingRefinementPrompts = const [];
+  LanguageProfileDiagnosticsSnapshot? _languageDiagnostics;
 
   ProofRunServiceV0? _tryResolveProofRun() {
     try {
@@ -72,6 +79,30 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
     } catch (_) {
       return null;
     }
+  }
+
+  SecurityKernelReleaseGateService? _tryResolveSecurityReleaseGate() {
+    try {
+      final sl = GetIt.instance;
+      if (!sl.isRegistered<SecurityKernelReleaseGateService>()) {
+        return null;
+      }
+      return sl<SecurityKernelReleaseGateService>();
+    } catch (_) {
+      return null;
+    }
+  }
+
+  LocalLlmModelPackManager _packManager() {
+    return LocalLlmModelPackManager(
+      securityReleaseGateService: _tryResolveSecurityReleaseGate(),
+    );
+  }
+
+  LocalLlmImportService _importService() {
+    return LocalLlmImportService(
+      securityReleaseGateService: _tryResolveSecurityReleaseGate(),
+    );
   }
 
   Future<void> _recordProofRunMilestoneIfActive(
@@ -128,6 +159,7 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
 
       LocalLlmBootstrapState? bootstrap;
       List<LocalLlmRefinementPrompt> pendingPrompts = const [];
+      LanguageProfileDiagnosticsSnapshot? languageDiagnostics;
       try {
         final userId = Supabase.instance.client.auth.currentUser?.id;
         if (userId != null && userId.isNotEmpty) {
@@ -141,6 +173,8 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
             pendingPrompts =
                 await svc.getPendingRefinementPromptsForUser(userId);
           }
+          languageDiagnostics = await _resolveLanguageDiagnosticsService()
+              .getDiagnosticsForUser(userId);
         }
       } catch (e, st) {
         developer.log(
@@ -158,6 +192,7 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
         _packStatus = packStatus;
         _bootstrap = bootstrap;
         _pendingRefinementPrompts = pendingPrompts;
+        _languageDiagnostics = languageDiagnostics;
         _loading = false;
       });
     } catch (e, st) {
@@ -176,32 +211,40 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
-      title: 'On-Device AI',
-      constrainBody: false,
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                if (_error != null)
-                  _buildInfoCard(
-                    title: 'Error',
-                    body: _error!,
-                    icon: Icons.error_outline,
-                    iconColor: AppColors.error,
-                  ),
-                _buildHappinessCard(),
-                const SizedBox(height: 12),
-                _buildCapabilityCard(),
-                const SizedBox(height: 12),
-                _buildModelSafetyCard(),
-                const SizedBox(height: 12),
-                _buildTogglesCard(),
-                const SizedBox(height: 12),
-                _buildNotesCard(),
-              ],
-            ),
+    final content = _loading
+        ? const AppLoadingState(label: 'Loading on-device language settings')
+        : ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              if (_error != null)
+                _buildInfoCard(
+                  title: 'Error',
+                  body: _error!,
+                  icon: Icons.error_outline,
+                  iconColor: AppColors.error,
+                ),
+              AppSection(title: 'Model Health', child: _buildHappinessCard()),
+              const SizedBox(height: 12),
+              AppSection(
+                  title: 'Device Capability', child: _buildCapabilityCard()),
+              const SizedBox(height: 12),
+              AppSection(title: 'Model Safety', child: _buildModelSafetyCard()),
+              const SizedBox(height: 12),
+              AppSection(title: 'Offline Mode', child: _buildTogglesCard()),
+              const SizedBox(height: 12),
+              AppSection(
+                  title: 'Language Profile',
+                  child: _buildLanguageProfileCard()),
+              const SizedBox(height: 12),
+              AppSection(title: 'Notes', child: _buildNotesCard()),
+            ],
+          );
+
+    return AppSchemaPage(
+      schema: buildOnDeviceAISettingsPageSchema(
+        content: content,
+      ),
+      scrollable: false,
     );
   }
 
@@ -216,9 +259,9 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
             : AppColors.error;
 
     return _buildInfoCard(
-      title: 'Agent happiness',
+      title: 'Model health',
       body: '$percent/100 (n=${h.count}, p50=${h.p50}, p95=${h.p95}).\n\n'
-          'This score helps schedule training safely (and blocks “from above” changes that make your agent worse).',
+          'This score helps schedule training safely and avoid changes that lower local model quality.',
       icon: Icons.favorite_outline,
       iconColor: color,
     );
@@ -262,7 +305,7 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
         ...gate.reasons.map((r) => '- $r'),
       ].join('\n'),
       icon: Icons.shield_outlined,
-      iconColor: gate.eligible ? AppColors.electricGreen : AppColors.grey600,
+      iconColor: gate.eligible ? AppColors.success : AppColors.grey600,
     );
   }
 
@@ -300,11 +343,11 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
                     await _setBool(_prefsKeyOfflineLlmEnabled, v);
                   }
                 : null,
-            title: const Text('Enable offline LLM (download)'),
+            title: const Text('Enable on-device language (download)'),
             subtitle: Text(eligible
                 ? (defaultTargetPlatform == TargetPlatform.macOS
-                    ? 'Downloads a local model immediately and runs chat offline.'
-                    : 'Downloads a local model when on Wi-Fi and charging, then runs chat offline.')
+                    ? 'Downloads a local model immediately and keeps AVRAI language on device.'
+                    : 'Downloads a local model when on Wi-Fi and charging, then keeps AVRAI language on device.')
                 : 'Disabled: device not eligible (or low power mode on).'),
           ),
           SwitchListTile(
@@ -334,7 +377,7 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Refine offline AI (30 seconds)',
+            'Refine on-device language (30 seconds)',
             style: TextStyle(
               fontWeight: FontWeight.w600,
               color: AppColors.textPrimary,
@@ -342,7 +385,7 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
           ),
           const SizedBox(height: 6),
           Text(
-            'These quick picks make local suggestions sharper.',
+            'These quick picks make on-device responses sharper.',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: AppColors.textSecondary,
                 ),
@@ -355,10 +398,9 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
                 .take(3)
                 .map((p) => Chip(
                       label: Text(p.title),
-                      backgroundColor:
-                          AppColors.electricGreen.withValues(alpha: 0.12),
+                      backgroundColor: AppColors.surfaceMuted,
                       side: BorderSide(
-                        color: AppColors.electricGreen.withValues(alpha: 0.35),
+                        color: AppColors.borderSubtle,
                       ),
                     ))
                 .toList(),
@@ -568,16 +610,17 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
         },
       );
 
-      await LocalLlmModelPackManager().downloadAndActivateTrusted(
+      await _packManager().downloadAndActivateTrusted(
         tier: tier,
+        operatorApproved: true,
+        actorAlias: 'on_device_ai_settings',
         onProgress: (r, t) {
           unawaited(provisioning.setProgress(receivedBytes: r, totalBytes: t));
         },
       );
       await provisioning.setPhase(LocalLlmProvisioningPhase.installed);
 
-      final installedPackId =
-          (await LocalLlmModelPackManager().getStatus()).activePackId;
+      final installedPackId = (await _packManager().getStatus()).activePackId;
       await _recordProofRunMilestoneIfActive(
         'proof_offline_ai_provisioning_installed',
         payload: <String, Object?>{
@@ -656,14 +699,14 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
         },
       );
 
-      await LocalLlmImportService().importAndActivateAndroidGguf(
+      await _importService().importAndActivateAndroidGguf(
         ggufFile: File(path),
+        operatorApproved: true,
       );
       await LocalLlmProvisioningStateService()
           .setPhase(LocalLlmProvisioningPhase.installed);
 
-      final installedPackId =
-          (await LocalLlmModelPackManager().getStatus()).activePackId;
+      final installedPackId = (await _packManager().getStatus()).activePackId;
       await _recordProofRunMilestoneIfActive(
         'proof_offline_ai_provisioning_installed',
         payload: <String, Object?>{
@@ -775,16 +818,17 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
         },
       );
 
-      await LocalLlmModelPackManager().downloadAndActivate(
+      await _packManager().downloadAndActivate(
         manifestUrl: Uri.parse(url),
+        operatorApproved: true,
+        actorAlias: 'on_device_ai_settings',
         onProgress: (r, t) {
           unawaited(provisioning.setProgress(receivedBytes: r, totalBytes: t));
         },
       );
       await provisioning.setPhase(LocalLlmProvisioningPhase.installed);
 
-      final installedPackId =
-          (await LocalLlmModelPackManager().getStatus()).activePackId;
+      final installedPackId = (await _packManager().getStatus()).activePackId;
       await _recordProofRunMilestoneIfActive(
         'proof_offline_ai_provisioning_installed',
         payload: <String, Object?>{
@@ -833,7 +877,7 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
       'Calling score model: $currentCalling',
       'Outcome model: $currentOutcome',
       '',
-      'Auto-rollback is enabled using agent happiness signals.',
+      'Auto-rollback is enabled using local quality signals.',
     ];
     if (last != null) {
       lines.add('');
@@ -848,22 +892,247 @@ class _OnDeviceAiSettingsPageState extends State<OnDeviceAiSettingsPage> {
       title: 'Model safety',
       body: lines.join('\n'),
       icon: Icons.health_and_safety_outlined,
-      iconColor: AppColors.electricGreen,
+      iconColor: AppColors.success,
     );
   }
 
   Widget _buildNotesCard() {
     return _buildInfoCard(
-      title: 'Why this exists (protection from above)',
-      body: 'Off-device governance is a protective firewall:\n'
-          '- It limits what leaves your device.\n'
-          '- It validates what comes back (signed, versioned, safe).\n'
-          '- It schedules training when it won’t hurt battery/heat.\n'
+      title: 'Why these controls exist',
+      body: 'These controls keep local AI predictable and easier to manage:\n'
+          '- They limit what leaves your device.\n'
+          '- They validate updates before they are used locally.\n'
+          '- They schedule training when it will not hurt battery or heat.\n'
           '\n'
-          'Your local agent stays in control of your personalization.',
+          'Your personalization stays tied to the device and settings you control.',
       icon: Icons.lock_outline,
       iconColor: AppColors.textSecondary,
     );
+  }
+
+  Widget _buildLanguageProfileCard() {
+    final diagnostics = _languageDiagnostics;
+    if (diagnostics == null) {
+      return _buildInfoCard(
+        title: 'Local language profile',
+        body: 'No local language profile yet.\n\n'
+            'AVRAI starts learning from direct language interactions that stay on this device. '
+            'This view only shows derived style signals, not raw messages.',
+        icon: Icons.record_voice_over_outlined,
+        iconColor: AppColors.textSecondary,
+      );
+    }
+
+    final profile = diagnostics.profile;
+    final topVocabulary = diagnostics.topVocabulary(limit: 6);
+    final topPhrases = diagnostics.topPhrases(limit: 4);
+    final recentEvents = diagnostics.recentEvents.take(3).toList();
+
+    return AppSurface(
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Local language profile',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'AVRAI keeps only derived language signals here so it can adapt tone and clarity without turning the diagnostics view into a message archive.',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _buildLanguageMetricChip(
+                'Messages',
+                profile.messageCount.toString(),
+              ),
+              _buildLanguageMetricChip(
+                'Confidence',
+                '${(profile.learningConfidence * 100).round()}%',
+              ),
+              _buildLanguageMetricChip(
+                'Status',
+                profile.isReadyForAdaptation ? 'ready' : 'warming up',
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          _buildLanguageToneWrap(profile.tone),
+          if (topVocabulary.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            _buildLanguageSignalGroup(
+              title: 'Top vocabulary',
+              values: topVocabulary.map((entry) => entry.key).toList(),
+            ),
+          ],
+          if (topPhrases.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            _buildLanguageSignalGroup(
+              title: 'Common phrases',
+              values: topPhrases.map((entry) => entry.key).toList(),
+            ),
+          ],
+          if (recentEvents.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Text(
+              'Recent learning',
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            const SizedBox(height: 8),
+            ...recentEvents.map(_buildLanguageEventRow),
+          ],
+        ],
+      ),
+    );
+  }
+
+  LanguageProfileDiagnosticsService _resolveLanguageDiagnosticsService() {
+    final sl = GetIt.instance;
+    if (sl.isRegistered<LanguageProfileDiagnosticsService>()) {
+      return sl<LanguageProfileDiagnosticsService>();
+    }
+    return LanguageProfileDiagnosticsService();
+  }
+
+  Widget _buildLanguageMetricChip(String label, String value) {
+    return Chip(
+      label: Text('$label: $value'),
+      backgroundColor: AppColors.surfaceMuted,
+      side: BorderSide(color: AppColors.borderSubtle),
+    );
+  }
+
+  Widget _buildLanguageToneWrap(Map<String, double> tone) {
+    final entries = <MapEntry<String, double>>[
+      MapEntry('Formality', tone['formality'] ?? 0.5),
+      MapEntry('Enthusiasm', tone['enthusiasm'] ?? 0.5),
+      MapEntry('Directness', tone['directness'] ?? 0.5),
+    ];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Current tone map',
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: entries
+              .map(
+                (entry) => Chip(
+                  label: Text(
+                    '${entry.key}: ${_describeTone(entry.value)}',
+                  ),
+                  backgroundColor: AppColors.grey100,
+                ),
+              )
+              .toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLanguageSignalGroup({
+    required String title,
+    required List<String> values,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: values
+              .map(
+                (value) => Chip(
+                  label: Text(value),
+                  backgroundColor: AppColors.grey100,
+                ),
+              )
+              .toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLanguageEventRow(LanguageLearningEvent event) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.grey300),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '${_languageScopeLabel(event.learningScope)} · ${_formatLearningTimestamp(event.timestamp)}',
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+          ),
+          const SizedBox(height: 4),
+          Text(event.summary),
+          if (event.vocabularySample.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Text(
+              'Signals: ${event.vocabularySample.join(', ')}',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  String _describeTone(double value) {
+    if (value < 0.34) return 'low';
+    if (value < 0.67) return 'medium';
+    return 'high';
+  }
+
+  String _languageScopeLabel(String scope) {
+    switch (scope) {
+      case 'user_runtime_learning':
+        return 'Direct language';
+      case 'governance_feedback_rewrite':
+        return 'Approved rewrite';
+      case 'governance_feedback_acceptance':
+        return 'Approved response';
+      default:
+        return scope.replaceAll('_', ' ');
+    }
+  }
+
+  String _formatLearningTimestamp(DateTime timestamp) {
+    final local = timestamp.toLocal();
+    final month = local.month.toString().padLeft(2, '0');
+    final day = local.day.toString().padLeft(2, '0');
+    final hour = local.hour.toString().padLeft(2, '0');
+    final minute = local.minute.toString().padLeft(2, '0');
+    return '$month/$day $hour:$minute';
   }
 
   Widget _buildInfoCard({

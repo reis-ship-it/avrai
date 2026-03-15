@@ -7,7 +7,7 @@ import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:go_router/go_router.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Friend Discovery Page
@@ -253,7 +253,7 @@ class _FriendDiscoveryPageState extends State<FriendDiscoveryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Find Friends',
       actions: [
         IconButton(

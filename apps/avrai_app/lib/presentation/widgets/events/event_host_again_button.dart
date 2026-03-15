@@ -4,8 +4,6 @@ import 'package:avrai_core/models/expertise/expertise_event.dart';
 import 'package:avrai_runtime_os/services/expertise/expertise_event_service.dart';
 import 'package:get_it/get_it.dart';
 
-/// OUR_GUTS.md: "Make hosting incredibly easy"
-/// Easy Event Hosting - Phase 3: Copy & Repeat
 /// One-click button to duplicate past events
 class EventHostAgainButton extends StatelessWidget {
   final ExpertiseEvent originalEvent;

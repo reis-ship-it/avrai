@@ -10,6 +10,7 @@ import 'package:avrai_runtime_os/ai2ai/locality/learning_insight_peer_dispatch_l
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
+import 'package:avrai_runtime_os/services/transport/mesh/governed_mesh_packet_codec.dart';
 import 'package:avrai_core/models/personality_profile.dart';
 import 'package:avrai_network/avra_network.dart';
 
@@ -38,7 +39,7 @@ class PassiveAi2AiLearningOrchestrationLane {
     }) applyInsightForPeer,
     required bool allowBleSideEffects,
     required bool eventModeEnabled,
-    required AI2AIProtocol? protocol,
+    required GovernedMeshPacketCodec? packetCodec,
     required DeviceDiscoveryService? deviceDiscovery,
     required Map<String, String> peerNodeIdByDeviceId,
     required String localBleNodeId,
@@ -65,7 +66,7 @@ class PassiveAi2AiLearningOrchestrationLane {
         await LearningInsightPeerDispatchLane.send(
           allowBleSideEffects: allowBleSideEffects,
           eventModeEnabled: eventModeEnabled,
-          protocol: protocol,
+          packetCodec: packetCodec,
           deviceDiscovery: deviceDiscovery,
           peerId: peerId,
           prefs: prefs,

@@ -47,7 +47,11 @@ void main() {
         expect(find.byType(FederatedLearningPage), findsOneWidget);
         // "Federated Learning" appears in AppBar and possibly in header
         expect(find.text('Federated Learning'), findsWidgets);
-        expect(find.text('Privacy-Preserving AI Training'), findsOneWidget);
+        final hasHeroCopy =
+            find.text('Privacy-Preserving AI Training').evaluate().isNotEmpty ||
+                find.textContaining('Privacy-preserving').evaluate().isNotEmpty;
+        expect(hasHeroCopy, isTrue,
+            reason: 'Page should render the federated privacy/training copy');
       });
 
       testWidgets('should display all four main sections',

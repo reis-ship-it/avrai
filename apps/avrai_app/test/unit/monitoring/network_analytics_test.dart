@@ -37,6 +37,10 @@ void main() {
       networkAnalytics = NetworkAnalytics(prefs: prefs);
     });
 
+    tearDown(() {
+      networkAnalytics.disposeStreams();
+    });
+
     tearDownAll(() async {
       await cleanupTestStorage();
     });

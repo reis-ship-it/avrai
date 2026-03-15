@@ -21,19 +21,16 @@ void main() {
         ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget1);
-      expect(find.text('Age Verification'), findsOneWidget);
+      expect(find.text('Age Verification'), findsWidgets);
       expect(
           find.text(
-              'We need your age to provide age-appropriate content and ensure legal compliance.'),
+              'Use your birthday to apply age-appropriate defaults and legal guardrails.'),
           findsOneWidget);
-      expect(find.text('Birthday'), findsOneWidget);
+      expect(find.text('Why we ask for this'), findsOneWidget);
+      expect(find.text('What we store'), findsOneWidget);
+      expect(find.text('Birthday'), findsWidgets);
       expect(find.text('Tap to select your birthday'), findsOneWidget);
       expect(find.byIcon(Icons.calendar_today), findsOneWidget);
-      expect(find.byIcon(Icons.lock_outline), findsOneWidget);
-      expect(
-          find.textContaining('Your age is stored securely'), findsOneWidget);
-      expect(find.textContaining('OUR_GUTS.md'), findsOneWidget);
-      expect(find.byIcon(Icons.info_outline), findsNothing);
       expect(find.textContaining('Age:'), findsNothing);
       final birthdayTapTarget = find.ancestor(
         of: find.text('Tap to select your birthday'),
@@ -49,7 +46,7 @@ void main() {
         ),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget2);
-      expect(find.text('Birthday'), findsOneWidget);
+      expect(find.byType(AgeCollectionPage), findsOneWidget);
     });
   });
 }

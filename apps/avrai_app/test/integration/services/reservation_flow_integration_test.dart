@@ -175,7 +175,7 @@ void main() {
         expect(reservation.type, equals(ReservationType.event));
         expect(reservation.targetId, equals(eventId));
         expect(reservation.partySize, equals(2));
-        expect(reservation.status, equals(ReservationStatus.pending));
+        expect(reservation.status, equals(ReservationStatus.confirmed));
         expect(reservation.atomicTimestamp, isNotNull);
         expect(reservation.quantumState, isNotNull);
 
@@ -235,7 +235,7 @@ void main() {
         // Assert - Reservation created (cloud sync may fail gracefully)
         expect(reservation, isA<Reservation>());
         expect(reservation.id, isNotEmpty);
-        expect(reservation.status, equals(ReservationStatus.pending));
+        expect(reservation.status, equals(ReservationStatus.confirmed));
       });
     });
 
@@ -409,10 +409,10 @@ void main() {
         );
 
         // Act - Filter by status
-        final pendingReservations =
+        final confirmedReservations =
             await reservationService.getUserReservations(
           userId: userId,
-          status: ReservationStatus.pending,
+          status: ReservationStatus.confirmed,
         );
 
         final cancelledReservations =
@@ -422,8 +422,8 @@ void main() {
         );
 
         // Assert - Filtering works
-        expect(pendingReservations.length, equals(1));
-        expect(pendingReservations.first.id, equals(reservation1.id));
+        expect(confirmedReservations.length, equals(1));
+        expect(confirmedReservations.first.id, equals(reservation1.id));
         expect(cancelledReservations.length, equals(1));
         expect(cancelledReservations.first.id, equals(reservation2.id));
       });

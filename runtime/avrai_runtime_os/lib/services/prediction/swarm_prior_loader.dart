@@ -2,28 +2,31 @@
 //
 // Phase 1.5E: Beta Markov Engagement Predictor (Bridge to Phase 5)
 //
-// Extracts city-stratified Markov transition priors from the Multi-City Swarm
-// Simulation archetypes. Maps SimulatedHuman behavioral patterns (RoutineState +
-// trustMeter + activationEnergy) to UserEngagementPhase transitions.
+// Extracts Markov transition priors from legacy swarm archetype datasets.
+//
+// Important: this loader is now a transitional bridge for beta-era engagement
+// prediction. It is NOT the authoritative Wave 8 BHAM replay or forecast path.
+// The authoritative replay/training path is Birmingham-only and will feed a
+// dedicated forecast kernel instead of keeping multi-city swarm priors as the
+// long-term truth source.
 //
 // These priors seed MarkovTransitionStore as 100 synthetic observations per row
 // before any real user data exists. They decay in relative weight as real
 // observations accumulate.
 //
 // Priors are computed once and cached in-memory. No simulation is re-run at
-// runtime — this loader encodes the population-level distributions derived
-// from swarm analysis of NYC, Denver, and Atlanta archetypes.
+// runtime — this loader encodes population-level distributions from the older
+// swarm analysis assets while the BHAM-only replay/forecast path is being built.
 //
 // See: MASTER_PLAN.md Phase 1.5E, SwarmSimulationEngine, SwarmPopulationGenerator
 
 import 'engagement_phase_predictor.dart';
 
-/// Provides city-stratified Markov transition priors derived from the
-/// Multi-City Swarm Simulation (NYC, Denver, Atlanta).
+/// Provides transition priors derived from legacy swarm simulation assets.
 ///
-/// Priors encode population-level behavioral arcs observed across 4 daily
-/// routine archetypes (Standard, Early Bird, Night Owl, Shift Worker) and
-/// 3 financial profiles (Tight, Comfortable, Affluent) per city.
+/// Birmingham remains the beta launch geography and the future authoritative
+/// replay baseline. Non-Birmingham priors in this loader are compatibility
+/// assets for the older bridge path, not Wave 8 authority.
 ///
 /// **How priors were derived:** The swarm simulation produces trajectories
 /// through RoutineState (sleeping → home → commuting → working → freeTime).
@@ -54,6 +57,10 @@ class SwarmPriorLoader {
         return _denverPrior;
       case 'atlanta':
         return _atlantaPrior;
+      case 'birmingham':
+      case 'bham':
+      case 'birmingham, alabama':
+        return _birminghamPrior;
       default:
         return _defaultPrior;
     }
@@ -222,6 +229,60 @@ class SwarmPriorLoader {
       UserEngagementPhase.embedding: 3,
       UserEngagementPhase.quietPeriod: 13,
       UserEngagementPhase.churning: 55,
+    },
+  };
+
+  // ─── Birmingham Prior ─────────────────────────────────────────────────────
+  // Moderate friction, neighborhood-centered, strong repeatable local loops.
+  static final Map<UserEngagementPhase, Map<UserEngagementPhase, int>>
+      _birminghamPrior = {
+    UserEngagementPhase.onboarding: {
+      UserEngagementPhase.onboarding: 16,
+      UserEngagementPhase.exploring: 54,
+      UserEngagementPhase.connecting: 16,
+      UserEngagementPhase.embedding: 5,
+      UserEngagementPhase.quietPeriod: 6,
+      UserEngagementPhase.churning: 3,
+    },
+    UserEngagementPhase.exploring: {
+      UserEngagementPhase.onboarding: 2,
+      UserEngagementPhase.exploring: 31,
+      UserEngagementPhase.connecting: 34,
+      UserEngagementPhase.embedding: 18,
+      UserEngagementPhase.quietPeriod: 10,
+      UserEngagementPhase.churning: 5,
+    },
+    UserEngagementPhase.connecting: {
+      UserEngagementPhase.onboarding: 0,
+      UserEngagementPhase.exploring: 8,
+      UserEngagementPhase.connecting: 30,
+      UserEngagementPhase.embedding: 47,
+      UserEngagementPhase.quietPeriod: 10,
+      UserEngagementPhase.churning: 5,
+    },
+    UserEngagementPhase.embedding: {
+      UserEngagementPhase.onboarding: 0,
+      UserEngagementPhase.exploring: 4,
+      UserEngagementPhase.connecting: 8,
+      UserEngagementPhase.embedding: 77,
+      UserEngagementPhase.quietPeriod: 8,
+      UserEngagementPhase.churning: 3,
+    },
+    UserEngagementPhase.quietPeriod: {
+      UserEngagementPhase.onboarding: 0,
+      UserEngagementPhase.exploring: 28,
+      UserEngagementPhase.connecting: 14,
+      UserEngagementPhase.embedding: 7,
+      UserEngagementPhase.quietPeriod: 31,
+      UserEngagementPhase.churning: 20,
+    },
+    UserEngagementPhase.churning: {
+      UserEngagementPhase.onboarding: 5,
+      UserEngagementPhase.exploring: 18,
+      UserEngagementPhase.connecting: 8,
+      UserEngagementPhase.embedding: 4,
+      UserEngagementPhase.quietPeriod: 14,
+      UserEngagementPhase.churning: 51,
     },
   };
 

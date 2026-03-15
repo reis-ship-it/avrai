@@ -8,6 +8,13 @@ import 'package:avrai_runtime_os/services/infrastructure/feature_flag_service.da
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 import 'package:avrai_runtime_os/services/infrastructure/supabase_service.dart';
 import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai_runtime_os/kernel/temporal/atomic_clock_temporal_adapter.dart';
+import 'package:avrai_runtime_os/kernel/temporal/native_backed_temporal_kernel.dart';
+import 'package:avrai_runtime_os/kernel/temporal/system_temporal_kernel.dart';
+import 'package:avrai_runtime_os/kernel/temporal/temporal_kernel.dart';
+import 'package:avrai_runtime_os/kernel/temporal/when_native_bridge_bindings.dart';
+import 'package:avrai_runtime_os/kernel/when/when_library_manager.dart';
+import 'package:avrai_runtime_os/kernel/when/when_native_priority.dart';
 import 'package:avrai_runtime_os/services/geographic/geo_hierarchy_service.dart';
 import 'package:avrai_runtime_os/services/places/large_city_detection_service.dart';
 import 'package:avrai_runtime_os/services/places/neighborhood_boundary_service.dart';
@@ -20,6 +27,7 @@ import 'package:avrai_runtime_os/services/infrastructure/deployment_validator.da
 import 'package:avrai_runtime_os/services/infrastructure/search_cache_service.dart';
 import 'package:avrai_runtime_os/services/ai_infrastructure/ai_search_suggestions_service.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:avrai_runtime_os/services/device/device_motion_service.dart';
 import 'package:avrai_runtime_os/services/user/permissions_persistence_service.dart';
 import 'package:avrai_runtime_os/ai/vibe_analysis_engine.dart';
 
@@ -36,11 +44,13 @@ import 'package:avrai_runtime_os/ai/vibe_analysis_engine.dart';
 /// - Security and validation services
 Future<void> registerCoreServices(GetIt sl) async {
   const logger = AppLogger(defaultTag: 'DI-Core', minimumLevel: LogLevel.debug);
+  const bool isFlutterTest = bool.fromEnvironment('FLUTTER_TEST');
   logger.debug('📦 [DI-Core] Registering core services...');
 
   // External dependencies
   sl.registerLazySingleton(() => Connectivity());
   sl.registerLazySingleton(() => PermissionsPersistenceService());
+  sl.registerLazySingleton<DeviceMotionService>(() => DeviceMotionService());
 
   // Note: AppDatabase (Drift) is registered in injection_container_device_sync.dart
   // Sembast was fully removed in Phase 26 migration.
@@ -108,6 +118,39 @@ Future<void> registerCoreServices(GetIt sl) async {
   // Patent #30: Quantum Atomic Clock System
   sl.registerLazySingleton<AtomicClockService>(() => AtomicClockService());
   logger.debug('✅ [DI-Core] AtomicClockService registered');
+  if (!sl.isRegistered<WhenLibraryManager>()) {
+    sl.registerLazySingleton<WhenLibraryManager>(() => WhenLibraryManager());
+  }
+  if (!sl.isRegistered<WhenNativeInvocationBridge>()) {
+    sl.registerLazySingleton<WhenNativeInvocationBridge>(
+      () => WhenNativeBridgeBindings(
+        libraryManager: sl<WhenLibraryManager>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<WhenNativeExecutionPolicy>()) {
+    sl.registerLazySingleton<WhenNativeExecutionPolicy>(
+      () => WhenNativeExecutionPolicy(requireNative: !isFlutterTest),
+    );
+  }
+  if (!sl.isRegistered<WhenNativeFallbackAudit>()) {
+    sl.registerLazySingleton<WhenNativeFallbackAudit>(
+      () => WhenNativeFallbackAudit(),
+    );
+  }
+  sl.registerLazySingleton<TemporalKernel>(
+    () => NativeBackedTemporalKernel(
+      nativeBridge: sl<WhenNativeInvocationBridge>(),
+      fallbackKernel: SystemTemporalKernel(
+        clockSource: AtomicClockTemporalAdapter(
+          atomicClockService: sl<AtomicClockService>(),
+        ),
+      ),
+      policy: sl<WhenNativeExecutionPolicy>(),
+      audit: sl<WhenNativeFallbackAudit>(),
+    ),
+  );
+  logger.debug('✅ [DI-Core] TemporalKernel registered');
 
   // Agent ID Service (privacy protection)
   // Note: AgentIdService requires SecureMappingEncryptionService and BusinessAccountService

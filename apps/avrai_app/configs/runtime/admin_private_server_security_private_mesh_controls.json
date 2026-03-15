@@ -19,7 +19,7 @@
     "peer_expiration_days": 30,
     "offboarding_revocation_sla_minutes": 15
   },
-  "status": "starter",
-  "last_updated": "2026-02-28",
-  "notes": "Locks target constraints for the internal backend private network rollout."
+  "status": "enforced",
+  "last_updated": "2026-03-14",
+  "notes": "Private mesh is enforced for all admin/autoresearch control-plane traffic."
 }

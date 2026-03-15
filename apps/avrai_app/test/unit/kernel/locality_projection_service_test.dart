@@ -55,7 +55,16 @@ void main() {
       expect(projection.primaryLabel, 'Avondale');
       expect(projection.metadata['reliabilityTier'], 'established');
       expect(projection.metadata['advisoryStatus'], 'eligible');
-      expect(projection.metadata['predictiveTrend'], 'changing');
+      expect(projection.metadata['dominantSource'], 'local');
+      expect(projection.metadata['sourceMixSummary'], 'localLed');
+      expect(projection.metadata['stabilityClass'], 'accelerating');
+      expect(projection.metadata['nextStateRisk'], 'medium');
+      expect(projection.metadata['promotionReadiness'], 'established');
+      expect(projection.metadata['predictiveTrend'], 'accelerating');
+      expect(
+        projection.metadata['explanatoryFactors'],
+        containsAll(<String>['highConfidence', 'boundaryTension']),
+      );
     });
   });
 }

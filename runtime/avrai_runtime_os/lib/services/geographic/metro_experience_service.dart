@@ -1,6 +1,6 @@
 import 'package:get_it/get_it.dart';
-import 'package:avrai_runtime_os/kernel/locality/locality_state.dart';
-import 'package:avrai_runtime_os/kernel/locality/locality_syscall_contract.dart';
+import 'package:avrai_runtime_os/kernel/where/where_kernel_models.dart';
+import 'package:avrai_runtime_os/kernel/where/where_kernel_contract.dart';
 import 'package:avrai_runtime_os/services/geographic/geo_hierarchy_service.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart';
 import 'package:avrai_runtime_os/services/locality_agents/onboarding_locality_lists.dart';
@@ -50,15 +50,15 @@ class MetroExperienceContext {
 class MetroExperienceService {
   final GeoHierarchyService _geoHierarchyService;
   final SharedPreferencesCompat _prefs;
-  final LocalityKernelContract? _localityKernel;
+  final WhereKernelContract? _whereKernel;
 
   const MetroExperienceService({
     required GeoHierarchyService geoHierarchyService,
     required SharedPreferencesCompat prefs,
-    LocalityKernelContract? localityKernel,
+    WhereKernelContract? whereKernel,
   })  : _geoHierarchyService = geoHierarchyService,
         _prefs = prefs,
-        _localityKernel = localityKernel;
+        _whereKernel = whereKernel;
 
   Future<MetroExperienceContext> resolveBestEffort({
     double? latitude,
@@ -73,14 +73,14 @@ class MetroExperienceService {
     String? displayName = locationLabel;
 
     if (lat != null && lon != null) {
-      final localityKernel = _resolveKernel();
-      if (localityKernel != null) {
-        final resolution = await localityKernel.resolvePoint(
-          LocalityPointQuery(
+      final whereKernel = _resolveKernel();
+      if (whereKernel != null) {
+        final resolution = await whereKernel.resolvePoint(
+          WherePointQuery(
             latitude: lat,
             longitude: lon,
             occurredAtUtc: DateTime.now().toUtc(),
-            audience: LocalityProjectionAudience.user,
+            audience: WhereProjectionAudience.user,
           ),
         );
         cityCode = resolution.cityCode;
@@ -110,11 +110,11 @@ class MetroExperienceService {
     );
   }
 
-  LocalityKernelContract? _resolveKernel() {
-    if (_localityKernel != null) return _localityKernel;
+  WhereKernelContract? _resolveKernel() {
+    if (_whereKernel != null) return _whereKernel;
     final sl = GetIt.instance;
-    if (!sl.isRegistered<LocalityKernelContract>()) return null;
-    return sl<LocalityKernelContract>();
+    if (!sl.isRegistered<WhereKernelContract>()) return null;
+    return sl<WhereKernelContract>();
   }
 
   double scoreCategoryAffinity({

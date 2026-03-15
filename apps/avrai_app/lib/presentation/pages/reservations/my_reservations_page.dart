@@ -12,7 +12,7 @@ import 'package:avrai/presentation/pages/reservations/reservation_detail_page.da
 import 'package:avrai/presentation/widgets/reservations/reservation_card_widget.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:go_router/go_router.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// My Reservations Page
 /// Phase 15: Reservation System Implementation
@@ -169,7 +169,7 @@ class _MyReservationsPageState extends State<MyReservationsPage>
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'My Reservations',
       appBarBackgroundColor: AppTheme.primaryColor,
       appBarForegroundColor: AppColors.white,

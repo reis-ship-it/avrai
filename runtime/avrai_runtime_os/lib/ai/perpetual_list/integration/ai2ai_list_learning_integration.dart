@@ -251,15 +251,18 @@ class AI2AIListLearningIntegration {
     }
 
     // 5. Apply dimension updates to personality (with reduced learning rate)
-    final scaledUpdates =
-        _scaleLearningUpdates(collapseResult.dimensionUpdates);
+    final scaledUpdates = _scaleLearningUpdates(
+      collapseResult.dimensionUpdates,
+      interaction,
+    );
 
     if (scaledUpdates.isNotEmpty) {
       // Use evolveFromAI2AILearning for learning from list interactions
       final insight = AI2AILearningInsight(
         type: _interactionToInsightType(interaction),
         dimensionInsights: scaledUpdates,
-        learningQuality: collapseResult.matchScore * 0.5, // 50% reduced quality
+        learningQuality:
+            (collapseResult.matchScore * 0.5) * interaction.learningWeight,
         timestamp: DateTime.now(),
       );
 
@@ -350,13 +353,17 @@ class AI2AIListLearningIntegration {
   }
 
   /// Scale learning updates by our reduced rate
-  Map<String, double> _scaleLearningUpdates(Map<String, double> updates) {
+  Map<String, double> _scaleLearningUpdates(
+    Map<String, double> updates,
+    ListInteraction interaction,
+  ) {
     // Apply our 50% reduced rate
     return updates.map(
       (key, value) => MapEntry(
           key,
           value *
-              (listInteractionLearningRate / VibeConstants.ai2aiLearningRate)),
+              (listInteractionLearningRate / VibeConstants.ai2aiLearningRate) *
+              interaction.learningWeight),
     );
   }
 
@@ -368,7 +375,9 @@ class AI2AIListLearningIntegration {
       case ListInteractionType.addedToCollection:
         return AI2AIInsightType.patternRecognition;
       case ListInteractionType.dismissed:
-        return AI2AIInsightType.dimensionDiscovery;
+        return interaction.isSoftIgnore
+            ? AI2AIInsightType.compatibilityLearning
+            : AI2AIInsightType.dimensionDiscovery;
       case ListInteractionType.shared:
         return AI2AIInsightType.communityInsight;
       case ListInteractionType.viewed:

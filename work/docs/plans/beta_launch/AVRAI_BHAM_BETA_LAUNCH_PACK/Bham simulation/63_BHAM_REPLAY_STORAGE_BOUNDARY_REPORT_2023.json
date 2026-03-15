@@ -1,0 +1,51 @@
+{
+  "environmentId": "bham-replay-2023",
+  "replayYear": 2023,
+  "passed": true,
+  "projectIsolationMode": "shared_project_isolated_namespace",
+  "replaySchema": "replay_simulation",
+  "replayBuckets": [
+    "replay-exchange-logs",
+    "replay-normalized-observations",
+    "replay-source-packs",
+    "replay-training-exports",
+    "replay-world-snapshots"
+  ],
+  "replayMetadataTables": [
+    "replay_artifact_partitions",
+    "replay_artifacts",
+    "replay_calibration_reports",
+    "replay_lineage",
+    "replay_realism_gate_reports",
+    "replay_runs",
+    "replay_training_exports"
+  ],
+  "appBuckets": [
+    "geo-packs",
+    "list-images",
+    "local-llm-models",
+    "paperwork-documents",
+    "spot-images",
+    "tax-documents",
+    "user-avatars"
+  ],
+  "appSchemas": [
+    "public"
+  ],
+  "violations": [],
+  "policySnapshot": {
+    "liveAppBucketReuse": "blocked",
+    "liveAppSchemaReuse": "blocked",
+    "appDirectReplayAccess": "blocked",
+    "replayWriteAuthority": "admin_tooling_or_service_role_only"
+  },
+  "notes": [
+    "Replay storage may share the Supabase project, but must remain isolated by schema and replay-prefixed buckets.",
+    "Replay artifacts must never be written through the live app SupabaseService surface."
+  ],
+  "metadata": {
+    "replayBucketCount": 5,
+    "replayMetadataTableCount": 7,
+    "overlappingBucketCount": 0
+  }
+}

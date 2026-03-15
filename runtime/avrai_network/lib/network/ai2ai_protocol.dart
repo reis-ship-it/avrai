@@ -6,14 +6,16 @@ import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:pointycastle/export.dart';
 import 'package:avrai_core/models/personality_profile.dart';
-
-import 'package:avrai_network/network/message_encryption_service.dart';
+import 'package:avrai_core/models/vibe/vibe_models.dart';
+import 'package:avrai_core/services/temporal_lineage_sink.dart';
 import 'package:avrai_network/network/binary_packet_codec.dart';
+import 'package:avrai_network/network/mesh_packet_models.dart';
 import 'package:avrai_network/network/packet_padding.dart';
 import 'package:avrai_network/network/replay_protection.dart';
 import 'package:avrai_network/network/rate_limiter.dart';
 import 'package:avrai_network/network/message_ordering_buffer.dart';
 import 'package:avrai_network/network/delivery_ack_service.dart';
+import 'package:avrai_network/network/message_encryption_service.dart';
 import 'package:avrai_network/network/message_fragmentation.dart'
     show MessageFragmentation, Fragment;
 
@@ -26,7 +28,9 @@ import 'package:avrai_network/network/message_fragmentation.dart'
 /// - TTL integration with geographic scope
 /// - PKCS#7 padding for traffic analysis resistance
 /// - Backward compatible with JSON format during transition
-@Deprecated('v0.1 Pivot: Replaced by DNAEncoderService for passive AI2AI walk-bys. Do not use for background AI sync. (Human chat still uses Signal Protocol directly).')
+@Deprecated(
+  'v0.1 Pivot: Replaced by DNAEncoderService for passive AI2AI walk-bys. Do not use for background AI sync. (Human chat still uses Signal Protocol directly).',
+)
 class AI2AIProtocol {
   static const String _logName = 'AI2AIProtocol';
   static const String _protocolVersion = '1.0';
@@ -55,6 +59,9 @@ class AI2AIProtocol {
   // Delivery ACK service (BitChat-inspired, AI2AI-optimized)
   final DeliveryAckService _ackService;
 
+  // Runtime lineage hook for transport encoding/decoding observability.
+  final TemporalLineageSink _temporalLineageSink;
+
   // Per-peer sequence numbers (AI2AI-specific: for message ordering)
   final Map<String, int> _sequenceNumbers = {};
 
@@ -72,13 +79,15 @@ class AI2AIProtocol {
     RateLimiter? rateLimiter,
     MessageOrderingBuffer? orderingBuffer,
     DeliveryAckService? ackService,
+    TemporalLineageSink? temporalLineageSink,
   }) : _encryptionService = encryptionService,
        _encryptionKey = encryptionKey,
        _useBinaryFormat = useBinaryFormat,
        _replayProtection = replayProtection ?? ReplayProtection(),
        _rateLimiter = rateLimiter ?? RateLimiter(),
        _orderingBuffer = orderingBuffer ?? MessageOrderingBuffer(),
-       _ackService = ackService ?? DeliveryAckService() {
+       _ackService = ackService ?? DeliveryAckService(),
+       _temporalLineageSink = temporalLineageSink ?? NullTemporalLineageSink() {
     // Start fragment buffer cleanup timer
     _fragmentCleanupTimer = Timer.periodic(
       const Duration(minutes: 5),
@@ -95,6 +104,8 @@ class AI2AIProtocol {
     _fragmentBuffers.clear();
     _sequenceNumbers.clear();
   }
+
+  MessageEncryptionService get encryptionService => _encryptionService;
 
   /// Encode a message for transmission
   ///
@@ -160,6 +171,21 @@ class AI2AIProtocol {
       developer.log(
         'Protocol packet created: ${packet.identifier} v${packet.version}, checksum: ${packet.checksum.substring(0, 8)}...',
         name: _logName,
+      );
+
+      await _temporalLineageSink.record(
+        TemporalLineageEvent(
+          eventId: packet.checksum,
+          stage: TemporalLineageStage.encoded,
+          occurredAt: message.timestamp,
+          source: 'ai2ai_protocol',
+          eventType: type.name,
+          peerId: recipientNodeId,
+          metadata: <String, dynamic>{
+            'senderId': senderNodeId,
+            'protocolVersion': _protocolVersion,
+          },
+        ),
       );
 
       return message;
@@ -242,9 +268,9 @@ class AI2AIProtocol {
           final nonce = _replayProtection.generateNonce(peerId);
 
           // Create fragment message
-          final fragmentMessage = ProtocolMessage(
+          final fragmentMessage = MeshPacketEnvelope(
             version: _protocolVersionBinary,
-            type: fragmentType,
+            type: _meshPacketTypeFor(fragmentType),
             senderId: senderNodeId,
             recipientId: recipientNodeId,
             timestamp: message.timestamp,
@@ -317,7 +343,7 @@ class AI2AIProtocol {
             type == MessageType.learningExchange;
 
         final binaryPacket = BinaryPacketCodec.encode(
-          message: message,
+          message: _meshEnvelopeFromProtocolMessage(message),
           encryptedPayload: encryptedBytes,
           geographicScope: geographicScope,
           nonce: nonce, // AI2AI-specific: nonce for replay protection
@@ -603,7 +629,7 @@ class AI2AIProtocol {
             // Normal (non-fragmented) message
             final message = ProtocolMessage(
               version: decodeResult.message.version,
-              type: decodeResult.message.type,
+              type: _legacyMessageTypeFor(decodeResult.message.type),
               senderId: decodeResult.message.senderId,
               recipientId: decodeResult.message.recipientId,
               timestamp: decodeResult.message.timestamp,
@@ -774,6 +800,75 @@ class AI2AIProtocol {
       return null;
     } catch (e) {
       developer.log('Error exchanging personality profile: $e', name: _logName);
+      return null;
+    }
+  }
+
+  /// Exchange canonical vibe references peer-to-peer (active send path).
+  ///
+  /// Retained temporarily for compatibility with older tests only.
+  /// Active runtime peer behavior now uses `exchangeCanonicalPeerPayload`.
+  /// The older `personalityExchange` path remains decode-only compatibility.
+  @Deprecated(
+    'Use exchangeCanonicalPeerPayload for active peer behavior. '
+    'Reference-only exchange is being retired.',
+  )
+  Future<Ai2AiVibeReference?> exchangeCanonicalVibeReference(
+    String deviceId,
+    Ai2AiVibeReference localVibeReference,
+  ) async {
+    try {
+      final message = await encodeMessage(
+        type: MessageType.vibeExchange,
+        payload: <String, dynamic>{
+          'vibe_reference': localVibeReference.toJson(),
+          'timestamp': DateTime.now().toIso8601String(),
+        },
+        senderNodeId: deviceId,
+      );
+
+      developer.log(
+        'Exchanging canonical vibe reference with device: $deviceId (message type: ${message.type.name}, payload size: ${message.payload.toString().length} chars)',
+        name: _logName,
+      );
+
+      return null;
+    } catch (e) {
+      developer.log(
+        'Error exchanging canonical vibe reference: $e',
+        name: _logName,
+      );
+      return null;
+    }
+  }
+
+  Future<Ai2AiCanonicalPeerPayload?> exchangeCanonicalPeerPayload(
+    String deviceId,
+    Ai2AiCanonicalPeerPayload localPeerPayload,
+  ) async {
+    try {
+      final message = await encodeMessage(
+        type: MessageType.vibeExchange,
+        payload: <String, dynamic>{
+          'canonical_peer_payload': localPeerPayload.toJson(),
+          'timestamp': DateTime.now().toIso8601String(),
+        },
+        senderNodeId: deviceId,
+      );
+
+      developer.log(
+        'Exchanging canonical peer payload with device: $deviceId '
+        '(message type: ${message.type.name}, payload size: '
+        '${message.payload.toString().length} chars)',
+        name: _logName,
+      );
+
+      return null;
+    } catch (e) {
+      developer.log(
+        'Error exchanging canonical peer payload: $e',
+        name: _logName,
+      );
       return null;
     }
   }
@@ -1048,7 +1143,7 @@ class AI2AIProtocol {
       // Encode binary packet
       // Phase 4.2: Delivery ACKs are not deniable (they are explicit acknowledgments)
       final binaryPacket = BinaryPacketCodec.encode(
-        message: ackMessage,
+        message: _meshEnvelopeFromProtocolMessage(ackMessage),
         encryptedPayload: ackEncryptedBytes,
         nonce: nonce,
         sequenceNumber: seqNum,
@@ -1166,6 +1261,55 @@ class AI2AIProtocol {
     );
   }
 
+  MeshPacketEnvelope _meshEnvelopeFromProtocolMessage(ProtocolMessage message) {
+    return MeshPacketEnvelope(
+      version: message.version,
+      type: _meshPacketTypeFor(message.type),
+      senderId: message.senderId,
+      recipientId: message.recipientId,
+      timestamp: message.timestamp,
+      payload: message.payload,
+    );
+  }
+
+  MeshPacketType _meshPacketTypeFor(MessageType type) {
+    return switch (type) {
+      MessageType.connectionRequest => MeshPacketType.connectionRequest,
+      MessageType.connectionResponse => MeshPacketType.connectionResponse,
+      MessageType.learningExchange => MeshPacketType.learningExchange,
+      MessageType.learningInsight => MeshPacketType.learningInsight,
+      MessageType.heartbeat => MeshPacketType.heartbeat,
+      MessageType.disconnect => MeshPacketType.disconnect,
+      MessageType.vibeExchange => MeshPacketType.vibeExchange,
+      MessageType.personalityExchange => MeshPacketType.personalityExchange,
+      MessageType.fragmentStart => MeshPacketType.fragmentStart,
+      MessageType.fragmentContinue => MeshPacketType.fragmentContinue,
+      MessageType.fragmentEnd => MeshPacketType.fragmentEnd,
+      MessageType.userChat => MeshPacketType.userChat,
+      MessageType.deliveryAck => MeshPacketType.deliveryAck,
+      MessageType.readReceipt => MeshPacketType.readReceipt,
+    };
+  }
+
+  MessageType _legacyMessageTypeFor(MeshPacketType type) {
+    return switch (type) {
+      MeshPacketType.connectionRequest => MessageType.connectionRequest,
+      MeshPacketType.connectionResponse => MessageType.connectionResponse,
+      MeshPacketType.learningExchange => MessageType.learningExchange,
+      MeshPacketType.learningInsight => MessageType.learningInsight,
+      MeshPacketType.heartbeat => MessageType.heartbeat,
+      MeshPacketType.disconnect => MessageType.disconnect,
+      MeshPacketType.vibeExchange => MessageType.vibeExchange,
+      MeshPacketType.personalityExchange => MessageType.personalityExchange,
+      MeshPacketType.fragmentStart => MessageType.fragmentStart,
+      MeshPacketType.fragmentContinue => MessageType.fragmentContinue,
+      MeshPacketType.fragmentEnd => MessageType.fragmentEnd,
+      MeshPacketType.userChat => MessageType.userChat,
+      MeshPacketType.deliveryAck => MessageType.deliveryAck,
+      MeshPacketType.readReceipt => MessageType.readReceipt,
+    };
+  }
+
   /// Generate unique vibe signature for personality profile
   Future<String> _generateVibeSignature(PersonalityProfile profile) async {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
@@ -1186,6 +1330,7 @@ enum MessageType {
   learningInsight, // NEW: Encrypted AI2AI learning insight exchange (v1)
   heartbeat,
   disconnect,
+  vibeExchange, // Canonical vibe reference exchange (active send path)
   personalityExchange, // NEW: For offline AI2AI personality exchange
   // Fragment types (BitChat-inspired, AI2AI-optimized)
   fragmentStart, // First fragment of fragmented message

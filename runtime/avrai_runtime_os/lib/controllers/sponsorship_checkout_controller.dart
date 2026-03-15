@@ -73,9 +73,6 @@ class SponsorshipCheckoutController
   // final RevenueSplitService _revenueSplitService;
   final ExpertiseEventService _eventService;
   final ProductTrackingService? _productTrackingService;
-  // ignore: unused_field
-  final AtomicClockService
-      _atomicClock; // Reserved for future timestamp-based sponsorship tracking
 
   // AVRAI Core System Integration (optional, graceful degradation)
   final CrossEntityCompatibilityService? _knotCompatibilityService;
@@ -102,10 +99,6 @@ class SponsorshipCheckoutController
         // _revenueSplitService = revenueSplitService ?? GetIt.instance<RevenueSplitService>(),
         _eventService = eventService ?? GetIt.instance<ExpertiseEventService>(),
         _productTrackingService = productTrackingService,
-        _atomicClock = atomicClock ??
-            (GetIt.instance.isRegistered<AtomicClockService>()
-                ? GetIt.instance<AtomicClockService>()
-                : AtomicClockService()),
         _knotCompatibilityService = knotCompatibilityService ??
             (GetIt.instance.isRegistered<CrossEntityCompatibilityService>()
                 ? GetIt.instance<CrossEntityCompatibilityService>()

@@ -28,7 +28,8 @@ class OnboardingData {
   /// Baseline lists the user wants to start with
   final List<String> baselineLists;
 
-  /// Open-ended text responses for the conversational AI onboarding (Air Gapped SLM digestion)
+  /// Open-ended text responses for the conversational AI onboarding
+  /// (air-gapped language digestion)
   /// Example: {"coffee": "I love small dark roasts", "about_me": "I'm a grungy techie"}
   final Map<String, String> openResponses;
 
@@ -54,6 +55,18 @@ class OnboardingData {
   /// Whether the user accepted the Privacy Policy
   final bool privacyAccepted;
 
+  /// Whether the user accepted the BHAM supervised beta consent.
+  final bool betaConsentAccepted;
+
+  /// Version identifier for the BHAM supervised beta consent.
+  final String? betaConsentVersion;
+
+  /// Version identifier for the exact onboarding questionnaire copy used.
+  final String? questionnaireVersion;
+
+  /// Snapshot of permission states captured during onboarding.
+  final Map<String, bool> permissionStates;
+
   /// Whether dimension values have been computed from onboarding
   bool get hasDimensionValues =>
       dimensionValues != null && dimensionValues!.isNotEmpty;
@@ -74,6 +87,10 @@ class OnboardingData {
     this.dimensionConfidence,
     this.tosAccepted = false,
     this.privacyAccepted = false,
+    this.betaConsentAccepted = false,
+    this.betaConsentVersion,
+    this.questionnaireVersion,
+    this.permissionStates = const {},
   });
 
   /// Convert to JSON for storage
@@ -94,6 +111,10 @@ class OnboardingData {
       'dimensionConfidence': dimensionConfidence,
       'tosAccepted': tosAccepted,
       'privacyAccepted': privacyAccepted,
+      'betaConsentAccepted': betaConsentAccepted,
+      'betaConsentVersion': betaConsentVersion,
+      'questionnaireVersion': questionnaireVersion,
+      'permissionStates': permissionStates,
     };
   }
 
@@ -145,6 +166,16 @@ class OnboardingData {
       ),
       tosAccepted: json['tosAccepted'] as bool? ?? false,
       privacyAccepted: json['privacyAccepted'] as bool? ?? false,
+      betaConsentAccepted: json['betaConsentAccepted'] as bool? ?? false,
+      betaConsentVersion: json['betaConsentVersion'] as String?,
+      questionnaireVersion: json['questionnaireVersion'] as String?,
+      permissionStates: (json['permissionStates'] as Map?)?.map(
+            (key, value) => MapEntry(
+              key.toString(),
+              value as bool? ?? false,
+            ),
+          ) ??
+          {},
     );
   }
 
@@ -165,6 +196,10 @@ class OnboardingData {
     Map<String, double>? dimensionConfidence,
     bool? tosAccepted,
     bool? privacyAccepted,
+    bool? betaConsentAccepted,
+    Object? betaConsentVersion = const _Sentinel(),
+    Object? questionnaireVersion = const _Sentinel(),
+    Map<String, bool>? permissionStates,
   }) {
     return OnboardingData(
       agentId: agentId ?? this.agentId,
@@ -182,6 +217,14 @@ class OnboardingData {
       dimensionConfidence: dimensionConfidence ?? this.dimensionConfidence,
       tosAccepted: tosAccepted ?? this.tosAccepted,
       privacyAccepted: privacyAccepted ?? this.privacyAccepted,
+      betaConsentAccepted: betaConsentAccepted ?? this.betaConsentAccepted,
+      betaConsentVersion: betaConsentVersion is _Sentinel
+          ? this.betaConsentVersion
+          : betaConsentVersion as String?,
+      questionnaireVersion: questionnaireVersion is _Sentinel
+          ? this.questionnaireVersion
+          : questionnaireVersion as String?,
+      permissionStates: permissionStates ?? this.permissionStates,
     );
   }
 
@@ -223,6 +266,8 @@ class OnboardingData {
       'openResponses': openResponses,
       'respectedFriends': respectedFriends,
       'socialMediaConnected': socialMediaConnected,
+      'betaConsentAccepted': betaConsentAccepted,
+      'permissionStates': permissionStates,
     };
   }
 
@@ -239,7 +284,8 @@ class OnboardingData {
         other.age == age &&
         other.birthday == birthday &&
         other.homebase == homebase &&
-        other.completedAt == completedAt;
+        other.completedAt == completedAt &&
+        other.betaConsentAccepted == betaConsentAccepted;
   }
 
   @override
@@ -250,6 +296,7 @@ class OnboardingData {
       birthday,
       homebase,
       completedAt,
+      betaConsentAccepted,
     );
   }
 }

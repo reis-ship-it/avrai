@@ -1,11 +1,23 @@
 // Platform-specific integration test for macOS
 // Tests Rust FFI integration on macOS platform
 
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:avrai_core/models/personality_profile.dart';
 import 'package:avrai_runtime_os/runtime_api.dart';
 
 void main() {
+  final runNativeKnotPlatformTests =
+      Platform.environment['RUN_KNOT_PLATFORM_TESTS'] == 'true';
+  if (!runNativeKnotPlatformTests || !Platform.isMacOS) {
+    test(
+      'Knot Math macOS integration tests are skipped by default',
+      () {},
+    );
+    return;
+  }
+
   group('Knot Math macOS Integration', () {
     late PersonalityKnotService service;
 

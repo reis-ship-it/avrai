@@ -1,13 +1,14 @@
 import 'dart:developer' as developer;
 
 /// Admin Privacy Filter
-/// Ensures admins can only see AI-related data, never personal user information
+/// Ensures admin oversight surfaces expose only redacted AI/system data.
 /// OUR_GUTS.md: "Privacy and Control Are Non-Negotiable"
 class AdminPrivacyFilter {
   static const String _logName = 'AdminPrivacyFilter';
 
   // List of keys that contain personal data and must be filtered out
-  // Note: Location data is allowed (core vibe indicator), but home address is forbidden
+  // Consumer identifiers and location-bearing fields are forbidden on admin
+  // oversight surfaces unless they are represented as bounded aggregates.
   static const List<String> _forbiddenKeys = [
     'name',
     'email',
@@ -22,6 +23,11 @@ class AdminPrivacyFilter {
     'profile',
     'displayname',
     'username',
+    'user_id',
+    'external_payload',
+    'raw_payload',
+    'source_html',
+    'source_body',
   ];
 
   // Specific keys that are forbidden even if they contain "location"
@@ -32,28 +38,27 @@ class AdminPrivacyFilter {
     'personal_address',
   ];
 
-  // List of keys that are safe to show (AI-related and location data)
-  // Location data is allowed as it's a core vibe indicator
+  // List of keys that are safe to show on admin oversight surfaces.
+  // Consumer identifiers and raw location history remain forbidden.
   static const List<String> _allowedKeys = [
     'ai_signature',
-    'user_id',
     'ai_personality',
     'ai_connections',
     'ai_metrics',
     'connection_id',
     'ai_status',
     'ai_activity',
-    'location', // Location data is allowed (vibe indicator)
-    'current_location',
-    'visited_locations',
-    'location_history',
-    'geographic_data',
-    'vibe_location',
-    'spot_locations',
+    'agent_alias',
+    'run_id',
+    'checkpoint_id',
+    'research_state',
+    'research_metrics',
+    'aggregate_counts',
+    'summary',
   ];
 
   /// Filter out personal data from a data map
-  /// Returns AI-related data and location data (vibe indicators), but excludes home address
+  /// Returns only admin-safe AI/system data and bounded aggregates.
   static Map<String, dynamic> filterPersonalData(Map<String, dynamic> data) {
     final filtered = <String, dynamic>{};
 
@@ -76,12 +81,12 @@ class AdminPrivacyFilter {
       // Check if key is explicitly allowed (AI-related or location data)
       final isAllowed = _allowedKeys.any((allowed) => key.contains(allowed));
 
-      if (!isForbidden &&
-          (isAllowed || _isSafeKey(key) || _isLocationKey(key))) {
+      if (!isForbidden && (isAllowed || _isSafeKey(key))) {
         // Recursively filter nested maps
         if (entry.value is Map) {
-          final nestedFiltered =
-              filterPersonalData(entry.value as Map<String, dynamic>);
+          final nestedFiltered = isAllowed
+              ? _filterAllowedAggregateMap(entry.value as Map<String, dynamic>)
+              : filterPersonalData(entry.value as Map<String, dynamic>);
           if (nestedFiltered.isNotEmpty) {
             filtered[entry.key] = nestedFiltered;
           }
@@ -97,32 +102,16 @@ class AdminPrivacyFilter {
     return filtered;
   }
 
-  /// Check if a key represents location data (allowed as vibe indicator)
-  /// but not home address (forbidden)
-  static bool _isLocationKey(String key) {
-    // Allow location-related keys but exclude home address
-    if (key.contains('location') ||
-        key.contains('geographic') ||
-        key.contains('coordinates') ||
-        key.contains('latitude') ||
-        key.contains('longitude') ||
-        key.contains('visited') ||
-        key.contains('spot_location')) {
-      // But exclude home address
-      return !_forbiddenLocationKeys
-          .any((forbidden) => key.contains(forbidden));
-    }
-    return false;
-  }
-
   /// Check if a key is safe to include (doesn't contain personal data)
   static bool _isSafeKey(String key) {
     // Keys that are clearly AI/system related
     if (key.startsWith('ai_') ||
         key.startsWith('system_') ||
+        key.startsWith('research_') ||
+        key.startsWith('aggregate_') ||
+        key.startsWith('checkpoint_') ||
         key.startsWith('connection_') ||
         key == 'id' ||
-        key == 'user_id' ||
         key == 'timestamp' ||
         key == 'created_at' ||
         key == 'updated_at') {
@@ -132,8 +121,38 @@ class AdminPrivacyFilter {
     return false;
   }
 
-  /// Validate that a data map contains no personal information
-  /// Location data is allowed, but home address is forbidden
+  static Map<String, dynamic> _filterAllowedAggregateMap(
+    Map<String, dynamic> data,
+  ) {
+    final filtered = <String, dynamic>{};
+    for (final entry in data.entries) {
+      final key = entry.key.toLowerCase();
+      final isForbidden = _forbiddenKeys
+              .any((forbidden) => key.contains(forbidden)) ||
+          _forbiddenLocationKeys.any((forbidden) => key.contains(forbidden)) ||
+          key.contains('location') ||
+          key.contains('geographic') ||
+          key.contains('coordinates') ||
+          key.contains('latitude') ||
+          key.contains('longitude') ||
+          key.contains('visited');
+      if (isForbidden) {
+        continue;
+      }
+      if (entry.value is Map<String, dynamic>) {
+        final nested =
+            _filterAllowedAggregateMap(entry.value as Map<String, dynamic>);
+        if (nested.isNotEmpty) {
+          filtered[entry.key] = nested;
+        }
+      } else {
+        filtered[entry.key] = entry.value;
+      }
+    }
+    return filtered;
+  }
+
+  /// Validate that a data map contains no personal information.
   static bool isValid(Map<String, dynamic> data) {
     for (final key in data.keys) {
       final lowerKey = key.toLowerCase();
@@ -144,25 +163,30 @@ class AdminPrivacyFilter {
         return false;
       }
 
-      // Check for other forbidden personal data
       if (_forbiddenKeys.any((forbidden) => lowerKey.contains(forbidden))) {
+        return false;
+      }
+
+      if (lowerKey.contains('location') ||
+          lowerKey.contains('geographic') ||
+          lowerKey.contains('coordinates') ||
+          lowerKey.contains('latitude') ||
+          lowerKey.contains('longitude') ||
+          lowerKey.contains('visited')) {
         return false;
       }
     }
     return true;
   }
 
-  /// Sanitize user search results to remove personal data
-  /// Includes location data (vibe indicators) but excludes home address
+  /// Sanitize user search results to remove personal data and fine-grained
+  /// location history.
   static Map<String, dynamic> sanitizeUserData(Map<String, dynamic> userData) {
     final sanitized = <String, dynamic>{};
 
     // Only include safe fields
     if (userData.containsKey('id')) {
       sanitized['id'] = userData['id'];
-    }
-    if (userData.containsKey('user_id')) {
-      sanitized['user_id'] = userData['user_id'];
     }
     if (userData.containsKey('ai_signature')) {
       sanitized['ai_signature'] = userData['ai_signature'];
@@ -174,18 +198,7 @@ class AdminPrivacyFilter {
       sanitized['is_active'] = userData['is_active'];
     }
 
-    // Include location data (vibe indicators) but filter out home address
-    if (userData.containsKey('current_location')) {
-      sanitized['current_location'] = userData['current_location'];
-    }
-    if (userData.containsKey('visited_locations')) {
-      sanitized['visited_locations'] = userData['visited_locations'];
-    }
-    if (userData.containsKey('location_history')) {
-      sanitized['location_history'] = userData['location_history'];
-    }
-
-    // Filter any additional data (will include location but exclude home address)
+    // Filter any additional data and keep only admin-safe aggregates.
     final filtered = filterPersonalData(userData);
     sanitized.addAll(filtered);
 

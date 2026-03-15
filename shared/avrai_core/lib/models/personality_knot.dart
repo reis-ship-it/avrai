@@ -324,7 +324,7 @@ class PersonalityKnot {
   String toString() {
     final agentIdPreview =
         agentId.length <= 10 ? agentId : agentId.substring(0, 10);
-    return 'PersonalityKnot(agentId: ${agentIdPreview}..., '
+    return 'PersonalityKnot(agentId: $agentIdPreview..., '
         'crossings: ${invariants.crossingNumber}, writhe: ${invariants.writhe})';
   }
 }

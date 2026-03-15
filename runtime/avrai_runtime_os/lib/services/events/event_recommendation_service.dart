@@ -1,7 +1,14 @@
 // MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
+import 'dart:developer' as developer;
+
 import 'package:avrai_core/models/user/unified_user.dart';
 import 'package:avrai_core/models/expertise/expertise_event.dart';
 import 'package:avrai_core/models/expertise/expertise_level.dart';
+import 'package:avrai_core/models/events/event_recommendation.dart'
+    as core_events;
+import 'package:avrai_core/models/why/why_models.dart' hide WhySignal;
+import 'package:avrai_runtime_os/kernel/os/functional_kernel_models.dart';
+import 'package:avrai_runtime_os/kernel/os/headless_avrai_os_host.dart';
 import 'package:avrai_runtime_os/services/expertise/expertise_event_service.dart';
 import 'package:avrai_runtime_os/services/events/event_matching_service.dart';
 import 'package:avrai_runtime_os/services/matching/user_preference_learning_service.dart';
@@ -23,6 +30,10 @@ import 'package:avrai_runtime_os/ai/personality_learning.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
 import 'package:avrai_runtime_os/services/matching/vibe_compatibility_service.dart';
+import 'package:avrai_runtime_os/services/recommendations/recommendation_why_explanation_service.dart';
+import 'package:avrai_runtime_os/services/recommendations/recommendation_telemetry_service.dart';
+import 'package:avrai_runtime_os/kernel/what/what_kernel_contract.dart';
+import 'package:avrai_runtime_os/kernel/what/what_models.dart';
 import 'package:get_it/get_it.dart';
 
 /// Event Recommendation Service
@@ -69,6 +80,10 @@ class EventRecommendationService {
   final UrkStageBEventOpsShadowRuntimeValidator _runtimeValidator;
   final UrkUserRuntimeLearningIntakeContract _userRuntimeIntakeContract;
   final UrkRuntimeActivationReceiptDispatcher? _activationDispatcher;
+  final RecommendationWhyExplanationService _whyExplanationService;
+  final RecommendationTelemetryService? _telemetryService;
+  final WhatKernelContract? _whatKernel;
+  final HeadlessAvraiOsHost? _headlessOsHost;
 
   EventRecommendationService({
     ExpertiseEventService? eventService,
@@ -90,6 +105,10 @@ class EventRecommendationService {
     UrkUserRuntimeLearningIntakeContract userRuntimeIntakeContract =
         const UrkUserRuntimeLearningIntakeContract(),
     UrkRuntimeActivationReceiptDispatcher? activationDispatcher,
+    RecommendationWhyExplanationService? whyExplanationService,
+    RecommendationTelemetryService? telemetryService,
+    WhatKernelContract? whatKernel,
+    HeadlessAvraiOsHost? headlessOsHost,
   })  : _eventService = eventService ?? ExpertiseEventService(),
         _matchingService = matchingService ?? EventMatchingService(),
         _preferenceService =
@@ -108,7 +127,21 @@ class EventRecommendationService {
         _runtimeValidator = runtimeValidator,
         _userRuntimeIntakeContract = userRuntimeIntakeContract,
         _activationDispatcher = activationDispatcher ??
-            resolveDefaultUrkRuntimeActivationDispatcher();
+            resolveDefaultUrkRuntimeActivationDispatcher(),
+        _whyExplanationService = whyExplanationService ??
+            RecommendationWhyExplanationService(
+              headlessOsHost: headlessOsHost ??
+                  (GetIt.I.isRegistered<HeadlessAvraiOsHost>()
+                      ? GetIt.I<HeadlessAvraiOsHost>()
+                      : null),
+            ),
+        _telemetryService =
+            telemetryService ?? resolveDefaultRecommendationTelemetryService(),
+        _whatKernel = whatKernel,
+        _headlessOsHost = headlessOsHost ??
+            (GetIt.I.isRegistered<HeadlessAvraiOsHost>()
+                ? GetIt.I<HeadlessAvraiOsHost>()
+                : null);
 
   /// Phase 19 vertical slice: compute an entanglement-based compatibility score for a user↔event pair.
   ///
@@ -144,6 +177,105 @@ class EventRecommendationService {
     required UnifiedUser user,
   }) async {
     return _calculateKnotCompatibilityScore(event: event, user: user);
+  }
+
+  WhySnapshot explainRecommendation({
+    required UnifiedUser user,
+    required EventRecommendation recommendation,
+    String perspective = 'system',
+  }) {
+    return _whyExplanationService.explainRecommendation(
+      user: user,
+      recommendation: _toCoreRecommendation(recommendation),
+      perspective: perspective,
+    );
+  }
+
+  RecommendationExpressionArtifact expressRecommendation({
+    required UnifiedUser user,
+    required EventRecommendation recommendation,
+    String perspective = 'user_safe',
+    WhySnapshot? explanation,
+  }) {
+    final coreRecommendation = _toCoreRecommendation(recommendation);
+    if (explanation != null) {
+      return _whyExplanationService.buildRecommendationExpressionArtifact(
+        userId: user.id,
+        recommendation: coreRecommendation,
+        explanation: explanation,
+        perspective: perspective,
+      );
+    }
+    return _whyExplanationService.expressRecommendation(
+      user: user,
+      recommendation: coreRecommendation,
+      perspective: perspective,
+    );
+  }
+
+  Future<RecommendationExpressionArtifact>
+      expressRecommendationWithKernelContext({
+    required UnifiedUser user,
+    required EventRecommendation recommendation,
+    String perspective = 'user_safe',
+  }) {
+    return _whyExplanationService.expressRecommendationWithKernelContext(
+      user: user,
+      recommendation: _toCoreRecommendation(recommendation),
+      perspective: perspective,
+    );
+  }
+
+  core_events.EventRecommendation _toCoreRecommendation(
+    EventRecommendation recommendation,
+  ) {
+    final lowerReason = recommendation.recommendationReason.toLowerCase();
+    final locality = _extractLocality(recommendation.event.location);
+    final categoryMatch =
+        lowerReason.contains(recommendation.event.category.toLowerCase())
+            ? 0.88
+            : (recommendation.relevanceScore * 0.65).clamp(0.0, 1.0);
+    final localityMatch =
+        locality != null && lowerReason.contains(locality.toLowerCase())
+            ? 0.82
+            : (recommendation.event.location != null ? 0.46 : 0.18);
+    final localExpertMatch = lowerReason.contains('local expert') ? 0.86 : 0.44;
+    final eventTypeMatch = lowerReason.contains(
+            recommendation.event.getEventTypeDisplayName().toLowerCase())
+        ? 0.72
+        : 0.4;
+    return core_events.EventRecommendation(
+      event: recommendation.event,
+      relevanceScore: recommendation.relevanceScore,
+      reason: _mapReason(recommendation),
+      preferenceMatch: core_events.PreferenceMatchDetails(
+        categoryMatch: categoryMatch,
+        localityMatch: localityMatch,
+        scopeMatch: recommendation.relevanceScore.clamp(0.0, 1.0),
+        eventTypeMatch: eventTypeMatch,
+        localExpertMatch: localExpertMatch,
+      ),
+      generatedAt: DateTime.now().toUtc(),
+    );
+  }
+
+  core_events.RecommendationReason _mapReason(
+      EventRecommendation recommendation) {
+    final lowerReason = recommendation.recommendationReason.toLowerCase();
+    if (lowerReason.contains('local expert')) {
+      return core_events.RecommendationReason.localExpert;
+    }
+    final locality = _extractLocality(recommendation.event.location);
+    if (locality != null && lowerReason.contains(locality.toLowerCase())) {
+      return core_events.RecommendationReason.localityPreference;
+    }
+    if (lowerReason.contains(recommendation.event.category.toLowerCase())) {
+      return core_events.RecommendationReason.categoryPreference;
+    }
+    if (recommendation.relevanceScore < 0.45) {
+      return core_events.RecommendationReason.exploration;
+    }
+    return core_events.RecommendationReason.combined;
   }
 
   double _blendCompatibility({
@@ -246,6 +378,20 @@ class EventRecommendationService {
       combined.sort((a, b) => b.relevanceScore.compareTo(a.relevanceScore));
 
       final output = combined.take(maxResults).toList();
+      final lifecycleArtifact =
+          await _emitHeadlessKernelRecommendationLifecycle(
+        user: user,
+        scopeHint: location ?? 'personalized',
+        category: category,
+        recommendations: output,
+        reason: 'event_recommendations',
+        failure: null,
+      );
+      await _recordRecommendationTelemetry(
+        user: user,
+        recommendations: output,
+        lifecycleArtifact: lifecycleArtifact,
+      );
       await _dispatchUserRuntimeLearningSignal(
         userId: user.id,
         scopeHint: 'personalized',
@@ -260,6 +406,14 @@ class EventRecommendationService {
       );
       return output;
     } catch (e) {
+      await _emitHeadlessKernelRecommendationLifecycle(
+        user: user,
+        scopeHint: location ?? 'personalized',
+        category: category,
+        recommendations: const <EventRecommendation>[],
+        reason: 'event_recommendations_error',
+        failure: e,
+      );
       await _dispatchEventOpsRuntimeValidation(
         userId: user.id,
         scopeHint: 'personalized',
@@ -273,6 +427,56 @@ class EventRecommendationService {
         tag: _logName,
       );
       return [];
+    }
+  }
+
+  Future<void> _recordRecommendationTelemetry({
+    required UnifiedUser user,
+    required List<EventRecommendation> recommendations,
+    _RecommendationKernelLifecycleArtifact? lifecycleArtifact,
+  }) async {
+    final telemetry = _telemetryService;
+    if (telemetry == null || recommendations.isEmpty) {
+      return;
+    }
+    try {
+      final records =
+          await Future.wait(recommendations.take(5).map((recommendation) async {
+        final coreRecommendation = _toCoreRecommendation(recommendation);
+        final explanation =
+            await _whyExplanationService.explainRecommendationWithKernelContext(
+          user: user,
+          recommendation: coreRecommendation,
+          perspective: 'admin',
+        );
+        return RecommendationTelemetryRecord(
+          recordId:
+              'rec_${user.id}_${recommendation.event.id}_${coreRecommendation.generatedAt.microsecondsSinceEpoch}',
+          timestamp: coreRecommendation.generatedAt,
+          userId: user.id,
+          eventId: recommendation.event.id,
+          eventTitle: recommendation.event.title,
+          category: recommendation.event.category,
+          reason: recommendation.recommendationReason,
+          relevanceScore: recommendation.relevanceScore,
+          traceRef:
+              'user:${user.id}|event:${recommendation.event.id}|reason:${_mapReason(recommendation).name}',
+          location: recommendation.event.location,
+          kernelEventId: lifecycleArtifact?.kernelEventId,
+          modelTruthReady: lifecycleArtifact?.modelTruthReady,
+          localityContainedInWhere: lifecycleArtifact?.localityContainedInWhere,
+          governanceSummary: lifecycleArtifact?.governanceSummary,
+          governanceDomains:
+              lifecycleArtifact?.governanceDomains ?? const <String>[],
+          explanation: explanation,
+        );
+      }).toList(growable: false));
+      await telemetry.recordRecommendations(records);
+    } catch (error) {
+      _logger.warn(
+        'Failed to record recommendation telemetry: $error',
+        tag: _logName,
+      );
     }
   }
 
@@ -340,6 +544,20 @@ class EventRecommendationService {
           .sort((a, b) => b.relevanceScore.compareTo(a.relevanceScore));
 
       final output = recommendations.take(maxResults).toList();
+      final lifecycleArtifact =
+          await _emitHeadlessKernelRecommendationLifecycle(
+        user: user,
+        scopeHint: scope,
+        category: category,
+        recommendations: output,
+        reason: 'event_scope_recommendations',
+        failure: null,
+      );
+      await _recordRecommendationTelemetry(
+        user: user,
+        recommendations: output,
+        lifecycleArtifact: lifecycleArtifact,
+      );
       await _dispatchUserRuntimeLearningSignal(
         userId: user.id,
         scopeHint: scope,
@@ -354,6 +572,14 @@ class EventRecommendationService {
       );
       return output;
     } catch (e) {
+      await _emitHeadlessKernelRecommendationLifecycle(
+        user: user,
+        scopeHint: scope,
+        category: category,
+        recommendations: const <EventRecommendation>[],
+        reason: 'event_scope_recommendations_error',
+        failure: e,
+      );
       await _dispatchEventOpsRuntimeValidation(
         userId: user.id,
         scopeHint: scope,
@@ -367,6 +593,137 @@ class EventRecommendationService {
         tag: _logName,
       );
       return [];
+    }
+  }
+
+  Future<_RecommendationKernelLifecycleArtifact?>
+      _emitHeadlessKernelRecommendationLifecycle({
+    required UnifiedUser user,
+    required String scopeHint,
+    required String? category,
+    required List<EventRecommendation> recommendations,
+    required String reason,
+    required Object? failure,
+  }) async {
+    final headlessOsHost = _headlessOsHost;
+    if (headlessOsHost == null) {
+      return null;
+    }
+    try {
+      await headlessOsHost.start();
+      final agentId = await _resolveActorAgentId(user.id);
+      final generatedAt = DateTime.now().toUtc();
+      final primaryRecommendation =
+          recommendations.isEmpty ? null : recommendations.first;
+      final envelope = KernelEventEnvelope(
+        eventId:
+            'event_reco:${user.id}:${generatedAt.microsecondsSinceEpoch}:$reason',
+        agentId: agentId,
+        userId: user.id,
+        occurredAtUtc: generatedAt,
+        sourceSystem: 'event_recommendation_service',
+        eventType: failure == null
+            ? 'event_recommendations_generated'
+            : 'event_recommendations_failed',
+        actionType: 'recommend_event',
+        entityId: primaryRecommendation?.event.id,
+        entityType:
+            primaryRecommendation == null ? 'recommendation_batch' : 'event',
+        context: <String, dynamic>{
+          'scope_hint': scopeHint,
+          if (category != null) 'category': category,
+          'recommendation_count': recommendations.length,
+          if (failure != null) 'failure': failure.toString(),
+        },
+        predictionContext: <String, dynamic>{
+          'planner_mode': 'event_recommendation_service',
+          'model_family': 'event_recommendation_service',
+          if (primaryRecommendation != null)
+            'predicted_relevance': primaryRecommendation.relevanceScore,
+        },
+        policyContext: <String, dynamic>{
+          'trust_scope': 'private',
+          'legacy_dispatch_active': _activationDispatcher != null,
+        },
+        runtimeContext: <String, dynamic>{
+          'execution_path':
+              'event_recommendation_service.${failure == null ? "success" : "failure"}',
+          'workflow_stage': failure == null
+              ? 'recommendation_delivery'
+              : 'recommendation_error',
+          'intervention_chain': <String>[
+            'preference_score',
+            'ranking',
+            'telemetry',
+            'headless_os_host',
+          ],
+        },
+      );
+      final runtimeBundle =
+          await headlessOsHost.resolveRuntimeExecution(envelope: envelope);
+      final whyRequest = KernelWhyRequest(
+        bundle: runtimeBundle.withoutWhy(),
+        goal: 'recommend_event',
+        predictedOutcome: failure == null
+            ? 'recommendation_visible'
+            : 'recommendation_failed',
+        predictedConfidence: primaryRecommendation?.relevanceScore ??
+            (failure == null ? 0.5 : 0.0),
+        actualOutcome: failure == null ? 'generated' : 'failed',
+        actualOutcomeScore: failure == null ? 1.0 : 0.0,
+        coreSignals: <WhySignal>[
+          WhySignal(
+            label: 'recommendation_count_${recommendations.length}',
+            weight: recommendations.isEmpty ? -0.25 : 0.45,
+            source: 'core',
+            durable: false,
+          ),
+        ],
+        policySignals: <WhySignal>[
+          WhySignal(
+            label: 'legacy_dispatch_active',
+            weight: _activationDispatcher == null ? -0.15 : 0.15,
+            source: 'policy',
+            durable: false,
+          ),
+        ],
+        pheromoneSignals: <WhySignal>[
+          if (primaryRecommendation != null)
+            WhySignal(
+              label: 'top_relevance',
+              weight: primaryRecommendation.relevanceScore.clamp(0.0, 1.0),
+              source: 'pheromone',
+              durable: false,
+            ),
+        ],
+        severity: failure == null ? 'normal' : 'elevated',
+      );
+      final governanceReport = await headlessOsHost.inspectGovernance(
+        envelope: envelope,
+        whyRequest: whyRequest,
+      );
+      developer.log(
+        'Headless recommendation lifecycle emitted with '
+        '${governanceReport.projections.length} governance projections',
+        name: _logName,
+      );
+      return _RecommendationKernelLifecycleArtifact(
+        kernelEventId: envelope.eventId,
+        modelTruthReady: true,
+        localityContainedInWhere: true,
+        governanceSummary: governanceReport.projections.isEmpty
+            ? 'No governance projections'
+            : governanceReport.projections.first.summary,
+        governanceDomains: governanceReport.projections
+            .map((projection) => projection.domain.name)
+            .toList(growable: false),
+      );
+    } catch (error) {
+      _logger.warn(
+        'Headless OS recommendation lifecycle failed: $error',
+        tag: _logName,
+      );
+      return null;
     }
   }
 
@@ -571,6 +928,12 @@ class EventRecommendationService {
       user: user,
     );
     fallbackScore += knotScore * 0.15;
+    final semanticScore = await _calculateSemanticWhatScore(
+      event: event,
+      user: user,
+    );
+    fallbackScore =
+        ((fallbackScore * 0.9) + (semanticScore * 0.1)).clamp(0.0, 1.0);
 
     final clampedFallback = fallbackScore.clamp(0.0, 1.0);
     if (_entitySignatureService == null) {
@@ -594,6 +957,65 @@ class EventRecommendationService {
         tag: _logName,
       );
       return clampedFallback;
+    }
+  }
+
+  Future<double> _calculateSemanticWhatScore({
+    required ExpertiseEvent event,
+    required UnifiedUser user,
+  }) async {
+    if (_whatKernel == null || _agentIdService == null) {
+      return 0.5;
+    }
+    try {
+      final agentId = await _agentIdService.getUserAgentId(user.id);
+      final state = await _whatKernel.resolveWhat(
+        WhatPerceptionInput(
+          agentId: agentId,
+          observedAtUtc: DateTime.now().toUtc(),
+          source: 'event_recommendation_service',
+          entityRef: 'event:${event.id}',
+          candidateLabels: <String>[
+            event.category,
+            event.getEventTypeDisplayName(),
+          ],
+          locationContext: <String, dynamic>{
+            if (event.location != null) 'location': event.location,
+          },
+          temporalContext: <String, dynamic>{
+            'startTime': event.startTime.toIso8601String(),
+          },
+          activityHint: event.category.toLowerCase().replaceAll(' ', '_'),
+          structuredMetadata: <String, dynamic>{
+            'eventType': event.getEventTypeDisplayName(),
+            if (event.cityCode != null) 'cityCode': event.cityCode,
+            if (event.localityCode != null) 'localityCode': event.localityCode,
+          },
+        ),
+      );
+      final affordanceStrength = state.affordanceVector.isEmpty
+          ? 0.0
+          : state.affordanceVector.values.reduce((a, b) => a + b) /
+              state.affordanceVector.length;
+      final relationBoost = switch (state.userRelation) {
+        WhatUserRelation.prefers => 0.9,
+        WhatUserRelation.contextualLike => 0.74,
+        WhatUserRelation.curiousAbout => 0.62,
+        WhatUserRelation.usedToLike => 0.42,
+        WhatUserRelation.avoids => 0.12,
+        _ => 0.5,
+      };
+      return ((state.trust * 0.3) +
+              (state.novelty * 0.2) +
+              (relationBoost * 0.3) +
+              (affordanceStrength * 0.2))
+          .clamp(0.0, 1.0);
+    } catch (e) {
+      _logger.warn(
+        'What semantic enrichment failed, using neutral score: $e',
+        tag: _logName,
+      );
+      return 0.5;
     }
   }
 
@@ -971,12 +1393,36 @@ class EventRecommendationService {
   }
 }
 
+class _RecommendationKernelLifecycleArtifact {
+  const _RecommendationKernelLifecycleArtifact({
+    required this.kernelEventId,
+    required this.modelTruthReady,
+    required this.localityContainedInWhere,
+    required this.governanceSummary,
+    required this.governanceDomains,
+  });
+
+  final String kernelEventId;
+  final bool modelTruthReady;
+  final bool localityContainedInWhere;
+  final String governanceSummary;
+  final List<String> governanceDomains;
+}
+
 StorageService? resolveDefaultStorageService() {
   final sl = GetIt.instance;
   if (!sl.isRegistered<StorageService>()) {
     return null;
   }
   return sl<StorageService>();
+}
+
+RecommendationTelemetryService? resolveDefaultRecommendationTelemetryService() {
+  final sl = GetIt.instance;
+  if (!sl.isRegistered<RecommendationTelemetryService>()) {
+    return null;
+  }
+  return sl<RecommendationTelemetryService>();
 }
 
 /// Event Recommendation Model

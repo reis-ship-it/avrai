@@ -14,7 +14,7 @@ import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/pages/events/create_community_event_page.dart';
 import 'package:avrai/presentation/widgets/clubs/expertise_coverage_widget.dart';
 import 'package:avrai/presentation/widgets/clubs/expansion_timeline_widget.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Community Page
 /// Agent 2: Frontend & UX Specialist (Phase 6)
@@ -268,7 +268,7 @@ class _CommunityPageState extends State<CommunityPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: _community?.name ?? 'Community',
       constrainBody: false,
       backgroundColor: AppColors.background,

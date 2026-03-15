@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 
-import 'package:avrai_runtime_os/crypto/signal/device_registration_service.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_empty_state.dart';
+import 'package:avrai/presentation/widgets/common/app_info_banner.dart';
+import 'package:avrai/presentation/widgets/common/app_status_pill.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
+import 'package:avrai/presentation/widgets/common/app_button_primary.dart';
+import 'package:avrai/presentation/widgets/common/app_loading_state.dart';
+import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
+import 'package:avrai/presentation/schemas/pages/linked_devices_page_schema.dart';
 import 'package:avrai/theme/colors.dart';
+import 'package:avrai_runtime_os/crypto/signal/device_registration_service.dart';
 
-/// Linked Devices Page
-///
-/// Displays all devices linked to the user's account with management options.
-///
-/// Phase 26: Multi-Device Sync - Device Management UI
 class LinkedDevicesPage extends StatefulWidget {
   const LinkedDevicesPage({super.key});
 
@@ -51,48 +52,47 @@ class _LinkedDevicesPageState extends State<LinkedDevicesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
-      title: 'Linked Devices',
+    return AppSchemaPage(
+      schema: buildLinkedDevicesPageSchema(
+        content: _isLoading
+            ? const AppLoadingState(label: 'Loading linked devices')
+            : _buildBody(),
+      ),
       actions: [
         IconButton(
           icon: const Icon(Icons.refresh),
           onPressed: _loadDevices,
         ),
       ],
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _buildDeviceList(),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showLinkDeviceOptions(context),
-        icon: const Icon(Icons.add_link),
-        label: const Text('Link Device'),
-      ),
+      scrollable: false,
     );
   }
 
-  Widget _buildDeviceList() {
+  Widget _buildBody() {
     if (_devices.isEmpty) {
-      return Center(
+      return Padding(
+        padding: const EdgeInsets.all(16),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.devices,
-              size: 64,
-              color: AppColors.textSecondary,
+            const AppInfoBanner(
+              title: 'Device sync',
+              body:
+                  'Link a device to access your account and synced profile across supported platforms.',
+              icon: Icons.sync_outlined,
             ),
-            const SizedBox(height: 16),
-            Text(
-              'No devices linked',
-              style: TextStyle(
-                fontSize: 18,
-                color: AppColors.textSecondary,
+            const SizedBox(height: 24),
+            const AppEmptyState(
+              title: 'No devices linked',
+              body: 'Link a device to sync your data across platforms.',
+              icon: Icons.devices_outlined,
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: AppButtonPrimary(
+                onPressed: () => _showLinkDeviceOptions(context),
+                child: const Text('Link Device'),
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Link a device to sync your data across platforms',
-              style: TextStyle(color: AppColors.textHint),
             ),
           ],
         ),
@@ -101,20 +101,34 @@ class _LinkedDevicesPageState extends State<LinkedDevicesPage> {
 
     final currentDeviceId = _deviceService.currentDevice?.deviceId;
 
-    return ListView.builder(
+    return ListView(
       padding: const EdgeInsets.all(16),
-      itemCount: _devices.length,
-      itemBuilder: (context, index) {
-        final device = _devices[index];
-        final isCurrentDevice = device.deviceId == currentDeviceId;
-
-        return _DeviceCard(
-          device: device,
-          isCurrentDevice: isCurrentDevice,
-          onRevoke: () => _revokeDevice(device),
-          onRemove: () => _removeDevice(device),
-        );
-      },
+      children: [
+        const AppInfoBanner(
+          title: 'Device access',
+          body:
+              'Active devices can continue syncing. Revoke or remove devices you no longer use.',
+          icon: Icons.security_outlined,
+        ),
+        const SizedBox(height: 16),
+        for (final device in _devices) ...[
+          _DeviceCard(
+            device: device,
+            isCurrentDevice: device.deviceId == currentDeviceId,
+            onRevoke: () => _revokeDevice(device),
+            onRemove: () => _removeDevice(device),
+          ),
+          const SizedBox(height: 12),
+        ],
+        const SizedBox(height: 16),
+        SizedBox(
+          width: double.infinity,
+          child: AppButtonPrimary(
+            onPressed: () => _showLinkDeviceOptions(context),
+            child: const Text('Link Device'),
+          ),
+        ),
+      ],
     );
   }
 
@@ -128,7 +142,7 @@ class _LinkedDevicesPageState extends State<LinkedDevicesPage> {
             ListTile(
               leading: const Icon(Icons.pin),
               title: const Text('Show Pairing Code'),
-              subtitle: const Text('Display a code to enter on new device'),
+              subtitle: const Text('Display a code to enter on a new device'),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/device-link/code');
@@ -137,7 +151,7 @@ class _LinkedDevicesPageState extends State<LinkedDevicesPage> {
             ListTile(
               leading: const Icon(Icons.notifications),
               title: const Text('Send Push to New Device'),
-              subtitle: const Text('Approve via notification'),
+              subtitle: const Text('Approve the link from a notification'),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/device-link/push');
@@ -146,7 +160,7 @@ class _LinkedDevicesPageState extends State<LinkedDevicesPage> {
             ListTile(
               leading: const Icon(Icons.warning_amber),
               title: const Text('Lost Device Recovery'),
-              subtitle: const Text('Link new device without old one'),
+              subtitle: const Text('Link a new device without the old one'),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.pushNamed(context, '/device-link/bypass');
@@ -163,9 +177,8 @@ class _LinkedDevicesPageState extends State<LinkedDevicesPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Revoke Device?'),
-        content: Text(
-          'This device will no longer be able to receive new messages. '
-          'Existing messages on the device will remain.',
+        content: const Text(
+          'This device will no longer receive new messages. Existing messages on the device will remain.',
         ),
         actions: [
           TextButton(
@@ -174,7 +187,7 @@ class _LinkedDevicesPageState extends State<LinkedDevicesPage> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: AppColors.error),
+            style: TextButton.styleFrom(foregroundColor: AppColors.warning),
             child: const Text('Revoke'),
           ),
         ],
@@ -193,8 +206,7 @@ class _LinkedDevicesPageState extends State<LinkedDevicesPage> {
       builder: (context) => AlertDialog(
         title: const Text('Remove Device?'),
         content: Text(
-          'This will permanently remove "${device.deviceName}" from your account. '
-          'The device will need to be linked again to sync.',
+          'This will permanently remove "${device.deviceName}" from your account. The device will need to be linked again to sync.',
         ),
         actions: [
           TextButton(
@@ -236,11 +248,11 @@ class _DeviceCard extends StatelessWidget {
     final isActive = device.status == DeviceStatus.active;
 
     return AppSurface(
-      margin: const EdgeInsets.only(bottom: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildDeviceIcon(),
               const SizedBox(width: 12),
@@ -248,55 +260,41 @@ class _DeviceCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         Text(
                           device.deviceName,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                  ),
                         ),
-                        if (isCurrentDevice) ...[
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.primary.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              'This Device',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
+                        if (isCurrentDevice)
+                          const AppStatusPill(label: 'This Device'),
+                        if (device.isPrimary)
+                          const AppStatusPill(
+                            label: 'Primary',
+                            color: AppColors.warning,
                           ),
-                        ],
-                        if (device.isPrimary) ...[
-                          const SizedBox(width: 8),
-                          const Icon(Icons.star,
-                              size: 16, color: AppColors.warning),
-                        ],
                       ],
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 6),
                     Text(
                       '${device.platform.toUpperCase()} • ${device.deviceModel ?? 'Unknown'}',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                   ],
                 ),
               ),
-              _buildStatusBadge(isActive),
+              AppStatusPill(
+                label: isActive ? 'Active' : device.status.name,
+                color: isActive ? AppColors.success : AppColors.error,
+              ),
             ],
           ),
           const SizedBox(height: 12),
@@ -307,10 +305,9 @@ class _DeviceCard extends StatelessWidget {
             children: [
               Text(
                 'Last seen: $lastSeen',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textHint,
-                ),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.textHint,
+                    ),
               ),
               if (!isCurrentDevice)
                 Row(
@@ -365,44 +362,10 @@ class _DeviceCard extends StatelessWidget {
       width: 48,
       height: 48,
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: AppColors.surfaceMuted,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Icon(icon, color: AppColors.textSecondary),
-    );
-  }
-
-  Widget _buildStatusBadge(bool isActive) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: isActive
-            ? AppColors.success.withValues(alpha: 0.1)
-            : AppColors.error.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 8,
-            height: 8,
-            decoration: BoxDecoration(
-              color: isActive ? AppColors.success : AppColors.error,
-              shape: BoxShape.circle,
-            ),
-          ),
-          const SizedBox(width: 4),
-          Text(
-            isActive ? 'Active' : device.status.name,
-            style: TextStyle(
-              fontSize: 12,
-              color: isActive ? AppColors.success : AppColors.error,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

@@ -13,7 +13,7 @@ import 'package:avrai/theme/colors.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Add Friend QR Page
 ///
@@ -81,7 +81,7 @@ class _AddFriendQRPageState extends State<AddFriendQRPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Add Friend',
       appBarBackgroundColor: AppColors.primary,
       appBarForegroundColor: AppColors.white,

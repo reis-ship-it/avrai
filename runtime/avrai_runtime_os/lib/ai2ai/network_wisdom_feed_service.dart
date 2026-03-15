@@ -1,20 +1,20 @@
 import 'dart:developer' as developer;
 
-import 'package:avrai_runtime_os/ai2ai/anonymous_communication.dart';
+import 'package:avrai_runtime_os/services/transport/legacy/legacy_conversation_transport_adapter.dart';
 
 /// Network wisdom feed: aggregates delivered AI2AI messages and learning-derived
 /// cues into a user-facing feed (e.g. local trends, event suggestions).
 ///
-/// Data flow: [AnonymousCommunicationProtocol.getDeliveredMessages] for current
+/// Data flow: [LegacyConversationTransportAdapter.getDeliveredMessages] for current
 /// agent and peers; message types mapped to feed items. All data in-app only.
 class NetworkWisdomFeedService {
   static const String _logName = 'NetworkWisdomFeedService';
 
-  final AnonymousCommunicationProtocol _protocol;
+  final LegacyConversationTransportAdapter _transportAdapter;
 
   NetworkWisdomFeedService({
-    required AnonymousCommunicationProtocol protocol,
-  }) : _protocol = protocol;
+    required LegacyConversationTransportAdapter transportAdapter,
+  }) : _transportAdapter = transportAdapter;
 
   /// Build ordered feed items for the current agent, optionally including
   /// messages from/to the given peer agent IDs.
@@ -32,11 +32,11 @@ class NetworkWisdomFeedService {
       final peers = peerAgentIds.isEmpty ? [currentAgentId] : peerAgentIds;
       for (final peerId in peers) {
         if (peerId == currentAgentId) continue;
-        final asTarget = await _protocol.getDeliveredMessages(
+        final asTarget = await _transportAdapter.getDeliveredMessages(
           senderAgentId: peerId,
           targetAgentId: currentAgentId,
         );
-        final asSender = await _protocol.getDeliveredMessages(
+        final asSender = await _transportAdapter.getDeliveredMessages(
           senderAgentId: currentAgentId,
           targetAgentId: peerId,
         );
@@ -56,9 +56,9 @@ class NetworkWisdomFeedService {
     }
   }
 
-  NetworkWisdomFeedItem _messageToFeedItem(DeliveredAI2AIMessage m,
+  NetworkWisdomFeedItem _messageToFeedItem(LegacyDeliveredAi2AiMessage m,
       {required bool fromNetwork}) {
-    final type = m.messageType.name;
+    final type = m.messageTypeName;
     final shortLabel = _shortLabelForType(type, m.decryptedPayload);
     final deepLink = _deepLinkForType(type, m.decryptedPayload);
     return NetworkWisdomFeedItem(

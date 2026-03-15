@@ -20,6 +20,8 @@ class GooglePlacesSyncService {
   final GooglePlacesDataSource _googlePlacesDataSource;
   final SpotsLocalDataSource _spotsLocalDataSource;
   final Connectivity _connectivity;
+  final Duration _perSpotDelay;
+  final Duration _betweenBatchDelay;
 
   GooglePlacesSyncService({
     required GooglePlaceIdFinderServiceNew placeIdFinderNew,
@@ -27,11 +29,15 @@ class GooglePlacesSyncService {
     required GooglePlacesDataSource googlePlacesDataSource,
     required SpotsLocalDataSource spotsLocalDataSource,
     required Connectivity connectivity,
+    Duration perSpotDelay = const Duration(milliseconds: 200),
+    Duration betweenBatchDelay = const Duration(seconds: 1),
   })  : _placeIdFinderNew = placeIdFinderNew,
         _cacheService = cacheService,
         _googlePlacesDataSource = googlePlacesDataSource,
         _spotsLocalDataSource = spotsLocalDataSource,
-        _connectivity = connectivity;
+        _connectivity = connectivity,
+        _perSpotDelay = perSpotDelay,
+        _betweenBatchDelay = betweenBatchDelay;
 
   /// Sync a single community spot with Google Maps
   /// Finds Google Place ID and updates spot with Google Maps data
@@ -119,12 +125,16 @@ class GooglePlacesSyncService {
           }
 
           // Small delay between spots to avoid rate limiting
-          await Future.delayed(const Duration(milliseconds: 200));
+          if (_perSpotDelay > Duration.zero) {
+            await Future.delayed(_perSpotDelay);
+          }
         }
 
         // Delay between batches
         if (i + batchSize < spots.length) {
-          await Future.delayed(const Duration(seconds: 1));
+          if (_betweenBatchDelay > Duration.zero) {
+            await Future.delayed(_betweenBatchDelay);
+          }
         }
       }
 

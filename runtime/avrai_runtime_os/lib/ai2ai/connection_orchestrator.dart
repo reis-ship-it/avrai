@@ -1,6 +1,3 @@
-// TODO(Phase 0.5.0): Remove this suppression after AI2AIProtocol callers migrate to DNAEncoderService.
-// ignore_for_file: deprecated_member_use
-
 // MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
 import 'dart:async';
 
@@ -20,7 +17,10 @@ import 'package:avrai_runtime_os/ai2ai/pending_connection.dart';
 import 'package:avrai_runtime_os/ai2ai/connection_summary.dart';
 import 'package:avrai_runtime_os/ai2ai/connection_summary_orchestration_lane.dart';
 import 'package:avrai_runtime_os/ai2ai/ai2ai_connection_exception.dart';
+import 'package:avrai_runtime_os/ai2ai/ai2ai_connection_governance_orchestration_lane.dart';
+import 'package:avrai_runtime_os/ai2ai/canonical_peer_resolution_service.dart';
 import 'package:avrai_runtime_os/ai2ai/orchestrator_components.dart';
+import 'package:avrai_runtime_os/ai2ai/peer_interaction_outcome_learning_service.dart';
 import 'package:avrai_runtime_os/services/transport/ble/discovery_node_orchestration_lane.dart';
 import 'package:avrai_runtime_os/ai2ai/discovery/debug_hot_path_simulation_lane.dart';
 import 'package:avrai_runtime_os/services/transport/ble/nearby_discovery_orchestration_lane.dart';
@@ -52,6 +52,8 @@ import 'package:avrai_runtime_os/ai2ai/telemetry/ai_pleasure_score_lane.dart';
 import 'package:avrai_runtime_os/services/transport/ble/hot_path_orchestration_flow_lane.dart';
 import 'package:avrai_runtime_os/services/transport/ble/hot_path_metrics_orchestration_lane.dart';
 import 'package:avrai_runtime_os/kernel/contracts/urk_runtime_activation_receipt_dispatcher.dart';
+import 'package:avrai_runtime_os/services/ai_infrastructure/ai2ai_chat_event_intake_service.dart';
+import 'package:avrai_runtime_os/services/infrastructure/feature_flag_service.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
@@ -66,7 +68,13 @@ import 'package:avrai_knot/services/knot/knot_storage_service.dart';
 import 'package:avrai_network/avra_network.dart';
 import 'package:avrai_runtime_os/services/transport/mesh/pheromone_mesh_routing_service.dart';
 import 'package:avrai_runtime_os/services/security/governance_kernel_service.dart';
+import 'package:avrai_runtime_os/services/vibe/canonical_vibe_projection_service.dart';
 import 'package:avrai_network/network/bloom_filter.dart';
+import 'package:avrai_runtime_os/kernel/os/ai2ai_mesh_governance_binding_service.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/mesh_interface_registry.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/governed_mesh_packet_codec.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/mesh_inbound_decode_lane.dart';
+import 'package:avrai_runtime_os/services/transport/legacy/legacy_protocol_codec_adapter.dart';
 
 class VibeConnectionOrchestrator {
   static const String _logName = 'VibeConnectionOrchestrator';
@@ -111,14 +119,22 @@ class VibeConnectionOrchestrator {
   AI2AIBroadcastService? _realtimeService;
   final DiscoveryManager _discoveryManager;
   final ConnectionManager _connectionManager;
+  final CanonicalPeerResolutionService _canonicalPeerResolutionService;
+  final PeerInteractionOutcomeLearningService
+      _peerInteractionOutcomeLearningService;
   final RealtimeCoordinator? _realtimeCoordinator;
   final DeviceDiscoveryService? _deviceDiscovery;
-  final AI2AIProtocol? _protocol;
+  final GovernedMeshPacketCodec? _meshPacketCodec;
+  final MeshInboundDecodeLane? _meshInboundDecodeLane;
   final PersonalityAdvertisingService? _advertisingService;
   final UserAnonymizationService? _anonymizationService;
   final SignalKeyManager? _signalKeyManager;
+  final Ai2AiMeshGovernanceBindingService? _ai2aiMeshGovernanceBindingService;
+  final Ai2AiChatEventIntakeService? _ai2aiChatEventIntakeService;
+  final FeatureFlagService? _featureFlagService;
   final SharedPreferencesCompat _prefs;
   final UrkRuntimeActivationReceiptDispatcher? _urkActivationDispatcher;
+  final CanonicalVibeProjectionService _canonicalVibeProjectionService;
   final AppLogger _logger =
       const AppLogger(defaultTag: 'AI2AI', minimumLevel: LogLevel.debug);
 
@@ -134,6 +150,9 @@ class VibeConnectionOrchestrator {
   // Connection discovery and matching
   final Map<String, UserVibe> _nearbyVibes = {};
   final Map<String, AIPersonalityNode> _discoveredNodes = {};
+  final Map<String, String> _ai2aiPlanGovernanceRecordIdsByRemoteNodeId = {};
+  final Map<String, String> _ai2aiOutcomeGovernanceRecordIdsBySubjectId = {};
+  final Map<String, AIPersonalityNode> _remoteNodeByConnectionId = {};
 
   // Connection orchestration state
   bool _isDiscovering = false;
@@ -142,6 +161,9 @@ class VibeConnectionOrchestrator {
   Timer? _discoveryTimer;
   Timer? _connectionMaintenanceTimer;
   Timer? _bleInboxPoller;
+  Timer? _meshCustodyReplayPoller;
+  bool _reticulumMeshTransportControlPlaneEnabled = false;
+  bool _trustedMeshAnnounceEnforcementEnabled = false;
   BatteryAdaptiveBleScheduler? _batteryScheduler;
   AdaptiveMeshNetworkingService? _adaptiveMeshService;
 
@@ -242,6 +264,18 @@ class VibeConnectionOrchestrator {
   }
 
   @visibleForTesting
+  Map<String, String> debugAi2AiGovernancePlanRecordIds() {
+    return Map<String, String>.from(
+        _ai2aiPlanGovernanceRecordIdsByRemoteNodeId);
+  }
+
+  @visibleForTesting
+  Map<String, String> debugAi2AiGovernanceOutcomeRecordIds() {
+    return Map<String, String>.from(
+        _ai2aiOutcomeGovernanceRecordIdsBySubjectId);
+  }
+
+  @visibleForTesting
   Future<void> debugSimulateWalkByHotPath({
     required String userId,
     required PersonalityProfile personality,
@@ -290,28 +324,45 @@ class VibeConnectionOrchestrator {
     required Connectivity connectivity,
     AI2AIBroadcastService? realtimeService,
     DeviceDiscoveryService? deviceDiscovery,
-    AI2AIProtocol? protocol,
+    LegacyProtocolCodecAdapter? legacyProtocolCodecAdapter,
+    GovernedMeshPacketCodec? meshPacketCodec,
+    MeshInboundDecodeLane? meshInboundDecodeLane,
     PersonalityAdvertisingService? advertisingService,
     UserAnonymizationService? anonymizationService,
     SignalKeyManager? signalKeyManager,
+    Ai2AiMeshGovernanceBindingService? ai2aiMeshGovernanceBindingService,
+    Ai2AiChatEventIntakeService? ai2aiChatEventIntakeService,
+    FeatureFlagService? featureFlagService,
     required SharedPreferencesCompat prefs,
     UrkRuntimeActivationReceiptDispatcher? urkActivationDispatcher,
     PersonalityLearning? personalityLearning, // NEW: For offline AI2AI learning
+    PeerInteractionOutcomeLearningService? peerInteractionOutcomeLearningService,
     // Phase 2: Knot Weaving Integration
     KnotWeavingService? knotWeavingService,
     KnotStorageService? knotStorageService,
     GovernanceKernelService? governanceKernelService,
+    CanonicalVibeProjectionService? canonicalVibeProjectionService,
   })  : _vibeAnalyzer = vibeAnalyzer,
         _connectivity = connectivity,
         _realtimeService = realtimeService,
         _deviceDiscovery = deviceDiscovery,
-        _protocol = protocol,
+        _meshPacketCodec = meshPacketCodec,
+        _meshInboundDecodeLane = meshInboundDecodeLane,
         _advertisingService = advertisingService,
         _anonymizationService = anonymizationService,
         _signalKeyManager = signalKeyManager,
+        _ai2aiMeshGovernanceBindingService = ai2aiMeshGovernanceBindingService,
+        _ai2aiChatEventIntakeService = ai2aiChatEventIntakeService,
+        _featureFlagService = featureFlagService,
         _prefs = prefs,
         _urkActivationDispatcher = urkActivationDispatcher ??
             resolveDefaultUrkRuntimeActivationDispatcher(),
+        _canonicalVibeProjectionService =
+            canonicalVibeProjectionService ?? CanonicalVibeProjectionService(),
+        _canonicalPeerResolutionService = CanonicalPeerResolutionService(),
+        _peerInteractionOutcomeLearningService =
+            peerInteractionOutcomeLearningService ??
+                PeerInteractionOutcomeLearningService(),
         _knotWeavingService = knotWeavingService,
         _knotStorageService = knotStorageService,
         _discoveryManager = DiscoveryManager(
@@ -320,7 +371,7 @@ class VibeConnectionOrchestrator {
           vibeAnalyzer: vibeAnalyzer,
           personalityLearning:
               personalityLearning, // NEW: Pass to ConnectionManager
-          ai2aiProtocol: protocol, // NEW: Pass to ConnectionManager
+          protocolCodecAdapter: legacyProtocolCodecAdapter,
         ),
         _realtimeCoordinator = realtimeService != null
             ? RealtimeCoordinator(realtimeService)
@@ -338,9 +389,11 @@ class VibeConnectionOrchestrator {
     String userId,
     PersonalityProfile updatedPersonality,
   ) async {
+    final canonicalPersonality =
+        await _canonicalizePersonality(userId, updatedPersonality);
     await PersonalityAdvertisingUpdateLane.update(
       userId: userId,
-      updatedPersonality: updatedPersonality,
+      updatedPersonality: canonicalPersonality,
       advertisingService: _advertisingService,
       prefs: _prefs,
       vibeAnalyzer: _vibeAnalyzer,
@@ -361,10 +414,13 @@ class VibeConnectionOrchestrator {
   Future<void> initializeOrchestration(
       String userId, PersonalityProfile personality) async {
     try {
+      final canonicalPersonality =
+          await _canonicalizePersonality(userId, personality);
+      await _refreshTransportFeatureFlags(userId);
       await OrchestrationInitFlowLane.runForOrchestrator(
         isInitialized: _isInitialized,
         userId: userId,
-        personality: personality,
+        personality: canonicalPersonality,
         prefs: _prefs,
         prefsKeyNodeId: _prefsKeyBleNodeId,
         prefsKeyNodeIdExpiresAtMs: _prefsKeyBleNodeIdExpiresAtMs,
@@ -388,13 +444,13 @@ class VibeConnectionOrchestrator {
         publishPrekeyPayload: _publishPrekeyPayload,
         initializeRealtime: _realtimeService?.initialize,
         setupRealtimeListeners: _setupRealtimeListeners,
-        startAdvertising: () => _startAdvertising(userId, personality),
+        startAdvertising: () => _startAdvertising(userId, canonicalPersonality),
         startDiscovery: _startDiscovery,
         startAi2AiDiscovery: () async {
           _discoveryTimer = await OrchestrationStartupLane.startDiscovery(
             discoverNearby: () => discoverNearbyAIPersonalities(
               userId,
-              personality,
+              canonicalPersonality,
               throwOnError: true,
             ),
             logger: _logger,
@@ -584,6 +640,17 @@ class VibeConnectionOrchestrator {
       deviceDiscovery: _deviceDiscovery,
       primeOfflineSignalPreKeyBundleInSession:
           _primeOfflineSignalPreKeyBundleInSession,
+      resolveRemotePeerContext: ({
+        required String localUserId,
+        required PersonalityProfile localPersonality,
+        required String remoteDeviceId,
+      }) {
+        return _connectionManager.resolveRemotePeerContextForDevice(
+          localUserId: localUserId,
+          localPersonality: localPersonality,
+          remoteDeviceId: remoteDeviceId,
+        );
+      },
       isConnectionWorthy: _isConnectionWorthy,
       updateDiscoveredNodes: _updateDiscoveredNodes,
       maybeApplyPassiveAi2AiLearning: _maybeApplyPassiveAi2AiLearning,
@@ -650,7 +717,7 @@ class VibeConnectionOrchestrator {
       applyInsightForPeer: _applyInsightForPeer,
       allowBleSideEffects: _allowBleSideEffects,
       eventModeEnabled: _isEventModeEnabled(),
-      protocol: _protocol,
+      packetCodec: _meshPacketCodec,
       deviceDiscovery: _deviceDiscovery,
       peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
       localBleNodeId: _localBleNodeId,
@@ -694,6 +761,8 @@ class VibeConnectionOrchestrator {
   Future<List<AIPersonalityNode>> discoverNearbyAIPersonalities(
       String userId, PersonalityProfile personality,
       {bool throwOnError = false}) async {
+    final canonicalPersonality =
+        await _canonicalizePersonality(userId, personality);
     return NearbyDiscoveryOrchestrationLane.runForOrchestrator(
       isDiscovering: _isDiscovering,
       setIsDiscovering: (value) => _isDiscovering = value,
@@ -701,7 +770,7 @@ class VibeConnectionOrchestrator {
       checkConnectivity: _connectivity.checkConnectivity,
       performRawDiscovery: () => _discoveryManager.discover(
         userId,
-        personality,
+        canonicalPersonality,
         (localVibe) => Ai2AiDiscoveryPrekeyOrchestrationLane.performDiscovery(
           deviceDiscovery: _deviceDiscovery,
           allowBleSideEffects: _allowBleSideEffects,
@@ -713,14 +782,14 @@ class VibeConnectionOrchestrator {
         ),
       ),
       userId: userId,
-      personality: personality,
+      personality: canonicalPersonality,
       vibeAnalyzer: _vibeAnalyzer,
       isConnectionWorthy: _isConnectionWorthy,
       updateDiscoveredNodes: _updateDiscoveredNodes,
       onWorthyNodes: (worthyNodes, compatibilityByNodeId) {
         unawaited(_maybeApplyPassiveAi2AiLearning(
           userId: userId,
-          localPersonality: personality,
+          localPersonality: canonicalPersonality,
           nodes: worthyNodes,
           compatibilityByNodeId: compatibilityByNodeId,
         ));
@@ -738,23 +807,79 @@ class VibeConnectionOrchestrator {
     PersonalityProfile localPersonality,
     AIPersonalityNode remoteNode,
   ) async {
-    return ConnectionAttemptOrchestrationLane.establish(
+    final canonicalPersonality =
+        await _canonicalizePersonality(localUserId, localPersonality);
+    _currentUserId = localUserId;
+    _currentPersonality = canonicalPersonality;
+
+    await Ai2AiConnectionGovernanceOrchestrationLane.recordPlan(
+      governanceBindingService: _ai2aiMeshGovernanceBindingService,
+      localUserId: localUserId,
+      localAgentId: canonicalPersonality.agentId,
+      remoteNode: remoteNode,
+      canonicalPeerMetadata: _canonicalPeerMetadataForNode(
+        localPersonality: canonicalPersonality,
+        remoteNode: remoteNode,
+      ),
+      logger: _logger,
+      logName: _logName,
+      onRecorded: (subjectId, recordId) {
+        _ai2aiPlanGovernanceRecordIdsByRemoteNodeId[subjectId] = recordId;
+      },
+    );
+
+    final connection = await ConnectionAttemptOrchestrationLane.establish(
       isConnecting: _isConnecting,
       setIsConnecting: (value) => _isConnecting = value,
       connectionCooldowns: _connectionCooldowns,
       activeConnections: _activeConnections,
       localUserId: localUserId,
-      localPersonality: localPersonality,
+      localPersonality: canonicalPersonality,
       remoteNode: remoteNode,
       vibeAnalyzer: _vibeAnalyzer,
       connectionManager: _connectionManager,
       isConnectionWorthy: _isConnectionWorthy,
-      protocol: _protocol,
+      packetCodec: _meshPacketCodec,
       signalKeyManager: _signalKeyManager,
       knotWeavingService: _knotWeavingService,
       knotStorageService: _knotStorageService,
       logger: _logger,
       logName: _logName,
+    );
+
+    await Ai2AiConnectionGovernanceOrchestrationLane.recordOutcome(
+      governanceBindingService: _ai2aiMeshGovernanceBindingService,
+      localUserId: localUserId,
+      localAgentId: canonicalPersonality.agentId,
+      remoteNode: remoteNode,
+      connection: connection,
+      canonicalPeerMetadata: connection?.learningOutcomes ??
+          _canonicalPeerMetadataForNode(
+            localPersonality: canonicalPersonality,
+            remoteNode: remoteNode,
+          ),
+      reason: connection == null ? 'connection_attempt_failed' : null,
+      logger: _logger,
+      logName: _logName,
+      onRecorded: (subjectId, recordId) {
+        _ai2aiOutcomeGovernanceRecordIdsBySubjectId[subjectId] = recordId;
+      },
+    );
+
+    if (connection != null) {
+      _remoteNodeByConnectionId[connection.connectionId] = remoteNode;
+    }
+
+    return connection;
+  }
+
+  Future<PersonalityProfile> _canonicalizePersonality(
+    String userId,
+    PersonalityProfile personality,
+  ) {
+    return _canonicalVibeProjectionService.canonicalizeUserProfile(
+      userId: userId,
+      profile: personality,
     );
   }
 
@@ -796,6 +921,7 @@ class VibeConnectionOrchestrator {
       discoveryTimer: _discoveryTimer,
       connectionMaintenanceTimer: _connectionMaintenanceTimer,
       bleInboxPoller: _bleInboxPoller,
+      meshCustodyReplayPoller: _meshCustodyReplayPoller,
       federatedCloudSyncTimer: _federatedCloudSyncTimer,
       federatedCloudConnectivitySub: _federatedCloudConnectivitySub,
       batteryScheduler: _batteryScheduler,
@@ -828,18 +954,28 @@ class VibeConnectionOrchestrator {
       logger: _logger,
       logName: _logName,
     );
+
+    _ai2aiPlanGovernanceRecordIdsByRemoteNodeId.clear();
+    _ai2aiOutcomeGovernanceRecordIdsBySubjectId.clear();
+    _remoteNodeByConnectionId.clear();
   }
 
   void _startBleInboxProcessing() {
+    final inboundDecodeLane = _meshInboundDecodeLane;
+    if (inboundDecodeLane == null) {
+      return;
+    }
     _bleInboxPoller =
         RuntimeServicesStartupOrchestrationLane.startBleInboxProcessing(
       allowBleSideEffects: _allowBleSideEffects,
       existingPoller: _bleInboxPoller,
-      protocol: _protocol,
+      inboundDecodeLane: inboundDecodeLane,
       seenBleMessageHashes: _seenBleMessageHashes,
       prefs: _prefs,
       prefsKeyAi2AiLearningEnabled: _prefsKeyAi2AiLearningEnabled,
       currentUserId: _currentUserId,
+      currentAgentId: _currentPersonality?.agentId ?? _localBleNodeId,
+      ai2aiChatEventIntakeService: _ai2aiChatEventIntakeService,
       personalityLearning: _connectionManager.personalityLearning,
       adaptiveMeshService: _adaptiveMeshService,
       seenLearningInsightIds: _seenLearningInsightIds,
@@ -852,12 +988,61 @@ class VibeConnectionOrchestrator {
       discoveredNodes: _discoveredNodes,
       discovery: _deviceDiscovery,
       peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
+      packetCodec: _meshPacketCodec,
+      governanceBindingService: _ai2aiMeshGovernanceBindingService,
+      trustedAnnounceEnforcementEnabled: _trustedMeshAnnounceEnforcementEnabled,
       persistSeenBleHashesIfNeeded: _persistSeenBleHashesIfNeeded,
       persistSeenLearningInsightIdsIfNeeded:
           _persistSeenLearningInsightIdsIfNeeded,
       logger: _logger,
       logName: _logName,
     );
+    _meshCustodyReplayPoller =
+        RuntimeServicesStartupOrchestrationLane.startMeshCustodyReplay(
+      allowBleSideEffects: _allowBleSideEffects,
+      existingPoller: _meshCustodyReplayPoller,
+      discovery: _deviceDiscovery,
+      packetCodec: _meshPacketCodec,
+      discoveredNodes: _discoveredNodes,
+      localNodeId: _localBleNodeId,
+      peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
+      governanceBindingService: _ai2aiMeshGovernanceBindingService,
+      localUserId: _currentUserId,
+      localAgentId: _currentPersonality?.agentId ?? _localBleNodeId,
+      privacyMode: _meshPrivacyMode(),
+      reticulumTransportControlPlaneEnabled:
+          _reticulumMeshTransportControlPlaneEnabled,
+      trustedAnnounceEnforcementEnabled: _trustedMeshAnnounceEnforcementEnabled,
+      logger: _logger,
+      logName: _logName,
+    );
+  }
+
+  String _meshPrivacyMode() {
+    return _isFederatedLearningParticipationEnabled()
+        ? MeshTransportPrivacyMode.federatedCloud
+        : MeshTransportPrivacyMode.privateMesh;
+  }
+
+  Future<void> _refreshTransportFeatureFlags(String? userId) async {
+    if (_featureFlagService == null) {
+      _reticulumMeshTransportControlPlaneEnabled = false;
+      _trustedMeshAnnounceEnforcementEnabled = false;
+      return;
+    }
+    _reticulumMeshTransportControlPlaneEnabled =
+        await _featureFlagService.isEnabled(
+      GovernanceFeatureFlags.reticulumMeshTransportControlPlaneV1,
+      userId: userId,
+      defaultValue: false,
+    );
+    _trustedMeshAnnounceEnforcementEnabled =
+        _reticulumMeshTransportControlPlaneEnabled &&
+            await _featureFlagService.isEnabled(
+              GovernanceFeatureFlags.trustedMeshAnnounceEnforcementV1,
+              userId: userId,
+              defaultValue: false,
+            );
   }
 
   bool _isFederatedLearningParticipationEnabled() {
@@ -962,7 +1147,7 @@ class VibeConnectionOrchestrator {
         .primeOfflineSignalPreKeyBundleInSessionForOrchestrator(
       allowBleSideEffects: _allowBleSideEffects,
       signalKeyManager: _signalKeyManager,
-      protocol: _protocol,
+      packetCodec: _meshPacketCodec,
       device: device,
       session: session,
       peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
@@ -972,6 +1157,13 @@ class VibeConnectionOrchestrator {
       discovery: _deviceDiscovery,
       discoveredNodes: _discoveredNodes,
       adaptiveMeshService: _adaptiveMeshService,
+      governanceBindingService: _ai2aiMeshGovernanceBindingService,
+      localUserId: _currentUserId,
+      localAgentId: _currentPersonality?.agentId ?? _localBleNodeId,
+      privacyMode: _meshPrivacyMode(),
+      reticulumTransportControlPlaneEnabled:
+          _reticulumMeshTransportControlPlaneEnabled,
+      trustedAnnounceEnforcementEnabled: _trustedMeshAnnounceEnforcementEnabled,
       logger: _logger,
       logName: _logName,
     );
@@ -1013,12 +1205,84 @@ class VibeConnectionOrchestrator {
 
   Future<ConnectionMetrics?> _completeConnection(ConnectionMetrics connection,
       {String? reason}) async {
-    return ConnectionCompletionLane.complete(
+    var completedConnection = await ConnectionCompletionLane.complete(
       connection: connection,
       reason: reason,
       logger: _logger,
       logName: _logName,
     );
+
+    final remoteNode = _remoteNodeByConnectionId[connection.connectionId];
+    if (completedConnection != null &&
+        remoteNode != null &&
+        _currentUserId != null &&
+        _currentPersonality != null) {
+      final learningResult =
+          await _peerInteractionOutcomeLearningService.recordCompletedInteraction(
+        localUserId: _currentUserId!,
+        localAgentId: _currentPersonality!.agentId,
+        remoteNode: remoteNode,
+        connection: completedConnection,
+        completionReason: reason,
+      );
+      if (learningResult.applied) {
+        completedConnection = completedConnection.updateDuringInteraction(
+          additionalOutcomes: <String, dynamic>{
+            'governed_peer_learning_mutations': learningResult.receipts.length,
+          },
+        );
+      }
+      await Ai2AiConnectionGovernanceOrchestrationLane.recordOutcome(
+        governanceBindingService: _ai2aiMeshGovernanceBindingService,
+        localUserId: _currentUserId!,
+        localAgentId: _currentPersonality!.agentId,
+        remoteNode: remoteNode,
+        connection: completedConnection,
+        canonicalPeerMetadata: completedConnection.learningOutcomes,
+        reason: reason,
+        logger: _logger,
+        logName: _logName,
+        onRecorded: (subjectId, recordId) {
+          _ai2aiOutcomeGovernanceRecordIdsBySubjectId[subjectId] = recordId;
+        },
+      );
+    }
+
+    if (completedConnection != null || reason != null) {
+      _remoteNodeByConnectionId.remove(connection.connectionId);
+    }
+
+    return completedConnection;
+  }
+
+  Map<String, dynamic>? _canonicalPeerMetadataForNode({
+    required PersonalityProfile localPersonality,
+    required AIPersonalityNode remoteNode,
+  }) {
+    final remoteContext = remoteNode.resolvedPeerContext;
+    if (remoteContext == null) {
+      return null;
+    }
+    final localPayload = _canonicalPeerResolutionService.buildLocalPayload(
+      localPersonality: localPersonality,
+    );
+    final compatibility = _canonicalPeerResolutionService.computeCompatibility(
+      localPayload: localPayload,
+      remoteContext: remoteContext,
+    );
+    return <String, dynamic>{
+      ..._canonicalPeerResolutionService.compatibilityMetadata(
+        compatibility,
+        remoteContext: remoteContext,
+      ),
+      'peer_why_summary': _canonicalPeerResolutionService
+          .buildPeerCompatibilityWhySnapshot(
+            localPayload: localPayload,
+            remoteContext: remoteContext,
+            result: compatibility,
+          )
+          .summary,
+    };
   }
 
   UserVibe? getCurrentVibe() => null;
@@ -1056,11 +1320,15 @@ class VibeConnectionOrchestrator {
       allowBleSideEffects: _allowBleSideEffects,
       federatedLearningParticipationEnabled:
           _isFederatedLearningParticipationEnabled(),
-      protocol: _protocol,
+      packetCodec: _meshPacketCodec,
       discovery: _deviceDiscovery,
       discoveredNodes: _discoveredNodes,
       localNodeId: _localBleNodeId,
       peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
+      governanceBindingService: _ai2aiMeshGovernanceBindingService,
+      localUserId: _currentUserId,
+      localAgentId: _currentPersonality?.agentId ?? _localBleNodeId,
+      trustedAnnounceEnforcementEnabled: _trustedMeshAnnounceEnforcementEnabled,
       logger: _logger,
       logName: _logName,
     );
@@ -1075,10 +1343,17 @@ class VibeConnectionOrchestrator {
       message: message,
       adaptiveMeshService: _adaptiveMeshService,
       bloomFilters: _bloomFilters,
-      protocol: _protocol,
+      packetCodec: _meshPacketCodec,
       discovery: _deviceDiscovery,
       discoveredNodes: _discoveredNodes,
       peerNodeIdByDeviceId: _peerNodeIdByDeviceId,
+      governanceBindingService: _ai2aiMeshGovernanceBindingService,
+      localUserId: _currentUserId,
+      localAgentId: _currentPersonality?.agentId ?? _localBleNodeId,
+      privacyMode: _meshPrivacyMode(),
+      reticulumTransportControlPlaneEnabled:
+          _reticulumMeshTransportControlPlaneEnabled,
+      trustedAnnounceEnforcementEnabled: _trustedMeshAnnounceEnforcementEnabled,
       logger: _logger,
       logName: _logName,
     );

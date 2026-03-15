@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/presentation/blocs/search/hybrid_search_bloc.dart';
 import 'package:avrai/presentation/widgets/search/hybrid_search_results.dart';
@@ -9,8 +8,9 @@ import 'package:avrai_runtime_os/ai/event_logger.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
+import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
+import 'package:avrai/presentation/schemas/pages/hybrid_search_page_schema.dart';
 
 class HybridSearchPage extends StatefulWidget {
   const HybridSearchPage({super.key});
@@ -98,7 +98,7 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
             const SnackBar(
               content:
                   Text('Location services are disabled. Please enable them.'),
-              backgroundColor: AppTheme.warningColor,
+              backgroundColor: AppColors.warning,
             ),
           );
         }
@@ -113,7 +113,7 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('Location permissions are denied.'),
-                backgroundColor: AppTheme.errorColor,
+                backgroundColor: AppColors.error,
               ),
             );
           }
@@ -127,7 +127,7 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
             const SnackBar(
               content: Text(
                   'Location permissions are permanently denied. Please enable them in settings.'),
-              backgroundColor: AppTheme.errorColor,
+              backgroundColor: AppColors.error,
             ),
           );
         }
@@ -154,7 +154,7 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error getting location: $e'),
-            backgroundColor: AppTheme.errorColor,
+            backgroundColor: AppColors.error,
           ),
         );
       }
@@ -163,8 +163,72 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
-      title: 'Hybrid Search',
+    final resultsHeight =
+        (MediaQuery.sizeOf(context).height * 0.4).clamp(280.0, 520.0).toDouble();
+    return AppSchemaPage(
+      schema: buildHybridSearchPageSchema(
+        content: Column(
+          children: [
+            // Search Bar
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: AppSurface(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _searchController,
+                        decoration: InputDecoration(
+                          hintText:
+                              'Search for spots, places, or categories...',
+                          prefixIcon: const Icon(Icons.search),
+                          suffixIcon: _searchController.text.isNotEmpty
+                              ? IconButton(
+                                  icon: const Icon(Icons.clear),
+                                  onPressed: () {
+                                    _searchController.clear();
+                                    context
+                                        .read<HybridSearchBloc>()
+                                        .add(ClearHybridSearch());
+                                  },
+                                )
+                              : null,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onSubmitted: _performSearch,
+                        onChanged: (value) {
+                          setState(() {});
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    IconButton(
+                      onPressed: _searchNearby,
+                      icon: const Icon(Icons.near_me),
+                      tooltip: 'Search nearby spots',
+                    ),
+                    const SizedBox(width: 8),
+                    IconButton(
+                      onPressed: () {
+                        context.go('/group/formation');
+                      },
+                      icon: const Icon(Icons.group),
+                      tooltip: 'Find with Friends',
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            if (_showFilters) _buildFilters(),
+            SizedBox(
+              height: resultsHeight,
+              child: const HybridSearchResults(),
+            ),
+          ],
+        ),
+      ),
       actions: [
         IconButton(
           icon: Icon(_showFilters ? Icons.filter_list_off : Icons.filter_list),
@@ -175,106 +239,6 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
           },
         ),
       ],
-      constrainBody: false,
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-            child: const AppSurface(
-              color: AppColors.grey100,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(Icons.info,
-                          color: AppColors.textSecondary, size: 20),
-                      SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'Community-First Search',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    'Community results are ranked first, with outside sources filling gaps when they add useful context.',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Search Bar
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: InputDecoration(
-                      hintText: 'Search for spots, places, or categories...',
-                      prefixIcon: const Icon(Icons.search),
-                      suffixIcon: _searchController.text.isNotEmpty
-                          ? IconButton(
-                              icon: const Icon(Icons.clear),
-                              onPressed: () {
-                                _searchController.clear();
-                                context
-                                    .read<HybridSearchBloc>()
-                                    .add(ClearHybridSearch());
-                              },
-                            )
-                          : null,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    onSubmitted: _performSearch,
-                    onChanged: (value) {
-                      setState(() {}); // Update to show/hide clear button
-                    },
-                  ),
-                ),
-                const SizedBox(width: 8),
-                IconButton(
-                  onPressed: _searchNearby,
-                  icon: const Icon(Icons.near_me),
-                  tooltip: 'Search nearby spots',
-                  // Use default icon theme; keep it neutral
-                ),
-                const SizedBox(width: 8),
-                IconButton(
-                  onPressed: () {
-                    context.go('/group/formation');
-                  },
-                  icon: const Icon(Icons.group),
-                  tooltip: 'Find with Friends',
-                  // Use default icon theme; keep it neutral
-                ),
-              ],
-            ),
-          ),
-
-          // Filters (if expanded)
-          if (_showFilters) _buildFilters(),
-
-          // Results
-          const Expanded(
-            child: HybridSearchResults(),
-          ),
-        ],
-      ),
     );
   }
 
@@ -282,9 +246,9 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: const BoxDecoration(
-        color: AppColors.grey100,
+        color: AppColors.surfaceMuted,
         border: Border(
-          bottom: BorderSide(color: AppColors.grey300),
+          bottom: BorderSide(color: AppColors.borderSubtle),
         ),
       ),
       child: Column(
@@ -317,7 +281,7 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
             },
             secondary: Icon(
               _includeExternal ? Icons.public : Icons.people,
-              color: AppTheme.primaryColor,
+              color: AppColors.textSecondary,
             ),
           ),
 
@@ -340,7 +304,7 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
             secondary: Icon(
               Icons.event_available,
               color: _reservationAvailable
-                  ? AppTheme.primaryColor
+                  ? AppColors.textPrimary
                   : AppColors.textSecondary,
             ),
           ),
@@ -405,7 +369,8 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
                   _searchController.text = category;
                   _performSearch(category);
                 },
-                backgroundColor: AppTheme.primaryColor.withValues(alpha: 0.1),
+                backgroundColor: AppColors.surfaceMuted,
+                side: const BorderSide(color: AppColors.borderSubtle),
               );
             }).toList(),
           ),

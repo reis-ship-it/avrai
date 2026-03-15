@@ -7,6 +7,8 @@ import 'package:avrai_runtime_os/services/ai_infrastructure/kernel_governance_ga
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
 import 'package:avrai_runtime_os/services/local_llm/model_pack_manager.dart';
+import 'package:avrai_runtime_os/services/security/security_kernel_release_gate_service.dart';
+import 'package:avrai_core/models/truth/truth_scope_descriptor.dart';
 
 part 'model_safety_supervisor_models.dart';
 
@@ -31,12 +33,15 @@ class ModelSafetySupervisor {
 
   final SharedPreferencesCompat _prefs;
   final KernelGovernanceGate? _kernelGovernanceGate;
+  final SecurityKernelReleaseGateService? _securityReleaseGateService;
 
   ModelSafetySupervisor({
     required SharedPreferencesCompat prefs,
     KernelGovernanceGate? kernelGovernanceGate,
+    SecurityKernelReleaseGateService? securityReleaseGateService,
   })  : _prefs = prefs,
-        _kernelGovernanceGate = kernelGovernanceGate;
+        _kernelGovernanceGate = kernelGovernanceGate,
+        _securityReleaseGateService = securityReleaseGateService;
 
   static String _candidateKeyForType(String modelType) {
     // Keep keys simple and stable.
@@ -70,6 +75,28 @@ class ModelSafetySupervisor {
         );
         return;
       }
+      final securityGate = _securityReleaseGateService;
+      if (securityGate != null) {
+        final releaseGateDecision =
+            await securityGate.evaluateReleaseManifestPromotion(
+          manifestId: '$modelType:$toVersion',
+          scope: _releaseManifestScopeFor(modelType),
+          actorAlias: 'model_safety_supervisor',
+          operatorApproved: true,
+          metadata: <String, dynamic>{
+            'from_version': fromVersion,
+            'to_version': toVersion,
+          },
+        );
+        if (!releaseGateDecision.servingAllowed) {
+          developer.log(
+            'Blocked rollout candidate start for $modelType by security release gate: '
+            '${releaseGateDecision.reasonCodes.join(",")}',
+            name: _logName,
+          );
+          return;
+        }
+      }
 
       final nowMs = DateTime.now().millisecondsSinceEpoch;
       final baseline = _computeBaselineAvg(nowMs: nowMs);
@@ -100,6 +127,25 @@ class ModelSafetySupervisor {
         error: e,
         stackTrace: st,
       );
+    }
+  }
+
+  TruthScopeDescriptor _releaseManifestScopeFor(String modelType) {
+    switch (modelType) {
+      case 'calling_score':
+      case 'outcome':
+      case 'chat_local_llm':
+        return const TruthScopeDescriptor.defaultSecurity(
+          governanceStratum: GovernanceStratum.universal,
+          sphereId: 'security_autonomy',
+          familyId: 'autonomy_hijack',
+        );
+      default:
+        return const TruthScopeDescriptor.defaultSecurity(
+          governanceStratum: GovernanceStratum.universal,
+          sphereId: 'security_autonomy',
+          familyId: 'autonomy_hijack',
+        );
     }
   }
 

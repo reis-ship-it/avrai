@@ -1,4 +1,5 @@
 import 'package:avrai_core/models/expertise/expertise_event.dart';
+import 'package:avrai_core/models/events/event_planning.dart';
 import 'package:avrai_core/models/expertise/expertise_level.dart';
 import 'package:avrai_core/models/imports/external_sync_metadata.dart';
 import 'package:avrai_core/models/user/unified_user.dart';
@@ -105,6 +106,7 @@ class CommunityEvent extends ExpertiseEvent {
     required super.updatedAt,
     super.status,
     super.externalSyncMetadata,
+    super.planningSnapshot,
     this.isCommunityEvent = true,
     this.hostExpertiseLevel,
     this.engagementScore = 0.0,
@@ -338,6 +340,7 @@ class CommunityEvent extends ExpertiseEvent {
     DateTime? updatedAt,
     EventStatus? status,
     Object? externalSyncMetadata = _communityEventSentinel,
+    Object? planningSnapshot = _communityEventSentinel,
     bool? isCommunityEvent,
     ExpertiseLevel? hostExpertiseLevel,
     double? engagementScore,
@@ -382,6 +385,9 @@ class CommunityEvent extends ExpertiseEvent {
       externalSyncMetadata: externalSyncMetadata == _communityEventSentinel
           ? this.externalSyncMetadata
           : externalSyncMetadata as ExternalSyncMetadata?,
+      planningSnapshot: planningSnapshot == _communityEventSentinel
+          ? this.planningSnapshot
+          : planningSnapshot as EventPlanningSnapshot?,
       isCommunityEvent: isCommunityEvent ?? this.isCommunityEvent,
       hostExpertiseLevel: hostExpertiseLevel ?? this.hostExpertiseLevel,
       engagementScore: engagementScore ?? this.engagementScore,

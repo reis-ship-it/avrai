@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
+import 'package:avrai/presentation/schemas/pages/baseline_lists_page_schema.dart';
 import 'package:avrai/theme/colors.dart';
-import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'package:avrai_core/models/user/onboarding_suggestion_event.dart';
 import 'package:avrai_runtime_os/services/onboarding/onboarding_suggestion_event_store.dart';
@@ -165,195 +166,165 @@ class _BaselineListsPageState extends State<BaselineListsPage>
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return AppSchemaPage(
+      schema: buildBaselineListsPageSchema(
+        isLoading: _isLoading,
+        loadingSection: _buildLoadingSection(),
+        introSection: _buildIntroSection(),
+        listSection: _buildListSection(),
+      ),
+    );
+  }
+
+  Widget _buildLoadingSection() {
+    return Column(
+      children: [
+        AnimatedBuilder(
+          animation: _loadingAnimation,
+          builder: (context, child) {
+            return Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: AppColors.textPrimary,
+                borderRadius: BorderRadius.circular(40),
+              ),
+              child: const Icon(
+                Icons.psychology,
+                color: AppColors.white,
+                size: 40,
+              ),
+            );
+          },
+        ),
+        const SizedBox(height: 24),
+        Text(
+          'Creating your starter lists...',
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 16),
+        Text(
+          'We are creating a few useful lists based on your preferences.',
+          style: Theme.of(context)
+              .textTheme
+              .bodyLarge
+              ?.copyWith(color: AppColors.grey600),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'You can edit these recommendations after onboarding.',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.grey500,
+              ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 24),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(3, (index) {
+            return Container(
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              width: 8,
+              height: 8,
+              decoration: const BoxDecoration(
+                color: AppColors.textPrimary,
+                shape: BoxShape.circle,
+              ),
+            );
+          }),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildIntroSection() {
+    return AppSurface(
+      color: AppColors.surfaceMuted,
+      borderColor: AppColors.borderSubtle,
+      padding: const EdgeInsets.all(12),
+      child: Row(
         children: [
-          if (_isLoading) ...[
-            // Loading state
-            Expanded(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // AI Processing Animation
-                    AnimatedBuilder(
-                      animation: _loadingAnimation,
-                      builder: (context, child) {
-                        return Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            color: AppTheme.primaryColor,
-                            borderRadius: BorderRadius.circular(40),
-                          ),
-                          child: const Icon(
-                            Icons.psychology,
-                            color: AppColors.white,
-                            size: 40,
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 32),
-                    Text(
-                      'Creating your personalized lists...',
-                      style:
-                          Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: AppTheme.primaryColor,
-                              ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'We\'re setting up smart lists based on your preferences. The background AI will continue optimizing these for you.',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: AppColors.grey600,
-                          ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'You can start exploring immediately!',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.grey500,
-                            fontStyle: FontStyle.italic,
-                          ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 24),
-                    // Progress dots
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(3, (index) {
-                        return Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 4),
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            color: AppTheme.primaryColor,
-                            shape: BoxShape.circle,
-                          ),
-                        );
-                      }),
-                    ),
-                  ],
+          const Icon(
+            Icons.lightbulb_outline,
+            color: AppColors.textSecondary,
+            size: 24,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Welcome to Lists',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
-              ),
-            ),
-          ] else ...[
-            // Results state
-            Text(
-              'Your Smart Lists',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.primaryColor,
-                  ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'We\'ve created these lists based on your preferences. The background AI will continue optimizing them for you.',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: AppColors.grey600,
-                  ),
-            ),
-            const SizedBox(height: 24),
-
-            // Lists intro
-            AppSurface(
-              color: AppTheme.primaryColor.withValues(alpha: 0.1),
-              borderColor: AppTheme.primaryColor.withValues(alpha: 0.3),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.lightbulb_outline,
-                    color: AppTheme.primaryColor,
-                    size: 24,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Welcome to Lists!',
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    color: AppTheme.primaryColor,
-                                  ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Lists help you organize and discover amazing spots. The background AI will continuously improve your suggestions.',
-                          style:
-                              Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: AppColors.grey700,
-                                  ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Generated lists
-            Expanded(
-              child: ListView.builder(
-                itemCount: _generatedLists.length,
-                itemBuilder: (context, index) {
-                  final listName = _generatedLists[index];
-                  final isSelected = _selectedLists.contains(listName);
-                  return AppSurface(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    padding: EdgeInsets.zero,
-                    child: ListTile(
-                      onTap: () => _toggleSelected(listName),
-                      leading: CircleAvatar(
-                        backgroundColor:
-                            AppTheme.primaryColor.withValues(alpha: 0.1),
-                        child: Icon(
-                          _getListIcon(listName),
-                          color: AppTheme.primaryColor,
-                          size: 20,
-                        ),
+                const SizedBox(height: 4),
+                Text(
+                  'These are suggested starting points. You can edit, remove, or add new lists at any time.',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.grey700,
                       ),
-                      title: Text(
-                        listName,
-                        style: const TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      subtitle: Text(
-                        _getListDescription(listName),
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.grey600,
-                        ),
-                      ),
-                      trailing: Icon(
-                        isSelected
-                            ? Icons.check_circle
-                            : Icons.radio_button_unchecked,
-                        color: isSelected
-                            ? AppTheme.primaryColor
-                            : AppColors.grey500,
-                        size: 24,
-                      ),
-                      tileColor: AppTheme.primaryColor.withValues(alpha: 0.05),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  );
-                },
-              ),
+                ),
+              ],
             ),
-          ],
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _buildListSection() {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: _generatedLists.length,
+      itemBuilder: (context, index) {
+        final listName = _generatedLists[index];
+        final isSelected = _selectedLists.contains(listName);
+        return AppSurface(
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: EdgeInsets.zero,
+          child: ListTile(
+            onTap: () => _toggleSelected(listName),
+            leading: CircleAvatar(
+              backgroundColor: AppColors.surfaceMuted,
+              child: Icon(
+                _getListIcon(listName),
+                color: AppColors.textSecondary,
+                size: 20,
+              ),
+            ),
+            title: Text(
+              listName,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+            subtitle: Text(
+              _getListDescription(listName),
+              style: const TextStyle(
+                fontSize: 12,
+                color: AppColors.grey600,
+              ),
+            ),
+            trailing: Icon(
+              isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
+              color: isSelected ? AppColors.textPrimary : AppColors.grey500,
+              size: 24,
+            ),
+            tileColor:
+                isSelected ? AppColors.surfaceMuted : AppColors.transparent,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        );
+      },
     );
   }
 

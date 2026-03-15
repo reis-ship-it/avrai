@@ -20,6 +20,7 @@ import 'package:avrai_knot/services/knot/knot_evolution_string_service.dart';
 import 'package:avrai_quantum/services/quantum/location_timing_quantum_state_service.dart';
 import 'package:avrai_quantum/services/quantum/quantum_entanglement_service.dart';
 import 'package:avrai_runtime_os/services/quantum/quantum_matching_ai_learning_service.dart';
+import 'package:avrai_runtime_os/kernel/what/what_runtime_ingestion_service.dart';
 
 /// Event Attendance Controller
 ///
@@ -74,6 +75,7 @@ class EventAttendanceController
   final LocationTimingQuantumStateService? _locationTimingService;
   final QuantumEntanglementService? _quantumEntanglementService;
   final QuantumMatchingAILearningService? _aiLearningService;
+  final WhatRuntimeIngestionService? _whatRuntimeIngestionService;
 
   EventAttendanceController({
     ExpertiseEventService? eventService,
@@ -88,6 +90,7 @@ class EventAttendanceController
     LocationTimingQuantumStateService? locationTimingService,
     QuantumEntanglementService? quantumEntanglementService,
     QuantumMatchingAILearningService? aiLearningService,
+    WhatRuntimeIngestionService? whatRuntimeIngestionService,
   })  : _eventService = eventService ?? GetIt.instance<ExpertiseEventService>(),
         _paymentController =
             paymentController ?? GetIt.instance<PaymentProcessingController>(),
@@ -125,6 +128,10 @@ class EventAttendanceController
         _aiLearningService = aiLearningService ??
             (GetIt.instance.isRegistered<QuantumMatchingAILearningService>()
                 ? GetIt.instance<QuantumMatchingAILearningService>()
+                : null),
+        _whatRuntimeIngestionService = whatRuntimeIngestionService ??
+            (GetIt.instance.isRegistered<WhatRuntimeIngestionService>()
+                ? GetIt.instance<WhatRuntimeIngestionService>()
                 : null);
 
   /// Register for an event
@@ -305,6 +312,40 @@ class EventAttendanceController
             error: e,
           );
           // Don't fail registration if preference update fails
+        }
+      }
+      if (_whatRuntimeIngestionService != null && _agentIdService != null) {
+        try {
+          final agentId = await _agentIdService.getUserAgentId(attendee.id);
+          await _whatRuntimeIngestionService.ingestEventAttendanceObservation(
+            entityRef: 'event:${event.id}',
+            observedAtUtc: DateTime.now().toUtc(),
+            agentId: agentId,
+            activityContext: event.category.toLowerCase().replaceAll(' ', '_'),
+            locationContext: <String, dynamic>{
+              if (event.location != null) 'location': event.location,
+              if (event.latitude != null) 'latitude': event.latitude,
+              if (event.longitude != null) 'longitude': event.longitude,
+            },
+            temporalContext: <String, dynamic>{
+              'startTime': event.startTime.toIso8601String(),
+            },
+            structuredSignals: <String, dynamic>{
+              'eventCategory': event.category,
+              'eventType': event.getEventTypeDisplayName(),
+              if (event.cityCode != null) 'cityCode': event.cityCode,
+              if (event.localityCode != null)
+                'localityCode': event.localityCode,
+            },
+            confidence: 0.64,
+            lineageRef: 'event_attendance:${event.id}:${attendee.id}',
+          );
+        } catch (e) {
+          developer.log(
+            'Error ingesting event attendance into what kernel: $e',
+            name: _logName,
+            error: e,
+          );
         }
       }
 

@@ -4,15 +4,17 @@ part of 'admin_auth_service.dart';
 class _VerifyResult {
   final bool success;
   final String? error;
-  final bool lockedOut;
-  final Duration? lockoutRemaining;
-  final int? remainingAttempts;
+  final String? controlPlaneToken;
+  final String? sessionTokenId;
+  final String? issuedBy;
+  final Duration? sessionDuration;
 
   _VerifyResult({
     required this.success,
     this.error,
-    this.lockedOut = false,
-    this.lockoutRemaining,
-    this.remainingAttempts,
+    this.controlPlaneToken,
+    this.sessionTokenId,
+    this.issuedBy,
+    this.sessionDuration,
   });
 }

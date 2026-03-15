@@ -13,7 +13,11 @@
       "home_address",
       "personal_address",
       "ssn",
-      "government_id"
+      "government_id",
+      "user_id",
+      "location_history",
+      "raw_payload",
+      "external_payload"
     ]
   },
   "redaction_pipeline": {
@@ -27,7 +31,7 @@
     "pii_leakage_gate_blocks_release": true,
     "privacy_breach_alerting_required": true
   },
-  "status": "starter",
-  "last_updated": "2026-02-28",
-  "notes": "Aligns with command-center policy of agent identity + aggregate telemetry only."
+  "status": "enforced",
+  "last_updated": "2026-03-14",
+  "notes": "Server-side redaction is authoritative for admin/autoresearch responses and evidence packs."
 }

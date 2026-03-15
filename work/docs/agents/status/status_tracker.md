@@ -52,14 +52,18 @@ To avoid drift and contradictory “status snapshots” across docs:
   - `test/integration/database/predictive_outreach_schema_test.dart`
 
 **Policy:**
-- Heavy environment-dependent suites are executed separately (not default beta blocker):
-  - `RUN_HEAVY_INTEGRATION_TESTS=true flutter test test/integration test/performance test/platform`
+- Heavy BHAM consumer suites are executed separately (not default beta blocker):
+  - `RUN_HEAVY_INTEGRATION_TESTS=true bash work/scripts/run_bham_heavy_consumer_suites.sh`
 
 **Sign-off checklist (release owner):**
 - [x] Deterministic beta gate pass
 - [x] Beta-critical smoke subset pass
 - [x] Build + Supabase parity checks pass
 - [x] Final human Go/No-Go recorded (**Go**)
+
+**Carry-forward note for BHAM Wave 7:**
+- Wave 6 admin/governance work was validated with targeted admin/runtime checks.
+- Wave 7 must run full monorepo beta validation and treat any cross-repo regression as a launch blocker before final BHAM launch signoff.
 
 ### **Advanced AI Services + Privacy Architecture Additions (Phases 2.6, 3.9, 6.8, 6.9, 8.10, 11.5-11.7, 12.5 ext., 12.8)**
 **Status:** 📋 **Planned — Staggered Execution (Phase-gated)**  
@@ -80,6 +84,28 @@ To avoid drift and contradictory “status snapshots” across docs:
 
 **Philosophy:** `docs/plans/philosophy_implementation/AVRAI_PHILOSOPHY_AND_ARCHITECTURE.md` (Section 5.1-5.3)  
 **Foundational Decision:** #25 (Air Gap as privacy physics)
+
+---
+
+### **Event-OS Roadmap Additions**
+**Status:** 📋 **Planned — Future build tracks only**  
+**Note:** Birmingham beta keeps `Beta Event Truth + Air-Gapped Agent Learning + Creator Debrief` as the completed in-app slice. Closeout finished on March 14, 2026 via a real iOS integration smoke receipt plus a green closeout gate; the manual iOS smoke runbook remains the canonical future human QA path. Only the post-beta and public-launch additions below are future roadmap entries.
+
+#### **Post-Beta Event Ops Expansion + Human-Governed Outreach**
+- **Status:** 📋 Planned
+- **Gate:** Birmingham beta learning validated; phase-1 event-truth + debrief slice complete and useful in production-like beta use.
+- **Scope:** Organizer/event-ops workspace, reviewed candidate queues for volunteers/vendors/bands/sponsors/workers/security, human-approved outreach drafts, richer timing and budget planning, expanded learning from outreach and staffing outcomes.
+- **Non-goals:** Autonomous contracting, city-grade safety automation, state/regional rollout.
+- **Human-in-loop boundary:** High-impact sends, expensive commitments, and all safety-sensitive actions require human approval.
+- **Air-gap rule:** Organizer-entered planning, outreach, and staffing inputs still cross the event-planning air gap before persistence, learning, or higher-layer sharing.
+
+#### **Public Launch Event Ops + Partnerships + Civic Coordination**
+- **Status:** 📋 Planned
+- **Gate:** Phase 2 organizer workflows stable; partnership/payment primitives hardened; civic coordination boundaries verified.
+- **Scope:** Full organizer/event-ops and business/partnership surfaces, contracts/deposits/payouts/reporting, live incident/run-of-show workflows, civic coordination surfaces, broader operational learning from realized event execution.
+- **Non-goals:** Full autonomous civic authority, Phase 12 AVRAI OS behavior, privileged organizer bypass around governance.
+- **Human-in-loop boundary:** Police/fire/EMS/public-safety actions remain human-directed; expensive or binding agreements remain approval-gated.
+- **Air-gap rule:** Planner, partner, and operator inputs do not bypass the air gap.
 
 ---
 
@@ -2368,4 +2394,3 @@ If you're waiting for a dependency:
 - ✅ Check this file before starting work that depends on others
 - ✅ Signal completion of work that others depend on
 - ✅ Check regularly if you're blocked
-

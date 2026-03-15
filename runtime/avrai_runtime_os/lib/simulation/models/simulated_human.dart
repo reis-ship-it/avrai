@@ -46,6 +46,12 @@ class SimulatedHuman {
   final CityProfile city;
   final DailyRoutine routine;
   final FinancialProfile finances;
+  final double transportDependence;
+  final double weatherSensitivity;
+  final double accessibilitySensitivity;
+  final double socialFollowThrough;
+  final double nightlifeAffinity;
+  final double childcareFriction;
 
   final GeoCoordinate homeLocation;
   final GeoCoordinate workLocation;
@@ -69,6 +75,12 @@ class SimulatedHuman {
     required this.city,
     required this.routine,
     required this.finances,
+    this.transportDependence = 0.5,
+    this.weatherSensitivity = 0.5,
+    this.accessibilitySensitivity = 0.2,
+    this.socialFollowThrough = 0.5,
+    this.nightlifeAffinity = 0.5,
+    this.childcareFriction = 0.0,
     required this.homeLocation,
     required this.workLocation,
     this.baseInertia = 0.7,
@@ -88,6 +100,9 @@ class SimulatedHuman {
     required double value,
     required double friction,
     double eventCost = 0.0,
+    double weatherImpact = 0.0,
+    double routeReliabilityPenalty = 0.0,
+    double socialMomentumBoost = 0.0,
   }) {
     // 1. Calculate Financial Friction
     // If the event cost is high relative to their budget, add massive friction.
@@ -99,11 +114,17 @@ class SimulatedHuman {
     }
 
     // 2. Combine frictions and apply trust modifier
-    double totalFriction = friction + financialFriction;
-    
+    double totalFriction =
+        friction +
+        financialFriction +
+        (weatherImpact * weatherSensitivity * 0.5) +
+        (routeReliabilityPenalty * transportDependence * 0.4) +
+        (childcareFriction * 0.35) +
+        (accessibilitySensitivity * 0.2);
+
     // Trust significantly lowers perceived friction (up to 0.3 offset)
-    double effectiveFriction = totalFriction - (trustMeter * 0.3); 
-    
+    double effectiveFriction = totalFriction - (trustMeter * 0.3);
+
     // Hard floor for friction - even with high trust, effort is required
     if (effectiveFriction < 0.1) effectiveFriction = 0.1;
 
@@ -113,7 +134,9 @@ class SimulatedHuman {
 
     // 3. Evaluate Value Proposition
     // Does the value exceed the required effort?
-    return value >= effectiveFriction;
+    final effectiveValue =
+        value + (socialMomentumBoost * socialFollowThrough * 0.25);
+    return effectiveValue >= effectiveFriction;
   }
 
   /// Processes the outcome of an event they attended.

@@ -1,12 +1,12 @@
 import 'package:avrai_core/models/personality_profile.dart';
-import 'package:avrai_runtime_os/services/ai_infrastructure/llm_service.dart';
 import 'package:avrai_runtime_os/services/geographic/metro_experience_service.dart';
+import 'package:avrai_runtime_os/services/language/language_runtime_service.dart';
 import 'package:geolocator/geolocator.dart';
 
 /// Normalized prompt payload for the human-facing agent chat.
 class HumanChatPrompt {
-  final List<ChatMessage> messages;
-  final LLMContext context;
+  final List<LanguageTurnMessage> messages;
+  final LanguageRuntimeContext context;
 
   const HumanChatPrompt({
     required this.messages,
@@ -19,7 +19,7 @@ class HumanChatPromptComposer {
   const HumanChatPromptComposer();
 
   HumanChatPrompt compose({
-    required List<ChatMessage> historyMessages,
+    required List<LanguageTurnMessage> historyMessages,
     required String userId,
     PersonalityProfile? personality,
     String? languageStyle,
@@ -28,9 +28,9 @@ class HumanChatPromptComposer {
     MetroExperienceContext? metroContext,
     Position? currentLocation,
   }) {
-    final messages = <ChatMessage>[
-      ChatMessage(
-        role: ChatRole.system,
+    final messages = <LanguageTurnMessage>[
+      LanguageTurnMessage(
+        role: LanguageTurnRole.system,
         content: _buildSystemInstruction(
           personality: personality,
           languageStyle: languageStyle,
@@ -44,7 +44,7 @@ class HumanChatPromptComposer {
 
     return HumanChatPrompt(
       messages: messages,
-      context: LLMContext(
+      context: LanguageRuntimeContext(
         userId: userId,
         location: _coarseLocation(currentLocation),
         preferences: _buildSafePreferences(

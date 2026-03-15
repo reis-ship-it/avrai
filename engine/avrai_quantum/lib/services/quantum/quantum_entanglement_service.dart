@@ -35,6 +35,9 @@ import 'package:avrai_knot/models/entity_knot.dart';
 /// All entanglement calculations use AtomicClockService for precise temporal tracking
 class QuantumEntanglementService {
   static const String _logName = 'QuantumEntanglementService';
+  static const int _maxExactTensorEntities = 10;
+  static const int _maxTensorDimensions = 65536;
+  static const int _reducedEntanglementDimensions = 32;
 
   final AtomicClockService _atomicClock;
   final IntegratedKnotRecommendationEngine? _knotEngine;
@@ -106,6 +109,8 @@ class QuantumEntanglementService {
       final normalizedStates = entityStates
           .map((state) => state.normalized())
           .toList();
+      final stateVectors =
+          normalizedStates.map(_stateToVector).toList(growable: false);
 
       // Calculate or use provided coefficients
       final finalCoefficients =
@@ -127,20 +132,23 @@ class QuantumEntanglementService {
         }
       }
 
-      // Perform tensor product: |ψ_entity_i⟩ ⊗ |ψ_entity_j⟩ ⊗ ... ⊗ |ψ_entity_k⟩
-      final tensorProduct = _tensorProduct(normalizedStates);
+      final useReducedRepresentation =
+          _shouldUseReducedEntanglement(stateVectors);
 
-      // Create entangled state: Σᵢ αᵢ |ψ_tensor_i⟩
-      final entangledVector = _createEntangledVector(
-        tensorProduct,
-        finalCoefficients,
-      );
+      final entangledVector = useReducedRepresentation
+          ? _createReducedEntangledVector(stateVectors, finalCoefficients)
+          : _createEntangledVector(
+              _tensorProduct(normalizedStates),
+              finalCoefficients,
+            );
 
       // Normalize entangled state: ⟨ψ_entangled|ψ_entangled⟩ = 1
       final normalizedEntangled = _normalizeVector(entangledVector);
 
       developer.log(
-        '✅ Created entangled state: ${normalizedStates.length} entities, ${normalizedEntangled.length} dimensions',
+        '✅ Created entangled state: ${normalizedStates.length} entities, '
+        '${normalizedEntangled.length} dimensions, '
+        'mode=${useReducedRepresentation ? "reduced" : "exact"}',
         name: _logName,
       );
 
@@ -208,6 +216,95 @@ class QuantumEntanglementService {
     }
 
     return result;
+  }
+
+  bool _shouldUseReducedEntanglement(List<List<double>> stateVectors) {
+    if (stateVectors.length > _maxExactTensorEntities) {
+      return true;
+    }
+
+    var projectedDimensions = 1;
+    for (final vector in stateVectors) {
+      final vectorLength = math.max(1, vector.length);
+      if (projectedDimensions > _maxTensorDimensions ~/ vectorLength) {
+        return true;
+      }
+      projectedDimensions *= vectorLength;
+    }
+
+    return projectedDimensions > _maxTensorDimensions;
+  }
+
+  List<double> _createReducedEntangledVector(
+    List<List<double>> stateVectors,
+    List<double> coefficients,
+  ) {
+    final projectedStates = stateVectors
+        .map(
+          (vector) => _projectVector(
+            vector,
+            _reducedEntanglementDimensions,
+          ),
+        )
+        .toList(growable: false);
+    final reducedVector = List<double>.filled(
+      _reducedEntanglementDimensions,
+      0.0,
+    );
+
+    for (var i = 0; i < projectedStates.length; i++) {
+      final coeff = coefficients[i];
+      final projectedState = projectedStates[i];
+
+      for (var d = 0; d < _reducedEntanglementDimensions; d++) {
+        reducedVector[d] += projectedState[d] * coeff;
+      }
+
+      if (i == 0) {
+        continue;
+      }
+
+      final previousState = projectedStates[i - 1];
+      final interactionCoeff = coefficients[i - 1] * coeff;
+      for (var d = 0; d < _reducedEntanglementDimensions; d++) {
+        reducedVector[d] += previousState[d] *
+            projectedState[(d + 1) % _reducedEntanglementDimensions] *
+            interactionCoeff;
+      }
+    }
+
+    return reducedVector;
+  }
+
+  List<double> _projectVector(List<double> vector, int targetDimensions) {
+    if (vector.isEmpty) {
+      return List<double>.filled(targetDimensions, 0.0);
+    }
+
+    if (vector.length == targetDimensions) {
+      return List<double>.from(vector);
+    }
+
+    if (vector.length < targetDimensions) {
+      return [
+        ...vector,
+        ...List<double>.filled(targetDimensions - vector.length, 0.0),
+      ];
+    }
+
+    final projected = List<double>.filled(targetDimensions, 0.0);
+    for (var d = 0; d < targetDimensions; d++) {
+      final start = (d * vector.length) ~/ targetDimensions;
+      final end = ((d + 1) * vector.length) ~/ targetDimensions;
+      final safeEnd = math.max(start + 1, end);
+      var sum = 0.0;
+      for (var i = start; i < safeEnd; i++) {
+        sum += vector[i];
+      }
+      projected[d] = sum / (safeEnd - start);
+    }
+
+    return projected;
   }
 
   /// Convert quantum entity state to vector representation

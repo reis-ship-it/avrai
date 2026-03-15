@@ -23,23 +23,20 @@ import '../../../helpers/test_storage_helper.dart';
 /// - TaxDocument: Tax document model
 
 void main() {
-  const boxName = 'tax_documents_repo_test';
-
   group('TaxDocumentRepository', () {
+    var boxCounter = 0;
+    late String boxName;
     late TaxDocumentRepository repository;
     late TaxDocument testDocument;
     late DateTime testDate;
 
     setUpAll(() async {
       await TestStorageHelper.initTestStorage();
-      await GetStorage.init(boxName);
     });
 
     setUp(() async {
-      // Clear storage before each test for isolation.
-      final box = GetStorage(boxName);
-      await box.erase();
-
+      boxName = 'tax_documents_repo_test_${boxCounter++}';
+      await GetStorage.init(boxName);
       repository = TaxDocumentRepository(storeName: boxName);
       testDate = DateTime(2025, 12, 1, 14, 0);
 
@@ -54,8 +51,11 @@ void main() {
       );
     });
 
-    tearDownAll(() async {
+    tearDown(() async {
       await GetStorage(boxName).erase();
+    });
+
+    tearDownAll(() async {
       await TestStorageHelper.clearTestStorage();
     });
 

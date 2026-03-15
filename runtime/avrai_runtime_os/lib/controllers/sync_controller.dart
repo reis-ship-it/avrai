@@ -15,7 +15,6 @@ import 'package:avrai_knot/services/knot/knot_storage_service.dart';
 import 'package:avrai_knot/services/knot/knot_fabric_service.dart';
 import 'package:avrai_knot/services/knot/knot_worldsheet_service.dart';
 import 'package:avrai_quantum/services/quantum/quantum_entanglement_service.dart';
-import 'package:avrai_runtime_os/ai2ai/anonymous_communication.dart';
 
 // Import for SharedPreferencesCompat (matches injection_container.dart)
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart'
@@ -69,7 +68,6 @@ class SyncController implements WorkflowController<SyncInput, SyncResult> {
   final KnotFabricService? _knotFabricService;
   final KnotWorldsheetService? _knotWorldsheetService;
   final QuantumEntanglementService? _quantumEntanglementService;
-  final AnonymousCommunicationProtocol? _ai2aiProtocol;
 
   SyncController({
     EnhancedConnectivityService? connectivityService,
@@ -81,7 +79,6 @@ class SyncController implements WorkflowController<SyncInput, SyncResult> {
     KnotFabricService? knotFabricService,
     KnotWorldsheetService? knotWorldsheetService,
     QuantumEntanglementService? quantumEntanglementService,
-    AnonymousCommunicationProtocol? ai2aiProtocol,
   })  : _connectivityService = connectivityService ??
             GetIt.instance<EnhancedConnectivityService>(),
         _personalitySyncService =
@@ -115,10 +112,6 @@ class SyncController implements WorkflowController<SyncInput, SyncResult> {
         _quantumEntanglementService = quantumEntanglementService ??
             (GetIt.instance.isRegistered<QuantumEntanglementService>()
                 ? GetIt.instance<QuantumEntanglementService>()
-                : null),
-        _ai2aiProtocol = ai2aiProtocol ??
-            (GetIt.instance.isRegistered<AnonymousCommunicationProtocol>()
-                ? GetIt.instance<AnonymousCommunicationProtocol>()
                 : null);
 
   /// Sync user data to/from cloud
@@ -320,33 +313,6 @@ class SyncController implements WorkflowController<SyncInput, SyncResult> {
           );
           syncDetails['quantum'] = 'failed: ${e.toString()}';
           // Continue - quantum state sync is optional
-        }
-      }
-
-      // 4.5: Use AI2AI mesh for distributed sync (optional)
-      if (_ai2aiProtocol != null && hasConnectivity) {
-        try {
-          developer.log(
-            '🤖 AI2AI mesh sync available (distributed sync deferred)',
-            name: _logName,
-          );
-
-          // Note: Full implementation would use AI2AI mesh for peer-to-peer sync
-          // This is a placeholder for future AI2AI mesh sync
-          developer.log(
-            'ℹ️ AI2AI mesh sync deferred (requires mesh network implementation)',
-            name: _logName,
-          );
-
-          syncDetails['ai2ai'] = 'deferred';
-        } catch (e) {
-          developer.log(
-            '⚠️ AI2AI mesh sync failed (non-blocking): $e',
-            name: _logName,
-            error: e,
-          );
-          syncDetails['ai2ai'] = 'failed: ${e.toString()}';
-          // Continue - AI2AI mesh sync is optional
         }
       }
 

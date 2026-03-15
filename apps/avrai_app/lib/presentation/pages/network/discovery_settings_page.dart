@@ -14,8 +14,8 @@ import 'package:avrai/theme/colors.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai_network/network/device_discovery.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
-import 'package:avrai/presentation/widgets/common/app_page_header.dart';
+import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
+import 'package:avrai/presentation/schemas/pages/discovery_settings_page_detail_schema.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 
 /// Page for configuring device discovery settings
@@ -153,53 +153,14 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
-      title: 'Discovery Settings',
-      appBarBackgroundColor: AppColors.black,
-      appBarForegroundColor: AppColors.white,
-      constrainBody: false,
-      body: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+    return AppSchemaPage(
+      bodyScrollKey: const Key('discovery_settings_page_scroll'),
+      schema: buildDiscoverySettingsDetailPageSchema(
+        content: Form(
+          key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const AppPageHeader(
-                title: 'Device Discovery Configuration',
-                subtitle:
-                    'Configure how often AVRAI scans for nearby devices and how long they remain in the list.',
-                leadingIcon: Icons.radar_outlined,
-                showDivider: false,
-              ),
-              const SizedBox(height: 16),
-              AppSurface(
-                radius: 10,
-                color: AppColors.primary.withValues(alpha: 0.05),
-                padding: const EdgeInsets.all(12),
-                child: Semantics(
-                  label: 'Discovery privacy summary',
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(Icons.privacy_tip, color: AppColors.primary),
-                      SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          'Discovery uses anonymized compatibility signals only. '
-                          'You can stop discovery anytime from the AI2AI Network screen.',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                            height: 1.4,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
               AppSurface(
                 radius: 12,
                 padding: const EdgeInsets.all(16),

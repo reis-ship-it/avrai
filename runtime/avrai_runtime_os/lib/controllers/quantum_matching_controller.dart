@@ -32,7 +32,6 @@ import 'package:avrai_knot/services/knot/knot_evolution_string_service.dart';
 import 'package:avrai_knot/services/knot/knot_fabric_service.dart';
 import 'package:avrai_knot/services/knot/knot_worldsheet_service.dart';
 import 'package:avrai_runtime_os/services/security/hybrid_encryption_service.dart';
-import 'package:avrai_runtime_os/ai2ai/anonymous_communication.dart';
 import 'package:avrai_core/models/user/unified_user.dart';
 import 'package:avrai_core/models/expertise/expertise_event.dart';
 import 'package:avrai_core/models/spots/spot.dart';
@@ -128,9 +127,6 @@ class QuantumMatchingController
   // Reserved for future use: encrypting matching results when transmitting via AI2AI mesh
   // ignore: unused_field
   final HybridEncryptionService? _encryptionService;
-  // Reserved for future use: transmitting matching results via AI2AI mesh
-  // ignore: unused_field
-  final AnonymousCommunicationProtocol? _ai2aiProtocol;
 
   QuantumMatchingController({
     required AtomicClockService atomicClock,
@@ -149,7 +145,6 @@ class QuantumMatchingController
     KnotFabricService? fabricService,
     KnotWorldsheetService? worldsheetService,
     HybridEncryptionService? encryptionService,
-    AnonymousCommunicationProtocol? ai2aiProtocol,
   })  : _atomicClock = atomicClock,
         _entanglementService = entanglementService,
         _locationTimingService = locationTimingService,
@@ -166,8 +161,7 @@ class QuantumMatchingController
         _stringService = stringService,
         _fabricService = fabricService,
         _worldsheetService = worldsheetService,
-        _encryptionService = encryptionService,
-        _ai2aiProtocol = ai2aiProtocol;
+        _encryptionService = encryptionService;
 
   @override
   Future<QuantumMatchingResult> execute(MatchingInput input) async {
@@ -514,6 +508,7 @@ class QuantumMatchingController
     UnifiedUser user,
     AtomicTimestamp tAtomic,
   ) async {
+    final userAgentId = await _agentIdService.getUserAgentId(user.id);
     // Get personality profile
     final personalityProfile =
         await _personalityLearning.getCurrentPersonality(user.id);
@@ -547,9 +542,8 @@ class QuantumMatchingController
     // Get timing quantum state from preferences
     EntityTimingQuantumState? timingState;
     try {
-      final agentId = await _agentIdService.getUserAgentId(user.id);
       final preferencesProfile =
-          await _preferencesProfileService?.getPreferencesProfile(agentId);
+          await _preferencesProfileService?.getPreferencesProfile(userAgentId);
 
       if (preferencesProfile != null) {
         final explorationWillingness =
@@ -584,14 +578,14 @@ class QuantumMatchingController
     }
 
     return QuantumEntityState(
-      entityId: user.id,
+      entityId: userAgentId,
       entityType: QuantumEntityType.user,
       personalityState: personalityDimensions,
       quantumVibeAnalysis: quantumVibeAnalysis,
       entityCharacteristics: {
         'type': 'user',
-        'email': user.email,
         'displayName': user.displayName,
+        'agentId': userAgentId,
       },
       location: locationState,
       timing: timingState,
@@ -604,6 +598,7 @@ class QuantumMatchingController
     ExpertiseEvent event,
     AtomicTimestamp tAtomic,
   ) async {
+    final hostAgentId = await _agentIdService.getUserAgentId(event.host.id);
     // Get event host personality (if available)
     final hostPersonality =
         await _personalityLearning.getCurrentPersonality(event.host.id);
@@ -655,7 +650,7 @@ class QuantumMatchingController
         'type': 'event',
         'category': event.category,
         'eventType': event.eventType.name,
-        'hostId': event.host.id,
+        'hostAgentId': hostAgentId,
         'title': event.title,
       },
       location: locationState,

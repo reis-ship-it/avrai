@@ -292,7 +292,7 @@ class PDFGenerationService {
         ),
         pw.SizedBox(height: 8),
         pw.Text(
-          'For questions, contact avrai support or visit avrai.app/support',
+          'For questions, visit https://avrai.org/support',
           style: const pw.TextStyle(fontSize: 8),
         ),
       ],

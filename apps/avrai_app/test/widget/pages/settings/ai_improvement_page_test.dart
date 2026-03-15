@@ -88,8 +88,9 @@ void main() {
         await tester.pumpAndSettle();
 
         // Assert
-        expect(find.text('AI Self-Improvement'), findsOneWidget);
-        expect(find.textContaining('Watch your AI learn'), findsOneWidget);
+        expect(find.text('AI Improvement'), findsWidgets);
+        expect(
+            find.textContaining('Review how your AI improves'), findsOneWidget);
         expect(find.byIcon(Icons.trending_up), findsWidgets);
       });
 
@@ -143,15 +144,14 @@ void main() {
 
         // Assert
         final list = find.byKey(const Key('ai_improvement_page_list'));
-        final learnMore = find.text('Learn More');
+        final learnMore = find.text('Learn more');
         for (var i = 0; i < 40 && learnMore.evaluate().isEmpty; i++) {
           await tester.drag(list, const Offset(0, -600));
           await WidgetTestHelpers.safePumpAndSettle(tester);
         }
-        expect(find.text('Learn More'), findsOneWidget);
+        expect(find.text('Learn more'), findsOneWidget);
         expect(
-            find.textContaining('Your AI continuously learns'), findsOneWidget);
-        expect(find.textContaining('Your data stays on your device'),
+            find.textContaining('Improvements focus on recommendation quality'),
             findsOneWidget);
       });
     });
@@ -207,7 +207,7 @@ void main() {
         await WidgetTestHelpers.safePumpAndSettle(tester);
 
         // Assert - All widgets should be in a scrollable list
-        expect(find.byType(ListView), findsOneWidget);
+        expect(find.byType(SingleChildScrollView), findsOneWidget);
         expect(find.byType(AIImprovementSection), findsOneWidget);
         final list = find.byKey(const Key('ai_improvement_page_list'));
         final progressWidget = find.byType(AIImprovementProgressWidget);
@@ -356,7 +356,7 @@ void main() {
         await WidgetTestHelpers.safePumpAndSettle(tester);
 
         // Assert
-        expect(find.byType(ListView), findsOneWidget);
+        expect(find.byType(SingleChildScrollView), findsOneWidget);
         expect(find.byType(Scrollable), findsWidgets);
       });
 
@@ -381,7 +381,7 @@ void main() {
         }
 
         // Assert
-        expect(find.text('Learn More'), findsOneWidget);
+        expect(find.text('Learn more'), findsOneWidget);
       });
     });
 
@@ -416,13 +416,13 @@ void main() {
         expect(
             find.textContaining('Timeline of AI improvements'), findsOneWidget);
 
-        final benefits = find.textContaining('How AI improvements benefit');
+        final benefits = find.textContaining('How ongoing improvements affect');
         for (var i = 0; i < 40 && benefits.evaluate().isEmpty; i++) {
           await tester.drag(list, const Offset(0, -600));
           await WidgetTestHelpers.safePumpAndSettle(tester);
         }
-        expect(
-            find.textContaining('How AI improvements benefit'), findsOneWidget);
+        expect(find.textContaining('How ongoing improvements affect'),
+            findsOneWidget);
       });
     });
   });

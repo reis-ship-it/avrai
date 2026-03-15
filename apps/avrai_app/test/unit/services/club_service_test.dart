@@ -17,6 +17,10 @@ import '../../helpers/platform_channel_helper.dart';
 /// - Club leaders gain expertise recognition
 /// - Organizational structure enables community growth
 void main() {
+  setUpAll(() async {
+    await setupTestStorage();
+  });
+
   group('ClubService Tests', () {
     late ClubService service;
     late CommunityService communityService;

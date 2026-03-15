@@ -46,11 +46,11 @@ class PersonalityAdvertisingUpdateLane {
           await vibeAnalyzer.compileUserVibe(userId, updatedPersonality);
       final anonymized = await PrivacyProtection.anonymizeUserVibe(vibe);
 
-      final knotService = GetIt.instance.isRegistered<PersonalityKnotService>() 
-          ? GetIt.instance<PersonalityKnotService>() 
+      final knotService = GetIt.instance.isRegistered<PersonalityKnotService>()
+          ? GetIt.instance<PersonalityKnotService>()
           : PersonalityKnotService();
       final dnaEncoder = DnaEncoderService();
-      
+
       final knot = await knotService.generateKnot(updatedPersonality);
       final dnaPayload = dnaEncoder.encode(knot);
 

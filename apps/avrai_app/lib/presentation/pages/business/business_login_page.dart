@@ -4,7 +4,7 @@ import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai/presentation/pages/business/business_dashboard_page.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Business Login Page
 /// Secure login for business account access
@@ -124,7 +124,7 @@ class _BusinessLoginPageState extends State<BusinessLoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: '',
       backgroundColor: AppColors.grey50,
       appBarBackgroundColor: Colors.transparent,

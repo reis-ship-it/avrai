@@ -110,6 +110,7 @@ void main() {
     });
 
     tearDown(() {
+      networkAnalytics.disposeStreams();
       // Reset mock storage for test isolation
       MockGetStorage.reset();
     });

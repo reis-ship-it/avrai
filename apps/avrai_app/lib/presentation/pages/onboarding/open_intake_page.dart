@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:avrai/theme/colors.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
+import 'package:avrai/theme/colors.dart';
+import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
+import 'package:avrai/presentation/schemas/pages/open_intake_page_schema.dart';
 
 class OpenIntakePage extends StatefulWidget {
   final Map<String, String> openResponses;
@@ -55,38 +57,35 @@ class _OpenIntakePageState extends State<OpenIntakePage> {
   }
 
   void _updateResponses() {
-    final newResponses = {
+    widget.onResponsesChanged({
       'coffee': _coffeeController.text.trim(),
       'clear_head': _clearHeadController.text.trim(),
       'hobby': _hobbyController.text.trim(),
       'about_me': _aboutController.text.trim(),
-    };
-    widget.onResponsesChanged(newResponses);
+    });
   }
 
-  Widget _buildQuestionField(String question, TextEditingController controller,
-      {int maxLines = 2}) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 24.0),
+  Widget _buildQuestionField(
+    String question,
+    TextEditingController controller, {
+    int maxLines = 2,
+  }) {
+    return AppSurface(
+      borderColor: AppColors.borderSubtle,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             question,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           TextField(
             controller: controller,
             maxLines: maxLines,
             textCapitalization: TextCapitalization.sentences,
-            decoration: InputDecoration(
-              hintText: 'Type here or skip...',
-              hintStyle: const TextStyle(color: AppColors.grey500),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              contentPadding: const EdgeInsets.all(12),
+            decoration: const InputDecoration(
+              hintText: 'Type here or skip',
             ),
           ),
         ],
@@ -96,48 +95,38 @@ class _OpenIntakePageState extends State<OpenIntakePage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Who are you?',
-            style: theme.textTheme.headlineSmall
-                ?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'We use these answers entirely locally to seed your AI\'s understanding of your personality. Nothing you type here leaves your device.',
-            style:
-                theme.textTheme.bodyMedium?.copyWith(color: AppColors.grey600),
-          ),
-          const SizedBox(height: 24),
-          AppSurface(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildQuestionField(
-                      "What's your favorite place to get coffee?",
-                      _coffeeController),
-                  _buildQuestionField("Where do you go to clear your head?",
-                      _clearHeadController),
-                  _buildQuestionField(
-                      "What's a hobby you wish you had more time for?",
-                      _hobbyController),
-                  _buildQuestionField(
-                      "Tell us a bit about you.", _aboutController,
-                      maxLines: 4),
-                ],
-              ),
-            ),
-          ),
-        ],
+    return AppSchemaPage(
+      schema: buildOpenIntakePageSchema(
+        questionsSection: _buildQuestionsSection(),
       ),
+      padding: const EdgeInsets.all(16),
+    );
+  }
+
+  Widget _buildQuestionsSection() {
+    return Column(
+      children: [
+        _buildQuestionField(
+          "What's your favorite place to get coffee?",
+          _coffeeController,
+        ),
+        const SizedBox(height: 16),
+        _buildQuestionField(
+          'Where do you go to clear your head?',
+          _clearHeadController,
+        ),
+        const SizedBox(height: 16),
+        _buildQuestionField(
+          "What's a hobby you wish you had more time for?",
+          _hobbyController,
+        ),
+        const SizedBox(height: 16),
+        _buildQuestionField(
+          'Tell us a bit about you.',
+          _aboutController,
+          maxLines: 4,
+        ),
+      ],
     );
   }
 }

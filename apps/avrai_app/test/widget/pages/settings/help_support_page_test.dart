@@ -17,8 +17,9 @@ void main() {
         child: const HelpSupportPage(),
       );
       await WidgetTestHelpers.pumpAndSettle(tester, widget);
-      expect(find.text('Help & Support'), findsOneWidget);
-      expect(find.text('We\'re Here to Help'), findsOneWidget);
+      expect(find.text('Help & Support'), findsWidgets);
+      expect(find.text('Need something quickly?'), findsOneWidget);
+      expect(find.text('Quick Help'), findsOneWidget);
       expect(find.byType(HelpSupportPage), findsOneWidget);
     });
   });

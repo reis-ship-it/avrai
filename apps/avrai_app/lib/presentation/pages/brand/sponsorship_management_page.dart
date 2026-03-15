@@ -11,7 +11,7 @@ import 'package:avrai/presentation/blocs/auth/auth_bloc.dart'
 import 'package:avrai/presentation/widgets/brand/sponsorship_card.dart';
 import 'package:avrai/presentation/pages/brand/brand_discovery_page.dart';
 import 'package:get_it/get_it.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Sponsorship Management Page
 ///
@@ -167,7 +167,7 @@ class _SponsorshipManagementPageState extends State<SponsorshipManagementPage>
 
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Sponsorship Management',
       backgroundColor: AppColors.background,
       appBarBackgroundColor: AppTheme.primaryColor,

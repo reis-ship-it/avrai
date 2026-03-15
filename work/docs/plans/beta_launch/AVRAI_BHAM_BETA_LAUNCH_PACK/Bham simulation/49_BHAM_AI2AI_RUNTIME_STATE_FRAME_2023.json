@@ -1,0 +1,94 @@
+{
+  "captured_at_utc": "2023-12-31T23:59:59.000Z",
+  "recent_event_count": 18,
+  "active_connection_count": 2,
+  "distinct_connection_count": 5,
+  "distinct_remote_node_count": 4,
+  "routing_attempt_count": 7,
+  "custody_accepted_count": 5,
+  "delivery_success_count": 4,
+  "delivery_failure_count": 1,
+  "read_confirmed_count": 3,
+  "learning_applied_count": 2,
+  "learning_buffered_count": 1,
+  "encryption_failure_count": 0,
+  "anomaly_count": 1,
+  "event_type_counts": {
+    "ai2ai_routing_attempt": 7,
+    "ai2ai_custody_accepted": 5,
+    "ai2ai_delivery_success": 4,
+    "ai2ai_read_confirmed": 3,
+    "ai2ai_learning_applied": 2,
+    "ai2ai_delivery_failure": 1,
+    "ai2ai_learning_buffered": 1,
+    "ai2ai_anomaly": 1
+  },
+  "peers": [
+    {
+      "peer_ref": "peer:five-points",
+      "event_count": 8,
+      "active_connection_count": 1,
+      "delivery_success_count": 2,
+      "delivery_failure_count": 0,
+      "read_confirmed_count": 2,
+      "learning_applied_count": 1,
+      "learning_buffered_count": 0,
+      "connection_ids": [
+        "conn:downtown:1",
+        "conn:downtown:2"
+      ],
+      "event_type_counts": {
+        "ai2ai_routing_attempt": 3,
+        "ai2ai_custody_accepted": 2,
+        "ai2ai_delivery_success": 2,
+        "ai2ai_read_confirmed": 2,
+        "ai2ai_learning_applied": 1
+      },
+      "last_event_at_utc": "2023-12-31T23:57:00.000Z"
+    },
+    {
+      "peer_ref": "peer:avondale",
+      "event_count": 6,
+      "active_connection_count": 1,
+      "delivery_success_count": 1,
+      "delivery_failure_count": 1,
+      "read_confirmed_count": 1,
+      "learning_applied_count": 1,
+      "learning_buffered_count": 1,
+      "connection_ids": [
+        "conn:east:1",
+        "conn:east:2"
+      ],
+      "event_type_counts": {
+        "ai2ai_routing_attempt": 2,
+        "ai2ai_custody_accepted": 2,
+        "ai2ai_delivery_success": 1,
+        "ai2ai_delivery_failure": 1,
+        "ai2ai_read_confirmed": 1,
+        "ai2ai_learning_applied": 1,
+        "ai2ai_learning_buffered": 1
+      },
+      "last_event_at_utc": "2023-12-31T23:55:00.000Z"
+    },
+    {
+      "peer_ref": "peer:northside-hub",
+      "event_count": 4,
+      "active_connection_count": 0,
+      "delivery_success_count": 1,
+      "delivery_failure_count": 0,
+      "read_confirmed_count": 0,
+      "learning_applied_count": 0,
+      "learning_buffered_count": 0,
+      "connection_ids": [
+        "conn:north:1"
+      ],
+      "event_type_counts": {
+        "ai2ai_routing_attempt": 1,
+        "ai2ai_custody_accepted": 1,
+        "ai2ai_delivery_success": 1,
+        "ai2ai_anomaly": 1
+      },
+      "last_event_at_utc": "2023-12-31T23:53:00.000Z"
+    }
+  ]
+}

@@ -8,25 +8,29 @@ import 'package:avrai_runtime_os/services/ledgers/ledger_domain_v0.dart';
 class IncomingLearningInsightSideEffects {
   const IncomingLearningInsightSideEffects._();
 
-  static void emitSuccess({
+  static String emitSuccess({
     required String insightId,
     required String sender,
     required String originId,
     required int hop,
+    required bool applied,
     required double learningQuality,
     required int deltaDimensionsCount,
     required void Function() forwardGossip,
   }) {
+    final eventType =
+        applied ? 'ai2ai_learning_applied' : 'ai2ai_learning_buffered';
     if (LedgerAuditV0.isEnabled) {
       unawaited(LedgerAuditV0.tryAppend(
         domain: LedgerDomainV0.deviceCapability,
-        eventType: 'ai2ai_learning_insight_received',
+        eventType: eventType,
         occurredAt: DateTime.now(),
         payload: <String, Object?>{
           'insight_id': insightId,
           'sender_device_id': sender,
           'origin_id': originId,
           'hop': hop,
+          'applied': applied,
           'schema_version': 1,
           'learning_quality': learningQuality,
           'delta_dimensions_count': deltaDimensionsCount,
@@ -35,6 +39,7 @@ class IncomingLearningInsightSideEffects {
     }
 
     forwardGossip();
+    return eventType;
   }
 
   static void emitFailure({

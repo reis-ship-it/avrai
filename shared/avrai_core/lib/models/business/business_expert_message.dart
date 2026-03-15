@@ -23,6 +23,7 @@ class BusinessExpertMessage extends Equatable {
   final DateTime? readAt;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final Map<String, dynamic>? metadata;
 
   const BusinessExpertMessage({
     required this.id,
@@ -39,6 +40,7 @@ class BusinessExpertMessage extends Equatable {
     this.readAt,
     required this.createdAt,
     required this.updatedAt,
+    this.metadata,
   });
 
   BusinessExpertMessage copyWith({
@@ -56,6 +58,7 @@ class BusinessExpertMessage extends Equatable {
     DateTime? readAt,
     DateTime? createdAt,
     DateTime? updatedAt,
+    Map<String, dynamic>? metadata,
   }) {
     return BusinessExpertMessage(
       id: id ?? this.id,
@@ -72,6 +75,7 @@ class BusinessExpertMessage extends Equatable {
       readAt: readAt ?? this.readAt,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      metadata: metadata ?? this.metadata,
     );
   }
 
@@ -92,6 +96,7 @@ class BusinessExpertMessage extends Equatable {
       'read_at': readAt?.toIso8601String(),
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
+      'metadata': metadata,
     };
   }
 
@@ -133,6 +138,9 @@ class BusinessExpertMessage extends Equatable {
           : null,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
+      metadata: json['metadata'] != null
+          ? Map<String, dynamic>.from(json['metadata'] as Map)
+          : null,
     );
   }
 
@@ -152,6 +160,7 @@ class BusinessExpertMessage extends Equatable {
         readAt,
         createdAt,
         updatedAt,
+        metadata,
       ];
 }
 

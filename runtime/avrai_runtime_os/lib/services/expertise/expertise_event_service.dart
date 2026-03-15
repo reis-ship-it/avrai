@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:avrai_core/models/expertise/expertise_event.dart';
+import 'package:avrai_core/models/events/event_planning.dart';
 import 'package:avrai_core/models/imports/external_sync_metadata.dart';
 import 'package:avrai_core/models/community/community_event.dart';
 import 'package:avrai_core/models/user/unified_user.dart';
@@ -118,6 +119,7 @@ class ExpertiseEventService {
     int maxAttendees = 20,
     double? price,
     bool isPublic = true,
+    EventPlanningSnapshot? planningSnapshot,
   }) async {
     try {
       _logger.info('Creating expertise event: $title', tag: _logName);
@@ -131,6 +133,21 @@ class ExpertiseEventService {
       // Verify host has expertise in category
       if (!host.hasExpertiseIn(category)) {
         throw Exception('Host must have expertise in $category');
+      }
+
+      if (planningSnapshot != null) {
+        EventPlanningBoundaryGuard.ensureSanitizedSnapshot(
+          planningSnapshot,
+          context: 'event_persistence',
+        );
+        _logger.info(
+          'Persisting air-gapped planning snapshot: '
+          'crossingId=${planningSnapshot.docket.airGapProvenance.crossingId}, '
+          'tuples=${planningSnapshot.docket.airGapProvenance.tupleRefs.length}, '
+          'source=${planningSnapshot.docket.airGapProvenance.sourceKind.name}, '
+          'scope=${planningSnapshot.truthScope.scopeKey}',
+          tag: _logName,
+        );
       }
 
       // Validate geographic scope if location is provided
@@ -206,6 +223,7 @@ class ExpertiseEventService {
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
         status: EventStatus.upcoming,
+        planningSnapshot: planningSnapshot,
       );
 
       // In production, save to database
@@ -231,6 +249,11 @@ class ExpertiseEventService {
           'is_public': isPublic,
           'spots_count': (spots ?? const <Spot>[]).length,
           'has_location': (location ?? '').isNotEmpty,
+          'has_planning_snapshot': planningSnapshot != null,
+          'planning_snapshot_crossing_id':
+              planningSnapshot?.docket.airGapProvenance.crossingId,
+          'planning_snapshot_tuple_count':
+              planningSnapshot?.docket.airGapProvenance.tupleRefs.length,
         },
       ));
 

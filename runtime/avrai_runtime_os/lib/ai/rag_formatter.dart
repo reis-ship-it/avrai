@@ -1,21 +1,25 @@
 import 'dart:developer' as developer;
 
+import 'package:avrai_core/models/expression/expression_models.dart';
 import 'package:avrai_runtime_os/ai/retrieval_result.dart';
+import 'package:avrai_runtime_os/kernel/language/language_kernel_orchestrator_service.dart';
 import 'package:get_it/get_it.dart';
-import 'package:avrai_runtime_os/services/ai_infrastructure/llm_service.dart'
-    as llm;
 
-/// Format layer for RAG-as-answer: templates first, optional LLM with strict "no new facts" instructions.
+/// Format layer for RAG-as-answer: templates first, then grounded expression
+/// rendering that cannot originate new facts.
 /// Fallback: template-only bullet list. Graceful degradation for empty/partial retrieval.
 ///
 /// Plan: RAG wiring + RAG-as-answer — RAGFormatter.
 class RAGFormatter {
-  RAGFormatter({llm.LLMService? llmService})
-      : _llmService = llmService ?? _get<llm.LLMService>();
+  RAGFormatter({
+    LanguageKernelOrchestratorService? languageKernelOrchestrator,
+  }) : _languageKernelOrchestrator = languageKernelOrchestrator ??
+            _get<LanguageKernelOrchestratorService>() ??
+            LanguageKernelOrchestratorService();
 
   static const String _logName = 'RAGFormatter';
 
-  final llm.LLMService? _llmService;
+  final LanguageKernelOrchestratorService _languageKernelOrchestrator;
 
   static T? _get<T extends Object>() {
     if (!GetIt.instance.isRegistered<T>()) return null;
@@ -39,12 +43,9 @@ class RAGFormatter {
     final bullet = _templateOnly(result);
     final formatted = caveat + bullet;
 
-    if (_llmService != null &&
-        userId != null &&
-        query != null &&
-        query.trim().isNotEmpty) {
+    if (userId != null && query != null && query.trim().isNotEmpty) {
       try {
-        final strict = await _formatWithLlm(
+        final strict = _formatWithExpressionKernel(
           result: result,
           query: query,
           userId: userId,
@@ -54,7 +55,8 @@ class RAGFormatter {
           return caveat + strict;
         }
       } catch (e) {
-        developer.log('RAGFormatter LLM format failed, using template: $e',
+        developer.log(
+            'RAGFormatter expression kernel format failed, using template: $e',
             name: _logName);
       }
     }
@@ -101,30 +103,40 @@ class RAGFormatter {
     return s.isEmpty ? "Here's what I have: $fallback" : s;
   }
 
-  Future<String?> _formatWithLlm({
+  String? _formatWithExpressionKernel({
     required RetrievalResult result,
     required String query,
     required String userId,
     String? languageStyle,
-  }) async {
-    final list = result.items.map((e) => e.content).take(15).toList();
-    final block = list.join('\n');
-    var system =
-        "You only use the following retrieved items to answer. Do not add any information not in the list. Only rephrase or structure. Items:\n$block";
-    if (languageStyle != null && languageStyle.trim().isNotEmpty) {
-      system =
-          "$system\n\nUser's preferred communication style (match if possible):\n$languageStyle";
+  }) {
+    final allowedClaims = result.items
+        .map((entry) => entry.content.trim())
+        .where((entry) => entry.isNotEmpty)
+        .take(15)
+        .toList();
+    if (allowedClaims.isEmpty) {
+      return null;
     }
-    final ctx = llm.LLMContext(userId: userId);
-    final messages = [
-      llm.ChatMessage(role: llm.ChatRole.system, content: system),
-      llm.ChatMessage(role: llm.ChatRole.user, content: query),
-    ];
-    return _llmService!.chat(
-      messages: messages,
-      context: ctx,
-      temperature: 0.3,
-      maxTokens: 300,
+    final rendered = _languageKernelOrchestrator.renderGroundedOutput(
+      speechAct: ExpressionSpeechAct.explain,
+      audience: ExpressionAudience.userSafe,
+      surfaceShape: ExpressionSurfaceShape.chatTurn,
+      subjectLabel: query,
+      allowedClaims: allowedClaims,
+      evidenceRefs: result.items
+          .take(15)
+          .map((entry) => '${entry.source}:${entry.type}:${entry.id}')
+          .toList(),
+      confidenceBand: _isPartial(result) ? 'low' : 'medium',
+      toneProfile: languageStyle != null && languageStyle.trim().isNotEmpty
+          ? 'adapted_to_user_style'
+          : 'clear_calm',
+      uncertaintyNotice: _isPartial(result)
+          ? 'This answer is based on a partial slice of what AVRAI has grounded so far.'
+          : null,
+      cta: 'Ask a narrower follow-up if you want more specific detail.',
+      adaptationProfileRef: 'rag_formatter:$userId',
     );
+    return rendered.text;
   }
 }

@@ -14,6 +14,7 @@ class OrchestrationShutdownLane {
     required Timer? discoveryTimer,
     required Timer? connectionMaintenanceTimer,
     required Timer? bleInboxPoller,
+    required Timer? meshCustodyReplayPoller,
     required Timer? federatedCloudSyncTimer,
     required StreamSubscription<List<ConnectivityResult>>?
         federatedCloudConnectivitySub,
@@ -31,6 +32,7 @@ class OrchestrationShutdownLane {
     discoveryTimer?.cancel();
     connectionMaintenanceTimer?.cancel();
     bleInboxPoller?.cancel();
+    meshCustodyReplayPoller?.cancel();
     federatedCloudSyncTimer?.cancel();
     await federatedCloudConnectivitySub?.cancel();
     await batteryScheduler?.stop();

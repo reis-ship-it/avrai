@@ -20,7 +20,7 @@ void main() {
   group('AdminPrivacyFilter', () {
     group('filterPersonalData', () {
       test(
-          'should filter out personal data keys, handle case-insensitive key matching, or handle empty map',
+          'should filter out personal data keys, including consumer identifiers, and handle case-insensitive matching or empty maps',
           () {
         // Test business logic: basic personal data filtering
         final data1 = {
@@ -34,7 +34,7 @@ void main() {
         expect(filtered1.containsKey('name'), isFalse);
         expect(filtered1.containsKey('email'), isFalse);
         expect(filtered1.containsKey('phone'), isFalse);
-        expect(filtered1.containsKey('user_id'), isTrue);
+        expect(filtered1.containsKey('user_id'), isFalse);
         expect(filtered1.containsKey('ai_signature'), isTrue);
 
         final data2 = {
@@ -47,7 +47,7 @@ void main() {
         expect(filtered2.containsKey('NAME'), isFalse);
         expect(filtered2.containsKey('Email'), isFalse);
         expect(filtered2.containsKey('PHONE'), isFalse);
-        expect(filtered2.containsKey('User_ID'), isTrue);
+        expect(filtered2.containsKey('User_ID'), isFalse);
 
         final data3 = <String, dynamic>{};
         final filtered3 = AdminPrivacyFilter.filterPersonalData(data3);
@@ -55,7 +55,7 @@ void main() {
       });
 
       test(
-          'should allow AI-related data, allow location data (vibe indicator), or preserve allowed keys',
+          'should allow AI-related data while filtering location-bearing and identifier fields',
           () {
         // Test business logic: allowed data preservation
         final data1 = {
@@ -75,10 +75,10 @@ void main() {
           'vibe_location': 'SF',
         };
         final filtered2 = AdminPrivacyFilter.filterPersonalData(data2);
-        expect(filtered2.containsKey('current_location'), isTrue);
-        expect(filtered2.containsKey('visited_locations'), isTrue);
-        expect(filtered2.containsKey('location_history'), isTrue);
-        expect(filtered2.containsKey('vibe_location'), isTrue);
+        expect(filtered2.containsKey('current_location'), isFalse);
+        expect(filtered2.containsKey('visited_locations'), isFalse);
+        expect(filtered2.containsKey('location_history'), isFalse);
+        expect(filtered2.containsKey('vibe_location'), isFalse);
 
         final data3 = <String, dynamic>{
           'user_id': 'user-123',
@@ -94,17 +94,17 @@ void main() {
           'spot_locations': ['spot1'],
         };
         final filtered3 = AdminPrivacyFilter.filterPersonalData(data3);
-        expect(filtered3.containsKey('user_id'), isTrue);
+        expect(filtered3.containsKey('user_id'), isFalse);
         expect(filtered3.containsKey('ai_signature'), isTrue);
         expect(filtered3.containsKey('ai_connections'), isTrue);
         expect(filtered3.containsKey('connection_id'), isTrue);
         expect(filtered3.containsKey('ai_status'), isTrue);
         expect(filtered3.containsKey('ai_activity'), isTrue);
-        expect(filtered3.containsKey('current_location'), isTrue);
-        expect(filtered3.containsKey('visited_locations'), isTrue);
-        expect(filtered3.containsKey('location_history'), isTrue);
-        expect(filtered3.containsKey('vibe_location'), isTrue);
-        expect(filtered3.containsKey('spot_locations'), isTrue);
+        expect(filtered3.containsKey('current_location'), isFalse);
+        expect(filtered3.containsKey('visited_locations'), isFalse);
+        expect(filtered3.containsKey('location_history'), isFalse);
+        expect(filtered3.containsKey('vibe_location'), isFalse);
+        expect(filtered3.containsKey('spot_locations'), isFalse);
       });
 
       test('should filter out home address or filter contact information', () {
@@ -121,7 +121,7 @@ void main() {
         expect(filtered1.containsKey('homeaddress'), isFalse);
         expect(filtered1.containsKey('residential_address'), isFalse);
         expect(filtered1.containsKey('personal_address'), isFalse);
-        expect(filtered1.containsKey('visited_locations'), isTrue);
+        expect(filtered1.containsKey('visited_locations'), isFalse);
 
         final data2 = {
           'contact': {
@@ -136,7 +136,7 @@ void main() {
       });
 
       test(
-          'should filter nested maps recursively, filter displayname and username',
+          'should drop nested personal containers and filter displayname and username',
           () {
         // Test business logic: recursive filtering and username/displayname filtering
         final data1 = {
@@ -151,12 +151,7 @@ void main() {
           },
         };
         final filtered1 = AdminPrivacyFilter.filterPersonalData(data1);
-        if (filtered1.containsKey('user_data')) {
-          final userData = filtered1['user_data'] as Map<String, dynamic>;
-          expect(userData.containsKey('name'), isFalse);
-          expect(userData.containsKey('email'), isFalse);
-          expect(userData.containsKey('ai_signature'), isTrue);
-        }
+        expect(filtered1.containsKey('user_data'), isFalse);
         expect(filtered1.containsKey('profile'), isFalse);
 
         final data2 = {
@@ -167,7 +162,7 @@ void main() {
         final filtered2 = AdminPrivacyFilter.filterPersonalData(data2);
         expect(filtered2.containsKey('displayname'), isFalse);
         expect(filtered2.containsKey('username'), isFalse);
-        expect(filtered2.containsKey('user_id'), isTrue);
+        expect(filtered2.containsKey('user_id'), isFalse);
       });
     });
   });

@@ -59,9 +59,19 @@ class ConnectionMetrics {
     required String localAISignature,
     required String remoteAISignature,
     required double compatibility,
+    Map<String, dynamic> learningOutcomesSeed = const <String, dynamic>{},
   }) {
     final connectionId =
         _generateConnectionId(localAISignature, remoteAISignature);
+
+    final learningOutcomes = <String, dynamic>{
+      'insights_gained': 0,
+      'dimensions_evolved': <String>[],
+      'new_patterns_discovered': 0,
+      'successful_exchanges': 0,
+      'failed_exchanges': 0,
+    };
+    learningOutcomes.addAll(learningOutcomesSeed);
 
     return ConnectionMetrics(
       connectionId: connectionId,
@@ -74,13 +84,7 @@ class ConnectionMetrics {
       connectionDuration: Duration.zero,
       startTime: DateTime.now(),
       status: ConnectionStatus.establishing,
-      learningOutcomes: {
-        'insights_gained': 0,
-        'dimensions_evolved': <String>[],
-        'new_patterns_discovered': 0,
-        'successful_exchanges': 0,
-        'failed_exchanges': 0,
-      },
+      learningOutcomes: learningOutcomes,
       interactionHistory: [],
       dimensionEvolution: {},
       handshakeHash: null, // Will be set during Signal Protocol key exchange
@@ -261,6 +265,22 @@ class ConnectionMetrics {
 
   /// Get connection summary for analytics
   Map<String, dynamic> getSummary() {
+    final canonicalReasonCodes =
+        ((learningOutcomes['canonical_reason_codes'] as List?) ??
+                const <dynamic>[])
+            .map((entry) => entry.toString())
+            .toList(growable: false);
+    final sharedGeographicLevels =
+        ((learningOutcomes['shared_geographic_levels'] as List?) ??
+                const <dynamic>[])
+            .map((entry) => entry.toString())
+            .toList(growable: false);
+    final sharedScopedContextIds =
+        ((learningOutcomes['shared_scoped_context_ids'] as List?) ??
+                const <dynamic>[])
+            .map((entry) => entry.toString())
+            .toList(growable: false);
+
     return {
       'connection_id': connectionId.substring(0, 8),
       'duration_seconds': connectionDuration.inSeconds,
@@ -276,6 +296,18 @@ class ConnectionMetrics {
       'impactful_learnings': getMostImpactfulLearnings(),
       'successful_exchanges': learningOutcomes['successful_exchanges'],
       'failed_exchanges': learningOutcomes['failed_exchanges'],
+      if (canonicalReasonCodes.isNotEmpty)
+        'canonical_reason_codes': canonicalReasonCodes,
+      if (learningOutcomes['peer_confidence'] != null)
+        'peer_confidence': learningOutcomes['peer_confidence'],
+      if (learningOutcomes['peer_freshness_hours'] != null)
+        'peer_freshness_hours': learningOutcomes['peer_freshness_hours'],
+      if (sharedGeographicLevels.isNotEmpty)
+        'shared_geographic_levels': sharedGeographicLevels,
+      if (sharedScopedContextIds.isNotEmpty)
+        'shared_scoped_context_ids': sharedScopedContextIds,
+      if (learningOutcomes['peer_why_summary'] != null)
+        'peer_why_summary': learningOutcomes['peer_why_summary'],
     };
   }
 

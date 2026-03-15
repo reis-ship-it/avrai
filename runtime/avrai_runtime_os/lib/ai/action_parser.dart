@@ -1,19 +1,13 @@
 import 'dart:developer' as developer;
-import 'dart:convert';
 import 'package:avrai_runtime_os/ai/action_models.dart';
-import 'package:avrai_runtime_os/services/ai_infrastructure/llm_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:avrai_runtime_os/services/events/event_template_service.dart';
 import 'package:get_it/get_it.dart';
 
 /// Action Parser for Phase 5: Action Execution System
-/// Parses user messages to extract action intents
+/// Parses user messages into executable action intents.
 class ActionParser {
   static const String _logName = 'ActionParser';
-
-  final LLMService? _llmService;
-
-  ActionParser({LLMService? llmService}) : _llmService = llmService;
 
   /// Parse a user message to extract action intent
   /// Returns null if no action intent is detected
@@ -37,22 +31,6 @@ class ActionParser {
         developer.log('Parsed intent using rule-based: ${ruleBasedIntent.type}',
             name: _logName);
         return ruleBasedIntent;
-      }
-
-      // If LLM is available, use it for more complex parsing
-      if (_llmService != null) {
-        try {
-          final llmIntent =
-              await _parseWithLLM(userMessage, userId, currentLocation);
-          if (llmIntent != null) {
-            developer.log('Parsed intent using LLM: ${llmIntent.type}',
-                name: _logName);
-            return llmIntent;
-          }
-        } catch (e) {
-          developer.log('LLM parsing failed, using rule-based: $e',
-              name: _logName);
-        }
       }
 
       developer.log('No action intent detected', name: _logName);
@@ -201,132 +179,6 @@ class ActionParser {
     }
 
     return null;
-  }
-
-  /// Parse with LLM (more accurate, requires online)
-  /// Uses LLM to identify action types and extract structured information
-  Future<ActionIntent?> _parseWithLLM(
-    String message,
-    String? userId,
-    Position? currentLocation,
-  ) async {
-    if (_llmService == null || userId == null) {
-      return null;
-    }
-
-    try {
-      developer.log('Parsing action with LLM: $message', name: _logName);
-
-      // Create a prompt that asks the LLM to identify action intent
-      final prompt = '''
-Analyze this user message and identify if it contains an action intent. 
-If it does, respond with a JSON object containing:
-- "actionType": one of "create_list", "create_spot", "add_spot_to_list", or "none"
-- "confidence": a number between 0.0 and 1.0
-- "listName": the name of the list (if applicable)
-- "spotName": the name of the spot (if applicable)
-- "category": the category of the spot (if applicable)
-
-User message: "$message"
-
-Respond ONLY with valid JSON, no other text.
-Example response: {"actionType": "create_list", "confidence": 0.9, "listName": "Coffee Shops"}
-''';
-
-      final response = await _llmService.chat(
-        messages: [
-          ChatMessage(role: ChatRole.user, content: prompt),
-        ],
-        maxTokens: 200,
-        temperature: 0.3, // Lower temperature for more consistent parsing
-      );
-
-      // Try to parse JSON response
-      final intent = _parseLLMResponse(response, userId, currentLocation);
-      if (intent != null) {
-        developer.log(
-            'LLM parsed intent: ${intent.type} with confidence ${intent.confidence}',
-            name: _logName);
-        return intent;
-      }
-    } catch (e) {
-      developer.log('LLM parsing error: $e', name: _logName);
-      // Fall through to return null, which will trigger rule-based fallback
-    }
-
-    return null;
-  }
-
-  /// Parse LLM response into ActionIntent
-  ActionIntent? _parseLLMResponse(
-    String llmResponse,
-    String userId,
-    Position? currentLocation,
-  ) {
-    try {
-      // Try to extract JSON from response (may have extra text)
-      final jsonMatch = RegExp(r'\{[^}]+\}').firstMatch(llmResponse);
-      if (jsonMatch == null) {
-        return null;
-      }
-
-      final jsonString = jsonMatch.group(0)!;
-      final json = jsonDecode(jsonString) as Map<String, dynamic>;
-
-      final actionType = json['actionType'] as String?;
-      final confidence = (json['confidence'] as num?)?.toDouble() ?? 0.5;
-
-      if (actionType == null || actionType == 'none' || confidence < 0.5) {
-        return null;
-      }
-
-      switch (actionType) {
-        case 'create_list':
-          final listName = json['listName'] as String? ?? '';
-          if (listName.isEmpty) return null;
-          return CreateListIntent(
-            title: listName,
-            description: 'Created via AI command',
-            userId: userId,
-            confidence: confidence,
-          );
-
-        case 'create_spot':
-          final spotName = json['spotName'] as String? ?? '';
-          final category = json['category'] as String? ?? 'general';
-          if (spotName.isEmpty || currentLocation == null) return null;
-          return CreateSpotIntent(
-            name: spotName,
-            description: 'Created via AI command',
-            latitude: currentLocation.latitude,
-            longitude: currentLocation.longitude,
-            category: category,
-            userId: userId,
-            confidence: confidence,
-          );
-
-        case 'add_spot_to_list':
-          final spotName = json['spotName'] as String? ?? '';
-          final listName = json['listName'] as String? ?? '';
-          if (spotName.isEmpty || listName.isEmpty) return null;
-          return AddSpotToListIntent(
-            spotId: spotName, // Will be resolved by executor
-            listId: listName, // Will be resolved by executor
-            userId: userId,
-            confidence: confidence,
-            metadata: {
-              'spotName': spotName,
-              'listName': listName,
-            },
-          );
-
-        default:
-          return null;
-      }
-    } catch (e) {
-      developer.log('Error parsing LLM response: $e', name: _logName);
-      return null;
-    }
   }
 
   /// Extract list name from message

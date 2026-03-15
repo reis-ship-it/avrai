@@ -7,6 +7,7 @@ import 'package:avrai_core/models/community/community_event.dart';
 import 'package:avrai_core/models/expertise/expertise_event.dart';
 import 'package:avrai_core/models/user/unified_user.dart';
 import '../../fixtures/model_factories.dart';
+import '../../helpers/platform_channel_helper.dart';
 import '../../helpers/test_helpers.dart';
 
 /// Integration tests for Community/Club system
@@ -24,7 +25,8 @@ void main() {
     late CommunityEvent successfulEvent;
     late DateTime testDate;
 
-    setUp(() {
+    setUp(() async {
+      await setupTestStorage();
       TestHelpers.setupTestEnvironment();
       communityService = CommunityService();
       clubService = ClubService(communityService: communityService);

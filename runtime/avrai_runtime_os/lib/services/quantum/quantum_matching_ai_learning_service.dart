@@ -28,7 +28,6 @@ import 'package:avrai_knot/services/knot/knot_evolution_string_service.dart';
 import 'package:avrai_knot/services/knot/knot_fabric_service.dart';
 import 'package:avrai_knot/services/knot/knot_worldsheet_service.dart';
 import 'package:avrai_runtime_os/services/security/hybrid_encryption_service.dart';
-import 'package:avrai_runtime_os/ai2ai/anonymous_communication.dart';
 
 part 'quantum_matching_ai_learning_models.dart';
 
@@ -67,7 +66,6 @@ class QuantumMatchingAILearningService {
   final KnotFabricService? _fabricService;
   final KnotWorldsheetService? _worldsheetService;
   final HybridEncryptionService? _encryptionService;
-  final AnonymousCommunicationProtocol? _ai2aiProtocol;
 
   // Cache for offline quantum states (key: entityId, value: quantum state JSON)
   static const String _quantumStateCacheKey = 'quantum_matching_cache';
@@ -91,7 +89,6 @@ class QuantumMatchingAILearningService {
     KnotFabricService? fabricService,
     KnotWorldsheetService? worldsheetService,
     HybridEncryptionService? encryptionService,
-    AnonymousCommunicationProtocol? ai2aiProtocol,
   })  : _atomicClock = atomicClock,
         _personalityLearning = personalityLearning,
         _agentIdService = agentIdService,
@@ -101,8 +98,7 @@ class QuantumMatchingAILearningService {
         _stringService = stringService,
         _fabricService = fabricService,
         _worldsheetService = worldsheetService,
-        _encryptionService = encryptionService,
-        _ai2aiProtocol = ai2aiProtocol {
+        _encryptionService = encryptionService {
     // Start batch timer for mesh propagation
     _startBatchTimer();
   }
@@ -526,12 +522,11 @@ class QuantumMatchingAILearningService {
 
       // Enhanced: Encrypt payload using Signal Protocol before mesh transmission
       // Use AI2AI protocol for encrypted transmission (if available)
-      if (_ai2aiProtocol != null && _encryptionService != null) {
+      if (_encryptionService != null) {
         try {
           // The orchestrator may handle encryption internally, but we ensure Signal Protocol
-          // is used by routing through AnonymousCommunicationProtocol which handles encryption
-          // For now, payload is passed to orchestrator which handles mesh forwarding
-          // Signal Protocol encryption is handled by AnonymousCommunicationProtocol internally
+          // is used by routing through the governed mesh/exchange transport seams.
+          // For now, payload is passed to the orchestrator-managed forwarding flow.
           _logger.debug(
             'Learning insight ready for Signal Protocol-encrypted mesh transmission',
             tag: _logName,

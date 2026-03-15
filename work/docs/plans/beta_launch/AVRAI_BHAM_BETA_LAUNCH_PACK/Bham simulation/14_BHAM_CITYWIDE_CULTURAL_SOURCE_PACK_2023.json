@@ -1,0 +1,429 @@
+{
+  "packId": "manual-import-bham-citywide-cultural-seed-2023-4",
+  "replayYear": 2023,
+  "generatedAtUtc": "2026-03-11T21:02:33.493979Z",
+  "datasets": [
+    {
+      "sourceName": "Birmingham Public Library Network",
+      "records": [
+        {
+          "record_id": "bpl-avondale-branch-seed-2026",
+          "entity_type": "venue",
+          "entity_id": "bpl_avondale_branch",
+          "observed_at": "2026-03-11T18:20:00Z",
+          "published_at": "2026-03-11T18:20:00Z",
+          "classes": [
+            "public classes",
+            "community programming",
+            "branch services"
+          ],
+          "events": [
+            "branch-hosted events present on network site"
+          ],
+          "branch_locations": {
+            "branch": "Avondale",
+            "address": "509 40th St. S, Birmingham, AL 35222",
+            "phone": "205-226-4000"
+          },
+          "locality": "bham_avondale",
+          "name": "Avondale Library",
+          "title": "Avondale Library",
+          "venue_name": "Avondale Library",
+          "address": "509 40th St. S, Birmingham, AL 35222",
+          "category": "public_library_branch",
+          "seed_scope": "structural_citywide_baseline",
+          "seed_only": true,
+          "historical_admissibility": "non_authoritative",
+          "confidence": 0.7,
+          "uncertainty_minutes": 4320,
+          "source_excerpt": "Public branch listing and location from the Birmingham Public Library network page."
+        },
+        {
+          "record_id": "bpl-central-branch-seed-2026",
+          "entity_type": "venue",
+          "entity_id": "bpl_central_branch",
+          "observed_at": "2026-03-11T18:20:00Z",
+          "published_at": "2026-03-11T18:20:00Z",
+          "classes": [
+            "public classes",
+            "community programming",
+            "branch services"
+          ],
+          "events": [
+            "branch-hosted events present on network site"
+          ],
+          "branch_locations": {
+            "branch": "Central",
+            "address": "2100 Park Place, Birmingham, AL 35203",
+            "phone": "205-226-3600"
+          },
+          "locality": "bham_downtown",
+          "name": "Birmingham Public Library Central Branch",
+          "title": "Birmingham Public Library Central Branch",
+          "venue_name": "Birmingham Public Library Central Branch",
+          "address": "2100 Park Place, Birmingham, AL 35203",
+          "category": "public_library_branch",
+          "seed_scope": "structural_citywide_baseline",
+          "seed_only": true,
+          "historical_admissibility": "non_authoritative",
+          "confidence": 0.74,
+          "uncertainty_minutes": 4320,
+          "source_excerpt": "Public branch listing and location from the Birmingham Public Library network page."
+        },
+        {
+          "record_id": "bpl-southside-branch-seed-2026",
+          "entity_type": "venue",
+          "entity_id": "bpl_southside_branch",
+          "observed_at": "2026-03-11T18:20:00Z",
+          "published_at": "2026-03-11T18:20:00Z",
+          "classes": [
+            "public classes",
+            "community programming",
+            "branch services"
+          ],
+          "events": [
+            "branch-hosted events present on network site"
+          ],
+          "branch_locations": {
+            "branch": "Southside",
+            "address": "1814 11th Ave. S, Birmingham, AL 35205",
+            "phone": "205-933-7776"
+          },
+          "locality": "bham_southside",
+          "name": "Southside Branch Library",
+          "title": "Southside Branch Library",
+          "venue_name": "Southside Branch Library",
+          "address": "1814 11th Ave. S, Birmingham, AL 35205",
+          "category": "public_library_branch",
+          "seed_scope": "structural_citywide_baseline",
+          "seed_only": true,
+          "historical_admissibility": "non_authoritative",
+          "confidence": 0.72,
+          "uncertainty_minutes": 4320,
+          "source_excerpt": "Public branch listing and location from the Birmingham Public Library network page."
+        },
+        {
+          "record_id": "bpl-springville-road-branch-seed-2026",
+          "entity_type": "venue",
+          "entity_id": "bpl_springville_road_branch",
+          "observed_at": "2026-03-11T18:20:00Z",
+          "published_at": "2026-03-11T18:20:00Z",
+          "classes": [
+            "public classes",
+            "community programming",
+            "branch services"
+          ],
+          "events": [
+            "branch-hosted events present on network site"
+          ],
+          "branch_locations": {
+            "branch": "Springville Road",
+            "address": "1224 Old Springville Rd., Birmingham, AL 35215",
+            "phone": "205-226-4081"
+          },
+          "locality": "bham_roebuck",
+          "name": "Springville Road Branch Library",
+          "title": "Springville Road Branch Library",
+          "venue_name": "Springville Road Branch Library",
+          "address": "1224 Old Springville Rd., Birmingham, AL 35215",
+          "category": "public_library_branch",
+          "seed_scope": "structural_citywide_baseline",
+          "seed_only": true,
+          "historical_admissibility": "non_authoritative",
+          "confidence": 0.69,
+          "uncertainty_minutes": 4320,
+          "source_excerpt": "Public branch listing and location from the Birmingham Public Library network page."
+        }
+      ],
+      "metadata": {
+        "rawOutputKey": "birmingham_public_library_network",
+        "requiresReview": false,
+        "status": "populated",
+        "normalizationTargets": [
+          "community",
+          "event",
+          "locality",
+          "venue"
+        ],
+        "dedupeKeys": [
+          "branch",
+          "event_name",
+          "event_start"
+        ]
+      }
+    },
+    {
+      "sourceName": "Major Venue Calendars (Saturn / Iron City / The Nick)",
+      "records": [
+        {
+          "record_id": "major-venue-saturn-seed-2026",
+          "entity_type": "club",
+          "entity_id": "saturn_birmingham",
+          "observed_at": "2026-03-11T18:35:00Z",
+          "published_at": "2026-03-11T18:35:00Z",
+          "event_calendar": {
+            "status": "current_site_calendar_present",
+            "historical_2023_extraction_pending": true
+          },
+          "venue_status": "Active public live-music venue and nightlife anchor in Avondale.",
+          "ticketed_events": [
+            "live music",
+            "touring acts",
+            "club nights"
+          ],
+          "locality": "bham_avondale",
+          "name": "Saturn",
+          "title": "Saturn",
+          "venue_name": "Saturn",
+          "address": "200 41st St S, Birmingham, AL 35222",
+          "phone": "205-703-9546",
+          "category": "live_music_venue",
+          "seed_scope": "structural_citywide_baseline",
+          "seed_only": true,
+          "historical_admissibility": "non_authoritative",
+          "confidence": 0.72,
+          "uncertainty_minutes": 4320,
+          "source_excerpt": "Public venue identity, address, and active calendar presence from the Saturn site."
+        },
+        {
+          "record_id": "major-venue-iron-city-seed-2026",
+          "entity_type": "club",
+          "entity_id": "iron_city_birmingham",
+          "observed_at": "2026-03-11T18:40:00Z",
+          "published_at": "2026-03-11T18:40:00Z",
+          "event_calendar": {
+            "status": "current_site_calendar_present",
+            "historical_2023_extraction_pending": true
+          },
+          "venue_status": "Active public live-event venue and nightlife anchor south of downtown.",
+          "ticketed_events": [
+            "live music",
+            "special events",
+            "ticketed performances"
+          ],
+          "locality": "bham_southside",
+          "name": "Iron City",
+          "title": "Iron City",
+          "venue_name": "Iron City",
+          "address": "513 22nd Street South Birmingham, AL 35233",
+          "category": "live_event_venue",
+          "seed_scope": "structural_citywide_baseline",
+          "seed_only": true,
+          "historical_admissibility": "non_authoritative",
+          "confidence": 0.71,
+          "uncertainty_minutes": 4320,
+          "source_excerpt": "Public venue identity, address, and active event-site presence from the Iron City site."
+        },
+        {
+          "record_id": "major-venue-the-nick-seed-2026",
+          "entity_type": "club",
+          "entity_id": "the_nick_birmingham",
+          "observed_at": "2026-03-11T18:45:00Z",
+          "published_at": "2026-03-11T18:45:00Z",
+          "event_calendar": {
+            "status": "current_site_calendar_present",
+            "historical_2023_extraction_pending": true
+          },
+          "venue_status": "Active longstanding music-club anchor in Southside.",
+          "ticketed_events": [
+            "club shows",
+            "live music",
+            "late-night performances"
+          ],
+          "locality": "bham_southside",
+          "name": "The Nick",
+          "title": "The Nick",
+          "venue_name": "The Nick",
+          "address": "2514 10th Ave. S., Birmingham, AL 35205",
+          "phone": "205-252-3831",
+          "category": "music_club",
+          "seed_scope": "structural_citywide_baseline",
+          "seed_only": true,
+          "historical_admissibility": "non_authoritative",
+          "confidence": 0.73,
+          "uncertainty_minutes": 4320,
+          "source_excerpt": "Public venue identity, address, and active event-site presence from The Nick site."
+        }
+      ],
+      "metadata": {
+        "rawOutputKey": "major_venue_calendars_saturn_iron_city_the_nick",
+        "requiresReview": false,
+        "status": "populated",
+        "normalizationTargets": [
+          "club",
+          "community",
+          "event",
+          "locality",
+          "venue"
+        ],
+        "dedupeKeys": [
+          "venue",
+          "event_name",
+          "event_start"
+        ]
+      }
+    },
+    {
+      "sourceName": "City of Birmingham Play Pages",
+      "records": [
+        {
+          "record_id": "city-play-alabama-theatre-seed-2026",
+          "entity_type": "venue",
+          "entity_id": "alabama_theatre_birmingham",
+          "observed_at": "2026-03-11T18:55:00Z",
+          "published_at": "2026-03-11T18:55:00Z",
+          "venue_name": "Alabama Theatre",
+          "address": "1817 3rd Avenue North, Birmingham, AL",
+          "category": "historic_theatre",
+          "seed_scope": "structural_citywide_baseline",
+          "locality": "bham_downtown",
+          "name": "Alabama Theatre",
+          "title": "Alabama Theatre",
+          "seed_only": true,
+          "historical_admissibility": "non_authoritative",
+          "confidence": 0.76,
+          "uncertainty_minutes": 4320,
+          "source_excerpt": "Public cultural venue listing from the City of Birmingham arts and museums page."
+        },
+        {
+          "record_id": "city-play-bham-museum-of-art-seed-2026",
+          "entity_type": "venue",
+          "entity_id": "birmingham_museum_of_art",
+          "observed_at": "2026-03-11T18:55:00Z",
+          "published_at": "2026-03-11T18:55:00Z",
+          "venue_name": "Birmingham Museum of Art",
+          "address": "2000 8th Avenue North, Birmingham, AL",
+          "category": "art_museum",
+          "seed_scope": "structural_citywide_baseline",
+          "locality": "bham_downtown",
+          "name": "Birmingham Museum of Art",
+          "title": "Birmingham Museum of Art",
+          "seed_only": true,
+          "historical_admissibility": "non_authoritative",
+          "confidence": 0.78,
+          "uncertainty_minutes": 4320,
+          "source_excerpt": "Public cultural venue listing from the City of Birmingham arts and museums page."
+        },
+        {
+          "record_id": "city-play-civil-rights-institute-seed-2026",
+          "entity_type": "venue",
+          "entity_id": "birmingham_civil_rights_institute",
+          "observed_at": "2026-03-11T18:55:00Z",
+          "published_at": "2026-03-11T18:55:00Z",
+          "venue_name": "Birmingham Civil Rights Institute",
+          "address": "520 16th Street North, Birmingham, AL",
+          "category": "history_museum",
+          "seed_scope": "structural_citywide_baseline",
+          "locality": "bham_civil_rights_district",
+          "name": "Birmingham Civil Rights Institute",
+          "title": "Birmingham Civil Rights Institute",
+          "seed_only": true,
+          "historical_admissibility": "non_authoritative",
+          "confidence": 0.79,
+          "uncertainty_minutes": 4320,
+          "source_excerpt": "Public cultural venue listing from the City of Birmingham arts and museums page."
+        },
+        {
+          "record_id": "city-play-botanical-gardens-seed-2026",
+          "entity_type": "venue",
+          "entity_id": "birmingham_botanical_gardens",
+          "observed_at": "2026-03-11T18:55:00Z",
+          "published_at": "2026-03-11T18:55:00Z",
+          "venue_name": "Birmingham Botanical Gardens",
+          "address": "2612 Lane Park Road, Birmingham, AL",
+          "category": "public_garden",
+          "seed_scope": "structural_citywide_baseline",
+          "locality": "bham_lane_park",
+          "name": "Birmingham Botanical Gardens",
+          "title": "Birmingham Botanical Gardens",
+          "seed_only": true,
+          "historical_admissibility": "non_authoritative",
+          "confidence": 0.77,
+          "uncertainty_minutes": 4320,
+          "source_excerpt": "Public cultural venue listing from the City of Birmingham arts and museums page."
+        },
+        {
+          "record_id": "city-play-alabama-jazz-hall-of-fame-seed-2026",
+          "entity_type": "venue",
+          "entity_id": "alabama_jazz_hall_of_fame",
+          "observed_at": "2026-03-11T18:55:00Z",
+          "published_at": "2026-03-11T18:55:00Z",
+          "venue_name": "Alabama Jazz Hall of Fame",
+          "address": "1631 4th Avenue North, Birmingham, AL",
+          "category": "music_history_institution",
+          "seed_scope": "structural_citywide_baseline",
+          "locality": "bham_downtown",
+          "name": "Alabama Jazz Hall of Fame",
+          "title": "Alabama Jazz Hall of Fame",
+          "seed_only": true,
+          "historical_admissibility": "non_authoritative",
+          "confidence": 0.75,
+          "uncertainty_minutes": 4320,
+          "source_excerpt": "Public cultural venue listing from the City of Birmingham arts and museums page."
+        }
+      ],
+      "metadata": {
+        "rawOutputKey": "city_of_birmingham_play_pages",
+        "requiresReview": false,
+        "status": "populated",
+        "normalizationTargets": [
+          "community",
+          "locality",
+          "venue"
+        ],
+        "dedupeKeys": [
+          "venue_name",
+          "address"
+        ]
+      }
+    },
+    {
+      "sourceName": "Birmingham365.org",
+      "records": [
+        {
+          "record_id": "bham365-citywide-culture-network-seed-2026",
+          "entity_type": "community",
+          "entity_id": "birmingham365_citywide_culture_network",
+          "observed_at": "2026-03-11T19:05:00Z",
+          "published_at": "2026-03-11T19:05:00Z",
+          "community_name": "Birmingham365 Citywide Culture Network",
+          "address": "310 18th St N #303, Birmingham, AL 35203",
+          "category": "citywide_cultural_directory",
+          "seed_scope": "structural_citywide_baseline",
+          "locality": "bham_downtown",
+          "name": "Birmingham365",
+          "title": "Birmingham365",
+          "seed_only": true,
+          "historical_admissibility": "non_authoritative",
+          "confidence": 0.65,
+          "uncertainty_minutes": 4320,
+          "source_excerpt": "Public citywide arts and culture directory presence from Birmingham365."
+        }
+      ],
+      "metadata": {
+        "rawOutputKey": "birmingham365_org",
+        "requiresReview": false,
+        "status": "populated",
+        "normalizationTargets": [
+          "club",
+          "community",
+          "locality",
+          "venue"
+        ],
+        "dedupeKeys": [
+          "community_name",
+          "address"
+        ]
+      }
+    }
+  ],
+  "notes": [
+    "Citywide cultural seed bundle for BHAM replay year 2023.",
+    "This bundle is intentionally structural and venue/community oriented.",
+    "Current public pages are allowed to seed citywide BHAM place and community structure, but they are not authoritative historical event truth for 2023.",
+    "Generated from manual-import bundle bham-citywide-cultural-seed-2023-4."
+  ],
+  "metadata": {
+    "sourceBundleId": "bham-citywide-cultural-seed-2023-4"
+  }
+}

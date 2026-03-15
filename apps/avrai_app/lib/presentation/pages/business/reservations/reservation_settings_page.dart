@@ -17,7 +17,7 @@ import 'package:avrai/presentation/widgets/business/reservations/rate_limit_sett
 import 'package:avrai/presentation/widgets/business/reservations/seating_chart_settings_widget.dart';
 import 'package:avrai/presentation/widgets/business/reservations/notification_preferences_widget.dart';
 import 'package:avrai/presentation/widgets/business/reservations/notification_history_widget.dart';
-import 'package:avrai/presentation/widgets/adaptive/adaptive_layout.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 
 /// Reservation Settings Page
 ///
@@ -49,7 +49,7 @@ class ReservationSettingsPage extends StatefulWidget {
 class _ReservationSettingsPageState extends State<ReservationSettingsPage> {
   @override
   Widget build(BuildContext context) {
-    return AdaptivePlatformPageScaffold(
+    return AppFlowScaffold(
       title: 'Reservation Settings',
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

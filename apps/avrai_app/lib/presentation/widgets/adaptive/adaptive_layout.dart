@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/theme/responsive.dart';
 import 'package:avrai/theme/tokens/theme_tokens.dart';
 
@@ -96,6 +96,8 @@ class AdaptivePaneLayout extends StatelessWidget {
   }
 }
 
+@Deprecated(
+    'Use AppFlowScaffold instead. This compatibility wrapper remains only for legacy code.')
 class AdaptivePlatformPageScaffold extends StatelessWidget {
   final String title;
   final Widget? titleWidget;
@@ -140,68 +142,28 @@ class AdaptivePlatformPageScaffold extends StatelessWidget {
     this.appBarElevation,
   });
 
-  bool _isCupertinoPlatform(TargetPlatform platform) {
-    return platform == TargetPlatform.iOS || platform == TargetPlatform.macOS;
-  }
-
   @override
   Widget build(BuildContext context) {
-    final platform = Theme.of(context).platform;
-    final content = constrainBody
-        ? AdaptivePageScaffold(
-            scrollable: scrollable,
-            useSafeArea: useSafeArea,
-            padding: padding,
-            child: body,
-          )
-        : (useSafeArea ? SafeArea(child: body) : body);
-
-    if (_isCupertinoPlatform(platform)) {
-      final navigator = Navigator.maybeOf(context);
-      final hasBackStack = navigator?.canPop() ?? false;
-      final resolvedLeading = leading ??
-          (automaticallyImplyLeading && hasBackStack
-              ? CupertinoNavigationBarBackButton(
-                  onPressed: () => navigator?.maybePop(),
-                )
-              : null);
-
-      if (showNavigationBar && materialBottom == null) {
-        return CupertinoPageScaffold(
-          backgroundColor: backgroundColor,
-          navigationBar: CupertinoNavigationBar(
-            middle: titleWidget ?? Text(title),
-            leading: resolvedLeading,
-            trailing: actions == null || actions!.isEmpty
-                ? null
-                : Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: actions!,
-                  ),
-          ),
-          child: content,
-        );
-      }
-    }
-
-    return Scaffold(
+    return AppFlowScaffold(
+      title: title,
+      titleWidget: titleWidget,
+      body: body,
+      actions: actions,
+      leading: leading,
+      automaticallyImplyLeading: automaticallyImplyLeading,
+      scrollable: scrollable,
+      useSafeArea: useSafeArea,
+      padding: padding,
       backgroundColor: backgroundColor,
-      appBar: showNavigationBar
-          ? AppBar(
-              title: titleWidget ?? Text(title),
-              leading: leading,
-              automaticallyImplyLeading: automaticallyImplyLeading,
-              actions: actions,
-              bottom: materialBottom,
-              backgroundColor: appBarBackgroundColor,
-              foregroundColor: appBarForegroundColor,
-              elevation: appBarElevation,
-            )
-          : null,
-      body: content,
+      constrainBody: constrainBody,
+      showNavigationBar: showNavigationBar,
+      materialBottom: materialBottom,
       bottomNavigationBar: bottomNavigationBar,
       floatingActionButton: floatingActionButton,
       floatingActionButtonLocation: floatingActionButtonLocation,
+      appBarBackgroundColor: appBarBackgroundColor,
+      appBarForegroundColor: appBarForegroundColor,
+      appBarElevation: appBarElevation,
     );
   }
 }
