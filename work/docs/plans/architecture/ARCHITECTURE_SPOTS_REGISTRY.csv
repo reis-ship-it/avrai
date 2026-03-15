@@ -1,9 +1,9 @@
 spot_key,file_count,primary_domain,phase_refs,status,notes
-scripts/_root,146,tooling-ops,"10.2,methodology",active,architecture spot for file placement
-scripts/autopilot,15,unknown,,active,architecture spot for file placement
-scripts/ci,15,tooling-ops,"10.2,methodology",active,architecture spot for file placement
+scripts/_root,151,tooling-ops,"10.2,methodology",active,architecture spot for file placement
+scripts/autopilot,15,tooling-ops,"10.2,methodology",active,architecture spot for file placement
+scripts/ci,18,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/data_collection,3,tooling-ops,"10.2,methodology",active,architecture spot for file placement
-scripts/deploy,2,tooling-ops,"10.2,methodology",active,architecture spot for file placement
+scripts/deploy,3,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/ecommerce_experiments,37,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/experiments,1,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/geo,2,tooling-ops,"10.2,methodology",active,architecture spot for file placement
@@ -14,15 +14,15 @@ scripts/patent_visuals,1,tooling-ops,"10.2,methodology",active,architecture spot
 scripts/patents,4,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/perf,4,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/personality_data,30,tooling-ops,"10.2,methodology",active,architecture spot for file placement
-scripts/proof_run,2,tooling-ops,"10.2,methodology",active,architecture spot for file placement
+scripts/proof_run,3,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/runtime,44,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/security,1,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/security_validation,4,tooling-ops,"10.2,methodology",active,architecture spot for file placement
-scripts/setup,2,unknown,,active,architecture spot for file placement
+scripts/setup,2,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/smoke,1,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 scripts/supabase,14,tooling-ops,"10.2,methodology",active,architecture spot for file placement
 supabase/.gitignore,1,supabase-infra,"1.1,2.1,8.1,9",active,architecture spot for file placement
 supabase/config.toml,1,supabase-infra,"1.1,2.1,8.1,9",active,architecture spot for file placement
 supabase/functions,30,supabase-infra,"1.1,2.1,8.1,9",active,architecture spot for file placement
-supabase/migrations,107,supabase-infra,"1.1,2.1,8.1,9",active,architecture spot for file placement
+supabase/migrations,115,supabase-infra,"1.1,2.1,8.1,9",active,architecture spot for file placement
 supabase/sql,6,data-platform-sql,"1.1,2.1,8.1,9.2.6",active,architecture spot for file placement
