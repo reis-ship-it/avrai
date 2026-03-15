@@ -79,6 +79,7 @@ class _ContinuousLearningPageState extends State<ContinuousLearningPage> {
       builder: (context, authState) {
         if (authState is! Authenticated) {
           return AppSchemaPage(
+            bodyScrollKey: const Key('continuous_learning_page_scroll'),
             schema: buildContinuousLearningPageSchema(
               content: const AppLoadingState(
                 label: 'Loading continuous learning',
@@ -89,6 +90,7 @@ class _ContinuousLearningPageState extends State<ContinuousLearningPage> {
 
         if (_isInitializing) {
           return AppSchemaPage(
+            bodyScrollKey: const Key('continuous_learning_page_scroll'),
             schema: buildContinuousLearningPageSchema(
               content: const AppLoadingState(
                 label: 'Loading continuous learning',
@@ -99,6 +101,7 @@ class _ContinuousLearningPageState extends State<ContinuousLearningPage> {
 
         if (_errorMessage != null) {
           return AppSchemaPage(
+            bodyScrollKey: const Key('continuous_learning_page_scroll'),
             schema: buildContinuousLearningPageSchema(
               content: AppErrorState(
                 title: 'Unable to load continuous learning',
@@ -111,6 +114,7 @@ class _ContinuousLearningPageState extends State<ContinuousLearningPage> {
 
         if (_learningSystem == null) {
           return AppSchemaPage(
+            bodyScrollKey: const Key('continuous_learning_page_scroll'),
             schema: buildContinuousLearningPageSchema(
               content: const AppLoadingState(
                 label: 'Loading continuous learning',
@@ -120,6 +124,7 @@ class _ContinuousLearningPageState extends State<ContinuousLearningPage> {
         }
 
         return AppSchemaPage(
+          bodyScrollKey: const Key('continuous_learning_page_scroll'),
           schema: buildContinuousLearningPageSchema(
             content: _buildContent(authState.user.id),
           ),

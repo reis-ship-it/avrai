@@ -1,21 +1,21 @@
-/// SPOTS LLM Service Language Style Integration Tests
+/// SPOTS Language Runtime Style Integration Tests
 /// Date: December 2025
-/// Purpose: Test LLM Service language style integration (Phase 2.4)
+/// Purpose: Test language runtime style integration (Phase 2.4)
 ///
 /// Test Coverage:
-/// - LLMContext language style field
+/// - LanguageRuntimeContext language style field
 /// - Language style serialization to JSON
 /// - Language style inclusion in Edge Function context
 /// - Integration with PersonalityAgentChatService
 library;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:avrai_runtime_os/services/ai_infrastructure/llm_service.dart';
 import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai_runtime_os/services/language/language_runtime_service.dart';
 
 void main() {
-  group('LLM Service Language Style Integration Tests', () {
-    group('LLMContext Language Style', () {
+  group('Language Runtime Style Integration Tests', () {
+    group('LanguageRuntimeContext language style', () {
       test('should include language style in context', () {
         // Arrange
         const languageStyle = '''User's Communication Style:
@@ -29,7 +29,7 @@ void main() {
 Match the user's style gradually - do not copy exactly, but adapt naturally.''';
 
         // Act
-        final context = LLMContext(
+        final context = LanguageRuntimeContext(
           userId: 'user_123',
           languageStyle: languageStyle,
         );
@@ -41,7 +41,7 @@ Match the user's style gradually - do not copy exactly, but adapt naturally.''';
 
       test('should allow null language style when not available', () {
         // Act
-        final context = LLMContext(
+        final context = LanguageRuntimeContext(
           userId: 'user_123',
           languageStyle: null,
         );
@@ -54,7 +54,7 @@ Match the user's style gradually - do not copy exactly, but adapt naturally.''';
         // Arrange
         const languageStyle =
             'User\'s Communication Style:\n- Vocabulary: cool, awesome';
-        final context = LLMContext(
+        final context = LanguageRuntimeContext(
           userId: 'user_123',
           languageStyle: languageStyle,
         );
@@ -68,7 +68,7 @@ Match the user's style gradually - do not copy exactly, but adapt naturally.''';
 
       test('should not include language style in JSON when null', () {
         // Arrange
-        final context = LLMContext(
+        final context = LanguageRuntimeContext(
           userId: 'user_123',
           languageStyle: null,
         );
@@ -82,7 +82,7 @@ Match the user's style gradually - do not copy exactly, but adapt naturally.''';
 
       test('should not include empty language style in JSON', () {
         // Arrange
-        final context = LLMContext(
+        final context = LanguageRuntimeContext(
           userId: 'user_123',
           languageStyle: '',
         );
@@ -103,7 +103,7 @@ Match the user's style gradually - do not copy exactly, but adapt naturally.''';
             PersonalityProfile.initial('agent_user_123', userId: 'user_123');
 
         // Act
-        final context = LLMContext(
+        final context = LanguageRuntimeContext(
           userId: 'user_123',
           personality: personality,
           languageStyle: languageStyle,
@@ -133,7 +133,7 @@ Match the user's style gradually - do not copy exactly, but adapt naturally.''';
 Match the user's style gradually - do not copy exactly, but adapt naturally.''';
 
         // Act
-        final context = LLMContext(languageStyle: languageStyle);
+        final context = LanguageRuntimeContext(languageStyle: languageStyle);
 
         // Assert
         expect(context.languageStyle, equals(languageStyle));

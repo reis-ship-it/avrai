@@ -1,6 +1,7 @@
 // MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 import 'package:avrai_runtime_os/ai/vibe_analysis_engine.dart';
 import 'package:avrai_runtime_os/ai2ai/aipersonality_node.dart';
+import 'package:avrai_core/models/vibe/vibe_models.dart';
 import 'package:avrai_runtime_os/ai2ai/telemetry/hot_device_processing_lane.dart';
 import 'package:avrai_runtime_os/ai2ai/telemetry/hot_latency_window.dart';
 import 'package:avrai_runtime_os/services/transport/ble/hot_path_metrics_orchestration_lane.dart';
@@ -50,6 +51,11 @@ class HotPathOrchestrationFlowLane {
       required DiscoveredDevice device,
       required BleGattSession session,
     }) primeOfflineSignalPreKeyBundleInSession,
+    Future<ResolvedPeerVibeContext?> Function({
+      required String localUserId,
+      required PersonalityProfile localPersonality,
+      required String remoteDeviceId,
+    })? resolveRemotePeerContext,
     required bool Function(VibeCompatibilityResult compatibility)
         isConnectionWorthy,
     required void Function(List<AIPersonalityNode> nodes) updateDiscoveredNodes,
@@ -81,6 +87,7 @@ class HotPathOrchestrationFlowLane {
       deviceDiscovery: deviceDiscovery,
       primeOfflineSignalPreKeyBundleInSession:
           primeOfflineSignalPreKeyBundleInSession,
+      resolveRemotePeerContext: resolveRemotePeerContext,
       isConnectionWorthy: isConnectionWorthy,
       updateDiscoveredNodes: updateDiscoveredNodes,
       maybeApplyPassiveAi2AiLearning: maybeApplyPassiveAi2AiLearning,
@@ -149,6 +156,11 @@ class HotPathOrchestrationFlowLane {
       required DiscoveredDevice device,
       required BleGattSession session,
     }) primeOfflineSignalPreKeyBundleInSession,
+    Future<ResolvedPeerVibeContext?> Function({
+      required String localUserId,
+      required PersonalityProfile localPersonality,
+      required String remoteDeviceId,
+    })? resolveRemotePeerContext,
     required bool Function(VibeCompatibilityResult compatibility)
         isConnectionWorthy,
     required void Function(List<AIPersonalityNode> nodes) updateDiscoveredNodes,
@@ -183,6 +195,7 @@ class HotPathOrchestrationFlowLane {
       deviceDiscovery: deviceDiscovery,
       primeOfflineSignalPreKeyBundleInSession:
           primeOfflineSignalPreKeyBundleInSession,
+      resolveRemotePeerContext: resolveRemotePeerContext,
       isConnectionWorthy: isConnectionWorthy,
       updateDiscoveredNodes: updateDiscoveredNodes,
       maybeApplyPassiveAi2AiLearning: maybeApplyPassiveAi2AiLearning,

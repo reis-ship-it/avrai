@@ -115,37 +115,41 @@ class _CommunitiesDiscoverPageState extends State<CommunitiesDiscoverPage> {
   @override
   Widget build(BuildContext context) {
     final authState = context.watch<AuthBloc>().state;
+    final resultsHeight =
+        (MediaQuery.sizeOf(context).height * 0.42).clamp(280.0, 520.0).toDouble();
 
     return AppSchemaPage(
       schema: buildCommunitiesDiscoverPageSchema(
-        content: RefreshIndicator(
-          onRefresh: _load,
-          color: AppColors.textPrimary,
-          child: _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : authState is! Authenticated
-                  ? _buildSignedOutState()
-                  : _error != null
-                      ? _buildErrorState(_error!)
-                      : _communities.isEmpty
-                          ? _buildEmptyState()
-                          : ListView.separated(
-                              padding: const EdgeInsets.all(16),
-                              itemCount: _communities.length,
-                              separatorBuilder: (_, __) =>
-                                  const SizedBox(height: 12),
-                              itemBuilder: (context, index) {
-                                final community = _communities[index];
-                                return _buildCommunityCard(
-                                  community,
-                                  authState.user.id,
-                                );
-                              },
-                            ),
+        content: SizedBox(
+          height: resultsHeight,
+          child: RefreshIndicator(
+            onRefresh: _load,
+            color: AppColors.textPrimary,
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : authState is! Authenticated
+                    ? _buildSignedOutState()
+                    : _error != null
+                        ? _buildErrorState(_error!)
+                        : _communities.isEmpty
+                            ? _buildEmptyState()
+                            : ListView.separated(
+                                padding: const EdgeInsets.all(16),
+                                itemCount: _communities.length,
+                                separatorBuilder: (_, __) =>
+                                    const SizedBox(height: 12),
+                                itemBuilder: (context, index) {
+                                  final community = _communities[index];
+                                  return _buildCommunityCard(
+                                    community,
+                                    authState.user.id,
+                                  );
+                                },
+                              ),
+          ),
         ),
       ),
       showNavigationBar: widget.showAppBar,
-      scrollable: false,
       actions: [
         IconButton(
           tooltip: 'Refresh',

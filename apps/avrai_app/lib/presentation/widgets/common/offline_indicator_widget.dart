@@ -1,6 +1,6 @@
 /// Offline Indicator Widget
 ///
-/// Part of Feature Matrix Phase 1.3: LLM Full Integration
+/// Part of Feature Matrix Phase 1.3: language runtime integration
 /// Provides clear feedback when app is offline and what functionality is limited.
 ///
 /// Features:
@@ -249,8 +249,8 @@ class _OfflineIndicatorWidgetState extends State<OfflineIndicatorWidget> {
 
   List<String> _getDefaultLimitedFeatures() {
     return [
-      'Cloud AI responses (LLM-powered chat)',
-      'AI personality insights',
+      'Live language responses that need the network',
+      'Fresh personality insights',
       'AI2AI network learning',
       'Real-time recommendations',
       'Cloud data sync',
@@ -260,7 +260,7 @@ class _OfflineIndicatorWidgetState extends State<OfflineIndicatorWidget> {
   List<String> _getDefaultAvailableFeatures() {
     return [
       'View saved spots and lists',
-      'Basic rule-based commands',
+      'Grounded on-device command guidance',
       'Browse local data',
       'Offline map access (if cached)',
       'Create lists and spots (sync later)',

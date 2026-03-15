@@ -60,5 +60,13 @@ class AI2AINetworkActivityEventType {
   static const String nodeDiscovery = 'ai2ai_node_discovery';
   static const String deliverySuccess = 'ai2ai_delivery_success';
   static const String deliveryFailure = 'ai2ai_delivery_failure';
+  static const String custodyAccepted = 'ai2ai_custody_accepted';
+  static const String readConfirmed = 'ai2ai_read_confirmed';
+  static const String learningApplied = 'ai2ai_learning_applied';
+  static const String learningBuffered = 'ai2ai_learning_buffered';
+  static const String peerReceived = 'ai2ai_peer_received';
+  static const String peerValidated = 'ai2ai_peer_validated';
+  static const String peerConsumed = 'ai2ai_peer_consumed';
+  static const String peerApplied = 'ai2ai_peer_applied';
   static const String anomaly = 'ai2ai_anomaly';
 }

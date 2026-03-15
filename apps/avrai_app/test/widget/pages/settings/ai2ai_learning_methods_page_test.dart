@@ -38,6 +38,8 @@ import '../../mocks/mock_blocs.dart';
 void main() {
   group('AI2AILearningMethodsPage Widget Tests', () {
     late MockAuthBloc mockAuthBloc;
+    final pageScroll =
+        find.byKey(const Key('ai2ai_learning_methods_page_scroll'));
 
     setUpAll(() async {
       await WidgetTestHelpers.setupWidgetTestEnvironment();
@@ -127,7 +129,7 @@ void main() {
         // This may also be below-the-fold depending on device/text scale.
         // We assert it after ensuring it can be scrolled into view.
 
-        final list = find.byKey(const Key('ai2ai_learning_methods_page_list'));
+        final list = pageScroll;
 
         Future<void> scrollTo(Finder target) async {
           for (var i = 0; i < 20 && target.evaluate().isEmpty; i++) {
@@ -158,7 +160,7 @@ void main() {
         await tester.pumpWidget(widget);
         await WidgetTestHelpers.safePumpAndSettle(tester);
 
-        final list = find.byKey(const Key('ai2ai_learning_methods_page_list'));
+        final list = pageScroll;
         final learnMore = find.text('Learn more');
         for (var i = 0; i < 30 && learnMore.evaluate().isEmpty; i++) {
           await tester.drag(list, const Offset(0, -500));
@@ -190,7 +192,7 @@ void main() {
 
         // Assert - All widgets should be present
         expect(find.byType(AI2AILearningMethodsWidget), findsOneWidget);
-        final list = find.byKey(const Key('ai2ai_learning_methods_page_list'));
+        final list = pageScroll;
 
         Future<void> scrollTo(Finder target) async {
           for (var i = 0; i < 30 && target.evaluate().isEmpty; i++) {
@@ -223,10 +225,10 @@ void main() {
         await tester.pump(const Duration(seconds: 2));
         await WidgetTestHelpers.safePumpAndSettle(tester);
 
-        // Assert - All widgets should be in a scrollable list
-        expect(find.byType(ListView), findsOneWidget);
+        // Assert - All widgets should be in a scrollable page
+        expect(find.byType(Scrollable), findsWidgets);
         expect(find.byType(AI2AILearningMethodsWidget), findsOneWidget);
-        final list = find.byKey(const Key('ai2ai_learning_methods_page_list'));
+        final list = pageScroll;
         final effectiveness = find.byType(AI2AILearningEffectivenessWidget);
         for (var i = 0; i < 30 && effectiveness.evaluate().isEmpty; i++) {
           await tester.drag(list, const Offset(0, -500));
@@ -380,7 +382,6 @@ void main() {
         await WidgetTestHelpers.safePumpAndSettle(tester);
 
         // Assert
-        expect(find.byType(ListView), findsOneWidget);
         expect(find.byType(Scrollable), findsWidgets);
       });
 
@@ -399,8 +400,8 @@ void main() {
         await WidgetTestHelpers.safePumpAndSettle(tester);
 
         // Scroll to bottom
-        final list = find.byKey(const Key('ai2ai_learning_methods_page_list'));
-        final learnMore = find.text('Learn More');
+        final list = pageScroll;
+        final learnMore = find.text('Learn more');
         for (var i = 0; i < 40 && learnMore.evaluate().isEmpty; i++) {
           await tester.drag(list, const Offset(0, -600));
           await WidgetTestHelpers.safePumpAndSettle(tester);
@@ -430,7 +431,7 @@ void main() {
             find.textContaining('Review how your AI learns'), findsOneWidget);
         expect(find.textContaining('Track how effectively'), findsOneWidget);
 
-        final list = find.byKey(const Key('ai2ai_learning_methods_page_list'));
+        final list = pageScroll;
         final recentInsights = find.textContaining('Recent insights');
         for (var i = 0; i < 40 && recentInsights.evaluate().isEmpty; i++) {
           await tester.drag(list, const Offset(0, -600));

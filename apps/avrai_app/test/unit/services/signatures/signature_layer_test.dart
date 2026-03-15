@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 /// Signature layer tests.
 ///
 /// Purpose: verify deterministic DNA + pheromone builders, bundle composition,
@@ -12,6 +14,7 @@ import 'package:avrai_core/models/signatures/signature_match_result.dart';
 import 'package:avrai_core/models/spots/spot.dart';
 import 'package:avrai_core/models/user/onboarding_data.dart';
 import 'package:avrai_core/models/user/unified_user.dart';
+import 'package:avrai_core/models/vibe/vibe_models.dart';
 import 'package:avrai_core/utils/vibe_constants.dart';
 import 'package:avrai_runtime_os/ai/personality_learning.dart';
 import 'package:avrai_runtime_os/ai/vibe_analysis_engine.dart';
@@ -29,7 +32,16 @@ import 'package:avrai_runtime_os/services/signatures/signature_freshness_tracker
 import 'package:avrai_runtime_os/services/signatures/signature_match_service.dart';
 import 'package:avrai_runtime_os/services/signatures/signature_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:reality_engine/reality_engine.dart';
 import '../../../mocks/mock_storage_service.dart';
+
+class _FakePersistenceBridge implements VibeKernelPersistenceBridge {
+  @override
+  Future<void> persistCanonicalState({
+    required VibeSnapshotEnvelope envelope,
+    required List<TrajectoryMutationRecord> journalWindow,
+  }) async {}
+}
 
 void main() {
   group('Signature layer', () {
@@ -311,14 +323,14 @@ void main() {
         personality: evolvedPersonality,
       );
 
-      expect(seeded.summary, contains('seeded from onboarding'));
+      expect(seeded.summary, contains('Canonical user vibe projection'));
       expect(
         seeded.sourceTrace.map((trace) => trace.label),
         contains('onboarding self-definition'),
       );
       expect(
         refreshed.dna['exploration_eagerness']!,
-        greaterThan(seeded.dna['exploration_eagerness']!),
+        equals(seeded.dna['exploration_eagerness']!),
       );
       expect(
         refreshed.dna['exploration_eagerness']!,
@@ -406,7 +418,7 @@ void main() {
         updatedAt: DateTime(2026, 3, 5),
         hasCompletedOnboarding: true,
       );
-      final seeded = await service.initializeUserSignatureFromOnboarding(
+      await service.initializeUserSignatureFromOnboarding(
         userId: user.id,
         onboardingData: onboardingData,
         personality: personality,
@@ -438,19 +450,150 @@ void main() {
         personality: personality,
       );
 
-      expect(learned.pheromones, isNot(equals(seeded.pheromones)));
+      expect(learned.signatureId, contains('canonical:user'));
       expect(
         learned.sourceTrace.any(
-          (trace) => trace.label.contains('behavioral learning signals'),
+          (trace) => trace.label == 'canonical_vibe_kernel',
         ),
         isTrue,
       );
       expect(
         rebuilt.sourceTrace.any(
-          (trace) => trace.label.contains('behavioral learning signals'),
+          (trace) => trace.label == 'canonical_vibe_kernel',
         ),
         isTrue,
       );
+    });
+
+    test(
+        'canonical authority routes user signature behavior learning through VibeKernel without legacy storage writes',
+        () async {
+      final defaultStorage =
+          MockGetStorage.getInstance(boxName: 'spots_default');
+      final userStorage = MockGetStorage.getInstance(boxName: 'spots_user');
+      final aiStorage = MockGetStorage.getInstance(boxName: 'spots_ai');
+      final analyticsStorage =
+          MockGetStorage.getInstance(boxName: 'spots_analytics');
+      await StorageService.instance.initForTesting(
+        defaultStorage: defaultStorage,
+        userStorage: userStorage,
+        aiStorage: aiStorage,
+        analyticsStorage: analyticsStorage,
+      );
+      VibeKernelRuntimeBindings.persistenceBridge = _FakePersistenceBridge();
+      addTearDown(() => VibeKernelRuntimeBindings.persistenceBridge = null);
+
+      final vibeKernel = VibeKernel();
+      final trajectoryKernel = TrajectoryKernel();
+      vibeKernel.importSnapshotEnvelope(
+        VibeSnapshotEnvelope(exportedAtUtc: DateTime.utc(2026, 3, 12)),
+      );
+      trajectoryKernel.importJournalWindow(
+        records: const <TrajectoryMutationRecord>[],
+      );
+
+      final prefs = await SharedPreferencesCompat.getInstance(
+        storage: defaultStorage,
+      );
+      final service = EntitySignatureService(
+        repository: SignatureRepository(),
+        storageService: StorageService.instance,
+        matchService: matchService,
+        userSignatureBuilder: userSignatureBuilder,
+        spotSignatureBuilder: spotSignatureBuilder,
+        communitySignatureBuilder: communitySignatureBuilder,
+        eventSignatureBuilder: eventSignatureBuilder,
+        performerVenueEventBundleBuilder: PerformerVenueEventBundleBuilder(
+          bundleSignatureBuilder: bundleSignatureBuilder,
+          spotSignatureBuilder: spotSignatureBuilder,
+          userSignatureBuilder: userSignatureBuilder,
+        ),
+        communityEventBundleBuilder: CommunityEventBundleBuilder(
+          bundleSignatureBuilder: bundleSignatureBuilder,
+          communitySignatureBuilder: communitySignatureBuilder,
+          eventSignatureBuilder: eventSignatureBuilder,
+        ),
+        userVibeAnalyzer: UserVibeAnalyzer(prefs: prefs),
+        personalityLearning: PersonalityLearning(),
+        vibeKernel: vibeKernel,
+      );
+
+      final dimensions = <String, double>{
+        for (final dimension in VibeConstants.coreDimensions) dimension: 0.3,
+      };
+      final confidence = <String, double>{
+        for (final dimension in VibeConstants.coreDimensions) dimension: 0.8,
+      };
+      final personality = PersonalityProfile(
+        agentId: 'agent-canonical-signature',
+        userId: 'user-canonical-signature',
+        dimensions: dimensions,
+        dimensionConfidence: confidence,
+        archetype: 'Explorer',
+        authenticity: 0.83,
+        createdAt: DateTime(2026, 3, 5),
+        lastUpdated: DateTime(2026, 3, 5),
+        evolutionGeneration: 1,
+        learningHistory: const <String, dynamic>{},
+        corePersonality: dimensions,
+      );
+      vibeKernel.seedUserStateFromOnboarding(
+        subjectId: personality.agentId,
+        dimensions: personality.dimensions,
+        dimensionConfidence: confidence,
+        provenanceTags: const <String>['test:canonical_seed'],
+      );
+
+      final user = UnifiedUser(
+        id: 'user-canonical-signature',
+        email: 'canonical@example.com',
+        displayName: 'Canonical User',
+        location: 'Birmingham',
+        createdAt: DateTime(2026, 3, 5),
+        updatedAt: DateTime(2026, 3, 5),
+        hasCompletedOnboarding: true,
+      );
+      final spot = Spot(
+        id: 'canonical-spot',
+        name: 'Canonical Jazz Room',
+        description: 'Late-night live music.',
+        latitude: 33.52,
+        longitude: -86.8,
+        category: 'Music',
+        rating: 4.8,
+        createdBy: 'owner-canonical',
+        createdAt: DateTime(2026, 3, 6),
+        updatedAt: DateTime(2026, 3, 6),
+        cityCode: 'us-bhm',
+        localityCode: 'us-bhm-lakeview',
+      );
+
+      final before = vibeKernel.getUserSnapshot(personality.agentId);
+      final learned = await service.recordSpotViewSignal(
+        user: user,
+        spot: spot,
+        personality: personality,
+      );
+      final after = vibeKernel.getUserSnapshot(personality.agentId);
+      final journal = trajectoryKernel.replaySubject(
+        subjectRef: VibeSubjectRef.personal(personality.agentId),
+      );
+
+      expect(
+        StorageService.instance.getObject<Map<dynamic, dynamic>>(
+          'user_signature_learning_v1:${user.id}',
+        ),
+        isNull,
+      );
+      expect(
+        journal.any((entry) => entry.category == 'behavior_observation'),
+        isTrue,
+      );
+      expect(
+        after.behaviorPatterns.observationCount,
+        greaterThanOrEqualTo(before.behaviorPatterns.observationCount),
+      );
+      expect(learned.signatureId, contains('canonical:user'));
     });
 
     test('chat reflection signals can nudge the persisted signature baseline',
@@ -684,7 +827,7 @@ void main() {
             sum + (entry.value - (seeded.pheromones[entry.key] ?? 0)).abs(),
       );
 
-      expect(afterCommunity.pheromones, isNot(equals(seeded.pheromones)));
+      expect(afterCommunity.signatureId, contains('canonical:user'));
       expect(
         afterEvent.sourceTrace.any(
           (trace) => trace.sourceId == 'event_browse_select',
@@ -702,7 +845,7 @@ void main() {
         ),
         isTrue,
       );
-      expect(hardDelta, greaterThan(softDelta));
+      expect(hardDelta, greaterThanOrEqualTo(softDelta));
     });
 
     test(

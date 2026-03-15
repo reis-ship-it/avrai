@@ -13,6 +13,7 @@ class AppPageScaffold extends StatelessWidget {
   final bool showNavigationBar;
   final bool constrainBody;
   final EdgeInsetsGeometry? padding;
+  final Key? scrollViewKey;
 
   const AppPageScaffold({
     super.key,
@@ -25,6 +26,7 @@ class AppPageScaffold extends StatelessWidget {
     this.showNavigationBar = true,
     this.constrainBody = true,
     this.padding,
+    this.scrollViewKey,
   });
 
   @override
@@ -37,6 +39,7 @@ class AppPageScaffold extends StatelessWidget {
       showNavigationBar: showNavigationBar,
       body: scrollable
           ? SingleChildScrollView(
+              key: scrollViewKey,
               padding: padding,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

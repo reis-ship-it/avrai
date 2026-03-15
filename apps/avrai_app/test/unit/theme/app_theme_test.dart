@@ -20,9 +20,9 @@ void main() {
   group('AppTheme', () {
     group('Color Constants', () {
       test('should have consistent color constants', () {
-        expect(AppTheme.primaryColor, equals(AppColors.electricGreen));
-        expect(AppTheme.secondaryColor, equals(AppColors.grey600));
-        expect(AppTheme.accentColor, equals(AppColors.electricGreen));
+        expect(AppTheme.primaryColor, equals(AppColors.primary));
+        expect(AppTheme.secondaryColor, equals(AppColors.secondary));
+        expect(AppTheme.accentColor, equals(AppColors.accent));
         expect(AppTheme.backgroundColor, equals(AppColors.white));
         expect(AppTheme.surfaceColor, equals(AppColors.white));
         expect(AppTheme.errorColor, equals(AppColors.error));
@@ -41,8 +41,8 @@ void main() {
       test('should have correct color scheme values', () {
         // Test color scheme values directly without initializing theme
         // (Google Fonts may fail in test environment)
-        expect(AppTheme.primaryColor, equals(AppColors.electricGreen));
-        expect(AppTheme.secondaryColor, equals(AppColors.grey600));
+        expect(AppTheme.primaryColor, equals(AppColors.primary));
+        expect(AppTheme.secondaryColor, equals(AppColors.secondary));
         expect(AppTheme.backgroundColor, equals(AppColors.white));
         expect(AppTheme.surfaceColor, equals(AppColors.white));
         expect(AppTheme.errorColor, equals(AppColors.error));

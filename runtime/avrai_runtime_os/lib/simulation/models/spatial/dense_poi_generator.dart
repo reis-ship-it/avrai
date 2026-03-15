@@ -30,6 +30,7 @@ class DensePOIGenerator {
   SpatialHeatmap _getHeatmapForCity(String name) {
     if (name.contains('New York')) return CityHeatmaps.newYork;
     if (name.contains('Denver')) return CityHeatmaps.denver;
+    if (name.contains('Birmingham')) return CityHeatmaps.birmingham;
     return CityHeatmaps.atlanta;
   }
 

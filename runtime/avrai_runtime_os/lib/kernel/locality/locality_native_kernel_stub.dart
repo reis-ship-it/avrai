@@ -1,9 +1,15 @@
 import 'package:avrai_core/models/spots/visit.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_native_bridge_bindings.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_native_priority.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_native_sync_payload_builder.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_state.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_syscall_contract.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_training_contract.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_why_contract.dart';
+import 'package:avrai_runtime_os/kernel/os/functional_kernel_models.dart';
+import 'package:avrai_runtime_os/kernel/os/kernel_outcome_attribution_lane.dart';
 import 'package:avrai_runtime_os/services/locality_agents/locality_agent_models_v1.dart';
+import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
 
 abstract class LocalitySyscallTransport {
   Future<Map<String, dynamic>> invokeAsync({
@@ -18,7 +24,7 @@ abstract class LocalitySyscallTransport {
 }
 
 class InProcessLocalitySyscallTransport implements LocalitySyscallTransport {
-  final LocalityKernelContract delegate;
+  final LocalityWhereProviderFallbackSurface delegate;
 
   const InProcessLocalitySyscallTransport({
     required this.delegate,
@@ -72,32 +78,44 @@ class InProcessLocalitySyscallTransport implements LocalitySyscallTransport {
         ))
             .toJson();
       case 'observe_mesh_locality':
-        final observed = await delegate.observeMeshUpdate(
-          key: LocalityAgentKeyV1.fromJson(
-            Map<String, dynamic>.from(payload['key'] as Map? ?? const {}),
+        return {
+          'stored': await delegate.observeMeshUpdate(
+            key: LocalityAgentKeyV1.fromJson(
+              Map<String, dynamic>.from(payload['key'] as Map? ?? const {}),
+            ),
+            delta12: (payload['delta12'] as List? ?? const <dynamic>[])
+                .map((entry) => (entry as num).toDouble())
+                .toList(),
+            ttlMs: (payload['ttlMs'] as num?)?.toInt() ?? 0,
+            hop: (payload['hop'] as num?)?.toInt() ?? 0,
           ),
-          delta12: (payload['delta12'] as List?)
-                  ?.map((entry) => (entry as num).toDouble())
-                  .toList() ??
-              const <double>[],
-          ttlMs: (payload['ttlMs'] as num?)?.toInt() ?? 0,
-          hop: (payload['hop'] as num?)?.toInt() ?? 0,
-        );
-        return {'observed': observed};
+        };
       case 'evaluate_zero_locality':
         return (await delegate.evaluateZeroLocalityReadiness(
           cityProfile: (payload['cityProfile'] as String?) ?? 'unknown',
-          modelFamily: (payload['modelFamily'] as String?) ?? 'default',
+          modelFamily: (payload['modelFamily'] as String?) ?? 'reality_kernel',
           localityCount: (payload['localityCount'] as num?)?.toInt() ?? 12,
         ))
             .toJson();
+      case 'project_where_reality':
+        return (await delegate.projectForRealityModel(
+          LocalityProjectionRequest.fromJson(payload),
+        ))
+            .toJson();
+      case 'project_where_governance':
+        return (await delegate.projectForGovernance(
+          LocalityProjectionRequest.fromJson(payload),
+        ))
+            .toJson();
+      case 'diagnose_where_kernel':
+        return (await delegate.diagnoseWhere()).toJson();
       case 'recover_locality':
         return (await delegate.recover(
           LocalityRecoveryRequest.fromJson(payload),
         ))
             .toJson();
       default:
-        throw UnsupportedError('Unknown async locality syscall: $syscall');
+        throw UnsupportedError('Unsupported async locality syscall: $syscall');
     }
   }
 
@@ -119,8 +137,14 @@ class InProcessLocalitySyscallTransport implements LocalitySyscallTransport {
         return {
           if (snapshot != null) 'snapshot': snapshot.toJson(),
         };
+      case 'explain_why':
+        return delegate
+            .explainWhy(
+              WhyKernelRequest.fromJson(payload),
+            )
+            .toJson();
       default:
-        throw UnsupportedError('Unknown sync locality syscall: $syscall');
+        throw UnsupportedError('Unsupported sync locality syscall: $syscall');
     }
   }
 }
@@ -128,10 +152,14 @@ class InProcessLocalitySyscallTransport implements LocalitySyscallTransport {
 class FfiPreferredLocalitySyscallTransport implements LocalitySyscallTransport {
   final LocalityNativeInvocationBridge nativeBridge;
   final LocalitySyscallTransport fallbackTransport;
+  final LocalityNativeExecutionPolicy policy;
+  final LocalityNativeFallbackAudit? audit;
 
   const FfiPreferredLocalitySyscallTransport({
     required this.nativeBridge,
     required this.fallbackTransport,
+    this.policy = const LocalityNativeExecutionPolicy(),
+    this.audit,
   });
 
   @override
@@ -141,21 +169,26 @@ class FfiPreferredLocalitySyscallTransport implements LocalitySyscallTransport {
   }) async {
     nativeBridge.initialize();
     if (nativeBridge.isAvailable) {
-      final response = nativeBridge.invoke(
-        syscall: syscall,
-        payload: payload,
-      );
+      final response = nativeBridge.invoke(syscall: syscall, payload: payload);
       if (response['handled'] == true) {
-        final nativePayload = response['payload'];
-        if (nativePayload is Map<String, dynamic>) {
-          return nativePayload;
-        }
+        audit?.recordNativeHandled();
+        return Map<String, dynamic>.from(
+          response['payload'] as Map? ?? response,
+        );
       }
+      audit?.recordFallback(LocalityNativeFallbackReason.deferred);
+      policy.verifyFallbackAllowed(
+        syscall: syscall,
+        reason: LocalityNativeFallbackReason.deferred,
+      );
+      return fallbackTransport.invokeAsync(syscall: syscall, payload: payload);
     }
-    return fallbackTransport.invokeAsync(
+    audit?.recordFallback(LocalityNativeFallbackReason.unavailable);
+    policy.verifyFallbackAllowed(
       syscall: syscall,
-      payload: payload,
+      reason: LocalityNativeFallbackReason.unavailable,
     );
+    return fallbackTransport.invokeAsync(syscall: syscall, payload: payload);
   }
 
   @override
@@ -165,30 +198,47 @@ class FfiPreferredLocalitySyscallTransport implements LocalitySyscallTransport {
   }) {
     nativeBridge.initialize();
     if (nativeBridge.isAvailable) {
-      final response = nativeBridge.invoke(
-        syscall: syscall,
-        payload: payload,
-      );
+      final response = nativeBridge.invoke(syscall: syscall, payload: payload);
       if (response['handled'] == true) {
-        final nativePayload = response['payload'];
-        if (nativePayload is Map<String, dynamic>) {
-          return nativePayload;
-        }
+        audit?.recordNativeHandled();
+        return Map<String, dynamic>.from(
+          response['payload'] as Map? ?? response,
+        );
       }
+      audit?.recordFallback(LocalityNativeFallbackReason.deferred);
+      policy.verifyFallbackAllowed(
+        syscall: syscall,
+        reason: LocalityNativeFallbackReason.deferred,
+      );
+      return fallbackTransport.invokeSync(syscall: syscall, payload: payload);
     }
-    return fallbackTransport.invokeSync(
+    audit?.recordFallback(LocalityNativeFallbackReason.unavailable);
+    policy.verifyFallbackAllowed(
       syscall: syscall,
-      payload: payload,
+      reason: LocalityNativeFallbackReason.unavailable,
     );
+    return fallbackTransport.invokeSync(syscall: syscall, payload: payload);
   }
 }
 
-class LocalityNativeKernelStub implements LocalityKernelContract {
+class LocalityNativeKernelStub implements LocalityWhereProviderContract {
   final LocalitySyscallTransport transport;
+  final AgentIdService? agentIdService;
+  final LocalityNativeSyncPayloadBuilder? syncPayloadBuilder;
+  final KernelOutcomeAttributionLane? kernelOutcomeAttributionLane;
+  final KernelOutcomeAttributionLane? Function()?
+      kernelOutcomeAttributionLaneProvider;
 
   const LocalityNativeKernelStub({
     required this.transport,
+    this.agentIdService,
+    this.syncPayloadBuilder,
+    this.kernelOutcomeAttributionLane,
+    this.kernelOutcomeAttributionLaneProvider,
   });
+
+  KernelOutcomeAttributionLane? get _resolvedKernelOutcomeAttributionLane =>
+      kernelOutcomeAttributionLane ?? kernelOutcomeAttributionLaneProvider?.call();
 
   @override
   Future<LocalityState> resolveWhere(LocalityPerceptionInput input) async {
@@ -228,21 +278,23 @@ class LocalityNativeKernelStub implements LocalityKernelContract {
     required Visit visit,
     required String source,
   }) async {
+    final resolvedAgentId = agentIdService == null
+        ? null
+        : await agentIdService!.getUserAgentId(userId);
     final response = await transport.invokeAsync(
       syscall: 'observe_visit',
       payload: {
         'userId': userId,
+        if (resolvedAgentId != null) 'agentId': resolvedAgentId,
         'visit': visit.toJson(),
         'source': source,
       },
     );
     final receipt = response['receipt'];
-    if (receipt == null) {
+    if (receipt is! Map) {
       return null;
     }
-    return LocalityUpdateReceipt.fromJson(
-      Map<String, dynamic>.from(receipt as Map),
-    );
+    return LocalityUpdateReceipt.fromJson(Map<String, dynamic>.from(receipt));
   }
 
   @override
@@ -256,9 +308,13 @@ class LocalityNativeKernelStub implements LocalityKernelContract {
 
   @override
   Future<LocalitySyncResult> sync(LocalitySyncRequest request) async {
+    final currentSnapshot = snapshot(request.agentId);
+    final payload = syncPayloadBuilder == null
+        ? request.toJson()
+        : await syncPayloadBuilder!.build(request, snapshot: currentSnapshot);
     final response = await transport.invokeAsync(
       syscall: 'sync_locality',
-      payload: request.toJson(),
+      payload: payload,
     );
     return LocalitySyncResult.fromJson(response);
   }
@@ -298,13 +354,13 @@ class LocalityNativeKernelStub implements LocalityKernelContract {
         'hop': hop,
       },
     );
-    return response['observed'] as bool? ?? false;
+    return response['stored'] as bool? ?? false;
   }
 
   @override
   Future<LocalityZeroReliabilityReport> evaluateZeroLocalityReadiness({
     required String cityProfile,
-    String modelFamily = 'default',
+    String modelFamily = 'reality_kernel',
     int localityCount = 12,
   }) async {
     final response = await transport.invokeAsync(
@@ -324,12 +380,12 @@ class LocalityNativeKernelStub implements LocalityKernelContract {
       syscall: 'snapshot_locality',
       payload: {'agentId': agentId},
     );
-    final snapshot = response['snapshot'];
-    if (snapshot == null) {
+    final snapshotJson = response['snapshot'];
+    if (snapshotJson is! Map) {
       return null;
     }
     return LocalityKernelSnapshot.fromJson(
-      Map<String, dynamic>.from(snapshot as Map),
+      Map<String, dynamic>.from(snapshotJson),
     );
   }
 
@@ -340,6 +396,76 @@ class LocalityNativeKernelStub implements LocalityKernelContract {
       syscall: 'recover_locality',
       payload: request.toJson(),
     );
-    return LocalityRecoveryResult.fromJson(response);
+    final result = LocalityRecoveryResult.fromJson(response);
+    final attributionLane = _resolvedKernelOutcomeAttributionLane;
+    if (attributionLane != null) {
+      await attributionLane.recordLocalityRecovery(
+        agentId: request.agentId,
+        request: request,
+        result: result,
+      );
+    }
+    return result;
+  }
+
+  @override
+  WhySnapshot explainWhy(WhyKernelRequest request) {
+    final response = transport.invokeSync(
+      syscall: 'explain_why',
+      payload: request.toJson(),
+    );
+    return WhySnapshot.fromJson(response);
+  }
+
+  @override
+  Future<WhereRealityProjection> projectForRealityModel(
+    LocalityProjectionRequest request,
+  ) async {
+    final response = await transport.invokeAsync(
+      syscall: 'project_where_reality',
+      payload: request.toJson(),
+    );
+    return WhereRealityProjection(
+      summary: response['summary'] as String? ?? 'Spatial truth unavailable',
+      confidence: (response['confidence'] as num?)?.toDouble() ?? 0.0,
+      features: Map<String, dynamic>.from(
+        response['features'] as Map? ?? const <String, dynamic>{},
+      ),
+      payload: Map<String, dynamic>.from(
+        response['payload'] as Map? ?? const <String, dynamic>{},
+      ),
+    );
+  }
+
+  @override
+  Future<KernelGovernanceProjection> projectForGovernance(
+    LocalityProjectionRequest request,
+  ) async {
+    final response = await transport.invokeAsync(
+      syscall: 'project_where_governance',
+      payload: request.toJson(),
+    );
+    return KernelGovernanceProjection(
+      domain: KernelDomain.values.byName(
+        response['domain'] as String? ?? KernelDomain.where.name,
+      ),
+      summary: response['summary'] as String? ?? 'Spatial governance view',
+      confidence: (response['confidence'] as num?)?.toDouble() ?? 0.0,
+      highlights: ((response['highlights'] as List?) ?? const <dynamic>[])
+          .map((entry) => entry.toString())
+          .toList(),
+      payload: Map<String, dynamic>.from(
+        response['payload'] as Map? ?? const <String, dynamic>{},
+      ),
+    );
+  }
+
+  @override
+  Future<KernelHealthReport> diagnoseWhere() async {
+    final response = await transport.invokeAsync(
+      syscall: 'diagnose_where_kernel',
+      payload: const <String, dynamic>{},
+    );
+    return KernelHealthReport.fromJson(response);
   }
 }

@@ -1,6 +1,6 @@
 import 'package:get_it/get_it.dart';
-import 'package:avrai_runtime_os/kernel/locality/locality_state.dart';
-import 'package:avrai_runtime_os/kernel/locality/locality_syscall_contract.dart';
+import 'package:avrai_runtime_os/kernel/where/where_kernel_models.dart';
+import 'package:avrai_runtime_os/kernel/where/where_kernel_contract.dart';
 import 'package:avrai_runtime_os/services/geographic/geo_hierarchy_service.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart';
@@ -18,17 +18,17 @@ class OnboardingGeoContextService {
 
   final GeoHierarchyService _geoHierarchyService;
   final SharedPreferencesCompat? _prefs;
-  final LocalityKernelContract? _localityKernel;
+  final WhereKernelContract? _whereKernel;
   final AppLogger _logger =
       const AppLogger(defaultTag: 'avrai', minimumLevel: LogLevel.debug);
 
   OnboardingGeoContextService({
     required GeoHierarchyService geoHierarchyService,
     required SharedPreferencesCompat? prefs,
-    LocalityKernelContract? localityKernel,
+    WhereKernelContract? whereKernel,
   })  : _geoHierarchyService = geoHierarchyService,
         _prefs = prefs,
-        _localityKernel = localityKernel;
+        _whereKernel = whereKernel;
 
   /// Resolve cached homebase geo context (best-effort)
   ///
@@ -42,14 +42,14 @@ class OnboardingGeoContextService {
     if (lat == null || lon == null) return const OnboardingGeoContextV1.empty();
 
     try {
-      final localityKernel = _resolveKernel();
-      if (localityKernel != null) {
-        final resolution = await localityKernel.resolvePoint(
-          LocalityPointQuery(
+      final whereKernel = _resolveKernel();
+      if (whereKernel != null) {
+        final resolution = await whereKernel.resolvePoint(
+          WherePointQuery(
             latitude: lat,
             longitude: lon,
             occurredAtUtc: DateTime.now().toUtc(),
-            audience: LocalityProjectionAudience.admin,
+            audience: WhereProjectionAudience.admin,
             includeGeometry: true,
             includeAttribution: true,
           ),
@@ -84,11 +84,11 @@ class OnboardingGeoContextService {
     }
   }
 
-  LocalityKernelContract? _resolveKernel() {
-    if (_localityKernel != null) return _localityKernel;
+  WhereKernelContract? _resolveKernel() {
+    if (_whereKernel != null) return _whereKernel;
     final sl = GetIt.instance;
-    if (!sl.isRegistered<LocalityKernelContract>()) return null;
-    return sl<LocalityKernelContract>();
+    if (!sl.isRegistered<WhereKernelContract>()) return null;
+    return sl<WhereKernelContract>();
   }
 }
 

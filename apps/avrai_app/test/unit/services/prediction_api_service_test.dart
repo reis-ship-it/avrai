@@ -20,7 +20,6 @@ import 'package:avrai_core/models/personality_profile.dart';
 import 'package:avrai_core/models/user/user_vibe.dart';
 import 'package:avrai_runtime_os/runtime_api.dart';
 import 'package:avrai_runtime_os/services/security/hybrid_encryption_service.dart';
-import 'package:avrai_runtime_os/ai2ai/anonymous_communication.dart';
 import 'package:avrai_core/models/personality_knot.dart';
 import 'package:avrai_runtime_os/services/security/message_encryption_service.dart';
 import 'package:avrai_core/models/user/personality_profile.dart';
@@ -43,7 +42,6 @@ import 'prediction_api_service_test.mocks.dart';
   KnotFabricService,
   KnotWorldsheetService,
   HybridEncryptionService,
-  AnonymousCommunicationProtocol,
 ])
 void main() {
   group('PredictionAPIService', () {
@@ -61,7 +59,6 @@ void main() {
     late MockKnotFabricService? mockFabricService;
     late MockKnotWorldsheetService? mockWorldsheetService;
     late MockHybridEncryptionService? mockEncryptionService;
-    late MockAnonymousCommunicationProtocol? mockAi2aiProtocol;
 
     setUp(() {
       mockAtomicClock = MockAtomicClockService();
@@ -77,8 +74,6 @@ void main() {
       mockFabricService = MockKnotFabricService();
       mockWorldsheetService = MockKnotWorldsheetService();
       mockEncryptionService = MockHybridEncryptionService();
-      mockAi2aiProtocol = MockAnonymousCommunicationProtocol();
-
       service = PredictionAPIService(
         atomicClock: mockAtomicClock,
         metricsService: mockMetricsService,
@@ -93,7 +88,6 @@ void main() {
         fabricService: mockFabricService,
         worldsheetService: mockWorldsheetService,
         encryptionService: mockEncryptionService,
-        ai2aiProtocol: mockAi2aiProtocol,
       );
     });
 
@@ -729,7 +723,7 @@ void main() {
         when(mockPrivacyService.encryptAndTransmit(
           anonymizedData: anyNamed('anonymizedData'),
           recipientAgentId: recipientAgentId,
-          messageType: anyNamed('messageType'),
+          legacyMessageTypeName: anyNamed('legacyMessageTypeName'),
         )).thenAnswer((_) async => transmissionResult);
 
         // Act
@@ -749,7 +743,7 @@ void main() {
         verify(mockPrivacyService.encryptAndTransmit(
           anonymizedData: predictionData,
           recipientAgentId: recipientAgentId,
-          messageType: MessageType.recommendationShare,
+          legacyMessageTypeName: 'recommendationShare',
         )).called(1);
       });
 
@@ -765,7 +759,7 @@ void main() {
         when(mockPrivacyService.encryptAndTransmit(
           anonymizedData: anyNamed('anonymizedData'),
           recipientAgentId: recipientAgentId,
-          messageType: anyNamed('messageType'),
+          legacyMessageTypeName: anyNamed('legacyMessageTypeName'),
         )).thenThrow(Exception('Privacy validation failed: Missing agentId'));
 
         // Act & Assert
@@ -781,7 +775,7 @@ void main() {
         verify(mockPrivacyService.encryptAndTransmit(
           anonymizedData: predictionData,
           recipientAgentId: recipientAgentId,
-          messageType: MessageType.recommendationShare,
+          legacyMessageTypeName: 'recommendationShare',
         )).called(1);
       });
     });

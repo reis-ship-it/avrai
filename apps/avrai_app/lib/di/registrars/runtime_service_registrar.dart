@@ -131,6 +131,20 @@ Future<void> _registerRuntimeServiceLayer(AppLogger logger) async {
     ),
   );
 
+  if (!sl.isRegistered<ListAnalyticsService>()) {
+    sl.registerLazySingleton<ListAnalyticsService>(
+      () => ListAnalyticsService(),
+    );
+  }
+  if (!sl.isRegistered<ListSyncService>()) {
+    sl.registerLazySingleton<ListSyncService>(
+      () => ListSyncService(
+        supabaseService: sl<SupabaseService>(),
+        storageService: sl<StorageService>(),
+      ),
+    );
+  }
+
   if (!sl.isRegistered<UniversalIntakeRepository>()) {
     sl.registerLazySingleton<UniversalIntakeRepository>(
       () => UniversalIntakeRepository(
@@ -251,6 +265,40 @@ Future<void> _registerRuntimeServiceLayer(AppLogger logger) async {
         ledger: sl<LedgerRecorderServiceV0>(),
         supabase: sl<SupabaseService>(),
         prefs: sl<SharedPreferencesCompat>(),
+        backgroundWakeRunRecordStore:
+            sl.isRegistered<BackgroundWakeExecutionRunRecordStore>()
+                ? sl<BackgroundWakeExecutionRunRecordStore>()
+                : null,
+        fieldScenarioProofStore:
+            sl.isRegistered<DomainExecutionFieldScenarioProofStore>()
+                ? sl<DomainExecutionFieldScenarioProofStore>()
+                : null,
+        ambientSocialLearningService:
+            sl.isRegistered<AmbientSocialRealityLearningService>()
+                ? sl<AmbientSocialRealityLearningService>()
+                : null,
+        ),
+    );
+  }
+  if (!sl.isRegistered<ProofRunAutomationService>()) {
+    sl.registerLazySingleton<ProofRunAutomationService>(
+      () => ProofRunAutomationService(
+        proofRunService: sl<ProofRunServiceV0>(),
+        adminRuntimeGovernanceService: sl<AdminRuntimeGovernanceService>(),
+        backgroundCoordinator: sl<HeadlessBackgroundRuntimeCoordinator>(),
+        prefs: sl<SharedPreferencesCompat>(),
+        storageService: sl<StorageService>(),
+        personalityLearning: sl<PersonalityLearning>(),
+        orchestrator: sl<VibeConnectionOrchestrator>(),
+        supabaseService: sl<SupabaseService>(),
+        ambientSocialLearningService:
+            sl.isRegistered<AmbientSocialRealityLearningService>()
+                ? sl<AmbientSocialRealityLearningService>()
+                : null,
+        backgroundWakeRunRecordStore:
+            sl.isRegistered<BackgroundWakeExecutionRunRecordStore>()
+                ? sl<BackgroundWakeExecutionRunRecordStore>()
+                : null,
       ),
     );
   }

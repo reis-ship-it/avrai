@@ -2,6 +2,7 @@
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage_x/flutter_secure_storage_x.dart';
 import 'package:avrai/injection_container.dart' as di;
@@ -425,11 +426,8 @@ class _PrivacySettingsPageState extends State<PrivacySettingsPage> {
   }
 
   void _openPrivacyPolicy() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Opening privacy policy...'),
-      ),
-    );
+    final uri = Uri.parse('https://avrai.org/privacy');
+    launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
   void _resetPrivacySettings() {

@@ -1,10 +1,10 @@
-// TODO(Phase 0.5.0): Remove this suppression after AI2AIProtocol callers migrate to DNAEncoderService.
-// ignore_for_file: deprecated_member_use
-
 import 'package:avrai_runtime_os/ai2ai/aipersonality_node.dart';
+import 'package:avrai_runtime_os/kernel/os/ai2ai_mesh_governance_binding_service.dart';
 import 'package:avrai_runtime_os/services/transport/mesh/mesh_forwarding_context_orchestration_lane.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 import 'package:avrai_runtime_os/services/transport/ble/adaptive_mesh_networking_service.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/governed_mesh_packet_codec.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/mesh_interface_registry.dart';
 import 'package:avrai_runtime_os/services/transport/mesh/mesh_outbound_forwarding_lane.dart';
 import 'package:avrai_network/avra_network.dart';
 import 'package:avrai_network/network/bloom_filter.dart';
@@ -25,9 +25,15 @@ class MeshForwardingOrchestrationLane {
     required AppLogger logger,
     required String logName,
     required Map<String, AIPersonalityNode> discoveredNodes,
-    required AI2AIProtocol? protocol,
+    required GovernedMeshPacketCodec? packetCodec,
     required DeviceDiscoveryService? discovery,
     required Map<String, String> peerNodeIdByDeviceId,
+    Ai2AiMeshGovernanceBindingService? governanceBindingService,
+    String? localUserId,
+    String? localAgentId,
+    String privacyMode = MeshTransportPrivacyMode.privateMesh,
+    bool reticulumTransportControlPlaneEnabled = false,
+    bool trustedAnnounceEnforcementEnabled = false,
   }) {
     return MeshOutboundForwardingLane.forwardLearningInsightGossip(
       allowBleSideEffects: allowBleSideEffects,
@@ -50,9 +56,16 @@ class MeshForwardingOrchestrationLane {
       discoveredNodeIds:
           MeshForwardingContextOrchestrationLane.discoveredNodeIds(
               discoveredNodes: discoveredNodes),
-      protocol: protocol,
+      packetCodec: packetCodec,
       discovery: discovery,
       peerNodeIdByDeviceId: peerNodeIdByDeviceId,
+      governanceBindingService: governanceBindingService,
+      localUserId: localUserId,
+      localAgentId: localAgentId,
+      privacyMode: privacyMode,
+      reticulumTransportControlPlaneEnabled:
+          reticulumTransportControlPlaneEnabled,
+      trustedAnnounceEnforcementEnabled: trustedAnnounceEnforcementEnabled,
     );
   }
 
@@ -60,11 +73,17 @@ class MeshForwardingOrchestrationLane {
     required Map<String, dynamic> signal,
     required bool allowBleSideEffects,
     required bool federatedLearningParticipationEnabled,
-    required AI2AIProtocol? protocol,
+    required GovernedMeshPacketCodec? packetCodec,
     required DeviceDiscoveryService? discovery,
     required Map<String, AIPersonalityNode> discoveredNodes,
     required String localNodeId,
     required Map<String, String> peerNodeIdByDeviceId,
+    Ai2AiMeshGovernanceBindingService? governanceBindingService,
+    String? localUserId,
+    String? localAgentId,
+    String privacyMode = MeshTransportPrivacyMode.privateMesh,
+    bool reticulumTransportControlPlaneEnabled = false,
+    bool trustedAnnounceEnforcementEnabled = false,
     required AppLogger logger,
     required String logName,
   }) {
@@ -75,8 +94,15 @@ class MeshForwardingOrchestrationLane {
           federatedLearningParticipationEnabled,
       tryCreateMeshForwardingContext: () {
         return MeshForwardingContextOrchestrationLane.tryCreate(
-          protocol: protocol,
+          packetCodec: packetCodec,
           discovery: discovery,
+          governanceBindingService: governanceBindingService,
+          localUserId: localUserId,
+          localAgentId: localAgentId,
+          privacyMode: privacyMode,
+          reticulumTransportControlPlaneEnabled:
+              reticulumTransportControlPlaneEnabled,
+          trustedAnnounceEnforcementEnabled: trustedAnnounceEnforcementEnabled,
         );
       },
       discoveredNodeIds:
@@ -96,10 +122,16 @@ class MeshForwardingOrchestrationLane {
     required Map<String, dynamic> message,
     required AdaptiveMeshNetworkingService? adaptiveMeshService,
     required Map<String, OptimizedBloomFilter> bloomFilters,
-    required AI2AIProtocol? protocol,
+    required GovernedMeshPacketCodec? packetCodec,
     required DeviceDiscoveryService? discovery,
     required Map<String, AIPersonalityNode> discoveredNodes,
     required Map<String, String> peerNodeIdByDeviceId,
+    Ai2AiMeshGovernanceBindingService? governanceBindingService,
+    String? localUserId,
+    String? localAgentId,
+    String privacyMode = MeshTransportPrivacyMode.privateMesh,
+    bool reticulumTransportControlPlaneEnabled = false,
+    bool trustedAnnounceEnforcementEnabled = false,
     required AppLogger logger,
     required String logName,
   }) {
@@ -116,12 +148,19 @@ class MeshForwardingOrchestrationLane {
           scope: scope,
         );
       },
-      protocol: protocol,
+      packetCodec: packetCodec,
       discovery: discovery,
       discoveredNodeIds:
           MeshForwardingContextOrchestrationLane.discoveredNodeIds(
               discoveredNodes: discoveredNodes),
       peerNodeIdByDeviceId: peerNodeIdByDeviceId,
+      governanceBindingService: governanceBindingService,
+      localUserId: localUserId,
+      localAgentId: localAgentId,
+      privacyMode: privacyMode,
+      reticulumTransportControlPlaneEnabled:
+          reticulumTransportControlPlaneEnabled,
+      trustedAnnounceEnforcementEnabled: trustedAnnounceEnforcementEnabled,
       logger: logger,
       logName: logName,
     );
@@ -140,9 +179,15 @@ class MeshForwardingOrchestrationLane {
     required AppLogger logger,
     required String logName,
     required Map<String, AIPersonalityNode> discoveredNodes,
-    required AI2AIProtocol? protocol,
+    required GovernedMeshPacketCodec? packetCodec,
     required DeviceDiscoveryService? discovery,
     required Map<String, String> peerNodeIdByDeviceId,
+    Ai2AiMeshGovernanceBindingService? governanceBindingService,
+    String? localUserId,
+    String? localAgentId,
+    String privacyMode = MeshTransportPrivacyMode.privateMesh,
+    bool reticulumTransportControlPlaneEnabled = false,
+    bool trustedAnnounceEnforcementEnabled = false,
   }) {
     return MeshOutboundForwardingLane.forwardLocalityAgentUpdateGossip(
       allowBleSideEffects: allowBleSideEffects,
@@ -165,9 +210,16 @@ class MeshForwardingOrchestrationLane {
       discoveredNodeIds:
           MeshForwardingContextOrchestrationLane.discoveredNodeIds(
               discoveredNodes: discoveredNodes),
-      protocol: protocol,
+      packetCodec: packetCodec,
       discovery: discovery,
       peerNodeIdByDeviceId: peerNodeIdByDeviceId,
+      governanceBindingService: governanceBindingService,
+      localUserId: localUserId,
+      localAgentId: localAgentId,
+      privacyMode: privacyMode,
+      reticulumTransportControlPlaneEnabled:
+          reticulumTransportControlPlaneEnabled,
+      trustedAnnounceEnforcementEnabled: trustedAnnounceEnforcementEnabled,
     );
   }
 }

@@ -24,19 +24,19 @@ class TermsOfService {
 
   /// Terms of Service content
   static const String content = '''
-SPOTS Terms of Service
+AVRAI Terms of Service
 
 1. ACCEPTANCE OF TERMS
-By using SPOTS, you agree to these Terms of Service. If you do not agree, do not use the platform.
+By using AVRAI, you agree to these Terms of Service. If you do not agree, do not use the platform.
 
 2. PLATFORM FEES
-SPOTS charges a 10% platform fee on all paid transactions. Processing fees (~3%) are additional.
+AVRAI charges a 10% platform fee on all paid transactions. Processing fees (~3%) are additional.
 
 3. REFUND POLICY
 Refund policies vary by event. Standard policy: Full refund >48h before event, 50% refund 24-48h before, no refund <24h before. Force majeure events receive full refunds.
 
 4. LIABILITY LIMITATIONS
-SPOTS is a platform connecting hosts and attendees. SPOTS is not responsible for:
+AVRAI is a platform connecting hosts and attendees. AVRAI is not responsible for:
 - Event quality or safety
 - Injuries or damages at events
 - Disputes between parties
@@ -45,10 +45,10 @@ SPOTS is a platform connecting hosts and attendees. SPOTS is not responsible for
 Maximum liability limited to amount paid for event ticket.
 
 5. INDEMNIFICATION
-Hosts agree to indemnify SPOTS against claims arising from events they host.
+Hosts agree to indemnify AVRAI against claims arising from events they host.
 
 6. INSURANCE REQUIREMENTS
-Hosts must maintain appropriate insurance for high-risk events. SPOTS may require proof of insurance.
+Hosts must maintain appropriate insurance for high-risk events. AVRAI may require proof of insurance.
 
 7. COMPLIANCE
 Users must comply with all local laws, permits, licenses, and regulations for events.
@@ -57,13 +57,13 @@ Users must comply with all local laws, permits, licenses, and regulations for ev
 Disputes resolved through binding arbitration. Class action waivers apply.
 
 9. INTELLECTUAL PROPERTY
-Users retain rights to their content. By using SPOTS, users grant SPOTS license to use content for platform purposes.
+Users retain rights to their content. By using AVRAI, users grant AVRAI license to use content for platform purposes.
 
 10. TERMINATION
-SPOTS may terminate accounts for violations of these terms, illegal activity, or platform abuse.
+AVRAI may terminate accounts for violations of these terms, illegal activity, or platform abuse.
 
 11. MODIFICATIONS
-SPOTS may modify these terms. Users will be notified of changes. Continued use constitutes acceptance.
+AVRAI may modify these terms. Users will be notified of changes. Continued use constitutes acceptance.
 
 12. GOVERNING LAW
 These terms are governed by [Jurisdiction] law.

@@ -24,11 +24,11 @@ class RoutePath {
 /// Here, it approximates realistic routes along a grid or slight arc.
 class PathfindingService {
   /// Generates a RoutePath between two coordinates, adding intermediate waypoints.
-  /// 
+  ///
   /// Uses a slight curvature to simulate non-linear travel (roads aren't straight lines).
   RoutePath calculateRoute(GeoCoordinate start, GeoCoordinate end) {
     final double distance = start.distanceTo(end);
-    
+
     // If it's a very short trip, just a straight line is fine
     if (distance < 1.0) {
       return RoutePath(
@@ -47,11 +47,11 @@ class PathfindingService {
     // Deviation is perpendicular to the straight line
     final double dx = end.longitude - start.longitude;
     final double dy = end.latitude - start.latitude;
-    
+
     // Perpendicular vector
     final double perpDx = -dy;
     final double perpDy = dx;
-    
+
     // Randomize if the arc bows "left" or "right"
     final double arcDirection = (Random().nextBool() ? 1.0 : -1.0);
     // Max deviation is roughly 15% of the total distance
@@ -59,15 +59,16 @@ class PathfindingService {
 
     for (int i = 1; i <= numWaypoints; i++) {
       final double fraction = i / (numWaypoints + 1);
-      
+
       // Base point on the straight line
       final double baseLat = start.latitude + (dy * fraction);
       final double baseLng = start.longitude + (dx * fraction);
-      
+
       // Apply deviation (parabolic arc, highest in the middle)
       // fraction * (1 - fraction) creates a parabola peaking at 0.5
-      final double deviationScale = 4.0 * fraction * (1.0 - fraction) * maxDeviation;
-      
+      final double deviationScale =
+          4.0 * fraction * (1.0 - fraction) * maxDeviation;
+
       waypoints.add(GeoCoordinate(
         baseLat + (perpDy * deviationScale),
         baseLng + (perpDx * deviationScale),

@@ -174,6 +174,7 @@ class SignatureHealthAdminService {
       reviewNeeded: reviewNeeded,
       lastSyncAt: source.lastSyncedAt,
       lastSignatureRebuildAt: lastSignatureRebuildAt,
+      updatedAt: source.updatedAt,
       syncState: source.syncState.name,
       healthCategory: healthCategory,
       summary: _buildSummary(

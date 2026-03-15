@@ -11,11 +11,11 @@ class AboutPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppSchemaPage(
       schema: buildAboutPageSchema(
-        openWebsite: () => _launchUrl('https://avrai.app'),
-        openPrinciples: () => _launchUrl('https://avrai.app/principles'),
-        openPrivacy: () => _launchUrl('https://avrai.app/privacy'),
-        openTerms: () => _launchUrl('https://avrai.app/terms'),
-        openSupport: () => _launchEmail('support@avrai.app'),
+        openWebsite: () => _launchUrl('https://avrai.org'),
+        openPrinciples: () => _launchUrl('https://avrai.org/principles'),
+        openPrivacy: () => _launchUrl('https://avrai.org/privacy'),
+        openTerms: () => _launchUrl('https://avrai.org/terms'),
+        openSupport: () => _launchUrl('https://avrai.org/support'),
       ),
     );
   }
@@ -24,16 +24,6 @@ class AboutPage extends StatelessWidget {
     final uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
-  }
-
-  Future<void> _launchEmail(String email) async {
-    final uri = Uri(
-      scheme: 'mailto',
-      path: email,
-    );
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
     }
   }
 }

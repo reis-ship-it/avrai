@@ -20,7 +20,6 @@ import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
 import 'package:avrai_runtime_os/services/expertise/expertise_event_service.dart';
 import 'package:avrai_runtime_os/ai/personality_learning.dart';
 import 'package:avrai_runtime_os/services/security/hybrid_encryption_service.dart';
-import 'package:avrai_runtime_os/ai2ai/anonymous_communication.dart';
 import 'package:avrai_runtime_os/ai/vibe_analysis_engine.dart';
 import 'package:avrai_knot/services/knot/knot_evolution_string_service.dart';
 import 'package:avrai_knot/services/knot/knot_fabric_service.dart';
@@ -61,11 +60,9 @@ class PredictionAPIService {
   final KnotEvolutionStringService? _stringService;
   final KnotFabricService? _fabricService;
   final KnotWorldsheetService? _worldsheetService;
-  // TODO(Phase 19.14): _encryptionService and _ai2aiProtocol used via _privacyService
+  // TODO(Phase 19.14): _encryptionService used via _privacyService
   // ignore: unused_field
   final HybridEncryptionService? _encryptionService;
-  // ignore: unused_field
-  final AnonymousCommunicationProtocol? _ai2aiProtocol;
 
   // Phase 1.5E: Markov engagement trajectory predictor (bridge to Phase 5)
   final EngagementPhasePredictor? _engagementPredictor;
@@ -86,7 +83,6 @@ class PredictionAPIService {
     KnotFabricService? fabricService,
     KnotWorldsheetService? worldsheetService,
     HybridEncryptionService? encryptionService,
-    AnonymousCommunicationProtocol? ai2aiProtocol,
     EngagementPhasePredictor? engagementPredictor,
   })  : _atomicClock = atomicClock,
         _metricsService = metricsService,
@@ -101,7 +97,6 @@ class PredictionAPIService {
         _fabricService = fabricService,
         _worldsheetService = worldsheetService,
         _encryptionService = encryptionService,
-        _ai2aiProtocol = ai2aiProtocol,
         _engagementPredictor = engagementPredictor;
 
   /// Get meaningful connection predictions for an event
@@ -542,7 +537,7 @@ class PredictionAPIService {
       final result = await _privacyService.encryptAndTransmit(
         anonymizedData: predictionData,
         recipientAgentId: recipientAgentId,
-        messageType: MessageType.recommendationShare,
+        legacyMessageTypeName: 'recommendationShare',
       );
 
       return {

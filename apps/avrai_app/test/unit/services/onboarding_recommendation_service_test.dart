@@ -10,6 +10,9 @@
 /// - Edge Cases: Empty data, no matches, invalid inputs
 library;
 
+import 'package:avrai_runtime_os/kernel/os/functional_kernel_models.dart'
+    as kernel_models;
+import 'package:avrai_runtime_os/kernel/os/headless_avrai_os_host.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:avrai_runtime_os/services/onboarding/onboarding_recommendation_service.dart';
@@ -67,6 +70,7 @@ void main() {
 
         // Assert
         expect(recommendations, isA<List<ListRecommendation>>());
+        expect(recommendations, isNotEmpty);
         verify(() => mockAgentIdService.getUserAgentId(testUserId)).called(1);
       });
 
@@ -127,6 +131,7 @@ void main() {
 
         // Assert
         expect(recommendations, isA<List<ListRecommendation>>());
+        expect(recommendations, isEmpty);
       });
 
       test('should handle errors gracefully and return empty list', () async {
@@ -173,6 +178,7 @@ void main() {
 
         // Assert
         expect(recommendations, isA<List<AccountRecommendation>>());
+        expect(recommendations, isNotEmpty);
         verify(() => mockAgentIdService.getUserAgentId(testUserId)).called(1);
       });
 
@@ -419,6 +425,44 @@ void main() {
         expect(recommendations, isA<List<ListRecommendation>>());
       });
 
+      test('should attach headless OS metadata and keep locality inside where',
+          () async {
+        final host = _FakeHeadlessAvraiOsHost();
+        final hostAwareService = OnboardingRecommendationService(
+          agentIdService: mockAgentIdService,
+          headlessOsHost: host,
+        );
+
+        final recommendations = await hostAwareService.getRecommendedLists(
+          userId: testUserId,
+          onboardingData: <String, dynamic>{
+            'preferences': <String, dynamic>{
+              'Food & Drink': <String>['Coffee'],
+            },
+            'homebase': 'Chicago, IL',
+          },
+          personalityDimensions: <String, double>{
+            'exploration_eagerness': 0.8,
+            'curation_tendency': 0.7,
+          },
+        );
+
+        expect(host.startCalls, 1);
+        expect(host.runtimeCalls, 1);
+        expect(host.modelTruthCalls, 1);
+        expect(host.governanceCalls, 1);
+        expect(recommendations, isNotEmpty);
+        expect(recommendations.first.metadata['modelTruthReady'], isTrue);
+        expect(
+          recommendations.first.metadata['localityContainedInWhere'],
+          isTrue,
+        );
+        expect(
+          recommendations.first.metadata['governanceDomains'],
+          contains('where'),
+        );
+      });
+
       test('should handle very large personality dimension maps', () {
         // Arrange
         final userDimensions = Map.fromEntries(
@@ -440,4 +484,235 @@ void main() {
       });
     });
   });
+}
+
+class _FakeHeadlessAvraiOsHost implements HeadlessAvraiOsHost {
+  int startCalls = 0;
+  int runtimeCalls = 0;
+  int modelTruthCalls = 0;
+  int governanceCalls = 0;
+
+  @override
+  Future<HeadlessAvraiOsHostState> start() async {
+    startCalls += 1;
+    return HeadlessAvraiOsHostState(
+      started: true,
+      startedAtUtc: DateTime.utc(2026, 3, 7, 12),
+      localityContainedInWhere: true,
+      summary: 'onboarding host ready',
+    );
+  }
+
+  @override
+  Future<kernel_models.RealityKernelFusionInput> buildModelTruth({
+    required kernel_models.KernelEventEnvelope envelope,
+    required kernel_models.KernelWhyRequest whyRequest,
+  }) async {
+    modelTruthCalls += 1;
+    return kernel_models.RealityKernelFusionInput(
+      envelope: envelope,
+      bundle: kernel_models.KernelContextBundle(
+        who: const kernel_models.WhoKernelSnapshot(
+          primaryActor: 'agent',
+          affectedActor: 'agent',
+          companionActors: <String>[],
+          actorRoles: <String>['personal'],
+          trustScope: 'trusted_mesh',
+          cohortRefs: <String>['personal'],
+          identityConfidence: 0.95,
+        ),
+        what: const kernel_models.WhatKernelSnapshot(
+          actionType: 'recommend_list',
+          targetEntityType: 'onboarding',
+          targetEntityId: 'bootstrap',
+          stateTransitionType: 'observation',
+          outcomeType: 'generated',
+          semanticTags: <String>['onboarding'],
+          taxonomyConfidence: 0.9,
+        ),
+        when: kernel_models.WhenKernelSnapshot(
+          observedAt: DateTime.utc(2026, 3, 7, 12),
+          freshness: 0.95,
+          recencyBucket: 'recent',
+          timingConflictFlags: <String>[],
+          temporalConfidence: 0.94,
+        ),
+        where: const kernel_models.WhereKernelSnapshot(
+          localityToken: 'loc-onboarding',
+          cityCode: 'CHI',
+          localityCode: 'CHI-LOOP',
+          projection: <String, dynamic>{'label': 'Chicago'},
+          boundaryTension: 0.08,
+          spatialConfidence: 0.93,
+          travelFriction: 0.2,
+          placeFitFlags: <String>['bootstrap_ready'],
+        ),
+        how: const kernel_models.HowKernelSnapshot(
+          executionPath: 'onboarding_recommendation_service',
+          workflowStage: 'onboarding',
+          transportMode: 'in_process',
+          plannerMode: 'bootstrap',
+          modelFamily: 'onboarding_recommendation',
+          interventionChain: <String>['bootstrap', 'rank'],
+          failureMechanism: 'none',
+          mechanismConfidence: 0.88,
+        ),
+      ),
+      who: const kernel_models.WhoRealityProjection(
+        summary: 'who ready',
+        confidence: 0.95,
+      ),
+      what: const kernel_models.WhatRealityProjection(
+        summary: 'what ready',
+        confidence: 0.9,
+      ),
+      when: const kernel_models.WhenRealityProjection(
+        summary: 'when ready',
+        confidence: 0.94,
+      ),
+      where: const kernel_models.WhereRealityProjection(
+        summary: 'where keeps locality internal',
+        confidence: 0.93,
+      ),
+      why: const kernel_models.WhyRealityProjection(
+        summary: 'why ready',
+        confidence: 0.87,
+      ),
+      how: const kernel_models.HowRealityProjection(
+        summary: 'how ready',
+        confidence: 0.88,
+      ),
+      generatedAtUtc: DateTime.utc(2026, 3, 7, 12),
+      localityContainedInWhere: true,
+    );
+  }
+
+  @override
+  Future<List<kernel_models.KernelHealthReport>> healthCheck() async =>
+      const <kernel_models.KernelHealthReport>[];
+
+  @override
+  Future<kernel_models.KernelGovernanceReport> inspectGovernance({
+    required kernel_models.KernelEventEnvelope envelope,
+    required kernel_models.KernelWhyRequest whyRequest,
+  }) async {
+    governanceCalls += 1;
+    return kernel_models.KernelGovernanceReport(
+      envelope: envelope,
+      bundle: kernel_models.KernelContextBundle(
+        who: const kernel_models.WhoKernelSnapshot(
+          primaryActor: 'agent',
+          affectedActor: 'agent',
+          companionActors: <String>[],
+          actorRoles: <String>['personal'],
+          trustScope: 'trusted_mesh',
+          cohortRefs: <String>['personal'],
+          identityConfidence: 0.95,
+        ),
+        what: const kernel_models.WhatKernelSnapshot(
+          actionType: 'recommend_list',
+          targetEntityType: 'onboarding',
+          targetEntityId: 'bootstrap',
+          stateTransitionType: 'observation',
+          outcomeType: 'generated',
+          semanticTags: <String>['onboarding'],
+          taxonomyConfidence: 0.9,
+        ),
+        when: kernel_models.WhenKernelSnapshot(
+          observedAt: DateTime.utc(2026, 3, 7, 12),
+          freshness: 0.95,
+          recencyBucket: 'recent',
+          timingConflictFlags: <String>[],
+          temporalConfidence: 0.94,
+        ),
+        where: const kernel_models.WhereKernelSnapshot(
+          localityToken: 'loc-onboarding',
+          cityCode: 'CHI',
+          localityCode: 'CHI-LOOP',
+          projection: <String, dynamic>{'label': 'Chicago'},
+          boundaryTension: 0.08,
+          spatialConfidence: 0.93,
+          travelFriction: 0.2,
+          placeFitFlags: <String>['bootstrap_ready'],
+        ),
+        how: const kernel_models.HowKernelSnapshot(
+          executionPath: 'onboarding_recommendation_service',
+          workflowStage: 'onboarding',
+          transportMode: 'in_process',
+          plannerMode: 'bootstrap',
+          modelFamily: 'onboarding_recommendation',
+          interventionChain: <String>['bootstrap', 'rank'],
+          failureMechanism: 'none',
+          mechanismConfidence: 0.88,
+        ),
+      ),
+      projections: const <kernel_models.KernelGovernanceProjection>[
+        kernel_models.KernelGovernanceProjection(
+          domain: kernel_models.KernelDomain.where,
+          summary: 'locality remains inside where during onboarding',
+          confidence: 0.93,
+        ),
+        kernel_models.KernelGovernanceProjection(
+          domain: kernel_models.KernelDomain.how,
+          summary: 'bootstrap recommendation path governed',
+          confidence: 0.88,
+        ),
+      ],
+      generatedAtUtc: DateTime.utc(2026, 3, 7, 12),
+    );
+  }
+
+  @override
+  Future<kernel_models.KernelContextBundle> resolveRuntimeExecution({
+    required kernel_models.KernelEventEnvelope envelope,
+  }) async {
+    runtimeCalls += 1;
+    return kernel_models.KernelContextBundle(
+      who: const kernel_models.WhoKernelSnapshot(
+        primaryActor: 'agent',
+        affectedActor: 'agent',
+        companionActors: <String>[],
+        actorRoles: <String>['personal'],
+        trustScope: 'trusted_mesh',
+        cohortRefs: <String>['personal'],
+        identityConfidence: 0.95,
+      ),
+      what: const kernel_models.WhatKernelSnapshot(
+        actionType: 'recommend_list',
+        targetEntityType: 'onboarding',
+        targetEntityId: 'bootstrap',
+        stateTransitionType: 'observation',
+        outcomeType: 'generated',
+        semanticTags: <String>['onboarding'],
+        taxonomyConfidence: 0.9,
+      ),
+      when: kernel_models.WhenKernelSnapshot(
+        observedAt: DateTime.utc(2026, 3, 7, 12),
+        freshness: 0.95,
+        recencyBucket: 'recent',
+        timingConflictFlags: <String>[],
+        temporalConfidence: 0.94,
+      ),
+      where: const kernel_models.WhereKernelSnapshot(
+        localityToken: 'loc-onboarding',
+        cityCode: 'CHI',
+        localityCode: 'CHI-LOOP',
+        projection: <String, dynamic>{'label': 'Chicago'},
+        boundaryTension: 0.08,
+        spatialConfidence: 0.93,
+        travelFriction: 0.2,
+        placeFitFlags: <String>['bootstrap_ready'],
+      ),
+      how: const kernel_models.HowKernelSnapshot(
+        executionPath: 'onboarding_recommendation_service',
+        workflowStage: 'onboarding',
+        transportMode: 'in_process',
+        plannerMode: 'bootstrap',
+        modelFamily: 'onboarding_recommendation',
+        interventionChain: <String>['bootstrap', 'rank'],
+        failureMechanism: 'none',
+        mechanismConfidence: 0.88,
+      ),
+    );
+  }
 }

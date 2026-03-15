@@ -5,6 +5,7 @@ import 'package:avrai_runtime_os/services/transport/ble/adaptive_mesh_networking
 import 'package:avrai_runtime_os/services/transport/mesh/learning_insight_mesh_forwarder.dart';
 import 'package:avrai_runtime_os/services/transport/mesh/mesh_forwarding_context.dart';
 import 'package:avrai_runtime_os/services/transport/mesh/mesh_forwarding_target_selector.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/mesh_runtime_governance_orchestration_lane.dart';
 import 'package:avrai_runtime_os/crypto/signal/signal_types.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 
@@ -23,6 +24,7 @@ class PrekeyBundleMeshForwardingLane {
     required String logName,
     int maxCandidates = 2,
   }) async {
+    MeshGovernanceForwardPlan? governancePlan;
     try {
       if (adaptiveMeshService == null) {
         return;
@@ -37,18 +39,6 @@ class PrekeyBundleMeshForwardingLane {
         return;
       }
 
-      final candidates =
-          MeshForwardingTargetSelector.excludingRecipientAndLocalNode(
-        discoveredNodeIds: discoveredNodeIds,
-        recipientId: recipientId,
-        localNodeId: localNodeId,
-        maxCandidates: maxCandidates,
-      );
-
-      if (candidates.isEmpty) {
-        return;
-      }
-
       final forwardPayload = <String, dynamic>{
         'kind': 'prekey_bundle_forward',
         'recipient_id': recipientId,
@@ -57,6 +47,70 @@ class PrekeyBundleMeshForwardingLane {
         'origin_id': recipientId,
         'scope': 'locality',
       };
+      final candidates =
+          await MeshForwardingTargetSelector.excludingRecipientAndLocalNode(
+        discoveredNodeIds: discoveredNodeIds,
+        recipientId: recipientId,
+        localNodeId: localNodeId,
+        context: context,
+        geographicScope: 'locality',
+        maxCandidates: maxCandidates,
+      );
+
+      governancePlan =
+          await MeshRuntimeGovernanceOrchestrationLane.recordForwardPlan(
+        context: context,
+        candidatePeerIds: candidates,
+        senderNodeId: localNodeId,
+        destinationId: recipientId,
+        payloadKind: 'prekey_bundle_forward',
+        peerNodeIdByDeviceId: peerNodeIdByDeviceId,
+        geographicScope: 'locality',
+        payloadContext: const <String, dynamic>{
+          'payload_class': 'prekey_bundle',
+        },
+        logger: logger,
+        logName: logName,
+      );
+
+      if (candidates.isEmpty) {
+        final deferredEntry = await context.custodyOutbox?.enqueue(
+          receiptId: governancePlan.routeReceipt.receiptId,
+          destinationId: recipientId,
+          payloadKind: 'prekey_bundle_forward',
+          channel: 'mesh_ble_forward',
+          payload: forwardPayload,
+          payloadContext: const <String, dynamic>{
+            'payload_class': 'prekey_bundle',
+          },
+          sourceRouteReceipt: governancePlan.routeReceipt,
+          geographicScope: 'locality',
+        );
+        await MeshRuntimeGovernanceOrchestrationLane.recordForwardOutcome(
+          context: context,
+          plan: governancePlan,
+          senderNodeId: localNodeId,
+          destinationId: recipientId,
+          payloadKind: 'prekey_bundle_forward',
+          forwardedPeerIds: const <String>[],
+          failedPeerIds: const <String>[],
+          failureReason: deferredEntry == null
+              ? 'no_mesh_candidates_available'
+              : 'waiting_for_viable_route',
+          deferredToCustody: deferredEntry != null,
+          custodyOutboxEntryId: deferredEntry?.entryId,
+          geographicScope: 'locality',
+          payloadContext: const <String, dynamic>{
+            'payload_class': 'prekey_bundle',
+          },
+          logger: logger,
+          logName: logName,
+        );
+        return;
+      }
+
+      final forwardedPeerIds = <String>[];
+      final failedPeerIds = <String>[];
 
       await LearningInsightMeshForwarder.forward(
         candidatePeerIds: candidates,
@@ -66,20 +120,108 @@ class PrekeyBundleMeshForwardingLane {
         payload: forwardPayload,
         geographicScope: 'locality',
         fireAndForgetSend: true,
-        onForwarded: (_, peerRecipientId) {
+        onForwarded: (peerId, peerRecipientId) {
+          forwardedPeerIds.add(peerId);
           logger.debug(
             'Forwarded prekey bundle through mesh: $recipientId → $peerRecipientId',
             tag: logName,
           );
         },
-        onForwardFailed: (_, peerRecipientId, error) {
+        onForwardFailed: (peerId, peerRecipientId, error) {
+          failedPeerIds.add(peerId);
           logger.debug(
             'Failed to forward prekey bundle to $peerRecipientId: $error',
             tag: logName,
           );
         },
       );
+
+      final deferredEntry = forwardedPeerIds.isEmpty
+          ? await context.custodyOutbox?.enqueue(
+              receiptId: governancePlan.routeReceipt.receiptId,
+              destinationId: recipientId,
+              payloadKind: 'prekey_bundle_forward',
+              channel: 'mesh_ble_forward',
+              payload: forwardPayload,
+              payloadContext: const <String, dynamic>{
+                'payload_class': 'prekey_bundle',
+              },
+              sourceRouteReceipt: governancePlan.routeReceipt,
+              geographicScope: 'locality',
+            )
+          : null;
+      await MeshRuntimeGovernanceOrchestrationLane.recordForwardOutcome(
+        context: context,
+        plan: governancePlan,
+        senderNodeId: localNodeId,
+        destinationId: recipientId,
+        payloadKind: 'prekey_bundle_forward',
+        forwardedPeerIds: forwardedPeerIds,
+        failedPeerIds: failedPeerIds,
+        failureReason:
+            forwardedPeerIds.isEmpty ? 'all_mesh_candidates_failed' : null,
+        deferredToCustody: deferredEntry != null,
+        custodyOutboxEntryId: deferredEntry?.entryId,
+        geographicScope: 'locality',
+        payloadContext: const <String, dynamic>{
+          'payload_class': 'prekey_bundle',
+        },
+        logger: logger,
+        logName: logName,
+      );
     } catch (e) {
+      governancePlan ??=
+          await MeshRuntimeGovernanceOrchestrationLane.recordForwardPlan(
+        context: context,
+        candidatePeerIds: const <String>[],
+        senderNodeId: localNodeId,
+        destinationId: recipientId,
+        payloadKind: 'prekey_bundle_forward',
+        peerNodeIdByDeviceId: peerNodeIdByDeviceId,
+        geographicScope: 'locality',
+        payloadContext: const <String, dynamic>{
+          'payload_class': 'prekey_bundle',
+        },
+        logger: logger,
+        logName: logName,
+      );
+      final deferredEntry = await context.custodyOutbox?.enqueue(
+        receiptId: governancePlan.routeReceipt.receiptId,
+        destinationId: recipientId,
+        payloadKind: 'prekey_bundle_forward',
+        channel: 'mesh_ble_forward',
+        payload: <String, dynamic>{
+          'kind': 'prekey_bundle_forward',
+          'recipient_id': recipientId,
+          'prekey_bundle': bundle.toJson(),
+          'hop': 1,
+          'origin_id': recipientId,
+          'scope': 'locality',
+        },
+        payloadContext: const <String, dynamic>{
+          'payload_class': 'prekey_bundle',
+        },
+        sourceRouteReceipt: governancePlan.routeReceipt,
+        geographicScope: 'locality',
+      );
+      await MeshRuntimeGovernanceOrchestrationLane.recordForwardOutcome(
+        context: context,
+        plan: governancePlan,
+        senderNodeId: localNodeId,
+        destinationId: recipientId,
+        payloadKind: 'prekey_bundle_forward',
+        forwardedPeerIds: const <String>[],
+        failedPeerIds: const <String>[],
+        failureReason: e.toString(),
+        deferredToCustody: deferredEntry != null,
+        custodyOutboxEntryId: deferredEntry?.entryId,
+        geographicScope: 'locality',
+        payloadContext: const <String, dynamic>{
+          'payload_class': 'prekey_bundle',
+        },
+        logger: logger,
+        logName: logName,
+      );
       logger.debug('Error forwarding prekey bundle through mesh: $e',
           tag: logName);
     }

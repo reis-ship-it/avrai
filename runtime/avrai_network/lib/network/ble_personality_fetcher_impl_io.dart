@@ -6,9 +6,7 @@ import 'package:avrai_network/network/device_discovery.dart';
 
 const _logName = 'BlePersonalityFetcher';
 
-Future<Uint8List?> fetchDnaPayloadOverBle(
-  DiscoveredDevice device,
-) async {
+Future<Uint8List?> fetchDnaPayloadOverBle(DiscoveredDevice device) async {
   try {
     final bytes = await fetchBleGattStreamPayload(device: device, streamId: 0);
     if (bytes == null || bytes.isEmpty) return null;

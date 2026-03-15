@@ -24,7 +24,9 @@ class SwarmPopulationGenerator {
         ? 0.85
         : (city.name == 'Denver')
             ? 0.60
-            : 0.70; // Atlanta and others
+            : (city.name == 'Birmingham')
+                ? 0.66
+                : 0.70; // Atlanta and others
 
     double friction = _normalDistribution(cityBaseFriction, 0.15);
     friction = friction.clamp(0.1, 1.0);
@@ -98,6 +100,7 @@ class SwarmPopulationGenerator {
   SpatialHeatmap _getHeatmapForCity(String name) {
     if (name.contains('New York')) return CityHeatmaps.newYork;
     if (name.contains('Denver')) return CityHeatmaps.denver;
+    if (name.contains('Birmingham')) return CityHeatmaps.birmingham;
     return CityHeatmaps.atlanta;
   }
 

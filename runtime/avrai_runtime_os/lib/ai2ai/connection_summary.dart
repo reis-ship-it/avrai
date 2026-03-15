@@ -11,6 +11,12 @@ class ConnectionSummary {
   final ConnectionStatus status;
   final int interactionCount;
   final int dimensionsEvolved;
+  final List<String> canonicalReasonCodes;
+  final double? peerConfidence;
+  final double? peerFreshnessHours;
+  final List<String> sharedGeographicLevels;
+  final List<String> sharedScopedContextIds;
+  final String? peerWhySummary;
 
   ConnectionSummary({
     required this.connectionId,
@@ -22,6 +28,12 @@ class ConnectionSummary {
     required this.status,
     required this.interactionCount,
     required this.dimensionsEvolved,
+    this.canonicalReasonCodes = const <String>[],
+    this.peerConfidence,
+    this.peerFreshnessHours,
+    this.sharedGeographicLevels = const <String>[],
+    this.sharedScopedContextIds = const <String>[],
+    this.peerWhySummary,
   });
 
   Map<String, dynamic> toJson() {
@@ -35,6 +47,16 @@ class ConnectionSummary {
       'status': status.toString().split('.').last,
       'interaction_count': interactionCount,
       'dimensions_evolved': dimensionsEvolved,
+      if (canonicalReasonCodes.isNotEmpty)
+        'canonical_reason_codes': canonicalReasonCodes,
+      if (peerConfidence != null) 'peer_confidence': peerConfidence,
+      if (peerFreshnessHours != null)
+        'peer_freshness_hours': peerFreshnessHours,
+      if (sharedGeographicLevels.isNotEmpty)
+        'shared_geographic_levels': sharedGeographicLevels,
+      if (sharedScopedContextIds.isNotEmpty)
+        'shared_scoped_context_ids': sharedScopedContextIds,
+      if (peerWhySummary != null) 'peer_why_summary': peerWhySummary,
     };
   }
 }

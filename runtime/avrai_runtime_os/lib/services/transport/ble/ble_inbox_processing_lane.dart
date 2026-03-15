@@ -1,18 +1,16 @@
-// TODO(Phase 0.5.0): Remove this suppression after AI2AIProtocol callers migrate to DNAEncoderService.
-// ignore_for_file: deprecated_member_use
-
 import 'dart:async';
 
 import 'package:crypto/crypto.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 import 'package:avrai_network/avra_network.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/mesh_inbound_decode_lane.dart';
 
 class BleInboxProcessingLane {
   const BleInboxProcessingLane._();
 
   static Timer start({
     Duration interval = const Duration(seconds: 2),
-    required AI2AIProtocol? protocol,
+    required MeshInboundDecodeLane inboundDecodeLane,
     required Map<String, int> seenBleMessageHashes,
     required Future<void> Function(ProtocolMessage decoded)
         handleIncomingLocalityAgentUpdate,
@@ -28,9 +26,6 @@ class BleInboxProcessingLane {
     required String logName,
   }) {
     return Timer.periodic(interval, (_) async {
-      final activeProtocol = protocol;
-      if (activeProtocol == null) return;
-
       try {
         final messages = await BleInbox.pollMessages(maxMessages: 50);
         if (messages.isEmpty) return;
@@ -45,8 +40,11 @@ class BleInboxProcessingLane {
           seenBleMessageHashes[hash] =
               nowMs + const Duration(minutes: 10).inMilliseconds;
 
-          final decoded =
-              await activeProtocol.decodeMessage(msg.data, msg.senderId);
+          final decodedPacket = await inboundDecodeLane.decode(
+            packetData: msg.data,
+            senderId: msg.senderId,
+          );
+          final decoded = decodedPacket?.toLegacyProtocolMessage();
           if (decoded == null) continue;
 
           if (decoded.type == MessageType.learningInsight) {

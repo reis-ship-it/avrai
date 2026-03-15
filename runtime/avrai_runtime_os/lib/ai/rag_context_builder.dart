@@ -15,10 +15,11 @@ import 'package:avrai_runtime_os/ai/vibe_analysis_engine.dart'
     show UserVibeAnalyzer;
 import 'package:avrai_core/models/quantum/connection_metrics.dart';
 import 'package:avrai_core/models/user/user_vibe.dart';
-import 'package:avrai_runtime_os/services/ai_infrastructure/llm_service.dart';
 import 'package:avrai_runtime_os/services/ai_infrastructure/language_pattern_learning_service.dart';
+import 'package:avrai_runtime_os/services/language/language_runtime_service.dart';
 
-/// Unified RAG context builder. All RAG entry points use this to build LLMContext
+/// Unified RAG context builder. All RAG entry points use this to build
+/// LanguageRuntimeContext
 /// with facts, network cues, personality, vibe, ai2aiInsights, connectionMetrics, languageStyle.
 ///
 /// RAG Phase 4: Consistent AI2AI context.
@@ -57,8 +58,8 @@ class RAGContextBuilder {
     return GetIt.instance<T>();
   }
 
-  /// Builds full LLMContext for [userId]. Optional [query] and [location] for future use.
-  Future<LLMContext> buildContext({
+  /// Builds full language runtime context for [userId].
+  Future<LanguageRuntimeContext> buildContext({
     required String userId,
     String? query,
     Position? location,
@@ -138,7 +139,7 @@ class RAGContextBuilder {
         preferences['network_cues'] = networkCuesSummary;
       }
 
-      return LLMContext(
+      return LanguageRuntimeContext(
         userId: userId,
         location: location,
         preferences: preferences,
@@ -159,7 +160,7 @@ class RAGContextBuilder {
         stackTrace: st,
       );
       final profile = await _personalityLearning.getCurrentPersonality(userId);
-      return LLMContext(
+      return LanguageRuntimeContext(
         userId: userId,
         location: location,
         preferences: {

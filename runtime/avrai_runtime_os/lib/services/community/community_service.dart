@@ -220,6 +220,41 @@ class CommunityService implements CommunityReader {
     return community;
   }
 
+  Future<Community> createCommunity({
+    required String founderId,
+    required String name,
+    required String description,
+    required String category,
+    required String originalLocality,
+    String? cityCode,
+    String? localityCode,
+  }) async {
+    final now = await _now();
+    final community = Community(
+      id: 'community_${now.microsecondsSinceEpoch}',
+      name: name,
+      description: description,
+      category: category,
+      originatingEventId: '',
+      originatingEventType: OriginatingEventType.communityEvent,
+      founderId: founderId,
+      memberIds: <String>[founderId],
+      memberCount: 1,
+      createdAt: now,
+      updatedAt: now,
+      originalLocality: originalLocality,
+      currentLocalities: originalLocality.isEmpty
+          ? const <String>[]
+          : <String>[originalLocality],
+      cityCode: cityCode,
+      localityCode: localityCode,
+      activityLevel: ActivityLevel.growing,
+    );
+    await _saveCommunity(community);
+    _invalidateCommunityCaches(community.id);
+    return community;
+  }
+
   Future<Community?> attachExternalSyncMetadata({
     required String communityId,
     required ExternalSyncMetadata metadata,

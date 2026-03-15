@@ -12,7 +12,7 @@ import 'package:avrai_runtime_os/services/community/community_service.dart';
 import 'package:avrai_runtime_os/services/admin/admin_communication_service.dart';
 import 'package:avrai_core/models/business/business_account.dart';
 import 'package:avrai_core/models/community/club.dart';
-import 'package:avrai_runtime_os/services/admin/admin_god_mode_service.dart'
+import 'package:avrai_runtime_os/services/admin/admin_runtime_governance_service.dart'
     as admin_models
     show BusinessAccountData, ClubCommunityData, CommunicationsSnapshot;
 

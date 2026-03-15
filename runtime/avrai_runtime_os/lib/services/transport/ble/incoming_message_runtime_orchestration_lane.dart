@@ -1,11 +1,10 @@
-// TODO(Phase 0.5.0): Remove this suppression after AI2AIProtocol callers migrate to DNAEncoderService.
-// ignore_for_file: deprecated_member_use
-
 // MIGRATION_SHIM: LEGACY_PATH_GUARD TEMPORARY UNTIL TARGET-ROOT MIGRATION
 import 'dart:async';
 
 import 'package:avrai_runtime_os/ai/personality_learning.dart';
 import 'package:avrai_runtime_os/ai2ai/aipersonality_node.dart';
+import 'package:avrai_runtime_os/kernel/os/ai2ai_mesh_governance_binding_service.dart';
+import 'package:avrai_runtime_os/services/ai_infrastructure/ai2ai_chat_event_intake_service.dart';
 import 'package:avrai_runtime_os/services/transport/ble/incoming_message_orchestration_lane.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart'
@@ -13,6 +12,8 @@ import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart'
 import 'package:avrai_runtime_os/services/transport/ble/adaptive_mesh_networking_service.dart';
 import 'package:avrai_runtime_os/services/transport/ble/ble_inbox_processing_orchestration_lane.dart';
 import 'package:avrai_runtime_os/services/transport/mesh/mesh_forwarding_orchestration_lane.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/governed_mesh_packet_codec.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/mesh_inbound_decode_lane.dart';
 import 'package:avrai_network/avra_network.dart';
 import 'package:avrai_network/network/bloom_filter.dart';
 
@@ -20,11 +21,13 @@ class IncomingMessageRuntimeOrchestrationLane {
   static Timer? startBleInboxProcessing({
     required bool allowBleSideEffects,
     required Timer? existingPoller,
-    required AI2AIProtocol? protocol,
+    required MeshInboundDecodeLane inboundDecodeLane,
     required Map<String, int> seenBleMessageHashes,
     required SharedPreferencesCompat prefs,
     required String prefsKeyAi2AiLearningEnabled,
     required String? currentUserId,
+    String? currentAgentId,
+    Ai2AiChatEventIntakeService? ai2aiChatEventIntakeService,
     required PersonalityLearning? personalityLearning,
     required AdaptiveMeshNetworkingService? adaptiveMeshService,
     required Map<String, int> seenLearningInsightIds,
@@ -46,6 +49,9 @@ class IncomingMessageRuntimeOrchestrationLane {
     required Map<String, AIPersonalityNode> discoveredNodes,
     required DeviceDiscoveryService? discovery,
     required Map<String, String> peerNodeIdByDeviceId,
+    GovernedMeshPacketCodec? packetCodec,
+    Ai2AiMeshGovernanceBindingService? governanceBindingService,
+    bool trustedAnnounceEnforcementEnabled = false,
     required Future<void> Function() persistSeenBleHashesIfNeeded,
     required Future<void> Function() persistSeenLearningInsightIdsIfNeeded,
     required AppLogger logger,
@@ -54,7 +60,7 @@ class IncomingMessageRuntimeOrchestrationLane {
     return BleInboxProcessingOrchestrationLane.start(
       allowBleSideEffects: allowBleSideEffects,
       existingPoller: existingPoller,
-      protocol: protocol,
+      inboundDecodeLane: inboundDecodeLane,
       seenBleMessageHashes: seenBleMessageHashes,
       handleIncomingLocalityAgentUpdate: (message) {
         return IncomingMessageOrchestrationLane.handleLocalityAgentUpdate(
@@ -81,9 +87,14 @@ class IncomingMessageRuntimeOrchestrationLane {
               logger: logger,
               logName: logName,
               discoveredNodes: discoveredNodes,
-              protocol: protocol,
+              packetCodec: packetCodec,
               discovery: discovery,
               peerNodeIdByDeviceId: peerNodeIdByDeviceId,
+              governanceBindingService: governanceBindingService,
+              localUserId: currentUserId,
+              localAgentId: currentAgentId ?? localNodeId,
+              trustedAnnounceEnforcementEnabled:
+                  trustedAnnounceEnforcementEnabled,
             );
           },
           logger: logger,
@@ -129,9 +140,14 @@ class IncomingMessageRuntimeOrchestrationLane {
               logger: logger,
               logName: logName,
               discoveredNodes: discoveredNodes,
-              protocol: protocol,
+              packetCodec: packetCodec,
               discovery: discovery,
               peerNodeIdByDeviceId: peerNodeIdByDeviceId,
+              governanceBindingService: governanceBindingService,
+              localUserId: currentUserId,
+              localAgentId: currentAgentId ?? localNodeId,
+              trustedAnnounceEnforcementEnabled:
+                  trustedAnnounceEnforcementEnabled,
             );
           },
           logger: logger,
@@ -141,6 +157,7 @@ class IncomingMessageRuntimeOrchestrationLane {
       handleIncomingUserChat: (message) {
         return IncomingMessageOrchestrationLane.handleUserChat(
           message: message,
+          ai2aiChatEventIntakeService: ai2aiChatEventIntakeService,
           logger: logger,
           logName: logName,
         );

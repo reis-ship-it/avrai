@@ -93,14 +93,14 @@ class _LegalAgePageState extends State<LegalAgePage> {
   }
 
   Future<void> _openTermsOfService() async {
-    const url = 'https://avrai.com/terms';
+    const url = 'https://avrai.org/terms';
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
     }
   }
 
   Future<void> _openPrivacyPolicy() async {
-    const url = 'https://avrai.com/privacy';
+    const url = 'https://avrai.org/privacy';
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
     }

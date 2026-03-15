@@ -1,4 +1,6 @@
 import 'package:equatable/equatable.dart';
+import 'package:avrai_runtime_os/kernel/os/functional_kernel_models.dart';
+import 'package:avrai_runtime_os/kernel/os/headless_avrai_os_bootstrap_service.dart';
 
 /// Base result class for all controller results
 ///
@@ -101,4 +103,83 @@ class ValidationResult extends Equatable {
 
   @override
   List<Object?> get props => [isValid, fieldErrors, generalErrors, warnings];
+}
+
+class OsBackedFlowResult<T> extends Equatable {
+  final bool success;
+  final T? data;
+  final String? error;
+  final String? errorCode;
+  final Map<String, dynamic> metadata;
+  final bool degraded;
+  final HeadlessAvraiOsBootstrapSnapshot? restoredHeadlessOsBootstrapSnapshot;
+  final KernelEventEnvelope? kernelEventEnvelope;
+  final TransportRouteReceipt? routeReceipt;
+
+  const OsBackedFlowResult({
+    required this.success,
+    this.data,
+    this.error,
+    this.errorCode,
+    this.metadata = const <String, dynamic>{},
+    this.degraded = false,
+    this.restoredHeadlessOsBootstrapSnapshot,
+    this.kernelEventEnvelope,
+    this.routeReceipt,
+  });
+
+  factory OsBackedFlowResult.success({
+    required T data,
+    Map<String, dynamic> metadata = const <String, dynamic>{},
+    bool degraded = false,
+    HeadlessAvraiOsBootstrapSnapshot? restoredHeadlessOsBootstrapSnapshot,
+    KernelEventEnvelope? kernelEventEnvelope,
+    TransportRouteReceipt? routeReceipt,
+  }) {
+    return OsBackedFlowResult<T>(
+      success: true,
+      data: data,
+      metadata: metadata,
+      degraded: degraded,
+      restoredHeadlessOsBootstrapSnapshot: restoredHeadlessOsBootstrapSnapshot,
+      kernelEventEnvelope: kernelEventEnvelope,
+      routeReceipt: routeReceipt,
+    );
+  }
+
+  factory OsBackedFlowResult.failure({
+    required String error,
+    String? errorCode,
+    Map<String, dynamic> metadata = const <String, dynamic>{},
+    bool degraded = false,
+    HeadlessAvraiOsBootstrapSnapshot? restoredHeadlessOsBootstrapSnapshot,
+    KernelEventEnvelope? kernelEventEnvelope,
+    TransportRouteReceipt? routeReceipt,
+  }) {
+    return OsBackedFlowResult<T>(
+      success: false,
+      error: error,
+      errorCode: errorCode,
+      metadata: metadata,
+      degraded: degraded,
+      restoredHeadlessOsBootstrapSnapshot: restoredHeadlessOsBootstrapSnapshot,
+      kernelEventEnvelope: kernelEventEnvelope,
+      routeReceipt: routeReceipt,
+    );
+  }
+
+  bool get isSuccess => success && error == null;
+
+  @override
+  List<Object?> get props => <Object?>[
+        success,
+        data,
+        error,
+        errorCode,
+        metadata,
+        degraded,
+        restoredHeadlessOsBootstrapSnapshot,
+        kernelEventEnvelope,
+        routeReceipt,
+      ];
 }

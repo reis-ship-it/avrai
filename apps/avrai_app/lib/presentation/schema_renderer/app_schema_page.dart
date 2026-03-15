@@ -20,6 +20,7 @@ class AppSchemaPage extends StatelessWidget {
   final bool scrollable;
   final EdgeInsetsGeometry padding;
   final bool? showNavigationBar;
+  final Key? bodyScrollKey;
 
   const AppSchemaPage({
     super.key,
@@ -28,6 +29,7 @@ class AppSchemaPage extends StatelessWidget {
     this.scrollable = true,
     this.padding = const EdgeInsets.all(16),
     this.showNavigationBar,
+    this.bodyScrollKey,
   });
 
   @override
@@ -40,6 +42,7 @@ class AppSchemaPage extends StatelessWidget {
       showNavigationBar: showNavigationBar ?? schema.showNavigationBar,
       scrollable: scrollable,
       padding: padding,
+      scrollViewKey: bodyScrollKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: _buildSections(context),

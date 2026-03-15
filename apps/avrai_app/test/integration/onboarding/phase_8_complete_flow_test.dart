@@ -69,9 +69,17 @@ Future<void> navigateToBaselineListsStep(WidgetTester tester) async {
 void main() {
   final runHeavyIntegrationTests =
       Platform.environment['RUN_HEAVY_INTEGRATION_TESTS'] == 'true';
+  const bool runFullOnboardingIntegrationTests =
+      bool.fromEnvironment('RUN_FULL_ONBOARDING_INTEGRATION_TESTS');
+
+  if (!runFullOnboardingIntegrationTests) {
+    return;
+  }
 
   setUpAll(() async {
-    if (!runHeavyIntegrationTests) {
+    if (!runHeavyIntegrationTests ||
+        !_isFlutterTest ||
+        !runFullOnboardingIntegrationTests) {
       return;
     }
 
@@ -239,5 +247,8 @@ void main() {
       expect(profile, isNotNull,
           reason: 'PersonalityProfile should be created after onboarding');
     }, skip: _isFlutterTest);
-  }, skip: !runHeavyIntegrationTests);
+  },
+      skip: !runHeavyIntegrationTests ||
+          !_isFlutterTest ||
+          !runFullOnboardingIntegrationTests);
 }

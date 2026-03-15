@@ -1,0 +1,31 @@
+{
+  "control_pack_id": "quantum_atomic_time_validity_controls",
+  "scope": "authoritative temporal validity windows for cognition, governance, replay, and cross-node coherence",
+  "master_plan_refs": ["12.1.11", "12.6.10"],
+  "related_milestones": ["M31-P7-2"],
+  "temporal_contract": {
+    "authoritative_time_mode": "quantum_atomic_time",
+    "required_fields": [
+      "atomic_timestamp",
+      "sync_status",
+      "drift_offset_ms",
+      "sync_rtt_ms",
+      "uncertainty_window_ms"
+    ],
+    "fail_closed_when_uncertainty_exceeds_policy": true
+  },
+  "validity_windows_ms": {
+    "high_impact_commit_max_uncertainty_ms": 25,
+    "governance_override_max_uncertainty_ms": 15,
+    "governance_inspection_max_uncertainty_ms": 50,
+    "cross_node_reconciliation_max_uncertainty_ms": 30
+  },
+  "degraded_mode_policy": {
+    "allow_semantic_time_fallback_for_low_impact_actions": true,
+    "forbid_semantic_time_only_for_high_impact_governance": true,
+    "require_replay_block_on_invalid_temporal_provenance": true
+  },
+  "status": "starter",
+  "last_updated": "2026-03-06",
+  "notes": "Starter timing policy pack. Thresholds are placeholders until empirical sync/error budgets are measured."
+}

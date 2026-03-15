@@ -824,8 +824,6 @@ class AIMasterOrchestrator {
     );
   }
 
-
-
   // ignore: unused_element
   user_model.User _convertToModelUser(UnifiedUser unifiedUser) {
     return user_model.User(

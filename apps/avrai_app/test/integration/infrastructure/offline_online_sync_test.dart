@@ -1,18 +1,22 @@
 import 'dart:io';
 
+import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:avrai_core/models/spots/spot.dart';
 import 'package:avrai_core/models/misc/list.dart';
 import 'package:avrai_core/models/user/user.dart';
+import 'package:get_it/get_it.dart';
 import 'package:avrai_runtime_os/data/repositories/auth_repository_impl.dart';
 import 'package:avrai_runtime_os/data/repositories/spots_repository_impl.dart';
 import 'package:avrai_runtime_os/data/repositories/lists_repository_impl.dart';
 import 'package:avrai_runtime_os/data/datasources/local/auth_drift_datasource.dart';
 import 'package:avrai_runtime_os/data/datasources/local/spots_drift_datasource.dart';
 import 'package:avrai_runtime_os/data/datasources/local/lists_drift_datasource.dart';
+import 'package:avrai_runtime_os/data/database/app_database.dart';
 import 'package:avrai_runtime_os/data/datasources/remote/spots_remote_datasource.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../helpers/platform_channel_helper.dart';
 
 /// Offline/Online Sync Integration Test
 ///
@@ -45,12 +49,24 @@ void main() {
     late SpotsRepositoryImpl spotsRepository;
     late ListsRepositoryImpl listsRepository;
     late MockConnectivity mockConnectivity;
+    late AppDatabase testDatabase;
 
     setUpAll(() async {
       // No-op: Sembast removed in Phase 26
     });
 
     setUp(() async {
+      await setupTestStorage();
+
+      if (GetIt.I.isRegistered<AppDatabase>()) {
+        await GetIt.I.unregister<AppDatabase>(disposingFunction: (db) async {
+          await db.close();
+        });
+      }
+
+      testDatabase = AppDatabase.forTesting(NativeDatabase.memory());
+      GetIt.I.registerSingleton<AppDatabase>(testDatabase);
+
       // Reset SharedPreferences mock state for test isolation
       SharedPreferences.setMockInitialValues({});
 
@@ -75,6 +91,16 @@ void main() {
         remoteDataSource: null, // Start offline
         connectivity: mockConnectivity,
       );
+    });
+
+    tearDown(() async {
+      if (GetIt.I.isRegistered<AppDatabase>()) {
+        await GetIt.I.unregister<AppDatabase>(disposingFunction: (db) async {
+          await db.close();
+        });
+      } else {
+        await testDatabase.close();
+      }
     });
 
     test('Complete Offline → Online → Conflict Resolution Cycle', () async {

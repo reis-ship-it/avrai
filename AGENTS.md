@@ -37,7 +37,7 @@ AVRAI/                          # Monorepo root
 
 ```bash
 melos bootstrap              # Install all dependencies
-melos test                   # Run all tests
+melos exec --dir-exists=test -c 4 -- flutter test  # Run all package tests
 melos analyze                # Run flutter analyze on all packages
 melos check:architecture     # Validate package dependency boundaries
 melos check:repo_hygiene     # Verify no generated artifacts in git
@@ -53,7 +53,7 @@ dart format --set-exit-if-changed .  # Check formatting
 
 ## Before Opening a PR
 
-1. All tests pass: `melos test`
+1. All tests pass: `melos exec --dir-exists=test -c 4 -- flutter test`
 2. Analysis clean: `flutter analyze --fatal-infos`
 3. Formatting clean: `dart format --set-exit-if-changed .`
 4. Architecture boundaries: `melos check:architecture`

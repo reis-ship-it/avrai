@@ -8,6 +8,7 @@ import 'package:avrai_core/models/user/user_vibe.dart';
 import 'package:avrai_core/models/spots/spot_vibe.dart';
 import 'package:avrai_runtime_os/services/calling_score/calling_score_calculator.dart';
 import 'package:avrai_runtime_os/services/calling_score/calling_score_data_collector.dart';
+import 'package:avrai_runtime_os/services/temporal/runtime_temporal_context_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Outcome Prediction Service
@@ -22,14 +23,17 @@ class OutcomePredictionService {
   final OutcomePredictionModel _model;
   final SupabaseClient? _supabase;
   final CallingScoreDataCollector? _dataCollector;
+  final RuntimeTemporalContextService? _runtimeTemporalContextService;
 
   OutcomePredictionService({
     required OutcomePredictionModel model,
     SupabaseClient? supabase,
     CallingScoreDataCollector? dataCollector,
+    RuntimeTemporalContextService? runtimeTemporalContextService,
   })  : _model = model,
         _supabase = supabase,
-        _dataCollector = dataCollector;
+        _dataCollector = dataCollector,
+        _runtimeTemporalContextService = runtimeTemporalContextService;
 
   /// Predict outcome probability for a recommendation
   ///
@@ -66,13 +70,19 @@ class OutcomePredictionService {
         baseFeatures: baseFeatures,
         historyFeatures: historyFeatures,
       );
+      final temporalContext = await _buildTemporalContext();
+      final adjustedProbability = _applyTemporalAdjustment(
+        probability: probability,
+        temporalContext: temporalContext,
+      );
 
       developer.log(
-        'Outcome probability: ${(probability * 100).toStringAsFixed(1)}%',
+        'Outcome probability: ${(adjustedProbability * 100).toStringAsFixed(1)}%'
+        ' (base ${(probability * 100).toStringAsFixed(1)}%)',
         name: _logName,
       );
 
-      return probability;
+      return adjustedProbability;
     } catch (e, stackTrace) {
       developer.log(
         'Error predicting outcome: $e',
@@ -308,5 +318,45 @@ class OutcomePredictionService {
       // Return default values on error
       return [0.5, 0.5, 0.5, 0.0, 0.5, 0.5];
     }
+  }
+
+  Future<RuntimeTemporalContext> _buildTemporalContext() async {
+    final service = _runtimeTemporalContextService;
+    if (service == null) {
+      return RuntimeTemporalContext.empty();
+    }
+    try {
+      return await service.buildContext();
+    } catch (e) {
+      developer.log(
+        'Error building temporal context: $e',
+        name: _logName,
+        error: e,
+      );
+      return RuntimeTemporalContext.empty();
+    }
+  }
+
+  double _applyTemporalAdjustment({
+    required double probability,
+    required RuntimeTemporalContext temporalContext,
+  }) {
+    if (temporalContext.totalEvents == 0) {
+      return probability;
+    }
+
+    final orderedRatio = temporalContext.totalEvents > 0
+        ? temporalContext.orderedCount / temporalContext.totalEvents
+        : 0.0;
+    final bufferedRatio = temporalContext.totalEvents > 0
+        ? temporalContext.bufferedCount / temporalContext.totalEvents
+        : 0.0;
+    final peerDiversityBoost =
+        (temporalContext.uniquePeerCount / 10.0).clamp(0.0, 0.1);
+    final adjustment = ((orderedRatio - bufferedRatio) * 0.08) +
+        peerDiversityBoost -
+        (bufferedRatio * 0.04);
+
+    return (probability + adjustment).clamp(0.0, 1.0);
   }
 }

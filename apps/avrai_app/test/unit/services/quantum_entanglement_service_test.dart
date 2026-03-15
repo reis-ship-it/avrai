@@ -203,6 +203,40 @@ void main() {
       expect(bonus, greaterThanOrEqualTo(0.0));
       expect(bonus, lessThanOrEqualTo(1.0));
     });
+
+    test('should use reduced entanglement representation for large entity sets',
+        () async {
+      await atomicClock.initialize();
+
+      final entities = <QuantumEntityState>[];
+      for (var i = 0; i < 100; i++) {
+        final tAtomic = await atomicClock.getAtomicTimestamp();
+        entities.add(
+          QuantumEntityState(
+            entityId: 'entity-$i',
+            entityType: QuantumEntityType.user,
+            personalityState: {
+              'dim1': 0.4 + (i * 0.001),
+              'dim2': 0.5 + (i * 0.001),
+            },
+            quantumVibeAnalysis: {
+              'vibe1': 0.6 + (i * 0.001),
+              'vibe2': 0.7 + (i * 0.001),
+            },
+            entityCharacteristics: const {'type': 'user'},
+            tAtomic: tAtomic,
+          ),
+        );
+      }
+
+      final entangled = await service.createEntangledState(
+        entityStates: entities,
+      );
+
+      expect(entangled.entityStates.length, equals(100));
+      expect(entangled.entangledVector.length, equals(32));
+      expect(entangled.isNormalized, isTrue);
+    });
   });
 
   group('QuantumEntityState', () {

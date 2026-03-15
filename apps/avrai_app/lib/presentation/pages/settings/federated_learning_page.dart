@@ -12,6 +12,7 @@ class FederatedLearningPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppSchemaPage(
+      bodyScrollKey: const Key('federated_learning_page_scroll'),
       schema: buildFederatedLearningPageSchema(
         content: const Column(
           children: [

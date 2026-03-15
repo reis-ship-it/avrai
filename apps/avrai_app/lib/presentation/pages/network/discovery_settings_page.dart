@@ -154,147 +154,144 @@ class _DiscoverySettingsPageState extends State<DiscoverySettingsPage> {
   @override
   Widget build(BuildContext context) {
     return AppSchemaPage(
+      bodyScrollKey: const Key('discovery_settings_page_scroll'),
       schema: buildDiscoverySettingsDetailPageSchema(
         content: Form(
           key: _formKey,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AppSurface(
-                  radius: 12,
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Scan Interval',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AppSurface(
+                radius: 12,
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Scan Interval',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
                       ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'How often to scan for nearby devices (in seconds)',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                        ),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'How often to scan for nearby devices (in seconds)',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textSecondary,
                       ),
-                      const SizedBox(height: 12),
-                      TextFormField(
-                        controller: _scanIntervalController,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: 'Seconds',
-                          hintText: '5',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          filled: true,
-                          fillColor: AppColors.grey100,
-                        ),
-                        validator: _validateScanInterval,
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Recommended: 5-10 seconds for active discovery',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: AppColors.textHint,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                AppSurface(
-                  radius: 12,
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Device Timeout',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'How long to keep discovered devices before removing them (in minutes)',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      TextFormField(
-                        controller: _deviceTimeoutController,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: 'Minutes',
-                          hintText: '2',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          filled: true,
-                          fillColor: AppColors.grey100,
-                        ),
-                        validator: _validateDeviceTimeout,
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Recommended: 2-5 minutes to balance freshness and stability',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: AppColors.textHint,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Semantics(
-                  button: true,
-                  label: 'Save discovery settings',
-                  hint: 'Applies scan interval and device timeout values.',
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _saveSettings,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: AppColors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        minimumSize: const Size(48, 48),
-                        shape: RoundedRectangleBorder(
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _scanIntervalController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: 'Seconds',
+                        hintText: '5',
+                        border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
+                        filled: true,
+                        fillColor: AppColors.grey100,
                       ),
-                      child: const Text(
-                        'Save',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                      validator: _validateScanInterval,
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Recommended: 5-10 seconds for active discovery',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: AppColors.textHint,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              AppSurface(
+                radius: 12,
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Device Timeout',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'How long to keep discovered devices before removing them (in minutes)',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _deviceTimeoutController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: 'Minutes',
+                        hintText: '2',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
                         ),
+                        filled: true,
+                        fillColor: AppColors.grey100,
+                      ),
+                      validator: _validateDeviceTimeout,
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Recommended: 2-5 minutes to balance freshness and stability',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: AppColors.textHint,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+              Semantics(
+                button: true,
+                label: 'Save discovery settings',
+                hint: 'Applies scan interval and device timeout values.',
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _saveSettings,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: AppColors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      minimumSize: const Size(48, 48),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text(
+                      'Save',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
-      scrollable: false,
     );
   }
 }

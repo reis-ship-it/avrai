@@ -91,6 +91,10 @@ class OnboardingDataService {
         dimensionConfidence: data.dimensionConfidence,
         tosAccepted: data.tosAccepted,
         privacyAccepted: data.privacyAccepted,
+        betaConsentAccepted: data.betaConsentAccepted,
+        betaConsentVersion: data.betaConsentVersion,
+        questionnaireVersion: data.questionnaireVersion,
+        permissionStates: data.permissionStates,
       );
 
       // Validate data before saving

@@ -9,13 +9,14 @@ import 'package:avrai_runtime_os/ai/personality_learning.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 import 'package:avrai_runtime_os/services/ledgers/ledger_audit_v0.dart';
 import 'package:avrai_runtime_os/services/ledgers/ledger_domain_v0.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/governed_mesh_packet_codec.dart';
 import 'package:avrai_network/avra_network.dart';
 
 class LearningInsightPeerSendLane {
   const LearningInsightPeerSendLane._();
 
   static Future<void> send({
-    required AI2AIProtocol protocol,
+    required GovernedMeshPacketCodec packetCodec,
     required DiscoveredDevice device,
     required String peerId,
     required String localBleNodeId,
@@ -46,9 +47,8 @@ class LearningInsightPeerSendLane {
 
     try {
       await enqueueFederatedDeltaForCloudFromInsightPayload(payload);
-
-      final packetBytes = await protocol.encodePacketBytes(
-        type: MessageType.learningInsight,
+      final packetBytes = await packetCodec.encode(
+        type: MeshPacketType.learningInsight,
         payload: payload,
         senderNodeId: localBleNodeId,
         recipientNodeId: recipientId,

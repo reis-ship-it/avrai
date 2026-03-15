@@ -19,9 +19,10 @@
   "gateway_controls": {
     "zero_trust_gateway_required": true,
     "public_direct_admin_api_access": "deny",
-    "step_up_auth_for_high_impact_actions": true
+    "step_up_auth_for_high_impact_actions": true,
+    "dual_approval_for_break_glass_and_open_web": true
   },
-  "status": "starter",
-  "last_updated": "2026-02-28",
-  "notes": "Intended as immediate control set while VPN/private-mesh is being provisioned."
+  "status": "enforced",
+  "last_updated": "2026-03-14",
+  "notes": "Enforced zero-trust posture for private-mesh-only admin control-plane access."
 }

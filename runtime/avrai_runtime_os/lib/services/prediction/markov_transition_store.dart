@@ -20,12 +20,12 @@ import 'swarm_prior_loader.dart';
 /// Stores and retrieves Markov transition counts for engagement phase prediction.
 ///
 /// Storage key per agent: `markov_transitions_{agentId}`
-/// Schema: JSON Map<String, int> where key = "fromPhase:toPhase"
+/// Schema: JSON `Map<String, int>` where key = `"fromPhase:toPhase"`
 ///
 /// Blending: total_count[from][to] = real_count[from][to] + prior_count[from][to]
-/// where prior_count comes from [SwarmPriorLoader] city-stratified priors.
+/// where prior_count comes from [SwarmPriorLoader]'s legacy bridge priors.
 /// Prior weight = 100 synthetic observations per row. Decays naturally as real
-/// data accumulates (after 200 real observations, prior is < 33% of weight).
+/// data accumulates (after 200 real observations, prior is below 33% of weight).
 class MarkovTransitionStore {
   static const String _logName = 'MarkovTransitionStore';
   static const String _keyPrefix = 'markov_transitions_';

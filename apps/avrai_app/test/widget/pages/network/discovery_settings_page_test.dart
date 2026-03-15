@@ -41,7 +41,7 @@ void main() {
       expect(
         find.descendant(
           of: find.byType(AppBar),
-          matching: find.text('Discovery Settings'),
+          matching: find.text('Device Discovery Configuration'),
         ),
         findsOneWidget,
       );

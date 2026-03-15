@@ -1,6 +1,3 @@
-// TODO(Phase 0.5.0): Remove this suppression after AI2AIProtocol callers migrate to DNAEncoderService.
-// ignore_for_file: deprecated_member_use
-
 // MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
 import 'package:avrai_runtime_os/ai/vibe_analysis_engine.dart';
 import 'package:avrai_runtime_os/ai2ai/aipersonality_node.dart';
@@ -14,10 +11,10 @@ import 'package:avrai_core/constants/vibe_constants.dart';
 import 'package:avrai_runtime_os/crypto/signal/signal_key_manager.dart';
 import 'package:avrai_core/models/quantum/connection_metrics.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/governed_mesh_packet_codec.dart';
 import 'package:avrai_core/models/personality_profile.dart';
 import 'package:avrai_knot/services/knot/knot_storage_service.dart';
 import 'package:avrai_knot/services/knot/knot_weaving_service.dart';
-import 'package:avrai_network/avra_network.dart';
 
 class ConnectionAttemptOrchestrationLane {
   const ConnectionAttemptOrchestrationLane._();
@@ -34,7 +31,7 @@ class ConnectionAttemptOrchestrationLane {
     required ConnectionManager connectionManager,
     required bool Function(VibeCompatibilityResult compatibility)
         isConnectionWorthy,
-    required AI2AIProtocol? protocol,
+    required GovernedMeshPacketCodec? packetCodec,
     required SignalKeyManager? signalKeyManager,
     required KnotWeavingService? knotWeavingService,
     required KnotStorageService? knotStorageService,
@@ -75,7 +72,7 @@ class ConnectionAttemptOrchestrationLane {
           remoteNode,
           (localVibe, remote, comp, metrics) =>
               ConnectionEstablishmentLane.establish(
-            protocol: protocol,
+            packetCodec: packetCodec,
             signalKeyManager: signalKeyManager,
             knotWeavingService: knotWeavingService,
             knotStorageService: knotStorageService,

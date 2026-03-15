@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:avrai_core/models/events/event_planning.dart';
 import 'package:avrai_core/models/expertise/expertise_event.dart';
 import 'package:avrai_core/models/events/event_success_metrics.dart';
 import 'package:avrai_core/models/events/event_success_level.dart';
 import 'package:avrai_runtime_os/services/events/event_success_analysis_service.dart';
-import 'package:avrai_runtime_os/services/expertise/expertise_event_service.dart';
-import 'package:avrai_runtime_os/services/events/post_event_feedback_service.dart';
-import 'package:avrai_runtime_os/services/payment/payment_service.dart';
+import 'package:avrai_runtime_os/services/events/event_host_debrief_service.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
@@ -39,23 +38,28 @@ class EventSuccessDashboard extends StatefulWidget {
 }
 
 class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
-  final EventSuccessAnalysisService _analysisService =
-      EventSuccessAnalysisService(
-    eventService: GetIt.instance<ExpertiseEventService>(),
-    feedbackService: PostEventFeedbackService(
-      eventService: GetIt.instance<ExpertiseEventService>(),
-    ),
-    paymentService: GetIt.instance<PaymentService>(),
-  );
+  late final EventSuccessAnalysisService _analysisService;
+  late final EventHostDebriefService _debriefService;
+  final TextEditingController _outcomeNotesController = TextEditingController();
 
   EventSuccessMetrics? _metrics;
+  HostEventDebrief? _debrief;
   bool _isLoading = true;
+  bool _isSavingDebrief = false;
   String? _error;
 
   @override
   void initState() {
     super.initState();
+    _analysisService = GetIt.instance<EventSuccessAnalysisService>();
+    _debriefService = GetIt.instance<EventHostDebriefService>();
     _loadMetrics();
+  }
+
+  @override
+  void dispose() {
+    _outcomeNotesController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadMetrics() async {
@@ -70,9 +74,11 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
 
       // If no metrics exist, analyze the event
       metrics ??= await _analysisService.analyzeEventSuccess(widget.event.id);
+      final debrief = await _debriefService.getDebrief(widget.event.id);
 
       setState(() {
         _metrics = metrics;
+        _debrief = debrief;
         _isLoading = false;
       });
     } catch (e) {
@@ -142,6 +148,9 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
             _buildKeyMetrics(),
             const SizedBox(height: 24),
 
+            _buildHostDebrief(),
+            const SizedBox(height: 24),
+
             // NPS Score
             _buildNPSScore(),
             const SizedBox(height: 24),
@@ -170,6 +179,229 @@ class _EventSuccessDashboardState extends State<EventSuccessDashboard> {
         ),
       ),
     );
+  }
+
+  Future<void> _recordDebrief() async {
+    setState(() {
+      _isSavingDebrief = true;
+      _error = null;
+    });
+
+    try {
+      final debrief = await _debriefService.createDebrief(
+        eventId: widget.event.id,
+        outcomeNotesRaw: _outcomeNotesController.text.trim().isEmpty
+            ? null
+            : _outcomeNotesController.text.trim(),
+      );
+
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _debrief = debrief;
+        _isSavingDebrief = false;
+      });
+    } catch (e) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _error = e.toString();
+        _isSavingDebrief = false;
+      });
+    }
+  }
+
+  Widget _buildHostDebrief() {
+    if (widget.event.planningSnapshot == null && _debrief == null) {
+      return Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.grey300),
+        ),
+        child: const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Host Debrief Unavailable',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              'This event does not have an air-gapped planning snapshot, so AVRAI cannot compare planned event truth against the outcome.',
+              style: TextStyle(
+                color: AppColors.textSecondary,
+                height: 1.5,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_debrief != null) {
+      return Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: AppTheme.primaryColor.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: AppTheme.primaryColor.withValues(alpha: 0.2),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Row(
+              children: [
+                Icon(Icons.fact_check_outlined, color: AppTheme.primaryColor),
+                SizedBox(width: 8),
+                Text(
+                  'Host Debrief',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            if (_debrief!.predictedAttendanceFillBand != null)
+              Text(
+                'Predicted fill: ${_titleCase(_debrief!.predictedAttendanceFillBand!.name)}',
+                style: const TextStyle(color: AppColors.textPrimary),
+              ),
+            const SizedBox(height: 4),
+            Text(
+              'Actual attendance: ${_debrief!.actualAttendance} • Return intent: ${(_debrief!.wouldAttendAgainRate * 100).toStringAsFixed(0)}%',
+              style: const TextStyle(color: AppColors.textPrimary),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Average rating: ${_debrief!.averageRating.toStringAsFixed(1)} / 5.0',
+              style: const TextStyle(color: AppColors.textPrimary),
+            ),
+            if (_debrief!.insightLines.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              ..._debrief!.insightLines.map(
+                (String line) => Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(
+                        Icons.arrow_forward,
+                        size: 16,
+                        color: AppTheme.primaryColor,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          line,
+                          style: const TextStyle(
+                            color: AppColors.textPrimary,
+                            height: 1.45,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.grey300),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.edit_note_outlined, color: AppTheme.primaryColor),
+              SizedBox(width: 8),
+              Text(
+                'Record Host Debrief',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'AVRAI will compare the air-gapped planning snapshot to the actual outcome. Any notes entered here cross the air gap before learning.',
+            style: TextStyle(
+              color: AppColors.textSecondary,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _outcomeNotesController,
+            maxLines: 4,
+            decoration: InputDecoration(
+              hintText:
+                  'What felt right, what missed, and what should AVRAI remember for next time?',
+              filled: true,
+              fillColor: AppColors.background,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: _isSavingDebrief ? null : _recordDebrief,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.primaryColor,
+                foregroundColor: AppColors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+              ),
+              child: _isSavingDebrief
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.white,
+                      ),
+                    )
+                  : const Text('Record Debrief'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _titleCase(String value) {
+    return value.isEmpty
+        ? value
+        : '${value[0].toUpperCase()}${value.substring(1).toLowerCase()}';
   }
 
   Widget _buildSuccessLevelBadge() {

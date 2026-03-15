@@ -11,11 +11,15 @@ import 'package:avrai_runtime_os/data/datasources/local/onboarding_completion_se
 import 'package:avrai_runtime_os/services/infrastructure/supabase_service.dart';
 import 'package:avrai_runtime_os/crypto/signal/signal_protocol_service.dart';
 import 'package:avrai_runtime_os/services/security/signal_protocol_initialization_service.dart';
+import 'package:avrai_runtime_os/services/background/headless_background_runtime_coordinator.dart';
 import 'package:avrai_core/services/atomic_clock_service.dart';
+import 'package:avrai_runtime_os/kernel/os/headless_avrai_os_bootstrap_service.dart';
 import 'package:avrai_runtime_os/services/local_llm/local_llm_auto_install_service.dart';
 import 'package:avrai_runtime_os/services/quantum/quantum_matching_connectivity_listener.dart';
 import 'package:avrai_runtime_os/services/infrastructure/deferred_initialization_service.dart';
 import 'dart:async';
+// ignore: unused_import
+import 'package:avrai/background/headless_background_runtime_entrypoint.dart';
 
 void main() async {
   // Performance tracking: Start measuring startup time
@@ -66,6 +70,18 @@ void main() async {
     logger.info('🔧 [MAIN] Initializing dependency injection...');
     await di.init();
     logger.info('✅ [MAIN] Dependency injection initialized.');
+
+    if (di.sl.isRegistered<HeadlessAvraiOsBootstrapService>()) {
+      final bootstrap = di.sl<HeadlessAvraiOsBootstrapService>();
+      final restoredSnapshot = await bootstrap.restorePersistedSnapshot();
+      if (restoredSnapshot != null) {
+        logger.info(
+          '♻️ [MAIN] Restored headless AVRAI OS snapshot '
+          '(kernels=${restoredSnapshot.healthReports.length}, '
+          'localityInWhere=${restoredSnapshot.state.localityContainedInWhere})',
+        );
+      }
+    }
 
     // Note: AppDatabase (Drift) is initialized via DI in injection_container_device_sync.dart
     // Sembast was fully removed in Phase 26 migration.
@@ -157,6 +173,27 @@ Future<void> _initializeDeferredServices(
   // Priority 3: Signal Protocol (important for secure communication)
   deferredInit.addTask(
     priority: 3,
+    name: 'Headless AVRAI OS',
+    dependencies: const ['Atomic Clock Service'],
+    initializer: () async {
+      try {
+        final bootstrap = di.sl<HeadlessAvraiOsBootstrapService>();
+        final snapshot = await bootstrap.initialize();
+        logger.info(
+          '✅ [MAIN] Headless AVRAI OS started '
+          '(kernels=${snapshot.healthReports.length}, localityInWhere=${snapshot.state.localityContainedInWhere})',
+        );
+      } catch (e, stackTrace) {
+        logger.warn('⚠️ [MAIN] Headless AVRAI OS bootstrap failed: $e');
+        logger.debug('Stack trace: $stackTrace');
+        rethrow;
+      }
+    },
+  );
+
+  // Priority 4: Signal Protocol (important for secure communication)
+  deferredInit.addTask(
+    priority: 4,
     name: 'Signal Protocol',
     initializer: () async {
       try {
@@ -192,9 +229,31 @@ Future<void> _initializeDeferredServices(
     },
   );
 
-  // Priority 4: Storage Health Check (diagnostic, not critical)
   deferredInit.addTask(
-    priority: 4,
+    priority: 5,
+    name: 'Headless Background Runtime Envelope',
+    initializer: () async {
+      try {
+        if (di.sl.isRegistered<HeadlessBackgroundRuntimeCoordinator>()) {
+          await di
+              .sl<HeadlessBackgroundRuntimeCoordinator>()
+              .startForegroundRuntimeEnvelope();
+          logger.info('✅ [MAIN] Headless background runtime envelope started');
+        }
+      } catch (e, stackTrace) {
+        logger.warn(
+          '⚠️ [MAIN] Headless background runtime envelope start failed: $e',
+        );
+        logger.debug('Stack trace: $stackTrace');
+        rethrow;
+      }
+    },
+  );
+
+  // Priority 4: Storage Health Check (diagnostic, not critical)
+  // Priority number intentionally follows headless OS and Signal boot.
+  deferredInit.addTask(
+    priority: 5,
     name: 'Storage Health Check',
     initializer: () async {
       try {

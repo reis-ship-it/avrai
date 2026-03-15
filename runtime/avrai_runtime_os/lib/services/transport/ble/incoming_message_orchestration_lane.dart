@@ -5,6 +5,7 @@ import 'package:avrai_runtime_os/ai2ai/chat/incoming_user_chat_processing_lane.d
 import 'package:avrai_runtime_os/ai2ai/locality/incoming_learning_insight_processing_lane.dart';
 import 'package:avrai_runtime_os/ai2ai/locality/incoming_mesh_signal_handlers_lane.dart';
 import 'package:avrai_runtime_os/ai/personality_learning.dart';
+import 'package:avrai_runtime_os/services/ai_infrastructure/ai2ai_chat_event_intake_service.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
@@ -61,6 +62,7 @@ class IncomingMessageOrchestrationLane {
 
   static Future<void> handleUserChat({
     required ProtocolMessage message,
+    Ai2AiChatEventIntakeService? ai2aiChatEventIntakeService,
     required AppLogger logger,
     required String logName,
   }) {
@@ -69,6 +71,7 @@ class IncomingMessageOrchestrationLane {
       handleIncomingBusinessExpertChat: (_, payload) {
         return IncomingBusinessExpertChatLane.handle(
           payload: payload,
+          ai2aiChatEventIntakeService: ai2aiChatEventIntakeService,
           logger: logger,
           logName: logName,
         );
@@ -76,6 +79,7 @@ class IncomingMessageOrchestrationLane {
       handleIncomingBusinessBusinessChat: (_, payload) {
         return IncomingBusinessBusinessChatLane.handle(
           payload: payload,
+          ai2aiChatEventIntakeService: ai2aiChatEventIntakeService,
           logger: logger,
           logName: logName,
         );

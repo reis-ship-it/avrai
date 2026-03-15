@@ -1,11 +1,12 @@
-/// SPOTS LLMService Service Tests
+/// SPOTS Language Runtime Service Tests
 /// Date: November 19, 2025
-/// Purpose: Test LLMService functionality including chat, recommendations, and offline handling
+/// Purpose: Test LanguageRuntimeService functionality including chat,
+/// recommendations, and offline handling.
 ///
 /// Test Coverage:
 /// - Initialization: Service setup with Supabase client and connectivity
-/// - Chat: Message processing with LLM backend
-/// - Recommendations: AI-powered recommendation generation
+/// - Chat: Message processing with the low-level language backend
+/// - Recommendations: runtime-backed recommendation generation
 /// - Connectivity Checks: Online/offline state detection
 /// - Error Handling: Offline exceptions, API errors
 ///
@@ -20,15 +21,15 @@ import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:avrai_runtime_os/services/ai_infrastructure/llm_service.dart';
+import 'package:avrai_runtime_os/services/language/language_runtime_service.dart';
 
 import 'llm_service_test.mocks.dart';
 import '../../helpers/platform_channel_helper.dart';
 
 @GenerateMocks([SupabaseClient, FunctionsClient, Connectivity])
 void main() {
-  group('LLMService Tests', () {
-    late LLMService service;
+  group('LanguageRuntimeService Tests', () {
+    late LanguageRuntimeService service;
     late MockSupabaseClient mockClient;
     late MockConnectivity mockConnectivity;
     late MockFunctionsClient mockFunctions;
@@ -40,11 +41,15 @@ void main() {
 
       when(mockClient.functions).thenReturn(mockFunctions);
 
-      service = LLMService(mockClient, connectivity: mockConnectivity);
+      service = LanguageRuntimeService(
+        mockClient,
+        connectivity: mockConnectivity,
+      );
     });
 
     // Removed: Property assignment tests
-    // LLM service tests focus on business logic (chat, recommendations, connectivity), not property assignment
+    // Language runtime tests focus on business logic (chat,
+    // recommendations, connectivity), not property assignment.
 
     group('Initialization', () {
       test(
@@ -52,14 +57,14 @@ void main() {
           () {
         // Test business logic: service initialization
         expect(service, isNotNull);
-        final serviceWithDefault = LLMService(mockClient);
+        final serviceWithDefault = LanguageRuntimeService(mockClient);
         expect(serviceWithDefault, isNotNull);
       });
     });
 
     group('Connectivity Checks', () {
       test(
-          'should detect online and offline status, and throw OfflineException when offline',
+          'should detect online and offline status, and throw an offline runtime exception when offline',
           () async {
         // Test business logic: connectivity detection and offline handling
         when(mockConnectivity.checkConnectivity())
@@ -71,17 +76,20 @@ void main() {
         expect(
           () => service.chat(
             messages: [
-              ChatMessage(role: ChatRole.user, content: 'Test'),
+              LanguageTurnMessage(
+                role: LanguageTurnRole.user,
+                content: 'Test',
+              ),
             ],
           ),
-          throwsA(isA<OfflineException>()),
+          throwsA(isA<LanguageRuntimeOfflineException>()),
         );
       });
     });
 
     group('Chat', () {
       test(
-          'should throw OfflineException when offline, handle successful chat request, and use custom temperature and maxTokens',
+          'should throw an offline runtime exception when offline, handle successful chat request, and use custom temperature and maxTokens',
           () async {
         // Test business logic: chat functionality with connectivity and parameters
         when(mockConnectivity.checkConnectivity())
@@ -89,10 +97,13 @@ void main() {
         expect(
           () => service.chat(
             messages: [
-              ChatMessage(role: ChatRole.user, content: 'Test'),
+              LanguageTurnMessage(
+                role: LanguageTurnRole.user,
+                content: 'Test',
+              ),
             ],
           ),
-          throwsA(isA<OfflineException>()),
+          throwsA(isA<LanguageRuntimeOfflineException>()),
         );
 
         when(mockConnectivity.checkConnectivity())
@@ -100,7 +111,10 @@ void main() {
         try {
           await service.chat(
             messages: [
-              ChatMessage(role: ChatRole.user, content: 'Test'),
+              LanguageTurnMessage(
+                role: LanguageTurnRole.user,
+                content: 'Test',
+              ),
             ],
           );
         } catch (e) {
@@ -110,7 +124,10 @@ void main() {
         try {
           await service.chat(
             messages: [
-              ChatMessage(role: ChatRole.user, content: 'Test'),
+              LanguageTurnMessage(
+                role: LanguageTurnRole.user,
+                content: 'Test',
+              ),
             ],
             temperature: 0.5,
             maxTokens: 1000,
@@ -138,7 +155,7 @@ void main() {
           expect(e, isA<Exception>());
         }
 
-        final context = LLMContext(
+        final context = LanguageRuntimeContext(
           userId: 'test-user',
           preferences: {'cuisine': 'Italian'},
         );
@@ -159,8 +176,14 @@ void main() {
             .thenAnswer((_) async => [ConnectivityResult.wifi]);
 
         final history = [
-          ChatMessage(role: ChatRole.user, content: 'Hello'),
-          ChatMessage(role: ChatRole.assistant, content: 'Hi there!'),
+          LanguageTurnMessage(
+            role: LanguageTurnRole.user,
+            content: 'Hello',
+          ),
+          LanguageTurnMessage(
+            role: LanguageTurnRole.assistant,
+            content: 'Hi there!',
+          ),
         ];
 
         try {
@@ -197,19 +220,25 @@ void main() {
 
     group('chatStream', () {
       test(
-          'should throw OfflineException when offline, use simulated streaming when useRealSSE is false, support autoFallback parameter, and handle streaming with context',
+          'should throw an offline runtime exception when offline, use simulated streaming when useRealSSE is false, support autoFallback parameter, and handle streaming with context',
           () async {
         // Test business logic: streaming chat with various parameters
 
-        // Test: Offline throws OfflineException
+        // Test: Offline throws the runtime's offline exception
         when(mockConnectivity.checkConnectivity())
             .thenAnswer((_) async => [ConnectivityResult.none]);
         final stream1 = service.chatStream(
           messages: [
-            ChatMessage(role: ChatRole.user, content: 'Test'),
+            LanguageTurnMessage(
+              role: LanguageTurnRole.user,
+              content: 'Test',
+            ),
           ],
         );
-        await expectLater(stream1, emitsError(isA<OfflineException>()));
+        await expectLater(
+          stream1,
+          emitsError(isA<LanguageRuntimeOfflineException>()),
+        );
 
         // Test: Simulated streaming (useRealSSE: false)
         when(mockConnectivity.checkConnectivity())
@@ -217,7 +246,10 @@ void main() {
         try {
           final stream2 = service.chatStream(
             messages: [
-              ChatMessage(role: ChatRole.user, content: 'Test'),
+              LanguageTurnMessage(
+                role: LanguageTurnRole.user,
+                content: 'Test',
+              ),
             ],
             useRealSSE: false,
           );
@@ -236,7 +268,10 @@ void main() {
         try {
           final stream3 = service.chatStream(
             messages: [
-              ChatMessage(role: ChatRole.user, content: 'Test'),
+              LanguageTurnMessage(
+                role: LanguageTurnRole.user,
+                content: 'Test',
+              ),
             ],
             useRealSSE: true,
             autoFallback: true,
@@ -249,14 +284,17 @@ void main() {
         }
 
         // Test: Streaming with context
-        final context = LLMContext(
+        final context = LanguageRuntimeContext(
           userId: 'test-user',
           preferences: {'cuisine': 'Italian'},
         );
         try {
           final stream4 = service.chatStream(
             messages: [
-              ChatMessage(role: ChatRole.user, content: 'Test'),
+              LanguageTurnMessage(
+                role: LanguageTurnRole.user,
+                content: 'Test',
+              ),
             ],
             context: context,
             useRealSSE: false,
@@ -277,7 +315,10 @@ void main() {
         try {
           final stream = service.chatStream(
             messages: [
-              ChatMessage(role: ChatRole.user, content: 'Test'),
+              LanguageTurnMessage(
+                role: LanguageTurnRole.user,
+                content: 'Test',
+              ),
             ],
             temperature: 0.5,
             maxTokens: 1000,
@@ -298,7 +339,10 @@ void main() {
         try {
           final stream = service.chatStream(
             messages: [
-              ChatMessage(role: ChatRole.user, content: 'Test'),
+              LanguageTurnMessage(
+                role: LanguageTurnRole.user,
+                content: 'Test',
+              ),
             ],
             useRealSSE: true,
             autoFallback: true,

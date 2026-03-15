@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:avrai_core/constants/vibe_constants.dart';
+import 'package:avrai_core/models/vibe/vibe_models.dart';
 import 'package:get_it/get_it.dart';
 import 'package:avrai_core/models/personality_profile.dart';
 import 'package:avrai_core/models/expertise/multi_path_expertise.dart';
@@ -6,6 +8,9 @@ import 'package:avrai_core/models/expertise/expertise_level.dart';
 import 'package:avrai_runtime_os/services/expertise/golden_expert_ai_influence_service.dart';
 import 'package:avrai_runtime_os/ai2ai/connection_orchestrator.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
+import 'package:avrai_runtime_os/services/vibe/canonical_vibe_signal.dart';
+import 'package:avrai_runtime_os/services/vibe/canonical_vibe_runtime_policy.dart';
+import 'package:reality_engine/reality_engine.dart';
 
 /// Locality Personality Service
 ///
@@ -30,13 +35,16 @@ class LocalityPersonalityService {
   );
 
   final GoldenExpertAIInfluenceService _influenceService;
+  final VibeKernel _vibeKernel;
 
   // In-memory storage for locality personalities (in production, use database)
   final Map<String, PersonalityProfile> _localityPersonalities = {};
 
   LocalityPersonalityService({
     GoldenExpertAIInfluenceService? influenceService,
-  }) : _influenceService = influenceService ?? GoldenExpertAIInfluenceService();
+    VibeKernel? vibeKernel,
+  })  : _influenceService = influenceService ?? GoldenExpertAIInfluenceService(),
+        _vibeKernel = vibeKernel ?? VibeKernel();
 
   /// Get AI personality for a locality
   ///
@@ -46,6 +54,9 @@ class LocalityPersonalityService {
   /// **Returns:**
   /// PersonalityProfile for the locality, or initial profile if not found
   Future<PersonalityProfile> getLocalityPersonality(String locality) async {
+    if (CanonicalVibeRuntimePolicy.isCanonicalAuthorityActive) {
+      return _projectCanonicalLocalityPersonality(locality);
+    }
     try {
       _logger.info(
         'Getting locality personality: $locality',
@@ -97,6 +108,13 @@ class LocalityPersonalityService {
     required Map<String, dynamic> userBehavior,
     LocalExpertise? localExpertise,
   }) async {
+    if (CanonicalVibeRuntimePolicy.isCanonicalAuthorityActive) {
+      _logger.info(
+        'Skipping legacy locality personality mutation for $locality; canonical VibeKernel is authoritative',
+        tag: _logName,
+      );
+      return getLocalityPersonality(locality);
+    }
     try {
       _logger.info(
         'Updating locality personality: $locality',
@@ -176,6 +194,13 @@ class LocalityPersonalityService {
     required Map<String, dynamic> goldenExpertBehavior,
     required LocalExpertise localExpertise,
   }) async {
+    if (CanonicalVibeRuntimePolicy.isCanonicalAuthorityActive) {
+      _logger.info(
+        'Skipping legacy golden-expert locality mutation for $locality; canonical VibeKernel is authoritative',
+        tag: _logName,
+      );
+      return getLocalityPersonality(locality);
+    }
     try {
       _logger.info(
         'Incorporating golden expert influence: $locality',
@@ -299,6 +324,53 @@ class LocalityPersonalityService {
         'valueOrientation': 0.5,
         'crowdTolerance': 0.5,
       };
+    }
+  }
+
+  PersonalityProfile _projectCanonicalLocalityPersonality(String locality) {
+    try {
+      final snapshot = _vibeKernel.getSnapshot(VibeSubjectRef.locality(locality));
+      if (!hasCanonicalVibeSignal(snapshot)) {
+        return PersonalityProfile.initial(
+          'agent_locality_$locality',
+          userId: 'locality_$locality',
+        );
+      }
+      final dimensions = <String, double>{
+        for (final dimension in VibeConstants.coreDimensions)
+          dimension: (snapshot.coreDna.dimensions[dimension] ??
+                  snapshot.pheromones.vectors[dimension] ??
+                  0.5)
+              .clamp(0.0, 1.0),
+      };
+      final confidence = snapshot.coreDna.dimensionConfidence.isEmpty
+          ? <String, double>{
+              for (final dimension in VibeConstants.coreDimensions)
+                dimension: snapshot.confidence.clamp(0.0, 1.0),
+            }
+          : Map<String, double>.from(snapshot.coreDna.dimensionConfidence);
+      return PersonalityProfile(
+        agentId: 'agent_locality_$locality',
+        userId: 'locality_$locality',
+        dimensions: dimensions,
+        dimensionConfidence: confidence,
+        archetype: 'canonical_locality_projection',
+        authenticity: snapshot.affectiveState.valence.clamp(0.0, 1.0),
+        createdAt: snapshot.updatedAtUtc,
+        lastUpdated: snapshot.updatedAtUtc,
+        evolutionGeneration: snapshot.behaviorPatterns.observationCount + 1,
+        learningHistory: <String, dynamic>{
+          'canonical_subject_id': snapshot.subjectId,
+          'canonical_subject_kind': snapshot.subjectKind,
+          'canonical_provenance_tags': snapshot.provenanceTags,
+        },
+        corePersonality: Map<String, double>.from(snapshot.coreDna.dimensions),
+      );
+    } catch (_) {
+      return PersonalityProfile.initial(
+        'agent_locality_$locality',
+        userId: 'locality_$locality',
+      );
     }
   }
 

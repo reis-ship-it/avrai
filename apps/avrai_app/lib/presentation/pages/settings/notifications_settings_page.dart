@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/presentation/schema_renderer/app_schema_page.dart';
 import 'package:avrai/presentation/schemas/pages/notifications_settings_page_schema.dart';
+import 'package:avrai_runtime_os/services/messaging/bham_notification_policy_service.dart';
+import 'package:get_it/get_it.dart';
 
 class NotificationsSettingsPage extends StatefulWidget {
   const NotificationsSettingsPage({super.key});
@@ -12,43 +14,40 @@ class NotificationsSettingsPage extends StatefulWidget {
 }
 
 class _NotificationsSettingsPageState extends State<NotificationsSettingsPage> {
-  bool _spotRecommendations = true;
-  bool _listRespects = true;
-  bool _communityActivity = false;
-  bool _nearbySpots = true;
-  bool _aiLearningUpdates = false;
-  bool _weeklyDigest = true;
+  final _notificationPolicyService =
+      GetIt.instance<BhamNotificationPolicyService>();
+  bool _dailyDrop = true;
+  bool _contextNudges = true;
+  bool _ai2aiCompatibility = true;
+  bool _humanMessages = true;
   bool _pushNotifications = true;
   bool _emailNotifications = false;
   bool _quietHours = true;
 
   TimeOfDay _quietStart = const TimeOfDay(hour: 22, minute: 0);
-  TimeOfDay _quietEnd = const TimeOfDay(hour: 7, minute: 0);
+  TimeOfDay _quietEnd = const TimeOfDay(hour: 6, minute: 0);
 
   @override
   Widget build(BuildContext context) {
     return AppSchemaPage(
       schema: buildNotificationsSettingsPageSchema(
-        spotRecommendations: _spotRecommendations,
-        listRespects: _listRespects,
-        communityActivity: _communityActivity,
-        nearbySpots: _nearbySpots,
-        aiLearningUpdates: _aiLearningUpdates,
-        weeklyDigest: _weeklyDigest,
+        dailyDrop: _dailyDrop,
+        contextNudges: _contextNudges,
+        ai2aiCompatibility: _ai2aiCompatibility,
+        humanMessages: _humanMessages,
         pushNotifications: _pushNotifications,
         emailNotifications: _emailNotifications,
         quietHours: _quietHours,
         quietStartLabel: _quietStart.format(context),
         quietEndLabel: _quietEnd.format(context),
-        onSpotRecommendationsChanged: (value) =>
-            setState(() => _spotRecommendations = value),
-        onListRespectsChanged: (value) => setState(() => _listRespects = value),
-        onCommunityActivityChanged: (value) =>
-            setState(() => _communityActivity = value),
-        onNearbySpotsChanged: (value) => setState(() => _nearbySpots = value),
-        onAiLearningUpdatesChanged: (value) =>
-            setState(() => _aiLearningUpdates = value),
-        onWeeklyDigestChanged: (value) => setState(() => _weeklyDigest = value),
+        maxCappedPerDay: _notificationPolicyService.policy.maxPerDay,
+        onDailyDropChanged: (value) => setState(() => _dailyDrop = value),
+        onContextNudgesChanged: (value) =>
+            setState(() => _contextNudges = value),
+        onAi2aiCompatibilityChanged: (value) =>
+            setState(() => _ai2aiCompatibility = value),
+        onHumanMessagesChanged: (value) =>
+            setState(() => _humanMessages = value),
         onPushNotificationsChanged: (value) =>
             setState(() => _pushNotifications = value),
         onEmailNotificationsChanged: (value) =>

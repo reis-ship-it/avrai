@@ -1,6 +1,6 @@
 import 'package:avrai_core/models/personality_profile.dart';
-import 'package:avrai_runtime_os/services/ai_infrastructure/llm_service.dart';
 import 'package:avrai_runtime_os/services/geographic/metro_experience_service.dart';
+import 'package:avrai_runtime_os/services/language/language_runtime_service.dart';
 import 'package:avrai_runtime_os/services/user/human_chat_prompt_composer.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:geolocator/geolocator.dart';
@@ -20,7 +20,10 @@ void main() {
 
       final prompt = composer.compose(
         historyMessages: [
-          ChatMessage(role: ChatRole.user, content: 'What fits me tonight?'),
+          LanguageTurnMessage(
+            role: LanguageTurnRole.user,
+            content: 'What fits me tonight?',
+          ),
         ],
         userId: 'user_123',
         personality: personality,
@@ -45,7 +48,7 @@ void main() {
         ),
       );
 
-      expect(prompt.messages.first.role, equals(ChatRole.system));
+      expect(prompt.messages.first.role, equals(LanguageTurnRole.system));
       expect(
           prompt.messages.first.content, contains('human-facing world-model'));
       expect(prompt.messages.first.content, contains('NYC'));

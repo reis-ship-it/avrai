@@ -48,7 +48,8 @@ void main() {
           expiresAt: now.add(const Duration(hours: 1)),
         );
 
-        final result = await service.startAdvertising(payload: Uint8List(0), personalityData: payload);
+        final result = await service.startAdvertising(
+            payload: Uint8List(0), personalityData: payload);
 
         // Result may be false if platform-specific code isn't available in test
         expect(result, isA<bool>());
@@ -72,8 +73,10 @@ void main() {
           expiresAt: now.add(const Duration(hours: 1)),
         );
 
-        await service.startAdvertising(payload: Uint8List(0), personalityData: payload);
-        final result = await service.startAdvertising(payload: Uint8List(0), personalityData: payload);
+        await service.startAdvertising(
+            payload: Uint8List(0), personalityData: payload);
+        final result = await service.startAdvertising(
+            payload: Uint8List(0), personalityData: payload);
 
         // Should return true on second call (already advertising)
         expect(result, isA<bool>());
@@ -111,7 +114,8 @@ void main() {
           expiresAt: now.add(const Duration(hours: 1)),
         );
 
-        await service.startAdvertising(payload: Uint8List(0), personalityData: payload);
+        await service.startAdvertising(
+            payload: Uint8List(0), personalityData: payload);
 
         // Basic behavior check: service holds the current advertised payload.
         expect(service.currentPersonalityData, isNotNull);

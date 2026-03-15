@@ -3,6 +3,7 @@ import 'package:avrai_runtime_os/services/transport/mesh/forwarded_payload_build
 import 'package:avrai_runtime_os/services/transport/mesh/learning_insight_mesh_forwarder.dart';
 import 'package:avrai_runtime_os/services/transport/mesh/mesh_forwarding_context.dart';
 import 'package:avrai_runtime_os/services/transport/mesh/mesh_forwarding_target_selector.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/mesh_runtime_governance_orchestration_lane.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 
 class GossipLearningForwardingLane {
@@ -22,22 +23,82 @@ class GossipLearningForwardingLane {
     required String failureLabel,
     int maxCandidates = 2,
   }) async {
+    final forwardedPayload = ForwardedPayloadBuilder.withHopAndOrigin(
+      source: payload,
+      hop: hop,
+      originId: originId,
+    );
     final candidates =
-        MeshForwardingTargetSelector.excludingReceivedFromAndOrigin(
+        await MeshForwardingTargetSelector.excludingReceivedFromAndOrigin(
       discoveredNodeIds: discoveredNodeIds,
       receivedFromDeviceId: receivedFromDeviceId,
       originId: originId,
+      context: context,
+      geographicScope: payload['scope']?.toString(),
       maxCandidates: maxCandidates,
     );
 
-    if (candidates.isEmpty) return;
+    final governancePlan =
+        await MeshRuntimeGovernanceOrchestrationLane.recordForwardPlan(
+      context: context,
+      candidatePeerIds: candidates,
+      senderNodeId: localNodeId,
+      destinationId: originId,
+      payloadKind: 'learning_insight_gossip',
+      peerNodeIdByDeviceId: peerNodeIdByDeviceId,
+      geographicScope: payload['scope']?.toString(),
+      payloadContext: <String, dynamic>{
+        'hop': hop,
+        'origin_id': originId,
+        'received_from_device_id': receivedFromDeviceId,
+      },
+      logger: logger,
+      logName: logName,
+    );
+
+    if (candidates.isEmpty) {
+      final deferredEntry = await context.custodyOutbox?.enqueue(
+        receiptId: governancePlan.routeReceipt.receiptId,
+        destinationId: originId,
+        payloadKind: 'learning_insight_gossip',
+        channel: 'mesh_ble_forward',
+        payload: forwardedPayload,
+        payloadContext: <String, dynamic>{
+          'hop': hop,
+          'origin_id': originId,
+          'received_from_device_id': receivedFromDeviceId,
+        },
+        sourceRouteReceipt: governancePlan.routeReceipt,
+        geographicScope: payload['scope']?.toString(),
+      );
+      await MeshRuntimeGovernanceOrchestrationLane.recordForwardOutcome(
+        context: context,
+        plan: governancePlan,
+        senderNodeId: localNodeId,
+        destinationId: originId,
+        payloadKind: 'learning_insight_gossip',
+        forwardedPeerIds: const <String>[],
+        failedPeerIds: const <String>[],
+        failureReason: deferredEntry == null
+            ? 'no_mesh_candidates_available'
+            : 'waiting_for_viable_route',
+        deferredToCustody: deferredEntry != null,
+        custodyOutboxEntryId: deferredEntry?.entryId,
+        geographicScope: payload['scope']?.toString(),
+        payloadContext: <String, dynamic>{
+          'hop': hop,
+          'origin_id': originId,
+          'received_from_device_id': receivedFromDeviceId,
+        },
+        logger: logger,
+        logName: logName,
+      );
+      return;
+    }
 
     try {
-      final forwardedPayload = ForwardedPayloadBuilder.withHopAndOrigin(
-        source: payload,
-        hop: hop,
-        originId: originId,
-      );
+      final forwardedPeerIds = <String>[];
+      final failedPeerIds = <String>[];
 
       await LearningInsightMeshForwarder.forward(
         candidatePeerIds: candidates,
@@ -45,8 +106,86 @@ class GossipLearningForwardingLane {
         senderNodeId: localNodeId,
         peerNodeIdByDeviceId: peerNodeIdByDeviceId,
         payload: forwardedPayload,
+        onForwarded: (peerId, _) {
+          forwardedPeerIds.add(peerId);
+        },
+        onForwardFailed: (peerId, _, __) {
+          failedPeerIds.add(peerId);
+        },
+      );
+
+      final deferredEntry = forwardedPeerIds.isEmpty
+          ? await context.custodyOutbox?.enqueue(
+              receiptId: governancePlan.routeReceipt.receiptId,
+              destinationId: originId,
+              payloadKind: 'learning_insight_gossip',
+              channel: 'mesh_ble_forward',
+              payload: forwardedPayload,
+              payloadContext: <String, dynamic>{
+                'hop': hop,
+                'origin_id': originId,
+                'received_from_device_id': receivedFromDeviceId,
+              },
+              sourceRouteReceipt: governancePlan.routeReceipt,
+              geographicScope: payload['scope']?.toString(),
+            )
+          : null;
+      await MeshRuntimeGovernanceOrchestrationLane.recordForwardOutcome(
+        context: context,
+        plan: governancePlan,
+        senderNodeId: localNodeId,
+        destinationId: originId,
+        payloadKind: 'learning_insight_gossip',
+        forwardedPeerIds: forwardedPeerIds,
+        failedPeerIds: failedPeerIds,
+        failureReason:
+            forwardedPeerIds.isEmpty ? 'all_mesh_candidates_failed' : null,
+        deferredToCustody: deferredEntry != null,
+        custodyOutboxEntryId: deferredEntry?.entryId,
+        geographicScope: payload['scope']?.toString(),
+        payloadContext: <String, dynamic>{
+          'hop': hop,
+          'origin_id': originId,
+          'received_from_device_id': receivedFromDeviceId,
+        },
+        logger: logger,
+        logName: logName,
       );
     } catch (e) {
+      final deferredEntry = await context.custodyOutbox?.enqueue(
+        receiptId: governancePlan.routeReceipt.receiptId,
+        destinationId: originId,
+        payloadKind: 'learning_insight_gossip',
+        channel: 'mesh_ble_forward',
+        payload: forwardedPayload,
+        payloadContext: <String, dynamic>{
+          'hop': hop,
+          'origin_id': originId,
+          'received_from_device_id': receivedFromDeviceId,
+        },
+        sourceRouteReceipt: governancePlan.routeReceipt,
+        geographicScope: payload['scope']?.toString(),
+      );
+      await MeshRuntimeGovernanceOrchestrationLane.recordForwardOutcome(
+        context: context,
+        plan: governancePlan,
+        senderNodeId: localNodeId,
+        destinationId: originId,
+        payloadKind: 'learning_insight_gossip',
+        forwardedPeerIds: const <String>[],
+        failedPeerIds: candidates,
+        failureReason: e.toString(),
+        deferredToCustody: deferredEntry != null,
+        custodyOutboxEntryId: deferredEntry?.entryId,
+        geographicScope: payload['scope']?.toString(),
+        payloadContext: <String, dynamic>{
+          'hop': hop,
+          'origin_id': originId,
+          'received_from_device_id': receivedFromDeviceId,
+        },
+        logger: logger,
+        logName: logName,
+      );
       logger.debug('$failureLabel: $e', tag: logName);
     }
   }

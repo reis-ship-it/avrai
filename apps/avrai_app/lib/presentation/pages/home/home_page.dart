@@ -11,6 +11,7 @@ import 'package:avrai/presentation/pages/lists/list_details_page.dart';
 import 'package:avrai/presentation/widgets/lists/spot_list_card.dart';
 import 'package:avrai/presentation/widgets/map/map_view.dart';
 import 'package:avrai/presentation/widgets/common/search_bar.dart';
+import 'package:avrai/presentation/widgets/common/headless_os_status_banner.dart';
 import 'package:avrai/presentation/widgets/common/chat_message.dart';
 import 'package:avrai/presentation/widgets/common/universal_ai_search.dart';
 import 'package:avrai/presentation/widgets/common/ai_command_processor.dart';
@@ -29,11 +30,9 @@ import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'package:avrai/presentation/pages/feed/daily_serendipity_drop_feed.dart';
 import 'package:avrai/presentation/models/daily_serendipity_drop.dart';
-import 'package:avrai/presentation/pages/chat/world_model_ai_page.dart';
 import 'package:avrai/presentation/pages/explore/explore_page.dart';
 import 'package:avrai/presentation/widgets/portal/turbine_loader.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
+import 'package:avrai_runtime_os/services/onboarding/bham_daily_drop_builder.dart';
 
 class DailySerendipityDropFeedWrapper extends StatefulWidget {
   const DailySerendipityDropFeedWrapper({super.key});
@@ -56,58 +55,15 @@ class _DailySerendipityDropFeedWrapperState
 
   Future<void> _loadDrop() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final dropJson = prefs.getString('latest_daily_serendipity_drop');
-
-      if (dropJson != null) {
-        setState(() {
-          _drop = DailySerendipityDrop.fromJson(jsonDecode(dropJson));
-          _isLoading = false;
-        });
-      } else {
-        // Create a realistic-looking empty state or default drop if none exists
-        setState(() {
-          _drop = DailySerendipityDrop(
-            date: DateTime.now(),
-            llmContextualInsight:
-                "Your AI is still learning your resonance patterns. Walk around the city to gather more serendipitous encounters.",
-            event: DropEvent(
-              id: 'ev_0',
-              title: "Discover the City",
-              subtitle: "Start moving to find events",
-              locationName: "Anywhere",
-              time: DateTime.now().add(const Duration(hours: 2)),
-              archetypeAffinity: 0.5,
-            ),
-            spot: DropSpot(
-              id: 'sp_0',
-              title: "Explore Hidden Gems",
-              subtitle: "We'll suggest spots once we know your vibe",
-              category: "Exploration",
-              distanceMiles: 0.0,
-              archetypeAffinity: 0.5,
-            ),
-            community: DropCommunity(
-              id: 'co_0',
-              title: "Local Groups",
-              subtitle: "Connect to find communities",
-              memberCount: 0,
-              commonInterests: ["Discovery"],
-              archetypeAffinity: 0.5,
-            ),
-            club: DropClub(
-              id: 'cl_0',
-              title: "Secret Clubs",
-              subtitle: "Awaiting your first physical interaction",
-              applicationStatus: "Locked",
-              vibe: "Unknown",
-              archetypeAffinity: 0.5,
-            ),
-          );
-          _isLoading = false;
-        });
-      }
+      final builder = BhamDailyDropBuilder();
+      final drop = await builder.loadLatestDrop();
+      if (!mounted) return;
+      setState(() {
+        _drop = drop;
+        _isLoading = false;
+      });
     } catch (e) {
+      if (!mounted) return;
       setState(() => _isLoading = false);
     }
   }
@@ -120,8 +76,15 @@ class _DailySerendipityDropFeedWrapperState
 
     if (_drop == null) {
       return const Center(
-          child: Text("No daily drop available.",
-              style: TextStyle(color: AppColors.white)));
+        child: Padding(
+          padding: EdgeInsets.all(24),
+          child: Text(
+            'No Birmingham Daily Drop is ready yet. The BHAM first slice requires a persisted 5-item drop before completion.',
+            style: TextStyle(color: AppColors.white),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
     }
 
     return DailySerendipityDropFeed(drop: _drop!);
@@ -142,13 +105,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late int _currentIndex;
-
-  final List<Widget> _pages = [
-    const DailySerendipityDropFeedWrapper(),
-    const ExplorePage(),
-    const SpotsTab(),
-    const AITab(),
-  ];
+  final Map<int, Widget> _pageCache = <int, Widget>{};
 
   @override
   void initState() {
@@ -157,6 +114,19 @@ class _HomePageState extends State<HomePage> {
     // Load lists when the app starts
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ListsBloc>().add(LoadLists());
+    });
+  }
+
+  Widget _buildPage(int index) {
+    return _pageCache.putIfAbsent(index, () {
+      switch (index) {
+        case 0:
+          return const DailySerendipityDropFeedWrapper();
+        case 1:
+          return const ExplorePage();
+        default:
+          return const SizedBox.shrink();
+      }
     });
   }
 
@@ -196,8 +166,20 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildAuthenticatedContent(BuildContext context, Authenticated state) {
     return AppFlowScaffold(
-      title: 'avrai',
-      showNavigationBar: false,
+      title: _currentIndex == 0 ? 'Daily Drop' : 'Explore',
+      leading: IconButton(
+        onPressed: () => context.go('/profile'),
+        icon: const Icon(Icons.person_outline),
+        tooltip: 'Profile',
+      ),
+      actions: [
+        IconButton(
+          onPressed: () => context.go('/chat'),
+          icon: const Icon(Icons.chat_bubble_outline),
+          tooltip: 'Chat',
+        ),
+      ],
+      showNavigationBar: true,
       constrainBody: false,
       body: Stack(
         children: [
@@ -208,7 +190,13 @@ class _HomePageState extends State<HomePage> {
                 return AdaptivePaneLayout(
                   primary: IndexedStack(
                     index: _currentIndex,
-                    children: _pages,
+                    children: List<Widget>.generate(
+                      2,
+                      (index) => index == _currentIndex ||
+                              _pageCache.containsKey(index)
+                          ? _buildPage(index)
+                          : const SizedBox.shrink(),
+                    ),
                   ),
                   secondary: null,
                 );
@@ -261,6 +249,13 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
+          const Positioned(
+            left: 16,
+            bottom: 88,
+            child: SafeArea(
+              child: HeadlessOsStatusBanner(),
+            ),
+          ),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -276,8 +271,6 @@ class _HomePageState extends State<HomePage> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.bolt), label: 'Daily Drop'),
           BottomNavigationBarItem(icon: Icon(Icons.explore), label: 'Explore'),
-          BottomNavigationBarItem(icon: Icon(Icons.place), label: 'Spots'),
-          BottomNavigationBarItem(icon: Icon(Icons.auto_awesome), label: 'AI'),
         ],
       ),
       floatingActionButton: DesignFeatureFlags.enableWorldPlanesRoute
@@ -671,15 +664,6 @@ class _SpotsTabState extends State<SpotsTab> {
       default:
         return Icons.place;
     }
-  }
-}
-
-class AITab extends StatelessWidget {
-  const AITab({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const WorldModelAiPage();
   }
 }
 

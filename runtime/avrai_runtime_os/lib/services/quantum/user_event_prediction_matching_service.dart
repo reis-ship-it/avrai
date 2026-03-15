@@ -24,7 +24,6 @@ import 'package:avrai_knot/services/knot/knot_worldsheet_service.dart';
 import 'package:avrai_runtime_os/services/predictive_outreach/future_compatibility_prediction_service.dart';
 import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
 import 'package:avrai_runtime_os/services/security/hybrid_encryption_service.dart';
-import 'package:avrai_runtime_os/ai2ai/anonymous_communication.dart';
 import 'package:avrai_core/models/personality_knot.dart';
 
 /// User-event prediction matching service for "what-if" scenarios
@@ -64,8 +63,6 @@ class UserEventPredictionMatchingService {
   // Reserved for sharing predictions with other users' AIs for learning or transmitting results
   // ignore: unused_field
   final HybridEncryptionService? _encryptionService;
-  // ignore: unused_field
-  final AnonymousCommunicationProtocol? _ai2aiProtocol;
 
   UserEventPredictionMatchingService({
     required AtomicClockService atomicClock,
@@ -79,7 +76,6 @@ class UserEventPredictionMatchingService {
     required FutureCompatibilityPredictionService futureCompatService,
     required AgentIdService agentIdService,
     HybridEncryptionService? encryptionService,
-    AnonymousCommunicationProtocol? ai2aiProtocol,
   })  : _atomicClock = atomicClock,
         _entanglementService = entanglementService,
         _eventService = eventService,
@@ -90,8 +86,7 @@ class UserEventPredictionMatchingService {
         _worldsheetService = worldsheetService,
         _futureCompatService = futureCompatService,
         _agentIdService = agentIdService,
-        _encryptionService = encryptionService,
-        _ai2aiProtocol = ai2aiProtocol;
+        _encryptionService = encryptionService;
 
   /// Predict if user will like an event using enhanced matching with knots/strings/fabrics
   ///

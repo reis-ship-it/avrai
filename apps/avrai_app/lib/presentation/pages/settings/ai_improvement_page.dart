@@ -110,16 +110,17 @@ class _AIImprovementPageState extends State<AIImprovementPage> {
           schema: buildAIImprovementPageSchema(
             content: _buildContent(userId),
           ),
-          scrollable: false,
+          bodyScrollKey: const Key('ai_improvement_page_list'),
         );
       },
     );
   }
 
   Widget _buildContent(String userId) {
-    return ListView(
-      key: const Key('ai_improvement_page_list'),
+    return Padding(
       padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _DashboardSection(
           title: 'AI Improvement Metrics',
@@ -164,6 +165,7 @@ class _AIImprovementPageState extends State<AIImprovementPage> {
           icon: Icons.info_outline,
         ),
       ],
+      ),
     );
   }
 }

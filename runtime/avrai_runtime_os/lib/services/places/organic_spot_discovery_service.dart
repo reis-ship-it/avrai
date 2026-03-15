@@ -1,6 +1,7 @@
 import 'dart:developer' as developer;
 import 'dart:math' as math;
 
+import 'package:get_it/get_it.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:uuid/uuid.dart';
 
@@ -8,6 +9,7 @@ import 'package:avrai_core/services/atomic_clock_service.dart';
 import 'package:avrai_core/models/geographic/discovered_spot_candidate.dart';
 import 'package:avrai_runtime_os/services/places/geohash_service.dart';
 import 'package:avrai_runtime_os/ai/perpetual_list/models/visit_pattern.dart';
+import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
 
 /// Organic Spot Discovery Service
 ///
@@ -359,13 +361,36 @@ class OrganicSpotDiscoveryService {
   /// The candidate won't be surfaced again. We still learn from this --
   /// it tells us what kinds of unmatched locations the user does NOT
   /// consider meaningful.
-  Future<void> dismissCandidate(String userId, String candidateId) async {
+  Future<void> dismissCandidate(
+    String userId,
+    String candidateId, {
+    NegativePreferenceIntent intent =
+        NegativePreferenceIntent.hardNotInterested,
+  }) async {
     final candidate = await _findCandidateById(userId, candidateId);
     if (candidate == null) return;
 
     await _saveCandidate(candidate.copyWith(
       status: DiscoveredSpotStatus.dismissed,
     ));
+
+    final getIt = GetIt.instance;
+    if (getIt.isRegistered<EntitySignatureService>()) {
+      await getIt<EntitySignatureService>().recordNegativePreferenceSignal(
+        userId: userId,
+        title: 'Unmatched location candidate',
+        subtitle:
+            'Candidate ${candidate.inferredCategory.name} at ${candidate.geohash}',
+        category: candidate.inferredCategory.name,
+        tags: <String>[
+          candidate.geohash,
+          candidate.inferredCategory.name,
+          'organic_spot_candidate',
+        ],
+        intent: intent,
+        entityType: 'organic_spot_candidate',
+      );
+    }
 
     developer.log(
       'Candidate $candidateId dismissed by user',

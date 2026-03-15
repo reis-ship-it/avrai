@@ -117,4 +117,52 @@ class CityHeatmaps {
           weight: 0.3), // Buckhead commercial
     ],
   );
+
+  // Birmingham: neighborhood clusters with a lighter downtown core.
+  static const SpatialHeatmap birmingham = SpatialHeatmap(
+    residentialZones: [
+      HeatmapZone(
+          id: 'highland_park_res',
+          center: GeoCoordinate(33.5014, -86.7747),
+          radiusKm: 3.2,
+          weight: 0.28),
+      HeatmapZone(
+          id: 'avondale_res',
+          center: GeoCoordinate(33.5231, -86.7741),
+          radiusKm: 3.0,
+          weight: 0.24),
+      HeatmapZone(
+          id: 'homewood_res',
+          center: GeoCoordinate(33.4718, -86.8008),
+          radiusKm: 3.6,
+          weight: 0.24),
+      HeatmapZone(
+          id: 'crestwood_res',
+          center: GeoCoordinate(33.5227, -86.7314),
+          radiusKm: 3.2,
+          weight: 0.24),
+    ],
+    commercialZones: [
+      HeatmapZone(
+          id: 'downtown_bham_com',
+          center: GeoCoordinate(33.5186, -86.8104),
+          radiusKm: 2.0,
+          weight: 0.30),
+      HeatmapZone(
+          id: 'pepper_place_com',
+          center: GeoCoordinate(33.5121, -86.7795),
+          radiusKm: 1.8,
+          weight: 0.24),
+      HeatmapZone(
+          id: 'five_points_com',
+          center: GeoCoordinate(33.4983, -86.7911),
+          radiusKm: 1.8,
+          weight: 0.22),
+      HeatmapZone(
+          id: 'lakeview_com',
+          center: GeoCoordinate(33.4913, -86.7741),
+          radiusKm: 1.8,
+          weight: 0.24),
+    ],
+  );
 }

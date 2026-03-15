@@ -74,8 +74,8 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
   Widget build(BuildContext context) {
     final content = _isLoading
         ? const AppLoadingState(label: 'Loading cross-app settings')
-        : ListView(
-            padding: const EdgeInsets.all(16),
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const AppInfoBanner(
                 title: 'Control learning sources',
@@ -123,7 +123,6 @@ class _CrossAppSettingsPageState extends State<CrossAppSettingsPage> {
       schema: buildCrossAppSettingsPageSchema(
         content: content,
       ),
-      scrollable: false,
     );
   }
 

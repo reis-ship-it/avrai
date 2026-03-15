@@ -1,8 +1,7 @@
 import 'dart:developer' as developer;
 import 'dart:math' as math;
 // import 'package:avrai_runtime_os/ml/real_time_recommendations.dart';
-import 'package:avrai_runtime_os/ai2ai/anonymous_communication.dart'
-    show AnonymousCommunicationProtocol, MessageType;
+import 'package:avrai_runtime_os/services/transport/legacy/legacy_conversation_transport_adapter.dart';
 import 'package:avrai_runtime_os/p2p/federated_learning.dart' as federated;
 
 // Stub class for missing RealTimeRecommendationEngine
@@ -19,15 +18,15 @@ class AdvancedRecommendationEngine {
   static const String _logName = 'AdvancedRecommendationEngine';
 
   final RealTimeRecommendationEngine _realTimeEngine;
-  final AnonymousCommunicationProtocol _ai2aiComm;
+  final LegacyConversationTransportAdapter _conversationTransportAdapter;
   final federated.FederatedLearningSystem _federatedLearning;
 
   AdvancedRecommendationEngine({
     required RealTimeRecommendationEngine realTimeEngine,
-    required AnonymousCommunicationProtocol ai2aiComm,
+    required LegacyConversationTransportAdapter conversationTransportAdapter,
     required federated.FederatedLearningSystem federatedLearning,
   })  : _realTimeEngine = realTimeEngine,
-        _ai2aiComm = ai2aiComm,
+        _conversationTransportAdapter = conversationTransportAdapter,
         _federatedLearning = federatedLearning;
 
   /// Generate hyper-personalized recommendations using all AI systems
@@ -177,10 +176,11 @@ class AdvancedRecommendationEngine {
       // Send anonymous message requesting recommendations
       // Note: In production, this would target a specific agent or broadcast to network
       // For now, we'll attempt to send and handle gracefully if network is unavailable
-      final message = await _ai2aiComm.sendEncryptedMessage(
-        'network', // Broadcast to network
-        MessageType.recommendationShare,
-        requestPayload,
+      final message =
+          await _conversationTransportAdapter.sendDirectMessagePayload(
+        recipientAgentId: 'network',
+        payload: requestPayload,
+        messageCategory: 'recommendation_request',
       );
 
       // #region agent log

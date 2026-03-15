@@ -21,7 +21,6 @@ import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
 import 'package:avrai_runtime_os/ai/personality_learning.dart';
 import 'package:avrai_runtime_os/services/quantum/quantum_matching_ai_learning_service.dart';
 import 'package:avrai_runtime_os/services/security/hybrid_encryption_service.dart';
-import 'package:avrai_runtime_os/ai2ai/anonymous_communication.dart';
 import 'package:avrai_runtime_os/ai2ai/connection_orchestrator.dart';
 import 'package:avrai_runtime_os/services/transport/ble/adaptive_mesh_networking_service.dart';
 import 'package:avrai_knot/services/knot/knot_orchestrator_service.dart';
@@ -80,8 +79,6 @@ class ReservationCheckInService {
   // Signal Protocol (Phase 10.1: Privacy-preserving mesh - reserved for future full integration)
   // ignore: unused_field - Reserved for Phase 10.1: Signal Protocol encryption integration
   final HybridEncryptionService? _encryptionService;
-  // ignore: unused_field - Reserved for Phase 10.1: Anonymous communication protocol integration
-  final AnonymousCommunicationProtocol? _ai2aiProtocol;
   // ignore: unused_field - Reserved for Phase 10.1: Connection orchestrator integration
   final VibeConnectionOrchestrator? _orchestrator;
   // ignore: unused_field - Reserved for Phase 10.1: Mesh networking service integration
@@ -110,7 +107,6 @@ class ReservationCheckInService {
     // Optional AI2AI services (graceful degradation if not available)
     QuantumMatchingAILearningService? aiLearningService,
     HybridEncryptionService? encryptionService,
-    AnonymousCommunicationProtocol? ai2aiProtocol,
     VibeConnectionOrchestrator? orchestrator,
     AdaptiveMeshNetworkingService? meshService,
   })  : _reservationService = reservationService,
@@ -127,7 +123,6 @@ class ReservationCheckInService {
         _worldsheetService = worldsheetService,
         _aiLearningService = aiLearningService,
         _encryptionService = encryptionService,
-        _ai2aiProtocol = ai2aiProtocol,
         _orchestrator = orchestrator,
         _meshService = meshService;
 

@@ -1,9 +1,13 @@
 import 'package:avrai_core/models/spots/visit.dart';
+import 'package:avrai_runtime_os/kernel/os/functional_kernel_models.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_state.dart';
 import 'package:avrai_runtime_os/kernel/locality/locality_training_contract.dart';
+import 'package:avrai_runtime_os/kernel/locality/locality_why_contract.dart';
+export 'package:avrai_runtime_os/kernel/where/where_kernel_contract.dart'
+    show WhereKernelContract, WhereKernelFallbackSurface;
 import 'package:avrai_runtime_os/services/locality_agents/locality_agent_models_v1.dart';
 
-/// Extraction-ready locality boundary.
+/// Extraction-ready where-kernel boundary.
 ///
 /// Syscall mapping:
 /// - `resolve_where`
@@ -11,7 +15,8 @@ import 'package:avrai_runtime_os/services/locality_agents/locality_agent_models_
 /// - `sync_locality`
 /// - `project_locality`
 /// - `snapshot_locality`
-abstract class LocalityKernelContract {
+/// - `explain_why`
+abstract class LocalityWhereProviderContract {
   Future<LocalityState> resolveWhere(LocalityPerceptionInput input);
 
   Future<LocalityState> seedHomebase({
@@ -53,4 +58,29 @@ abstract class LocalityKernelContract {
   LocalityKernelSnapshot? snapshot(String agentId);
 
   Future<LocalityRecoveryResult> recover(LocalityRecoveryRequest request);
+
+  WhySnapshot explainWhy(WhyKernelRequest request);
+
+  Future<WhereRealityProjection> projectForRealityModel(
+    LocalityProjectionRequest request,
+  );
+
+  Future<KernelGovernanceProjection> projectForGovernance(
+    LocalityProjectionRequest request,
+  );
+
+  Future<KernelHealthReport> diagnoseWhere();
 }
+
+typedef LocalityKernelContract = LocalityWhereProviderContract;
+
+/// Explicit Dart fallback boundary for when the native where kernel
+/// cannot handle or load a syscall path.
+///
+/// This keeps fallback ownership anchored to the concrete runtime kernel
+/// instead of routing fallback behavior back through the native-first
+/// public contract.
+abstract class LocalityWhereProviderFallbackSurface
+    implements LocalityWhereProviderContract {}
+
+typedef LocalityKernelFallbackSurface = LocalityWhereProviderFallbackSurface;

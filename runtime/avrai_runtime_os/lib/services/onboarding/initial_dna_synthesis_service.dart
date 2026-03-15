@@ -1,108 +1,266 @@
-import 'dart:convert';
-import 'package:avrai_core/utils/vibe_constants.dart';
-import 'package:avrai_runtime_os/services/ai_infrastructure/llm_service.dart';
 import 'dart:developer' as developer;
 
-/// An Air-Gapped SLM service that translates raw open-ended onboarding
-/// responses into an initial 12D personality vector (DNA).
-/// By using LLMBackend.local, it ensures the raw text never leaves the device.
+import 'package:avrai_core/avra_core.dart';
+import 'package:avrai_core/models/why/why_models.dart';
+import 'package:avrai_runtime_os/kernel/language/kernel_derived_language_dimension_mapper.dart';
+import 'package:avrai_runtime_os/kernel/language/language_kernel_orchestrator_service.dart';
+import 'package:reality_engine/reality_engine.dart';
+
+class InitialDnaSeedResult {
+  const InitialDnaSeedResult({
+    required this.baselineDimensions,
+    required this.turns,
+    required this.mutationReceipts,
+    required this.whySnapshot,
+    this.seededSnapshot,
+  });
+
+  final Map<String, double> baselineDimensions;
+  final List<HumanLanguageKernelTurn> turns;
+  final List<TrajectoryMutationRecord> mutationReceipts;
+  final WhySnapshot whySnapshot;
+  final VibeStateSnapshot? seededSnapshot;
+}
+
+/// Kernel-governed onboarding synthesis for the initial 12D personality vector.
+///
+/// Human responses are processed through interpretation + boundary first. This
+/// service only reads the sanitized artifacts that survive that pass.
 class InitialDNASynthesisService {
-  final LLMService _llmService;
+  InitialDNASynthesisService({
+    LanguageKernelOrchestratorService? languageKernelOrchestrator,
+    KernelDerivedLanguageDimensionMapper? dimensionMapper,
+    TrajectoryKernel? trajectoryKernel,
+    VibeKernel? vibeKernel,
+  })  : _languageKernelOrchestrator =
+            languageKernelOrchestrator ?? LanguageKernelOrchestratorService(),
+        _dimensionMapper =
+            dimensionMapper ?? KernelDerivedLanguageDimensionMapper(),
+        _trajectoryKernel = trajectoryKernel ?? TrajectoryKernel(),
+        _vibeKernel = vibeKernel ?? VibeKernel();
 
-  InitialDNASynthesisService({required LLMService llmService})
-      : _llmService = llmService;
+  final LanguageKernelOrchestratorService _languageKernelOrchestrator;
+  final KernelDerivedLanguageDimensionMapper _dimensionMapper;
+  final TrajectoryKernel _trajectoryKernel;
+  final VibeKernel _vibeKernel;
 
-  /// Parses the user's open responses and returns a map of dimension names to values (0.0 to 1.0).
-  Future<Map<String, double>> synthesizeInitialDNA(
-      Map<String, String> openResponses) async {
+  Future<InitialDnaSeedResult> synthesizeInitialDNA(
+    Map<String, String> openResponses, {
+    String actorAgentId = 'agt_onboarding_local',
+    Set<String> consentScopes = const <String>{'user_runtime_learning'},
+  }) async {
     if (openResponses.isEmpty) {
-      return _getFallbackDNA();
+      return InitialDnaSeedResult(
+        baselineDimensions: _getFallbackDNA(),
+        turns: const <HumanLanguageKernelTurn>[],
+        mutationReceipts: const <TrajectoryMutationRecord>[],
+        whySnapshot: _buildInitialDnaWhySnapshot(
+          baselineDimensions: _getFallbackDNA(),
+          mutationReceipts: const <TrajectoryMutationRecord>[],
+          turns: const <HumanLanguageKernelTurn>[],
+          seededSnapshot: null,
+        ),
+      );
     }
 
     try {
-      final jsonSchema = '''{
-  "type": "object",
-  "properties": {
-    "dimensions": {
-      "type": "object",
-      "description": "A map of personality dimension names to their values (between 0.0 and 1.0). Must include all 12 core dimensions.",
-      "additionalProperties": { "type": "number" }
-    }
-  },
-  "required": ["dimensions"]
-}''';
-
-      // Build the context from their answers
-      final buffer = StringBuffer();
+      final subjectRef = VibeSubjectRef.personal(actorAgentId);
+      final beforeMutationIds = _trajectoryKernel
+          .replaySubject(subjectRef: subjectRef, limit: 4096)
+          .map((entry) => entry.recordId)
+          .toSet();
+      final turns = <HumanLanguageKernelTurn>[];
       for (final entry in openResponses.entries) {
-        if (entry.value.trim().isNotEmpty) {
-          buffer.writeln("- ${entry.key}: ${entry.value}");
+        if (entry.value.trim().isEmpty) {
+          continue;
         }
+        turns.add(
+          await _languageKernelOrchestrator.processHumanText(
+            actorAgentId: actorAgentId,
+            rawText: entry.value,
+            consentScopes: consentScopes,
+            chatType: 'onboarding',
+            surface: 'onboarding_dna',
+            channel: _channelFromKey(entry.key),
+          ),
+        );
       }
-      final userContext = buffer.toString();
 
-      if (userContext.isEmpty) {
-        return _getFallbackDNA();
-      }
+      final dnaVector = turns.isEmpty
+          ? _getFallbackDNA()
+          : _dimensionMapper.synthesizeBaselineFromTurns(turns);
+      final mutationReceipts = _trajectoryKernel
+          .replaySubject(subjectRef: subjectRef, limit: 4096)
+          .where((entry) => !beforeMutationIds.contains(entry.recordId))
+          .toList()
+        ..sort((a, b) => a.occurredAtUtc.compareTo(b.occurredAtUtc));
+      final seededSnapshot = mutationReceipts.isEmpty
+          ? null
+          : _vibeKernel.getUserSnapshot(actorAgentId);
 
-      final prompt = '''
-You are a core component of AVRAI's Aspirational DNA engine.
-The user has provided some open-ended answers about who they are and what they like.
-Your job is to translate these natural language answers into a baseline personality profile across our 12 core dimensions.
-
-The 12 dimensions are:
-${VibeConstants.coreDimensions.join(', ')}
-
-User's Answers:
-$userContext
-
-Analyze the text and determine the baseline value for each dimension.
-Values must be between 0.0 (very low/opposite) and 1.0 (very high/strong). 0.5 is neutral.
-Provide only the JSON mapping the dimension name to the value. Do not include markdown formatting.
-''';
-
-      final responseStr = await _llmService.chat(
-        messages: [ChatMessage(role: ChatRole.user, content: prompt)],
-        temperature: 0.2,
-        maxTokens: 600,
-        responseFormat: jsonSchema,
+      developer.log(
+        'Synthesized initial DNA vector through the language kernel: '
+        '$dnaVector',
+        name: 'InitialDNASynthesisService',
       );
-
-      final cleanJson =
-          responseStr.replaceAll('```json', '').replaceAll('```', '').trim();
-      final decoded = jsonDecode(cleanJson) as Map<String, dynamic>;
-
-      final Map<String, double> dnaVector = {};
-
-      if (decoded.containsKey('dimensions') && decoded['dimensions'] != null) {
-        final dims = decoded['dimensions'] as Map<String, dynamic>;
-        for (final dimName in VibeConstants.coreDimensions) {
-          if (dims.containsKey(dimName)) {
-            dnaVector[dimName] =
-                (dims[dimName] as num).toDouble().clamp(0.0, 1.0);
-          } else {
-            dnaVector[dimName] = 0.5; // Neutral fallback
-          }
-        }
-      } else {
-        return _getFallbackDNA();
-      }
-
-      developer.log('Synthesized initial DNA vector: $dnaVector',
-          name: 'InitialDNASynthesisService');
-      return dnaVector;
+      return InitialDnaSeedResult(
+        baselineDimensions: dnaVector,
+        turns: turns,
+        mutationReceipts: mutationReceipts,
+        seededSnapshot: seededSnapshot,
+        whySnapshot: _buildInitialDnaWhySnapshot(
+          baselineDimensions: dnaVector,
+          mutationReceipts: mutationReceipts,
+          turns: turns,
+          seededSnapshot: seededSnapshot,
+        ),
+      );
     } catch (e, st) {
-      developer.log('Failed to synthesize DNA, falling back: $e',
-          error: e, stackTrace: st, name: 'InitialDNASynthesisService');
-      return _getFallbackDNA();
+      developer.log(
+        'Failed to synthesize DNA through the language kernel, falling back: '
+        '$e',
+        error: e,
+        stackTrace: st,
+        name: 'InitialDNASynthesisService',
+      );
+      return InitialDnaSeedResult(
+        baselineDimensions: _getFallbackDNA(),
+        turns: const <HumanLanguageKernelTurn>[],
+        mutationReceipts: const <TrajectoryMutationRecord>[],
+        whySnapshot: _buildInitialDnaWhySnapshot(
+          baselineDimensions: _getFallbackDNA(),
+          mutationReceipts: const <TrajectoryMutationRecord>[],
+          turns: const <HumanLanguageKernelTurn>[],
+          seededSnapshot: null,
+        ),
+      );
     }
   }
 
-  Map<String, double> _getFallbackDNA() {
-    final Map<String, double> fallback = {};
-    for (final dim in VibeConstants.coreDimensions) {
-      fallback[dim] = 0.5; // Neutral everywhere
-    }
-    return fallback;
+  WhySnapshot _buildInitialDnaWhySnapshot({
+    required Map<String, double> baselineDimensions,
+    required List<TrajectoryMutationRecord> mutationReceipts,
+    required List<HumanLanguageKernelTurn> turns,
+    required VibeStateSnapshot? seededSnapshot,
+  }) {
+    final dimensionDrivers = baselineDimensions.entries
+        .where((entry) => (entry.value - 0.5).abs() >= 0.08)
+        .toList()
+      ..sort(
+        (a, b) => (b.value - 0.5).abs().compareTo((a.value - 0.5).abs()),
+      );
+    final receiptDrivers = mutationReceipts
+        .where((entry) => entry.accepted)
+        .map(
+          (entry) => WhySignal(
+            label: entry.evidenceSummary ?? 'onboarding language signal',
+            weight: (seededSnapshot?.confidence ?? 0.7).clamp(0.2, 1.0),
+            source: entry.governanceScope,
+            durable: true,
+            confidence: (seededSnapshot?.confidence ?? 0.7).clamp(0.0, 1.0),
+            evidenceId: entry.recordId,
+            kernel: WhyEvidenceSourceKernel.model,
+          ),
+        )
+        .toList();
+    final drivers = <WhySignal>[
+      ...receiptDrivers.take(3),
+      ...dimensionDrivers.take(3).map(
+            (entry) => WhySignal(
+              label: _dimensionDriverLabel(entry.key, entry.value),
+              weight: ((entry.value - 0.5).abs() * 2).clamp(0.0, 1.0),
+              source: 'onboarding',
+              durable: true,
+              confidence: (seededSnapshot?.confidence ?? 0.65).clamp(0.0, 1.0),
+              evidenceId: 'dimension:${entry.key}',
+              kernel: WhyEvidenceSourceKernel.model,
+            ),
+          ),
+    ];
+
+    final traceRefs = mutationReceipts
+        .take(6)
+        .map(
+          (entry) => WhyTraceRef(
+            traceType: 'trajectory_mutation',
+            kernel: WhyEvidenceSourceKernel.model,
+            timeRef: entry.occurredAtUtc.toIso8601String(),
+            explanationRef: entry.recordId,
+          ),
+        )
+        .toList(growable: false);
+    final driverLabels = drivers.map((entry) => entry.label).toList();
+    final summary = mutationReceipts.isEmpty
+        ? 'AVRAI started from a neutral onboarding baseline because it did not have enough governed language evidence yet.'
+        : 'AVRAI seeded your initial DNA from ${mutationReceipts.length} governed onboarding language updates and the strongest stable dimension shifts in your responses.';
+
+    return WhySnapshot(
+      goal: 'seed_initial_personal_dna',
+      queryKind: WhyQueryKind.modelUpdate,
+      drivers: drivers,
+      inhibitors: const <WhySignal>[],
+      confidence: (seededSnapshot?.confidence ?? 0.0).clamp(0.0, 1.0),
+      rootCauseType: WhyRootCauseType.traitDriven,
+      summary: summary,
+      counterfactuals: mutationReceipts.isEmpty
+          ? const <WhyCounterfactual>[
+              WhyCounterfactual(
+                condition: 'Without governed onboarding language',
+                expectedEffect:
+                    'AVRAI would keep a neutral baseline until stronger evidence arrives.',
+                confidenceDelta: -0.25,
+              ),
+            ]
+          : const <WhyCounterfactual>[
+              WhyCounterfactual(
+                condition: 'Without the open-response onboarding evidence',
+                expectedEffect:
+                    'AVRAI would have kept a more neutral first-session DNA baseline.',
+                confidenceDelta: -0.2,
+              ),
+            ],
+      ambiguity: mutationReceipts.isEmpty ? 0.55 : 0.18,
+      traceRefs: traceRefs,
+      governanceEnvelope: WhyGovernanceEnvelope(
+        redacted: false,
+        policyRefs: mutationReceipts
+            .expand((entry) => entry.reasonCodes)
+            .map((entry) => entry.toString())
+            .toSet()
+            .toList(growable: false),
+      ),
+      generatedAt: DateTime.now().toUtc(),
+      attributionSummary: WhyAttributionSummary(
+        driverLabels: driverLabels,
+        inhibitorLabels: const <String>[],
+        topKernel: WhyEvidenceSourceKernel.model.toWireValue(),
+      ),
+    );
   }
+
+  String _dimensionDriverLabel(String dimension, double value) {
+    final direction = value >= 0.5 ? 'higher' : 'lower';
+    return '${_humanizeDimension(dimension)} trended $direction during onboarding';
+  }
+
+  String _humanizeDimension(String dimension) {
+    final words = dimension.split('_').where((entry) => entry.isNotEmpty);
+    return words
+        .map((entry) => '${entry[0].toUpperCase()}${entry.substring(1)}')
+        .join(' ');
+  }
+
+  String _channelFromKey(String key) {
+    final normalized = key
+        .toLowerCase()
+        .replaceAll(RegExp(r'[^a-z0-9]+'), '_')
+        .replaceAll(RegExp(r'_+'), '_')
+        .replaceAll(RegExp(r'^_|_$'), '');
+    return normalized.isEmpty ? 'onboarding' : 'onboarding_$normalized';
+  }
+
+  Map<String, double> _getFallbackDNA() => <String, double>{
+        for (final dimension in VibeConstants.coreDimensions)
+          dimension: VibeConstants.defaultDimensionValue,
+      };
 }

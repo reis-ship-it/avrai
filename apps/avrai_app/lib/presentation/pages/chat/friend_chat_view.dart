@@ -16,6 +16,7 @@ import 'package:get_it/get_it.dart';
 import 'package:avrai/theme/app_theme.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai_runtime_os/services/chat/friend_chat_service.dart';
+import 'package:avrai_runtime_os/services/infrastructure/headless_avrai_os_availability_service.dart';
 import 'package:avrai_runtime_os/services/user/user_name_resolution_service.dart';
 import 'package:avrai/presentation/widgets/chat/unified_chat_message.dart';
 import 'package:avrai/presentation/widgets/chat/typing_indicator.dart';
@@ -23,17 +24,23 @@ import 'package:avrai/presentation/widgets/chat/message_search_bar.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
+import 'package:avrai/presentation/widgets/common/headless_os_status_banner.dart';
 
 class FriendChatView extends StatefulWidget {
   final String friendId;
   final String? friendName;
   final String? friendPhotoUrl;
+  final FriendChatService? friendChatService;
+  final HeadlessAvraiOsAvailabilityService? headlessOsAvailabilityService;
 
   const FriendChatView({
     super.key,
     required this.friendId,
     this.friendName,
     this.friendPhotoUrl,
+    this.friendChatService,
+    this.headlessOsAvailabilityService,
   });
 
   @override
@@ -43,8 +50,8 @@ class FriendChatView extends StatefulWidget {
 class _FriendChatViewState extends State<FriendChatView> {
   final _messageController = TextEditingController();
   final _scrollController = ScrollController();
-  final _chatService = GetIt.instance<FriendChatService>();
-  final _nameResolver = GetIt.instance<UserNameResolutionService>();
+  late final FriendChatService _chatService;
+  late final UserNameResolutionService _nameResolver;
   StreamSubscription? _incomingSubscription;
 
   List<Map<String, dynamic>> _messages = [];
@@ -56,10 +63,14 @@ class _FriendChatViewState extends State<FriendChatView> {
   String? _friendDisplayName;
   String? _friendPhotoUrl;
   String _searchQuery = '';
+  FriendChatSendResult? _lastSendResult;
 
   @override
   void initState() {
     super.initState();
+    _chatService =
+        widget.friendChatService ?? GetIt.instance<FriendChatService>();
+    _nameResolver = GetIt.instance<UserNameResolutionService>();
     _loadUser();
   }
 
@@ -221,13 +232,17 @@ class _FriendChatViewState extends State<FriendChatView> {
       //
       // If Signal is unavailable or recipient hasn't published a prekey bundle yet,
       // this will throw and the UI will show an error, while still keeping the local message.
-      await _chatService.sendMessageOverNetwork(
-          _userId!, widget.friendId, messageText);
+      final result = await _chatService.sendMessageOverNetworkWithKernelContext(
+        _userId!,
+        widget.friendId,
+        messageText,
+      );
 
       if (mounted) {
         setState(() {
           _isSending = false;
           _isTyping = false;
+          _lastSendResult = result;
         });
         _scrollToBottom();
       }
@@ -325,6 +340,56 @@ class _FriendChatViewState extends State<FriendChatView> {
       ),
       body: Column(
         children: [
+          HeadlessOsStatusBanner(service: widget.headlessOsAvailabilityService),
+          if (_lastSendResult != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+              child: AppSurface(
+                key: const Key('friend_chat_os_result_card'),
+                color: AppColors.grey100,
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(
+                        Icons.memory,
+                        color: AppTheme.primaryColor,
+                        size: 18,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _lastSendResult!.modelTruthReady
+                                  ? 'AVRAI OS observed this direct message'
+                                  : 'Direct message queued without model truth',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(fontWeight: FontWeight.w700),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              _lastSendResult!.governanceSummary ??
+                                  (_lastSendResult!.localityContainedInWhere
+                                      ? 'locality remains inside where'
+                                      : 'governance summary pending'),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(color: AppColors.textSecondary),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           // Search bar
           MessageSearchBar(
             onSearch: _handleSearch,

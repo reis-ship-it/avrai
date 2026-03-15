@@ -1,15 +1,12 @@
-// TODO(Phase 0.5.0): Remove this suppression after AI2AIProtocol callers migrate to DNAEncoderService.
-// ignore_for_file: deprecated_member_use
-
-// MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
-import 'package:avrai_network/avra_network.dart';
+import 'package:avrai_network/network/mesh_packet_models.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/governed_mesh_packet_codec.dart';
 
 class ConnectionRequestEncodingLane {
   const ConnectionRequestEncodingLane._();
 
   static Future<void> maybeEncode({
-    required AI2AIProtocol? protocol,
+    required GovernedMeshPacketCodec? packetCodec,
     required String localVibeArchetype,
     required String remoteVibeArchetype,
     required double initialCompatibility,
@@ -19,11 +16,12 @@ class ConnectionRequestEncodingLane {
     required AppLogger logger,
     required String logName,
   }) async {
-    if (protocol == null) return;
+    final codec = packetCodec;
+    if (codec == null) return;
 
     try {
-      final connectionMessage = await protocol.encodeMessage(
-        type: MessageType.connectionRequest,
+      final packetBytes = await codec.encode(
+        type: MeshPacketType.connectionRequest,
         payload: <String, dynamic>{
           'local_vibe_archetype': localVibeArchetype,
           'remote_vibe_archetype': remoteVibeArchetype,
@@ -35,12 +33,12 @@ class ConnectionRequestEncodingLane {
       );
 
       logger.debug(
-        'Encoded connection message via protocol: type=${connectionMessage.type.name}, sender=${connectionMessage.senderId}',
+        'Encoded connection request via governed mesh codec: bytes=${packetBytes.length}, sender=$senderNodeId, recipient=$recipientNodeId',
         tag: logName,
       );
     } catch (e) {
       logger.warn(
-        'Error encoding protocol message: $e, continuing without protocol',
+        'Error encoding governed mesh connection request: $e',
         tag: logName,
       );
     }

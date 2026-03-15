@@ -2,8 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:developer' as developer;
 import 'package:crypto/crypto.dart';
-import 'package:avrai_network/network/ai2ai_protocol.dart'
-    show MessageType, ProtocolMessage;
+import 'package:avrai_network/network/mesh_packet_models.dart';
 
 /// Binary packet codec for efficient AI2AI protocol serialization
 ///
@@ -83,7 +82,7 @@ class BinaryPacketCodec {
     }
   }
 
-  /// Encode a ProtocolMessage to binary format
+  /// Encode a MeshPacketEnvelope to binary format
   ///
   /// **AI2AI-Specific Optimizations:**
   /// - TTL integration with geographic scope
@@ -93,7 +92,7 @@ class BinaryPacketCodec {
   /// - Sequence numbers for message ordering (AI2AI-specific)
   ///
   /// **Parameters:**
-  /// - `message`: ProtocolMessage to encode
+  /// - `message`: MeshPacketEnvelope to encode
   /// - `encryptedPayload`: Encrypted payload bytes (already encrypted)
   /// - `geographicScope`: Geographic scope for TTL calculation (locality/city/region/country/global)
   /// - `ttl`: Time-to-live for mesh routing (if null, calculated from geographicScope)
@@ -106,7 +105,7 @@ class BinaryPacketCodec {
   /// **Returns:**
   /// Binary packet bytes ready for transmission
   static Uint8List encode({
-    required ProtocolMessage message,
+    required MeshPacketEnvelope message,
     required Uint8List encryptedPayload,
     String? geographicScope,
     int? ttl,
@@ -205,7 +204,7 @@ class BinaryPacketCodec {
       // Check if broadcast (learning insights use broadcast)
       final isBroadcast =
           message.recipientId == null ||
-          message.type == MessageType.learningInsight;
+          message.type == MeshPacketType.learningInsight;
       if (isBroadcast) {
         // Broadcast: all 0xFF
         packet.buffer.asUint8List().fillRange(
@@ -274,13 +273,13 @@ class BinaryPacketCodec {
     return packet.buffer.asUint8List();
   }
 
-  /// Decode binary packet to ProtocolMessage
+  /// Decode binary packet to MeshPacketEnvelope
   ///
   /// **Parameters:**
   /// - `packetData`: Binary packet bytes
   ///
   /// **Returns:**
-  /// Decoded ProtocolMessage and metadata
+  /// Decoded MeshPacketEnvelope and metadata
   ///
   /// **Throws:**
   /// - `FormatException` if packet is malformed
@@ -299,10 +298,10 @@ class BinaryPacketCodec {
 
     // Header: Type (1 byte)
     final typeIndex = packet.getUint8(offset++);
-    if (typeIndex >= MessageType.values.length) {
+    if (typeIndex >= MeshPacketType.values.length) {
       throw FormatException('Invalid message type index: $typeIndex');
     }
-    final type = MessageType.values[typeIndex];
+    final type = MeshPacketType.values[typeIndex];
 
     // Header: TTL (1 byte)
     final ttl = packet.getUint8(offset++);
@@ -383,11 +382,11 @@ class BinaryPacketCodec {
       offset += nonceSize;
     }
 
-    // Create ProtocolMessage (payload will be decrypted separately)
+    // Create mesh packet envelope (payload will be decrypted separately)
     // For binary format, we need to reconstruct the payload map
     // This is a limitation - we'll need to decrypt first to get the actual payload
     // For now, create a placeholder payload that will be replaced after decryption
-    final message = ProtocolMessage(
+    final message = MeshPacketEnvelope(
       version: version,
       type: type,
       senderId: senderId,
@@ -446,7 +445,7 @@ class BinaryPacketCodec {
 
 /// Result of binary packet decoding
 class BinaryPacketDecodeResult {
-  final ProtocolMessage message;
+  final MeshPacketEnvelope message;
   final Uint8List encryptedPayload;
   final int ttl;
   final Uint8List? signature;

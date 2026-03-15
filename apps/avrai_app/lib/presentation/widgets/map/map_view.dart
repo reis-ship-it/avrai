@@ -24,8 +24,8 @@ import 'package:avrai/presentation/widgets/chat/chat_button_with_badge.dart';
 import 'package:avrai_runtime_os/services/geographic/geo_city_pack_service.dart';
 import 'package:avrai_runtime_os/services/geographic/geo_hierarchy_service.dart';
 import 'package:avrai/presentation/widgets/map/geo_synco_summary_card.dart';
-import 'package:avrai_runtime_os/kernel/locality/locality_state.dart';
-import 'package:avrai_runtime_os/kernel/locality/locality_syscall_contract.dart';
+import 'package:avrai_runtime_os/kernel/where/where_kernel_models.dart';
+import 'package:avrai_runtime_os/kernel/where/where_kernel_contract.dart';
 import 'package:avrai_runtime_os/services/places/neighborhood_boundary_service.dart';
 import 'package:avrai_core/models/geographic/neighborhood_boundary.dart';
 import 'package:avrai_runtime_os/services/places/geohash_service.dart';
@@ -420,11 +420,11 @@ class _MapViewState extends State<MapView> {
           : null;
       if (whereKernel != null) {
         final resolution = await whereKernel.resolvePoint(
-          LocalityPointQuery(
+          WherePointQuery(
             latitude: lat,
             longitude: lon,
             occurredAtUtc: DateTime.now().toUtc(),
-            audience: LocalityProjectionAudience.admin,
+            audience: WhereProjectionAudience.admin,
             includeGeometry: true,
             includeAttribution: true,
           ),

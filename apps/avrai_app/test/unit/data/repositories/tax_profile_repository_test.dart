@@ -21,23 +21,20 @@ import '../../../helpers/test_storage_helper.dart';
 /// - TaxProfile: Tax profile model
 
 void main() {
-  const boxName = 'tax_profiles_repo_test';
-
   group('TaxProfileRepository', () {
+    var boxCounter = 0;
+    late String boxName;
     late TaxProfileRepository repository;
     late TaxProfile testProfile;
     late DateTime testDate;
 
     setUpAll(() async {
       await TestStorageHelper.initTestStorage();
-      await GetStorage.init(boxName);
     });
 
     setUp(() async {
-      // Clear storage before each test for isolation.
-      final box = GetStorage(boxName);
-      await box.erase();
-
+      boxName = 'tax_profiles_repo_test_${boxCounter++}';
+      await GetStorage.init(boxName);
       repository = TaxProfileRepository(storeName: boxName);
       testDate = DateTime(2025, 12, 1, 14, 0);
 
@@ -50,8 +47,11 @@ void main() {
       );
     });
 
-    tearDownAll(() async {
+    tearDown(() async {
       await GetStorage(boxName).erase();
+    });
+
+    tearDownAll(() async {
       await TestStorageHelper.clearTestStorage();
     });
 

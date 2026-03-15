@@ -104,16 +104,18 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
           schema: buildAI2AILearningMethodsPageSchema(
             content: _buildContent(userId),
           ),
-          scrollable: false,
+          bodyScrollKey: const Key('ai2ai_learning_methods_page_scroll'),
         );
       },
     );
   }
 
   Widget _buildContent(String userId) {
-    return ListView(
-      key: const Key('ai2ai_learning_methods_page_list'),
+    return Padding(
+      key: const Key('ai2ai_learning_methods_page_content'),
       padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _DashboardSection(
           title: 'Learning Methods Overview',
@@ -158,6 +160,7 @@ class _AI2AILearningMethodsPageState extends State<AI2AILearningMethodsPage> {
           icon: Icons.info_outline,
         ),
       ],
+      ),
     );
   }
 }

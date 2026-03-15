@@ -20,12 +20,15 @@ import 'package:avrai_runtime_os/services/user/personality_agent_chat_service.da
 import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
 import 'package:avrai_runtime_os/services/security/message_encryption_service.dart';
 import 'package:avrai_runtime_os/services/ai_infrastructure/language_pattern_learning_service.dart';
-import 'package:avrai_runtime_os/services/ai_infrastructure/llm_service.dart';
+import 'package:avrai_runtime_os/services/language/language_runtime_service.dart';
 import 'package:avrai_runtime_os/ai/personality_learning.dart' as pl;
 import 'package:avrai_runtime_os/data/repositories/hybrid_search_repository.dart';
 import 'package:avrai_runtime_os/services/geographic/geo_hierarchy_service.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart'
     show SharedPreferencesCompat;
+import 'package:avrai_runtime_os/kernel/language/human_language_boundary_review_lane.dart';
+import 'package:avrai_runtime_os/kernel/os/functional_kernel_models.dart';
+import 'package:avrai_runtime_os/kernel/os/headless_avrai_os_host.dart';
 import 'package:avrai_core/models/personality_profile.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter/services.dart';
@@ -47,7 +50,8 @@ class MockMessageEncryptionService extends Mock
 class MockLanguagePatternLearningService extends Mock
     implements LanguagePatternLearningService {}
 
-class MockLLMService extends Mock implements LLMService {}
+class MockLanguageRuntimeService extends Mock
+    implements LanguageRuntimeService {}
 
 class MockPersonalityLearning extends Mock implements pl.PersonalityLearning {}
 
@@ -61,6 +65,89 @@ class MockAspirationalDNAEngine extends Mock implements AspirationalDNAEngine {}
 
 class MockGeoHierarchyService extends Mock implements GeoHierarchyService {}
 
+class _FakeChatHeadlessHost implements HeadlessAvraiOsHost {
+  @override
+  Future<HeadlessAvraiOsHostState> start() async {
+    return HeadlessAvraiOsHostState(
+      started: true,
+      startedAtUtc: DateTime.utc(2026, 3, 7),
+      localityContainedInWhere: true,
+      summary: 'chat host ready',
+    );
+  }
+
+  @override
+  Future<RealityKernelFusionInput> buildModelTruth({
+    required KernelEventEnvelope envelope,
+    required KernelWhyRequest whyRequest,
+  }) async {
+    return RealityKernelFusionInput(
+      envelope: envelope,
+      bundle: const KernelContextBundle(
+        who: null,
+        what: null,
+        when: null,
+        where: null,
+        how: null,
+        why: null,
+      ),
+      who: const WhoRealityProjection(summary: 'who', confidence: 0.9),
+      what: const WhatRealityProjection(summary: 'what', confidence: 0.8),
+      when: const WhenRealityProjection(summary: 'when', confidence: 0.95),
+      where: const WhereRealityProjection(summary: 'where', confidence: 0.88),
+      why: const WhyRealityProjection(summary: 'why', confidence: 0.77),
+      how: const HowRealityProjection(summary: 'how', confidence: 0.8),
+      generatedAtUtc: DateTime.utc(2026, 3, 7),
+      localityContainedInWhere: true,
+    );
+  }
+
+  @override
+  Future<List<KernelHealthReport>> healthCheck() async {
+    return const <KernelHealthReport>[];
+  }
+
+  @override
+  Future<KernelGovernanceReport> inspectGovernance({
+    required KernelEventEnvelope envelope,
+    required KernelWhyRequest whyRequest,
+  }) async {
+    return KernelGovernanceReport(
+      envelope: envelope,
+      bundle: const KernelContextBundle(
+        who: null,
+        what: null,
+        when: null,
+        where: null,
+        how: null,
+        why: null,
+      ),
+      projections: const <KernelGovernanceProjection>[
+        KernelGovernanceProjection(
+          domain: KernelDomain.why,
+          summary: 'chat stayed inside governance',
+          confidence: 0.82,
+        ),
+      ],
+      generatedAtUtc: DateTime.utc(2026, 3, 7),
+    );
+  }
+
+  @override
+  Future<KernelContextBundle> resolveRuntimeExecution({
+    required KernelEventEnvelope envelope,
+  }) async {
+    return const KernelContextBundle(
+      who: null,
+      what: null,
+      when: null,
+      where: null,
+      how: null,
+      why: null,
+    );
+  }
+}
+
 void main() {
   // Register fallback values for mocktail
   setUpAll(() {
@@ -72,7 +159,7 @@ void main() {
     );
     registerFallbackValue(
         PersonalityProfile.initial('agent_test_user', userId: 'test_user'));
-    registerFallbackValue(const LLMDispatchPolicy.humanChat());
+    registerFallbackValue(const LanguageRoutingPolicy.humanChat());
     registerFallbackValue(HybridSearchResult(
       spots: [],
       communityCount: 0,
@@ -88,7 +175,7 @@ void main() {
     late MockAgentIdService mockAgentIdService;
     late MockMessageEncryptionService mockEncryptionService;
     late MockLanguagePatternLearningService mockLanguageLearningService;
-    late MockLLMService mockLLMService;
+    late MockLanguageRuntimeService mockLanguageRuntimeService;
     late MockPersonalityLearning mockPersonalityLearning;
     late MockHybridSearchRepository mockSearchRepository;
     late MockAspirationalIntentParser mockAspirationalParser;
@@ -125,7 +212,7 @@ void main() {
       mockAgentIdService = MockAgentIdService();
       mockEncryptionService = MockMessageEncryptionService();
       mockLanguageLearningService = MockLanguagePatternLearningService();
-      mockLLMService = MockLLMService();
+      mockLanguageRuntimeService = MockLanguageRuntimeService();
       mockPersonalityLearning = MockPersonalityLearning();
       mockSearchRepository = MockHybridSearchRepository();
       mockAspirationalParser = MockAspirationalIntentParser();
@@ -178,28 +265,12 @@ void main() {
       when(() => mockPersonalityLearning.updatePersonality(any(), any()))
           .thenAnswer((_) async => {});
 
-      when(() => mockLLMService.chat(
-            messages: any(named: 'messages'),
-            context: any(named: 'context'),
-            dispatchPolicy: any(named: 'dispatchPolicy'),
-            temperature: any(named: 'temperature'),
-            maxTokens: any(named: 'maxTokens'),
-          )).thenAnswer((_) async => 'This is a test response from the agent.');
-
-      when(() => mockLLMService.generateWithContext(
-            query: any(named: 'query'),
-            userId: any(named: 'userId'),
-            messages: any(named: 'messages'),
-            temperature: any(named: 'temperature'),
-            maxTokens: any(named: 'maxTokens'),
-          )).thenThrow(Exception('Use fallback path for tests'));
-
       // Create service with mocks
       service = PersonalityAgentChatService(
         agentIdService: mockAgentIdService,
         encryptionService: mockEncryptionService,
         languageLearningService: mockLanguageLearningService,
-        llmService: mockLLMService,
+        languageRuntimeService: mockLanguageRuntimeService,
         personalityLearning: mockPersonalityLearning,
         searchRepository: mockSearchRepository,
         aspirationalParser: mockAspirationalParser,
@@ -232,13 +303,13 @@ void main() {
         expect(service, isNotNull);
       });
 
-      test('should require LLMService', () {
+      test('should require language runtime service', () {
         expect(
           () => PersonalityAgentChatService(
             agentIdService: mockAgentIdService,
             encryptionService: mockEncryptionService,
             languageLearningService: mockLanguageLearningService,
-            llmService: mockLLMService,
+            languageRuntimeService: mockLanguageRuntimeService,
             personalityLearning: mockPersonalityLearning,
             searchRepository: mockSearchRepository,
             aspirationalParser: mockAspirationalParser,
@@ -259,7 +330,7 @@ void main() {
 
         // Assert
         expect(response, isNotEmpty);
-        expect(response, contains('test response'));
+        expect(response, contains('grounded'));
 
         // Verify agentId conversion
         verify(() => mockAgentIdService.getUserAgentId(testUserId)).called(1);
@@ -274,18 +345,40 @@ void main() {
         // Verify encryption was called (for user message and agent response)
         verify(() => mockEncryptionService.encrypt(any(), any()))
             .called(greaterThan(0));
-
-        // Verify LLM was called
-        verify(() => mockLLMService.chat(
-              messages: any(named: 'messages'),
-              context: any(named: 'context'),
-              dispatchPolicy: any(named: 'dispatchPolicy'),
-              temperature: any(named: 'temperature'),
-              maxTokens: any(named: 'maxTokens'),
-            )).called(1);
+        verifyZeroInteractions(mockLanguageRuntimeService);
       });
 
-      test('should include conversation history in LLM context', () async {
+      test(
+          'should return kernel-backed chat artifacts when headless host is available',
+          () async {
+        service = PersonalityAgentChatService(
+          agentIdService: mockAgentIdService,
+          encryptionService: mockEncryptionService,
+          languageLearningService: mockLanguageLearningService,
+          languageRuntimeService: mockLanguageRuntimeService,
+          personalityLearning: mockPersonalityLearning,
+          searchRepository: mockSearchRepository,
+          aspirationalParser: mockAspirationalParser,
+          aspirationalDNAEngine: mockAspirationalDNAEngine,
+          headlessOsHost: _FakeChatHeadlessHost(),
+        );
+
+        final result = await service.chatWithKernelContext(
+          testUserId,
+          'How should I think about tonight?',
+        );
+
+        expect(result.response, isNotEmpty);
+        expect(result.modelTruthReady, isTrue);
+        expect(result.localityContainedInWhere, isTrue);
+        expect(result.kernelEventId, isNotNull);
+        expect(result.governanceSummary, 'chat stayed inside governance');
+        expect(result.governanceDomains, contains('why'));
+        expect(result.languageLearningAccepted, isTrue);
+      });
+
+      test('should keep returning grounded responses across conversation turns',
+          () async {
         // Arrange
         const firstMessage = 'Hello';
         const secondMessage = 'How are you?';
@@ -294,29 +387,19 @@ void main() {
         await service.chat(testUserId, firstMessage);
 
         // Act - send second message
-        await service.chat(testUserId, secondMessage);
+        final response = await service.chat(testUserId, secondMessage);
 
-        // Assert - verify LLM was called with history
-        verify(() => mockLLMService.chat(
-              messages: any(
-                  named: 'messages',
-                  that: predicate((List<ChatMessage> msgs) {
-                    // Should have at least 2 messages (first user message + first agent response + second user message)
-                    return msgs.length >= 2;
-                  })),
-              context: any(named: 'context'),
-              dispatchPolicy: any(named: 'dispatchPolicy'),
-              temperature: any(named: 'temperature'),
-              maxTokens: any(named: 'maxTokens'),
-            )).called(greaterThan(1));
+        // Assert
+        expect(response, isNotEmpty);
+        final history = await service.getConversationHistory(testUserId);
+        expect(history.length, greaterThanOrEqualTo(4));
       });
 
       test('should handle empty message', () async {
-        // Act - empty messages are processed (may return empty response)
-        final response = await service.chat(testUserId, '');
-
-        // Assert - service should still process (may return empty or default response)
-        expect(response, isA<String>());
+        expect(
+          () => service.chat(testUserId, ''),
+          throwsA(isA<HumanLanguageBoundaryViolationException>()),
+        );
       });
 
       test('should inject metro context into runtime prompt construction',
@@ -335,7 +418,7 @@ void main() {
               displayName: 'Williamsburg'
             ));
 
-        await service.chat(
+        final response = await service.chat(
           testUserId,
           'What should I do tonight?',
           currentLocation: Position(
@@ -352,31 +435,7 @@ void main() {
           ),
         );
 
-        verify(() => mockLLMService.chat(
-              messages: any(
-                named: 'messages',
-                that: predicate((List<ChatMessage> messages) {
-                  if (messages.isEmpty) {
-                    return false;
-                  }
-                  final systemMessage = messages.first;
-                  return systemMessage.role == ChatRole.system &&
-                      systemMessage.content.contains('Local context: NYC') &&
-                      systemMessage.content.contains('Dense, fast');
-                }),
-              ),
-              context: any(
-                named: 'context',
-                that: predicate((LLMContext context) {
-                  final metroContext = context.preferences?['metro_context']
-                      as Map<String, dynamic>?;
-                  return metroContext?['metro_key'] == 'nyc';
-                }),
-              ),
-              dispatchPolicy: any(named: 'dispatchPolicy'),
-              temperature: any(named: 'temperature'),
-              maxTokens: any(named: 'maxTokens'),
-            )).called(1);
+        expect(response, contains('Your current local context is NYC'));
       });
     });
 
@@ -543,7 +602,7 @@ void main() {
 
         // Assert - verify agent response was encrypted
         verify(() => mockEncryptionService.encrypt(
-              any(that: contains('test response')),
+              any(that: contains('grounded')),
               testChatId,
             )).called(1);
       });
@@ -581,21 +640,14 @@ void main() {
         );
       });
 
-      test('should handle LLM service errors gracefully', () async {
-        // Arrange
-        when(() => mockLLMService.chat(
-              messages: any(named: 'messages'),
-              context: any(named: 'context'),
-              dispatchPolicy: any(named: 'dispatchPolicy'),
-              temperature: any(named: 'temperature'),
-              maxTokens: any(named: 'maxTokens'),
-            )).thenThrow(Exception('LLM service unavailable'));
+      test('should not depend on freeform language runtime for grounded output',
+          () async {
+        // Act
+        final response = await service.chat(testUserId, 'Test message');
 
-        // Act & Assert
-        expect(
-          () => service.chat(testUserId, 'Test message'),
-          throwsA(isA<Exception>()),
-        );
+        // Assert
+        expect(response, isNotEmpty);
+        verifyZeroInteractions(mockLanguageRuntimeService);
       });
 
       test('should handle agentId service errors', () async {

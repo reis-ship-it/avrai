@@ -13,7 +13,7 @@
 
 import 'dart:async';
 import 'dart:developer' as developer;
-import 'package:avrai_core/models/personality_profile.dart';
+import 'package:avrai_core/avra_core.dart';
 import 'package:avrai_runtime_os/ai/personality_learning.dart';
 import 'package:avrai_knot/services/knot/knot_evolution_coordinator_service.dart';
 import 'package:avrai_runtime_os/services/quantum/quantum_matching_ai_learning_service.dart';
@@ -21,6 +21,8 @@ import 'package:avrai_runtime_os/ai/continuous_learning/orchestrator.dart';
 import 'package:avrai_runtime_os/services/ai_infrastructure/ai2ai_learning_service.dart'
     show AI2AILearning;
 import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
+import 'package:avrai_runtime_os/services/vibe/canonical_vibe_runtime_policy.dart';
+import 'package:reality_engine/reality_engine.dart';
 
 /// Unified orchestrator for all evolution-related activities
 ///
@@ -46,6 +48,7 @@ class UnifiedEvolutionOrchestrator {
   // Core evolution services (required)
   final PersonalityLearning _personalityLearning;
   final AgentIdService _agentIdService;
+  final VibeKernel _vibeKernel;
 
   // Evolution coordination services (optional - graceful degradation)
   final KnotEvolutionCoordinatorService? _knotEvolutionCoordinator;
@@ -57,6 +60,7 @@ class UnifiedEvolutionOrchestrator {
   bool _isInitialized = false;
   bool _isOrchestrating = false;
   Timer? _evolutionCycleTimer;
+  StreamSubscription<TrajectoryMutationRecord>? _canonicalMutationSubscription;
   final Map<String, EvolutionMetrics> _evolutionMetrics = {};
   final List<EvolutionEvent> _evolutionHistory = [];
 
@@ -67,8 +71,10 @@ class UnifiedEvolutionOrchestrator {
     QuantumMatchingAILearningService? quantumMatchingLearning,
     ContinuousLearningOrchestrator? continuousLearningOrchestrator,
     AI2AILearning? ai2aiLearning,
+    VibeKernel? vibeKernel,
   })  : _personalityLearning = personalityLearning,
         _agentIdService = agentIdService,
+        _vibeKernel = vibeKernel ?? VibeKernel(),
         _knotEvolutionCoordinator = knotEvolutionCoordinator,
         _quantumMatchingLearning = quantumMatchingLearning,
         _continuousLearningOrchestrator = continuousLearningOrchestrator,
@@ -91,8 +97,21 @@ class UnifiedEvolutionOrchestrator {
       developer.log('Initializing UnifiedEvolutionOrchestrator...',
           name: _logName);
 
-      // Set up personality evolution callback
-      _personalityLearning.setEvolutionCallback(_handlePersonalityEvolution);
+      if (!CanonicalVibeRuntimePolicy.isCanonicalAuthorityActive) {
+        _personalityLearning.setEvolutionCallback(_handlePersonalityEvolution);
+      }
+      _canonicalMutationSubscription ??=
+          VibeKernelRuntimeBindings.mutationReceipts.listen(
+        _handleCanonicalVibeMutation,
+        onError: (Object error, StackTrace stackTrace) {
+          developer.log(
+            'Failed to process canonical vibe mutation receipt: $error',
+            name: _logName,
+            error: error,
+            stackTrace: stackTrace,
+          );
+        },
+      );
 
       // Initialize evolution metrics
       await _initializeEvolutionMetrics();
@@ -159,6 +178,8 @@ class UnifiedEvolutionOrchestrator {
 
       _evolutionCycleTimer?.cancel();
       _evolutionCycleTimer = null;
+      await _canonicalMutationSubscription?.cancel();
+      _canonicalMutationSubscription = null;
       _isOrchestrating = false;
 
       // Save evolution state
@@ -205,6 +226,16 @@ class UnifiedEvolutionOrchestrator {
         _coordinateContinuousLearningEvolution(userId, evolvedProfile),
       ], eagerError: false); // Don't fail if one system fails
 
+      // Canonical state encoder snapshot now comes from VibeKernel.
+      final stateEncoderSnapshot = _vibeKernel.getStateEncoderSnapshot(
+        subjectId: agentId,
+      );
+      _vibeKernel.recordOutcome(
+        subjectId: agentId,
+        outcome: 'personality_evolution',
+        outcomeScore: stateEncoderSnapshot.userSnapshot.confidence,
+      );
+
       // Update evolution metrics
       await _updateEvolutionMetrics(agentId, evolvedProfile);
 
@@ -229,6 +260,76 @@ class UnifiedEvolutionOrchestrator {
       );
       // Don't rethrow - evolution coordination is non-blocking
     }
+  }
+
+  Future<void> _handleCanonicalVibeMutation(
+    TrajectoryMutationRecord record,
+  ) async {
+    if (!record.accepted ||
+        record.subjectRef.kind.canonicalKind != VibeSubjectKind.personalAgent) {
+      return;
+    }
+
+    try {
+      final snapshot = _vibeKernel.getStateEncoderSnapshot(
+        subjectId: record.subjectRef.subjectId,
+      );
+      final profile = _profileFromCanonicalSnapshot(snapshot.userSnapshot);
+      await Future.wait([
+        _coordinateKnotEvolution(record.subjectRef.subjectId, profile),
+        _coordinateAI2AILearningEvolution(record.subjectRef.subjectId, profile),
+        _coordinateQuantumMatchingEvolution(
+          record.subjectRef.subjectId,
+          profile,
+        ),
+        _coordinateContinuousLearningEvolution(
+          record.subjectRef.subjectId,
+          profile,
+        ),
+      ], eagerError: false);
+      _recordEvolutionEvent(
+        userId: record.subjectRef.subjectId,
+        agentId: record.subjectRef.subjectId,
+        generation: profile.evolutionGeneration,
+        dimensions: profile.dimensions,
+      );
+      developer.log(
+        'Observed canonical vibe mutation for ${record.subjectRef.subjectId} '
+        '(${record.category})',
+        name: _logName,
+      );
+    } catch (e, stackTrace) {
+      developer.log(
+        'Failed to project canonical vibe mutation into evolution state: $e',
+        error: e,
+        stackTrace: stackTrace,
+        name: _logName,
+      );
+    }
+  }
+
+  PersonalityProfile _profileFromCanonicalSnapshot(VibeStateSnapshot snapshot) {
+    final dimensions = Map<String, double>.from(snapshot.coreDna.dimensions);
+    final confidence = snapshot.coreDna.dimensionConfidence.isEmpty
+        ? <String, double>{
+            for (final entry in dimensions.entries)
+              entry.key: snapshot.confidence.clamp(0.0, 1.0),
+          }
+        : Map<String, double>.from(snapshot.coreDna.dimensionConfidence);
+    return PersonalityProfile(
+      agentId: snapshot.subjectId,
+      dimensions: dimensions,
+      dimensionConfidence: confidence,
+      archetype: 'canonical_vibe_projection',
+      authenticity: snapshot.affectiveState.valence.clamp(0.0, 1.0),
+      createdAt: snapshot.updatedAtUtc,
+      lastUpdated: snapshot.updatedAtUtc,
+      evolutionGeneration: snapshot.behaviorPatterns.observationCount + 1,
+      learningHistory: <String, dynamic>{
+        'canonical_subject_kind': snapshot.subjectKind,
+        'canonical_provenance_tags': snapshot.provenanceTags,
+      },
+    );
   }
 
   /// Coordinate knot evolution

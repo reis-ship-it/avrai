@@ -55,6 +55,15 @@ avrai - know you belong.''';
     );
   }
 
+  void _openSafetyChecklist(BuildContext context) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EventDetailsPage(event: event),
+      ),
+    );
+  }
+
   String _formatDateTime(DateTime dateTime) {
     return '${dateTime.month}/${dateTime.day}/${dateTime.year} at ${_formatTime(dateTime)}';
   }
@@ -241,6 +250,25 @@ avrai - know you belong.''';
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(
+                    onPressed: () => _openSafetyChecklist(context),
+                    icon: const Icon(Icons.shield_outlined, size: 20),
+                    label: const Text('Open Safety Checklist'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppTheme.primaryColor,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      side: const BorderSide(color: AppTheme.primaryColor),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
                     onPressed: () => _shareEvent(context),
                     icon: const Icon(Icons.share, size: 20),
                     label: const Text('Share Event'),
@@ -253,6 +281,17 @@ avrai - know you belong.''';
                       ),
                     ),
                   ),
+                ),
+
+                const SizedBox(height: 12),
+
+                const Text(
+                  'Safety acknowledgments and the host debrief both continue on the event details flow.',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textSecondary,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
 
                 const SizedBox(height: 12),

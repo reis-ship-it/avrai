@@ -1,14 +1,14 @@
-// TODO(Phase 0.5.0): Remove this suppression after AI2AIProtocol callers migrate to DNAEncoderService.
-// ignore_for_file: deprecated_member_use
-
 // MIGRATION_SHIM: M10-P10-6 REMOVE_BY:M10-P10-7
 import 'package:avrai_runtime_os/services/transport/mesh/adaptive_mesh_hop_policy.dart'
     as mesh_policy;
 import 'package:avrai_runtime_os/services/transport/ble/adaptive_mesh_networking_service.dart';
+import 'package:avrai_runtime_os/kernel/os/ai2ai_mesh_governance_binding_service.dart';
 import 'package:avrai_runtime_os/services/transport/mesh/federated_forwarding_guard.dart';
 import 'package:avrai_runtime_os/services/transport/mesh/federated_gossip_forwarding_lane.dart';
 import 'package:avrai_runtime_os/services/transport/mesh/locality_agent_update_mesh_forwarding_lane.dart';
 import 'package:avrai_runtime_os/services/transport/mesh/mesh_forwarding_context.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/governed_mesh_packet_codec.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/mesh_interface_registry.dart';
 import 'package:avrai_runtime_os/services/transport/mesh/organic_spot_discovery_forwarding_lane.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 import 'package:avrai_network/avra_network.dart';
@@ -59,10 +59,16 @@ class MeshOutboundForwardingLane {
     required Map<String, dynamic> message,
     required AdaptiveMeshNetworkingService? adaptiveMeshService,
     required OptimizedBloomFilter Function(String scope) getOrCreateBloomFilter,
-    required AI2AIProtocol? protocol,
+    required GovernedMeshPacketCodec? packetCodec,
     required DeviceDiscoveryService? discovery,
     required Iterable<String> discoveredNodeIds,
     required Map<String, String> peerNodeIdByDeviceId,
+    Ai2AiMeshGovernanceBindingService? governanceBindingService,
+    String? localUserId,
+    String? localAgentId,
+    String privacyMode = MeshTransportPrivacyMode.privateMesh,
+    bool reticulumTransportControlPlaneEnabled = false,
+    bool trustedAnnounceEnforcementEnabled = false,
     required AppLogger logger,
     required String logName,
   }) async {
@@ -74,10 +80,17 @@ class MeshOutboundForwardingLane {
       message: message,
       adaptiveMeshService: adaptiveMeshService,
       getOrCreateBloomFilter: getOrCreateBloomFilter,
-      protocol: protocol,
+      packetCodec: packetCodec,
       discovery: discovery,
       discoveredNodeIds: discoveredNodeIds,
       peerNodeIdByDeviceId: peerNodeIdByDeviceId,
+      governanceBindingService: governanceBindingService,
+      localUserId: localUserId,
+      localAgentId: localAgentId,
+      privacyMode: privacyMode,
+      reticulumTransportControlPlaneEnabled:
+          reticulumTransportControlPlaneEnabled,
+      trustedAnnounceEnforcementEnabled: trustedAnnounceEnforcementEnabled,
       logger: logger,
       logName: logName,
       maxCandidates: 2,
@@ -97,9 +110,15 @@ class MeshOutboundForwardingLane {
     required AppLogger logger,
     required String logName,
     required Iterable<String> discoveredNodeIds,
-    required AI2AIProtocol? protocol,
+    required GovernedMeshPacketCodec? packetCodec,
     required DeviceDiscoveryService? discovery,
     required Map<String, String> peerNodeIdByDeviceId,
+    Ai2AiMeshGovernanceBindingService? governanceBindingService,
+    String? localUserId,
+    String? localAgentId,
+    String privacyMode = MeshTransportPrivacyMode.privateMesh,
+    bool reticulumTransportControlPlaneEnabled = false,
+    bool trustedAnnounceEnforcementEnabled = false,
   }) async {
     await FederatedGossipForwardingLane.forward(
       allowBleSideEffects: allowBleSideEffects,
@@ -118,9 +137,16 @@ class MeshOutboundForwardingLane {
       messageType: mesh_policy.MessageType.learningInsight,
       fallbackMaxHopExclusive: 1,
       discoveredNodeIds: discoveredNodeIds,
-      protocol: protocol,
+      packetCodec: packetCodec,
       discovery: discovery,
       peerNodeIdByDeviceId: peerNodeIdByDeviceId,
+      governanceBindingService: governanceBindingService,
+      localUserId: localUserId,
+      localAgentId: localAgentId,
+      privacyMode: privacyMode,
+      reticulumTransportControlPlaneEnabled:
+          reticulumTransportControlPlaneEnabled,
+      trustedAnnounceEnforcementEnabled: trustedAnnounceEnforcementEnabled,
       failureLabel: 'Learning insight gossip forward failed',
       maxCandidates: 2,
     );
@@ -139,9 +165,15 @@ class MeshOutboundForwardingLane {
     required AppLogger logger,
     required String logName,
     required Iterable<String> discoveredNodeIds,
-    required AI2AIProtocol? protocol,
+    required GovernedMeshPacketCodec? packetCodec,
     required DeviceDiscoveryService? discovery,
     required Map<String, String> peerNodeIdByDeviceId,
+    Ai2AiMeshGovernanceBindingService? governanceBindingService,
+    String? localUserId,
+    String? localAgentId,
+    String privacyMode = MeshTransportPrivacyMode.privateMesh,
+    bool reticulumTransportControlPlaneEnabled = false,
+    bool trustedAnnounceEnforcementEnabled = false,
   }) async {
     await FederatedGossipForwardingLane.forward(
       allowBleSideEffects: allowBleSideEffects,
@@ -161,9 +193,16 @@ class MeshOutboundForwardingLane {
       fallbackMaxHopExclusive: 2,
       duplicateLabel: 'locality agent update',
       discoveredNodeIds: discoveredNodeIds,
-      protocol: protocol,
+      packetCodec: packetCodec,
       discovery: discovery,
       peerNodeIdByDeviceId: peerNodeIdByDeviceId,
+      governanceBindingService: governanceBindingService,
+      localUserId: localUserId,
+      localAgentId: localAgentId,
+      privacyMode: privacyMode,
+      reticulumTransportControlPlaneEnabled:
+          reticulumTransportControlPlaneEnabled,
+      trustedAnnounceEnforcementEnabled: trustedAnnounceEnforcementEnabled,
       failureLabel: 'Locality agent update gossip forward failed',
       maxCandidates: 2,
     );

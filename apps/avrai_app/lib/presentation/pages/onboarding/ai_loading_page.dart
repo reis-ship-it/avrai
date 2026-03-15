@@ -16,6 +16,8 @@ import 'package:avrai_runtime_os/services/onboarding/onboarding_data_service.dar
 import 'package:avrai_core/models/user/onboarding_data.dart';
 import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
 import 'package:avrai_runtime_os/controllers/agent_initialization_controller.dart';
+import 'package:avrai_runtime_os/kernel/os/headless_avrai_os_bootstrap_service.dart';
+import 'package:avrai_runtime_os/services/onboarding/bham_daily_drop_builder.dart';
 import 'package:avrai/presentation/widgets/knot/knot_audio_loading_widget.dart';
 import 'package:avrai_core/models/spots/spot.dart';
 import 'package:avrai_runtime_os/domain/usecases/spots/create_spot_usecase.dart';
@@ -121,16 +123,6 @@ class _AILoadingPageState extends State<AILoadingPage>
   void _startLoading() async {
     _loadingController.repeat();
 
-    // Enable continue button after 500ms - allows users to proceed quickly
-    // as the text says "You can start exploring immediately!"
-    _delay(const Duration(milliseconds: 500)).then((_) {
-      if (mounted) {
-        setState(() {
-          _canContinue = true;
-        });
-      }
-    });
-
     try {
       // In widget tests, keep this screen deterministic and avoid background
       // DB/DI/network side-effects (which can leave pending timers).
@@ -151,12 +143,13 @@ class _AILoadingPageState extends State<AILoadingPage>
         if (mounted) {
           setState(() {
             _isLoading = false;
+            _canContinue = true;
           });
           _loadingController.stop();
         }
         await _markOnboardingCompleted();
         if (mounted) {
-          context.go('/home');
+          context.go('/onboarding/walkthrough');
         }
         return;
       }
@@ -175,17 +168,23 @@ class _AILoadingPageState extends State<AILoadingPage>
 
       // If no data was passed, use fallback values
       if (homebase == null || homebase.isEmpty) {
-        homebase = "New York";
+        homebase = 'Birmingham, Alabama';
         _logger.warn('⚠️ Using fallback homebase: $homebase',
             tag: 'AILoadingPage');
       }
       if (openResponses.isEmpty) {
         openResponses = {
-          'about_me': 'I love exploring cities and finding hidden coffee shops.'
+          'bio':
+              'I want better local doors, calmer plans, and real Birmingham signal.'
         };
         _logger.warn('⚠️ Using fallback open responses: $openResponses',
             tag: 'AILoadingPage');
       }
+
+      OnboardingData? resolvedOnboardingData;
+      AgentInitializationResult? agentInitializationResult;
+      HeadlessAvraiOsBootstrapSnapshot? restoredBootstrapSnapshot;
+      String? authenticatedUserId;
 
       // Initialize personalized agent/personality for user using controller FIRST
       // This generates place lists with actual spots from Google Places API
@@ -195,8 +194,41 @@ class _AILoadingPageState extends State<AILoadingPage>
         final authState = authBloc.state;
         if (authState is Authenticated) {
           final userId = authState.user.id;
+          authenticatedUserId = userId;
           _logger.info('🤖 Initializing personalized agent for user: $userId',
               tag: 'AILoadingPage');
+
+          if (di.sl.isRegistered<HeadlessAvraiOsBootstrapService>()) {
+            try {
+              final bootstrap = di.sl<HeadlessAvraiOsBootstrapService>();
+              restoredBootstrapSnapshot = bootstrap.restoredSnapshot ??
+                  await bootstrap.restorePersistedSnapshot();
+              if (restoredBootstrapSnapshot != null) {
+                _logger.info(
+                  '♻️ Restored headless AVRAI OS snapshot available for onboarding '
+                  '(kernels=${restoredBootstrapSnapshot.healthReports.length}, '
+                  'localityInWhere=${restoredBootstrapSnapshot.state.localityContainedInWhere})',
+                  tag: 'AILoadingPage',
+                );
+              }
+              final snapshot = await bootstrap.tryInitialize();
+              if (snapshot != null) {
+                _logger.info(
+                  '✅ Headless AVRAI OS ready for onboarding runtime '
+                  '(kernels=${snapshot.healthReports.length}, '
+                  'localityInWhere=${snapshot.state.localityContainedInWhere})',
+                  tag: 'AILoadingPage',
+                );
+              }
+            } catch (e, stackTrace) {
+              _logger.warning(
+                '⚠️ Headless AVRAI OS bootstrap unavailable during onboarding load',
+                error: e,
+                stackTrace: stackTrace,
+                tag: 'AILoadingPage',
+              );
+            }
+          }
 
           // Load onboarding data from service (fallback to widget data)
           OnboardingData? onboardingData;
@@ -250,6 +282,7 @@ class _AILoadingPageState extends State<AILoadingPage>
 
           // Use controller to initialize agent
           if (onboardingData != null) {
+            resolvedOnboardingData = onboardingData;
             try {
               final controller = di.sl<AgentInitializationController>();
               final result = await controller.initializeAgent(
@@ -259,6 +292,7 @@ class _AILoadingPageState extends State<AILoadingPage>
                 getRecommendations: true,
                 attemptCloudSync: true,
               );
+              agentInitializationResult = result;
 
               if (result.isSuccess) {
                 _logger.info(
@@ -274,6 +308,28 @@ class _AILoadingPageState extends State<AILoadingPage>
                 if (result.preferencesProfile != null) {
                   _logger.debug(
                     '  Preferences: ${result.preferencesProfile!.categoryPreferences.length} categories, ${result.preferencesProfile!.localityPreferences.length} localities',
+                    tag: 'AILoadingPage',
+                  );
+                }
+                if (result.realityKernelFusionInput != null) {
+                  _logger.info(
+                    '🧠 Onboarding runtime model truth ready '
+                    '(localityInWhere=${result.realityKernelFusionInput!.localityContainedInWhere})',
+                    tag: 'AILoadingPage',
+                  );
+                }
+                if (result.kernelGovernanceReport != null) {
+                  _logger.debug(
+                    '  Governance domains: ${result.kernelGovernanceReport!.projections.map((entry) => entry.domain.name).join(", ")}',
+                    tag: 'AILoadingPage',
+                  );
+                }
+                if (result.restoredHeadlessOsBootstrapSnapshot != null) {
+                  restoredBootstrapSnapshot =
+                      result.restoredHeadlessOsBootstrapSnapshot;
+                  _logger.info(
+                    '♻️ Onboarding runtime resumed from restored headless OS state '
+                    '(startedAt=${result.restoredHeadlessOsBootstrapSnapshot!.startedAtUtc.toUtc().toIso8601String()})',
                     tag: 'AILoadingPage',
                   );
                 }
@@ -337,19 +393,56 @@ class _AILoadingPageState extends State<AILoadingPage>
         _logger.debug('Stack trace: $stackTrace', tag: 'AILoadingPage');
         // Continue anyway - don't block onboarding completion
       }
+
+      if (resolvedOnboardingData == null) {
+        throw Exception('Missing onboarding data for BHAM first-drop build');
+      }
+      if (authenticatedUserId == null || authenticatedUserId.isEmpty) {
+        throw Exception('Missing authenticated user for BHAM first-drop build');
+      }
+
+      final dropBuilder = BhamDailyDropBuilder();
+      final dropResult = await dropBuilder.buildInitialDrop(
+        userId: authenticatedUserId,
+        onboardingData: resolvedOnboardingData,
+        restoredHeadlessOsBootstrapSnapshot: restoredBootstrapSnapshot,
+        realityKernelFusionInput:
+            agentInitializationResult?.realityKernelFusionInput,
+        kernelGovernanceReport:
+            agentInitializationResult?.kernelGovernanceReport,
+      );
+
+      if (!dropResult.isSuccess) {
+        throw Exception(dropResult.error ?? 'Failed to build first daily drop');
+      }
     } catch (e, stackTrace) {
       // Handle error - still complete onboarding
       _logger.error('❌ Error in AI loading process',
           error: e, tag: 'AILoadingPage');
       _logger.debug('Stack trace: $stackTrace', tag: 'AILoadingPage');
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _canContinue = false;
+        });
+        _loadingController.stop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('We could not build your Birmingham Daily Drop: $e'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+      return;
     }
 
-    // Always complete onboarding, even if there were errors
-    _logger.info('🏁 Completing onboarding process...', tag: 'AILoadingPage');
+    _logger.info('🏁 Completing BHAM onboarding process...',
+        tag: 'AILoadingPage');
 
     if (mounted) {
       setState(() {
         _isLoading = false;
+        _canContinue = true;
       });
       _loadingController.stop();
 
@@ -421,12 +514,12 @@ class _AILoadingPageState extends State<AILoadingPage>
                 tag: 'AILoadingPage');
           }
 
-          // Navigate to home using go_router
+          // Navigate to the BHAM walkthrough before the first daily drop.
           if (mounted) {
-            _logger.info('🏠 [AI_LOADING] Navigating to home...',
+            _logger.info('🪜 [AI_LOADING] Navigating to BHAM walkthrough...',
                 tag: 'AILoadingPage');
-            context.go('/home');
-            _logger.info('✅ [AI_LOADING] Navigation to home completed',
+            context.go('/onboarding/walkthrough');
+            _logger.info('✅ [AI_LOADING] Navigation to walkthrough completed',
                 tag: 'AILoadingPage');
           }
         } catch (e, stackTrace) {
@@ -516,8 +609,8 @@ class _AILoadingPageState extends State<AILoadingPage>
         SizedBox(height: spacing.xl),
         Text(
           _isLoading
-              ? 'AI is creating your personalized lists...'
-              : 'Finishing up...',
+              ? 'Building your knot'
+              : 'Your Birmingham Daily Drop is ready',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -525,7 +618,9 @@ class _AILoadingPageState extends State<AILoadingPage>
         ),
         SizedBox(height: spacing.md),
         Text(
-          'Analyzing your preferences and favorite places to curate the perfect spots just for you.',
+          _isLoading
+              ? 'Your knot is AVRAI’s first mathematical picture of who you are right now. It will keep changing as you live, explore, connect, and grow in the real world.'
+              : 'AVRAI uses this living knot to find spots, lists, events, clubs, and communities that fit your actual life, not just your taps.',
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -569,7 +664,7 @@ class _AILoadingPageState extends State<AILoadingPage>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Personalized Lists',
+                  'What happens here',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                         color: AppColors.textPrimary,
@@ -577,7 +672,7 @@ class _AILoadingPageState extends State<AILoadingPage>
                 ),
                 SizedBox(height: spacing.xxs),
                 Text(
-                  'Based on your homebase, favorite places, and preferences, we\'ll create lists tailored just for you.',
+                  'AVRAI is finishing your BHAM first-slice runtime, persisting your exact 5-item Birmingham Daily Drop, and preparing the walkthrough that lands you there.',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -604,7 +699,9 @@ class _AILoadingPageState extends State<AILoadingPage>
               vertical: spacing.md,
             ),
             child: Text(
-              _canContinue ? 'Continue' : 'Setting up...',
+              _canContinue
+                  ? 'Continue to walkthrough'
+                  : 'Building your knot...',
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
@@ -619,28 +716,8 @@ class _AILoadingPageState extends State<AILoadingPage>
 
   Future<void> _onContinuePressed() async {
     _logger.info('User chose to continue immediately', tag: 'AILoadingPage');
-    _logger.info(
-      '🔄 [AI_LOADING_BUTTON] User clicked Continue, marking onboarding complete...',
-      tag: 'AILoadingPage',
-    );
-
-    try {
-      await _markOnboardingCompleted();
-      _logger.info(
-        '✅ [AI_LOADING_BUTTON] Onboarding marked complete, calling onLoadingComplete...',
-        tag: 'AILoadingPage',
-      );
-    } catch (e, st) {
-      _logger.error(
-        '❌ [AI_LOADING_BUTTON] Error marking onboarding complete',
-        error: e,
-        stackTrace: st,
-        tag: 'AILoadingPage',
-      );
-    }
-
     if (mounted) {
-      widget.onLoadingComplete();
+      context.go('/onboarding/walkthrough');
     }
   }
 

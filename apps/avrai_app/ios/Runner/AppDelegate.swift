@@ -1,82 +1,115 @@
 import UIKit
 import Flutter
-import MLCSwift
+import CoreBluetooth
+import BackgroundTasks
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
-    
-    // Hold the MLC Engine instance
-    var mlcEngine: MLCEngine?
-    
+    private let backgroundRefreshIdentifier = "com.avrai.app.background_runtime_refresh"
+    private var significantLocationWakeCoordinator: SignificantLocationWakeCoordinator?
+
     override func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        
-        let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
-        
-        // 1. Setup the MLC-LLM Method Channel
+        let backgroundWakeStore = BackgroundWakeStore.shared
+        let launchedForBackgroundWake = backgroundWakeStore.captureLaunchOptions(launchOptions)
+        registerBackgroundRefreshTasks(backgroundWakeStore: backgroundWakeStore)
+        significantLocationWakeCoordinator = SignificantLocationWakeCoordinator(
+            backgroundWakeStore: backgroundWakeStore,
+            backgroundRefreshIdentifier: backgroundRefreshIdentifier
+        )
+        significantLocationWakeCoordinator?.start()
+        GeneratedPluginRegistrant.register(with: self)
+        if let controller = window?.rootViewController as? FlutterViewController {
+            configureUiRuntimeChannels(
+                controller: controller,
+                backgroundWakeStore: backgroundWakeStore
+            )
+        }
+        if launchedForBackgroundWake {
+            BackgroundRuntimeEngineHost.shared.executeNow(
+                backgroundWakeStore: backgroundWakeStore,
+                backgroundRefreshIdentifier: backgroundRefreshIdentifier
+            )
+        }
+        return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    }
+
+    override func application(
+        _ app: UIApplication,
+        open url: URL,
+        options: [UIApplication.OpenURLOptionsKey : Any] = [:]
+    ) -> Bool {
+        return super.application(app, open: url, options: options)
+    }
+
+    override func applicationDidEnterBackground(_ application: UIApplication) {
+        BackgroundWakeStore.shared.scheduleBackgroundRefresh(
+            taskIdentifier: backgroundRefreshIdentifier,
+            earliestInSeconds: 30 * 60
+        )
+        super.applicationDidEnterBackground(application)
+    }
+
+    private func registerBackgroundRefreshTasks(backgroundWakeStore: BackgroundWakeStore) {
+        if #available(iOS 13.0, *) {
+            BGTaskScheduler.shared.register(
+                forTaskWithIdentifier: backgroundRefreshIdentifier,
+                using: nil
+            ) { task in
+                guard let refreshTask = task as? BGAppRefreshTask else {
+                    task.setTaskCompleted(success: false)
+                    return
+                }
+                backgroundWakeStore.enqueueInvocation(
+                    reason: "background_task_window",
+                    platformSource: "ios_bg_task"
+                )
+                backgroundWakeStore.scheduleBackgroundRefresh(
+                    taskIdentifier: self.backgroundRefreshIdentifier,
+                    earliestInSeconds: 30 * 60
+                )
+                var completionReported = false
+                let complete: (Bool) -> Void = { success in
+                    guard !completionReported else { return }
+                    completionReported = true
+                    refreshTask.setTaskCompleted(success: success)
+                }
+                refreshTask.expirationHandler = {
+                    BackgroundRuntimeEngineHost.shared.cancelCurrentExecution()
+                    complete(false)
+                }
+                BackgroundRuntimeEngineHost.shared.executeNow(
+                    backgroundWakeStore: backgroundWakeStore,
+                    backgroundRefreshIdentifier: self.backgroundRefreshIdentifier,
+                    completion: complete
+                )
+            }
+        }
+    }
+
+    private func configureUiRuntimeChannels(
+        controller: FlutterViewController,
+        backgroundWakeStore: BackgroundWakeStore
+    ) {
         let mlcChannel = FlutterMethodChannel(name: "avrai/mlc_llm", binaryMessenger: controller.binaryMessenger)
-        
-        mlcChannel.setMethodCallHandler({ [weak self] (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
-            guard let self = self else { return }
-            
-            if call.method == "loadModel" {
-                if let args = call.arguments as? [String: Any], let modelDir = args["model_dir"] as? String {
-                    // Initialize or reuse MLCEngine for the local model directory
-                    if self.mlcEngine == nil {
-                        self.mlcEngine = MLCEngine()
-                    }
-                    result(true)
-                } else {
-                    result(false)
-                }
-            } else if call.method == "generate" {
-                if let args = call.arguments as? [String: Any], 
-                   let engine = self.mlcEngine,
-                   let messages = args["messages"] as? [[String: String]] {
-                    
-                    let responseFormat = args["response_format"] as? String
-                    
-                    Task {
-                        var mlcMessages: [ChatCompletionMessage] = []
-                        for msg in messages {
-                            if let roleString = msg["role"], let content = msg["content"] {
-                                let role: ChatCompletionRole = (roleString == "system") ? .system : (roleString == "user" ? .user : .assistant)
-                                mlcMessages.append(ChatCompletionMessage(role: role, content: content))
-                            }
-                        }
 
-                        var format: ResponseFormat? = nil
-                        if let schema = responseFormat {
-                            format = ResponseFormat(type: "json_object", schema: schema)
-                        }
-
-                        let stream = await engine.chat.completions.create(
-                            messages: mlcMessages,
-                            response_format: format
-                        )
-
-                        var fullContent = ""
-                        for await chunk in stream {
-                            if let delta = chunk.choices.first?.delta.content {
-                                fullContent += delta.asText()
-                            }
-                        }
-
-                        DispatchQueue.main.async {
-                            result(fullContent)
-                        }
-                    }
-                } else {
-                    result(FlutterError(code: "not_ready", message: "Engine not loaded or invalid args", details: nil))
-                }
-            } else {
+        mlcChannel.setMethodCallHandler { call, result in
+            switch call.method {
+            case "loadModel", "generate", "startStream":
+                result(
+                    FlutterError(
+                        code: "unavailable",
+                        message: "Local iOS LLM runtime is not bundled in this beta build.",
+                        details: nil
+                    )
+                )
+            default:
                 result(FlutterMethodNotImplemented)
             }
-        })
+        }
 
-        // 2. Stub BLE Peripheral channel for iOS-native fallback path
         let blePeripheralChannel = FlutterMethodChannel(
             name: "avra/ble_peripheral",
             binaryMessenger: controller.binaryMessenger,
@@ -91,7 +124,6 @@ import MLCSwift
             }
         }
 
-        // 3. Stub BLE foreground channel for parity with Android transport bridge
         let bleForegroundChannel = FlutterMethodChannel(
             name: "avra/ble_foreground",
             binaryMessenger: controller.binaryMessenger,
@@ -106,7 +138,6 @@ import MLCSwift
             }
         }
 
-        // 4. Stub BLE inbox channel for parity with Android transport bridge
         let bleInboxChannel = FlutterMethodChannel(
             name: "avra/ble_inbox",
             binaryMessenger: controller.binaryMessenger,
@@ -121,16 +152,11 @@ import MLCSwift
                 result(FlutterMethodNotImplemented)
             }
         }
-        
-        GeneratedPluginRegistrant.register(with: self)
-        return super.application(application, didFinishLaunchingWithOptions: launchOptions)
-    }
 
-    override func application(
-        _ app: UIApplication,
-        open url: URL,
-        options: [UIApplication.OpenURLOptionsKey : Any] = [:]
-    ) -> Bool {
-        return super.application(app, open: url, options: options)
+        configureBackgroundRuntimeChannel(
+            binaryMessenger: controller.binaryMessenger,
+            backgroundWakeStore: backgroundWakeStore,
+            backgroundRefreshIdentifier: backgroundRefreshIdentifier
+        )
     }
 }

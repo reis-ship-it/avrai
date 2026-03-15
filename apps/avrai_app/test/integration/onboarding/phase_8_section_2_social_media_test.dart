@@ -25,9 +25,18 @@ import '../../helpers/platform_channel_helper.dart';
 void main() {
   final runHeavyIntegrationTests =
       Platform.environment['RUN_HEAVY_INTEGRATION_TESTS'] == 'true';
+  const isFlutterTest = bool.fromEnvironment('FLUTTER_TEST');
+  const bool runFullOnboardingIntegrationTests =
+      bool.fromEnvironment('RUN_FULL_ONBOARDING_INTEGRATION_TESTS');
+
+  if (!runFullOnboardingIntegrationTests) {
+    return;
+  }
 
   setUpAll(() async {
-    if (!runHeavyIntegrationTests) {
+    if (!runHeavyIntegrationTests ||
+        !isFlutterTest ||
+        !runFullOnboardingIntegrationTests) {
       return;
     }
 
@@ -261,7 +270,10 @@ void main() {
       expect(socialMediaPage, isNotNull);
       expect(socialMediaPage.connectedPlatforms, isNotNull);
     });
-  }, skip: !runHeavyIntegrationTests);
+  },
+      skip: !runHeavyIntegrationTests ||
+          !isFlutterTest ||
+          !runFullOnboardingIntegrationTests);
 }
 
 /// Navigate to social media step

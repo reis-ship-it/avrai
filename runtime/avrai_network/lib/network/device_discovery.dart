@@ -228,9 +228,7 @@ class DeviceDiscoveryService {
 
   /// Extract the binary DNA math payload from a discovered device
   /// Returns the Uint8List payload encoded by DnaEncoderService
-  Future<Uint8List?> extractDnaPayload(
-    DiscoveredDevice device,
-  ) async {
+  Future<Uint8List?> extractDnaPayload(DiscoveredDevice device) async {
     try {
       if (!device.isSpotsEnabled) {
         return null;

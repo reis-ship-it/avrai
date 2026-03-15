@@ -7,6 +7,8 @@ import 'package:avrai/presentation/routes/app_router.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
+import 'package:avrai_runtime_os/config/bham_beta_defaults.dart';
+import 'package:avrai_runtime_os/services/device/device_capability_service.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -24,11 +26,31 @@ class _SignupPageState extends State<SignupPage> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _isSubmitting = false;
+  bool _checkingDevice = true;
+  bool _deviceApproved = true;
+  List<String> _deviceGateReasons = const <String>[];
 
   bool get _supportsAppleSignIn =>
       !kIsWeb &&
       (defaultTargetPlatform == TargetPlatform.iOS ||
           defaultTargetPlatform == TargetPlatform.macOS);
+
+  @override
+  void initState() {
+    super.initState();
+    _checkDeviceEligibility();
+  }
+
+  Future<void> _checkDeviceEligibility() async {
+    final caps = await DeviceCapabilityService().getCapabilities();
+    final evaluation = BhamBetaDefaults.evaluateApprovedDevice(caps);
+    if (!mounted) return;
+    setState(() {
+      _checkingDevice = false;
+      _deviceApproved = evaluation.approved;
+      _deviceGateReasons = evaluation.reasons;
+    });
+  }
 
   @override
   void dispose() {
@@ -137,11 +159,19 @@ class _SignupPageState extends State<SignupPage> {
 
                       BlocBuilder<AuthBloc, AuthState>(
                         builder: (context, state) {
-                          final isBusy =
-                              state is AuthLoading || state is OAuthInProgress;
+                          final isBusy = state is AuthLoading ||
+                              state is OAuthInProgress ||
+                              _checkingDevice ||
+                              !_deviceApproved;
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
+                              if (!_deviceApproved) ...[
+                                _UnsupportedDeviceNotice(
+                                  reasons: _deviceGateReasons,
+                                ),
+                                const SizedBox(height: 16),
+                              ],
                               OutlinedButton(
                                 key: const Key('google_sign_in_button'),
                                 onPressed: isBusy ? null : _handleGoogleSignIn,
@@ -310,10 +340,13 @@ class _SignupPageState extends State<SignupPage> {
                       // Sign Up Button
                       BlocBuilder<AuthBloc, AuthState>(
                         builder: (context, state) {
-                          final isLoading =
-                              state is AuthLoading || _isSubmitting;
+                          final isLoading = state is AuthLoading ||
+                              _isSubmitting ||
+                              _checkingDevice;
                           return ElevatedButton(
-                            onPressed: isLoading ? null : _handleSignUp,
+                            onPressed: (isLoading || !_deviceApproved)
+                                ? null
+                                : _handleSignUp,
                             child: isLoading
                                 ? const SizedBox(
                                     height: 20,
@@ -382,5 +415,48 @@ class _SignupPageState extends State<SignupPage> {
       _isSubmitting = false;
     });
     context.read<AuthBloc>().add(AppleSignInRequested());
+  }
+}
+
+class _UnsupportedDeviceNotice extends StatelessWidget {
+  final List<String> reasons;
+
+  const _UnsupportedDeviceNotice({
+    required this.reasons,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.warning.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.warning),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'This device is not approved for the Birmingham beta first slice.',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                ),
+          ),
+          const SizedBox(height: 8),
+          for (final reason in reasons)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Text(
+                '• $reason',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+              ),
+            ),
+        ],
+      ),
+    );
   }
 }

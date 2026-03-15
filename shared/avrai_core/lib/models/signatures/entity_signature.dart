@@ -144,7 +144,7 @@ class EntitySignature extends Equatable {
           ? trace
               .whereType<Map>()
               .map((item) => SignatureSourceTrace.fromJson(
-                  Map<String, dynamic>.from(item as Map)))
+                  Map<String, dynamic>.from(item)))
               .toList()
           : const <SignatureSourceTrace>[],
       bundleEntityIds: List<String>.from(

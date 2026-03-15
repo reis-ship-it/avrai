@@ -3,10 +3,12 @@
 library;
 
 export 'automatic_check_in.dart';
+export 'break_glass_governance_directive.dart';
 export 'cancellation.dart';
 export 'cancellation_initiator.dart';
 export 'cross_app_learning_insight.dart';
 export 'emergency_information.dart';
+export 'governance_inspection.dart';
 export 'list.dart';
 export 'local_llm_bootstrap_state.dart';
 export 'local_llm_memory_profile.dart';

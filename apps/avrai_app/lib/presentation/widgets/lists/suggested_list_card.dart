@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:avrai/presentation/services/suggested_list_feedback_service.dart';
+import 'package:avrai/presentation/services/suggested_list_interaction_service.dart';
 import 'package:avrai/presentation/widgets/common/undoable_negative_feedback.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
@@ -74,6 +75,11 @@ class SuggestedListCard extends StatelessWidget {
             ),
           );
         } else {
+          unawaited(
+            recordSuggestedListSave(
+              suggestedList: suggestedList,
+            ),
+          );
           onSave?.call();
         }
       },

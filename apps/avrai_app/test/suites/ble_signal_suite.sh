@@ -16,5 +16,6 @@ cd "$PROJECT_DIR"
 #   Keep this suite “safe” and focused on orchestration logic.
 flutter test "$@" \
   test/unit/ai2ai/walkby_hotpath_simulation_test.dart \
-  test/unit/ai2ai/connection_orchestrator_test.dart
-
+  test/unit/ai2ai/connection_orchestrator_test.dart \
+  test/integration/ai2ai/routing_test.dart \
+  test/integration/ai2ai/secure_network_test.dart

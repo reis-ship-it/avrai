@@ -9,8 +9,6 @@ import 'package:avrai_network/network/device_discovery.dart';
 ///
 /// - Returns `null` if the platform/transport doesn't support BLE GATT reads.
 /// - Returns `null` if the remote device doesn't expose the SPOTS GATT service.
-Future<Uint8List?> fetchDnaPayloadOverBle(
-  DiscoveredDevice device,
-) {
+Future<Uint8List?> fetchDnaPayloadOverBle(DiscoveredDevice device) {
   return impl.fetchDnaPayloadOverBle(device);
 }

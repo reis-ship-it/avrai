@@ -15,7 +15,7 @@ Forbidden targets:
 - iOS
 
 Enforcement:
-- Runtime hard-block in `lib/apps/admin_app/bootstrap/admin_bootstrap.dart`
+- Runtime hard-block in `lib/bootstrap/admin_bootstrap.dart`
 - CI check: `python3 scripts/ci/check_admin_desktop_only.py`
 
 ## Internal-Only Usage Policy
@@ -44,6 +44,12 @@ Required rules:
 
 Traceability anchor:
 - `M12-P10-2` (`10.10.12`)
+
+Post-beta architecture return item:
+- after BHAM wave 1 is built and stable, extract the shared DI/bootstrap graph out of both app packages into a lower shared repo boundary
+- keep `apps/admin_app/*` thin and admin-specific
+- keep `apps/avrai_app/*` thin and consumer-specific
+- do not maintain two near-identical app bootstrap graphs long-term
 
 ## Command Center Routes
 

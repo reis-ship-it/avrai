@@ -100,10 +100,10 @@ class SimulatedHuman {
 
     // 2. Combine frictions and apply trust modifier
     double totalFriction = friction + financialFriction;
-    
+
     // Trust significantly lowers perceived friction (up to 0.3 offset)
-    double effectiveFriction = totalFriction - (trustMeter * 0.3); 
-    
+    double effectiveFriction = totalFriction - (trustMeter * 0.3);
+
     // Hard floor for friction - even with high trust, effort is required
     if (effectiveFriction < 0.1) effectiveFriction = 0.1;
 

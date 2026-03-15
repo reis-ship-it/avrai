@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:developer' as developer;
-import 'package:avrai_network/network/ai2ai_protocol.dart' show MessageType;
 
 /// Rate limit types for RateLimiter
 enum RateLimitType { handshake, message, connection }
+
+/// Protocol-independent traffic classes for AI2AI-aware rate limiting.
+enum RateLimitedMessageClass { learningInsight, personalityExchange, generic }
 
 /// Token bucket rate limiter for AI2AI mesh networking
 ///
@@ -72,7 +74,7 @@ class RateLimiter {
   /// **Parameters:**
   /// - `peerAgentId`: AI agent ID of the peer
   /// - `limitType`: Type of operation (handshake, message, connection)
-  /// - `messageType`: Message type (for message rate limiting) - AI2AI-specific
+  /// - `messageClass`: Traffic class (for message rate limiting) - AI2AI-specific
   /// - `geographicScope`: Geographic scope (for scope-aware limits) - AI2AI-specific
   ///
   /// **Returns:**
@@ -80,13 +82,13 @@ class RateLimiter {
   Future<bool> checkRateLimit({
     required String peerAgentId,
     required RateLimitType limitType,
-    MessageType? messageType, // AI2AI-specific
+    RateLimitedMessageClass? messageClass, // AI2AI-specific
     String? geographicScope, // AI2AI-specific
   }) async {
     // Get effective token count based on AI2AI-specific factors
     final effectiveTokens = await _getEffectiveTokens(
       limitType: limitType,
-      messageType: messageType,
+      messageClass: messageClass,
       geographicScope: geographicScope,
     );
 
@@ -110,7 +112,7 @@ class RateLimiter {
   /// Get effective token count based on AI2AI-specific factors
   Future<int> _getEffectiveTokens({
     required RateLimitType limitType,
-    MessageType? messageType,
+    RateLimitedMessageClass? messageClass,
     String? geographicScope,
   }) async {
     var tokens = baseTokens;
@@ -147,17 +149,17 @@ class RateLimiter {
     }
 
     // Message type differentiation (AI2AI-specific)
-    if (limitType == RateLimitType.message && messageType != null) {
-      switch (messageType) {
-        case MessageType.learningInsight:
+    if (limitType == RateLimitType.message && messageClass != null) {
+      switch (messageClass) {
+        case RateLimitedMessageClass.learningInsight:
           // Learning insights: higher rate limit (frequent, small)
           tokens = (tokens * 1.5).round();
           break;
-        case MessageType.personalityExchange:
+        case RateLimitedMessageClass.personalityExchange:
           // Personality exchange: lower rate limit (infrequent, large)
           tokens = (tokens * 0.7).round().clamp(1, tokens);
           break;
-        default:
+        case RateLimitedMessageClass.generic:
           // Default tokens for other message types
           break;
       }

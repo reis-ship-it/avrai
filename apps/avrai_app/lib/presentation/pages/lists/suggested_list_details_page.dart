@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:avrai_runtime_os/ai/perpetual_list/models/models.dart';
 import 'package:avrai/presentation/services/suggested_list_feedback_service.dart';
+import 'package:avrai/presentation/services/suggested_list_interaction_service.dart';
 import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
 import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
@@ -19,13 +20,29 @@ import 'package:avrai/presentation/widgets/common/undoable_negative_feedback.dar
 ///
 /// Part of Phase 2.1: Suggested Lists UI Components
 
-class SuggestedListDetailsPage extends StatelessWidget {
+class SuggestedListDetailsPage extends StatefulWidget {
   final SuggestedList suggestedList;
 
   const SuggestedListDetailsPage({
     super.key,
     required this.suggestedList,
   });
+
+  @override
+  State<SuggestedListDetailsPage> createState() =>
+      _SuggestedListDetailsPageState();
+}
+
+class _SuggestedListDetailsPageState extends State<SuggestedListDetailsPage> {
+  @override
+  void initState() {
+    super.initState();
+    unawaited(
+      recordSuggestedListView(
+        suggestedList: widget.suggestedList,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +81,7 @@ class SuggestedListDetailsPage extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context) {
+    final suggestedList = widget.suggestedList;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -190,6 +208,7 @@ class SuggestedListDetailsPage extends StatelessWidget {
   Widget _buildWhyThisListSection(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final suggestedList = widget.suggestedList;
 
     // Map trigger reasons to user-friendly explanations
     final explanations = suggestedList.triggerReasons.map((reason) {
@@ -269,6 +288,7 @@ class SuggestedListDetailsPage extends StatelessWidget {
   Widget _buildPlacesSection(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final suggestedList = widget.suggestedList;
 
     return Padding(
       padding: const EdgeInsets.all(20),
@@ -379,6 +399,11 @@ class SuggestedListDetailsPage extends StatelessWidget {
   }
 
   void _saveList(BuildContext context) {
+    unawaited(
+      recordSuggestedListSave(
+        suggestedList: widget.suggestedList,
+      ),
+    );
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('List saved to your collection'),
@@ -421,7 +446,7 @@ class SuggestedListDetailsPage extends StatelessWidget {
 
   Future<void> _recordNegativePreference() async {
     await commitSuggestedListNegativeFeedback(
-      suggestedList: suggestedList,
+      suggestedList: widget.suggestedList,
       intent: NegativePreferenceIntent.hardNotInterested,
     );
   }

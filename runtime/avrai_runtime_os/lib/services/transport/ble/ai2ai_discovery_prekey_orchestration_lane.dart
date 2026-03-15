@@ -3,13 +3,16 @@
 
 import 'package:avrai_runtime_os/ai2ai/aipersonality_node.dart';
 import 'package:avrai_runtime_os/ai2ai/discovery/ai2ai_discovery_execution_lane.dart';
+import 'package:avrai_runtime_os/kernel/os/ai2ai_mesh_governance_binding_service.dart';
 import 'package:avrai_runtime_os/services/transport/mesh/mesh_forwarding_context_orchestration_lane.dart';
 import 'package:avrai_runtime_os/services/transport/ble/prekey_session_prime_lane.dart';
 import 'package:avrai_runtime_os/crypto/signal/signal_key_manager.dart';
 import 'package:avrai_runtime_os/crypto/signal/signal_types.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
 import 'package:avrai_runtime_os/services/transport/ble/adaptive_mesh_networking_service.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/governed_mesh_packet_codec.dart';
 import 'package:avrai_runtime_os/services/transport/mesh/prekey_mesh_forward_bridge_lane.dart';
+import 'package:avrai_runtime_os/services/transport/mesh/mesh_interface_registry.dart';
 import 'package:avrai_runtime_os/ai2ai/services/ai2ai_broadcast_service.dart';
 import 'package:avrai_network/avra_network.dart';
 
@@ -41,7 +44,7 @@ class Ai2AiDiscoveryPrekeyOrchestrationLane {
   static Future<void> primeOfflineSignalPreKeyBundleInSession({
     required bool allowBleSideEffects,
     required SignalKeyManager? signalKeyManager,
-    required AI2AIProtocol? protocol,
+    required GovernedMeshPacketCodec? packetCodec,
     required DiscoveredDevice device,
     required BleGattSession session,
     required Map<String, String> peerNodeIdByDeviceId,
@@ -58,7 +61,7 @@ class Ai2AiDiscoveryPrekeyOrchestrationLane {
     return PrekeySessionPrimeLane.run(
       allowBleSideEffects: allowBleSideEffects,
       signalKeyManager: signalKeyManager,
-      protocol: protocol,
+      packetCodec: packetCodec,
       device: device,
       session: session,
       peerNodeIdByDeviceId: peerNodeIdByDeviceId,
@@ -73,7 +76,7 @@ class Ai2AiDiscoveryPrekeyOrchestrationLane {
 
   static Future<void> forwardPreKeyBundleThroughMesh({
     required bool allowBleSideEffects,
-    required AI2AIProtocol? protocol,
+    required GovernedMeshPacketCodec? packetCodec,
     required DeviceDiscoveryService? discovery,
     required SignalPreKeyBundle bundle,
     required String recipientId,
@@ -81,6 +84,12 @@ class Ai2AiDiscoveryPrekeyOrchestrationLane {
     required String localNodeId,
     required Map<String, String> peerNodeIdByDeviceId,
     required AdaptiveMeshNetworkingService? adaptiveMeshService,
+    Ai2AiMeshGovernanceBindingService? governanceBindingService,
+    String? localUserId,
+    String? localAgentId,
+    String privacyMode = MeshTransportPrivacyMode.privateMesh,
+    bool reticulumTransportControlPlaneEnabled = false,
+    bool trustedAnnounceEnforcementEnabled = false,
     required AppLogger logger,
     required String logName,
   }) {
@@ -88,8 +97,16 @@ class Ai2AiDiscoveryPrekeyOrchestrationLane {
       allowBleSideEffects: allowBleSideEffects,
       tryCreateMeshForwardingContext: () {
         return MeshForwardingContextOrchestrationLane.tryCreate(
-          protocol: protocol,
           discovery: discovery,
+          packetCodec: packetCodec,
+          governanceBindingService: governanceBindingService,
+          localUserId: localUserId,
+          localAgentId: localAgentId,
+          privacyMode: privacyMode,
+          reticulumTransportControlPlaneEnabled:
+              reticulumTransportControlPlaneEnabled,
+          trustedAnnounceEnforcementEnabled:
+              trustedAnnounceEnforcementEnabled,
         );
       },
       bundle: bundle,
@@ -108,7 +125,7 @@ class Ai2AiDiscoveryPrekeyOrchestrationLane {
   static Future<void> primeOfflineSignalPreKeyBundleInSessionForOrchestrator({
     required bool allowBleSideEffects,
     required SignalKeyManager? signalKeyManager,
-    required AI2AIProtocol? protocol,
+    required GovernedMeshPacketCodec? packetCodec,
     required DiscoveredDevice device,
     required BleGattSession session,
     required Map<String, String> peerNodeIdByDeviceId,
@@ -117,13 +134,19 @@ class Ai2AiDiscoveryPrekeyOrchestrationLane {
     required DeviceDiscoveryService? discovery,
     required Map<String, AIPersonalityNode> discoveredNodes,
     required AdaptiveMeshNetworkingService? adaptiveMeshService,
+    Ai2AiMeshGovernanceBindingService? governanceBindingService,
+    String? localUserId,
+    String? localAgentId,
+    String privacyMode = MeshTransportPrivacyMode.privateMesh,
+    bool reticulumTransportControlPlaneEnabled = false,
+    bool trustedAnnounceEnforcementEnabled = false,
     required AppLogger logger,
     required String logName,
   }) {
     return primeOfflineSignalPreKeyBundleInSession(
       allowBleSideEffects: allowBleSideEffects,
       signalKeyManager: signalKeyManager,
-      protocol: protocol,
+      packetCodec: packetCodec,
       device: device,
       session: session,
       peerNodeIdByDeviceId: peerNodeIdByDeviceId,
@@ -136,7 +159,7 @@ class Ai2AiDiscoveryPrekeyOrchestrationLane {
       }) {
         return forwardPreKeyBundleThroughMesh(
           allowBleSideEffects: allowBleSideEffects,
-          protocol: protocol,
+          packetCodec: packetCodec,
           discovery: discovery,
           bundle: bundle,
           recipientId: recipientId,
@@ -144,6 +167,14 @@ class Ai2AiDiscoveryPrekeyOrchestrationLane {
           localNodeId: localBleNodeId,
           peerNodeIdByDeviceId: peerNodeIdByDeviceId,
           adaptiveMeshService: adaptiveMeshService,
+          governanceBindingService: governanceBindingService,
+          localUserId: localUserId,
+          localAgentId: localAgentId,
+          privacyMode: privacyMode,
+          reticulumTransportControlPlaneEnabled:
+              reticulumTransportControlPlaneEnabled,
+          trustedAnnounceEnforcementEnabled:
+              trustedAnnounceEnforcementEnabled,
           logger: logger,
           logName: logName,
         );

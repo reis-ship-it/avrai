@@ -17,8 +17,9 @@ import 'package:avrai_core/models/quantum_entity_state.dart';
 import 'package:avrai_core/models/atomic_timestamp.dart';
 import 'package:avrai_core/services/atomic_clock_service.dart';
 import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
+import 'package:avrai_runtime_os/services/ai_infrastructure/ai2ai_exchange_submission_lane.dart';
+import 'package:avrai_runtime_os/kernel/ai2ai/ai2ai_kernel_models.dart';
 import 'package:avrai_runtime_os/services/security/hybrid_encryption_service.dart';
-import 'package:avrai_runtime_os/ai2ai/anonymous_communication.dart';
 import 'package:avrai_runtime_os/ai2ai/connection_orchestrator.dart';
 import 'package:avrai_knot/services/knot/knot_evolution_string_service.dart';
 import 'package:avrai_knot/models/knot/knot_fabric.dart';
@@ -49,7 +50,7 @@ class ThirdPartyDataPrivacyService {
   final AtomicClockService _atomicClock;
   final AgentIdService _agentIdService;
   final HybridEncryptionService? _encryptionService;
-  final AnonymousCommunicationProtocol? _ai2aiProtocol;
+  final Ai2AiExchangeSubmissionLane? _ai2aiExchangeSubmissionLane;
   // Note: _orchestrator and _knotStringService reserved for future mesh routing enhancements
   // ignore: unused_field
   final VibeConnectionOrchestrator? _orchestrator;
@@ -63,13 +64,13 @@ class ThirdPartyDataPrivacyService {
     required AtomicClockService atomicClock,
     required AgentIdService agentIdService,
     HybridEncryptionService? encryptionService,
-    AnonymousCommunicationProtocol? ai2aiProtocol,
+    Ai2AiExchangeSubmissionLane? ai2aiExchangeSubmissionLane,
     VibeConnectionOrchestrator? orchestrator,
     KnotEvolutionStringService? knotStringService,
   })  : _atomicClock = atomicClock,
         _agentIdService = agentIdService,
         _encryptionService = encryptionService,
-        _ai2aiProtocol = ai2aiProtocol,
+        _ai2aiExchangeSubmissionLane = ai2aiExchangeSubmissionLane,
         _orchestrator = orchestrator,
         _knotStringService = knotStringService;
 
@@ -646,7 +647,7 @@ class ThirdPartyDataPrivacyService {
   /// **Process:**
   /// 1. Anonymize data (quantum state, knot, string, fabric, worldsheet)
   /// 2. Encrypt using Signal Protocol (via HybridEncryptionService)
-  /// 3. Route through AI2AI mesh (via AnonymousCommunicationProtocol)
+  /// 3. Route through AI2AI mesh via the governed exchange submission seam
   /// 4. Return transmission result
   ///
   /// **Returns:**
@@ -654,7 +655,7 @@ class ThirdPartyDataPrivacyService {
   Future<EncryptedTransmissionResult> encryptAndTransmit({
     required Map<String, dynamic> anonymizedData,
     required String recipientAgentId,
-    MessageType? messageType,
+    String? legacyMessageTypeName,
   }) async {
     developer.log(
       'Encrypting and transmitting anonymized data via Signal Protocol + AI2AI mesh',
@@ -691,21 +692,30 @@ class ThirdPartyDataPrivacyService {
         encryptedPayload = jsonEncode(anonymizedData);
       }
 
-      // 3. Route through AI2AI mesh (if available)
+      // 3. Route through governed AI2AI exchange submission (if available)
       bool meshTransmitted = false;
-      if (_ai2aiProtocol != null) {
+      if (_ai2aiExchangeSubmissionLane != null) {
         try {
-          // Use sendEncryptedMessage method
-          await _ai2aiProtocol.sendEncryptedMessage(
-            recipientAgentId,
-            messageType ?? MessageType.recommendationShare,
-            {
-              'encrypted_data': encryptedPayload,
-              'encryption_type': encryptionType.toString(),
-              'anonymized': true,
-            },
+          final submissionResult = await _ai2aiExchangeSubmissionLane.submit(
+            Ai2AiExchangeSubmissionRequest(
+              exchangeId:
+                  'third-party-$recipientAgentId-${DateTime.now().microsecondsSinceEpoch}',
+              conversationId: 'third_party_data_transmission',
+              peerId: recipientAgentId,
+              artifactClass: Ai2AiExchangeArtifactClass.memoryArtifact,
+              payload: <String, dynamic>{
+                'encrypted_data': encryptedPayload,
+                'encryption_type': encryptionType.toString(),
+                'anonymized': true,
+              },
+              legacyMessageTypeName:
+                  legacyMessageTypeName ?? 'recommendationShare',
+              context: const <String, dynamic>{
+                'submission_domain': 'third_party_data_privacy',
+              },
+            ),
           );
-          meshTransmitted = true;
+          meshTransmitted = submissionResult.dispatched;
           developer.log(
             '✅ Data transmitted via AI2AI mesh with Signal Protocol encryption',
             name: _logName,

@@ -18,14 +18,14 @@ import 'package:avrai/theme/colors.dart';
 void main() {
   group('AppColors', () {
     group('Accent Colors', () {
-      test('should have electric green as primary accent', () {
+      test('should keep electric green as the legacy success alias', () {
         expect(AppColors.electricGreen, isA<Color>());
-        expect(AppColors.electricGreen.toARGB32(), equals(0xFF00FF66));
+        expect(AppColors.electricGreen, equals(AppColors.success));
       });
 
-      test('should map primary to electric green', () {
-        expect(AppColors.primary, equals(AppColors.electricGreen));
-        expect(AppColors.accent, equals(AppColors.electricGreen));
+      test('should map primary and accent to the neutral palette', () {
+        expect(AppColors.primary, equals(AppColors.focus));
+        expect(AppColors.accent, equals(AppColors.selection));
       });
     });
 
@@ -82,24 +82,24 @@ void main() {
         expect(AppColors.success, isA<Color>());
       });
 
-      test('should map success to electric green', () {
+      test('should map success to the legacy electric green alias', () {
         expect(AppColors.success, equals(AppColors.electricGreen));
       });
 
       test('should have correct error color', () {
-        expect(AppColors.error.toARGB32(), equals(0xFFFF4D4D));
+        expect(AppColors.error.toARGB32(), equals(0xFFB42318));
       });
 
       test('should have correct warning color', () {
-        expect(AppColors.warning.toARGB32(), equals(0xFFFFC107));
+        expect(AppColors.warning.toARGB32(), equals(0xFFB7791F));
       });
     });
 
     group('Backwards Compatibility', () {
       test('should maintain backwards compatible color names', () {
-        expect(AppColors.primary, equals(AppColors.electricGreen));
-        expect(AppColors.secondary, equals(AppColors.grey600));
-        expect(AppColors.accent, equals(AppColors.electricGreen));
+        expect(AppColors.primary, equals(AppColors.grey900));
+        expect(AppColors.secondary, equals(AppColors.grey700));
+        expect(AppColors.accent, equals(AppColors.grey700));
         expect(AppColors.background, equals(AppColors.white));
         expect(AppColors.surface, equals(AppColors.white));
       });
@@ -107,8 +107,8 @@ void main() {
       test('should have primary light and dark variants', () {
         expect(AppColors.primaryLight, isA<Color>());
         expect(AppColors.primaryDark, isA<Color>());
-        expect(AppColors.primaryLight.toARGB32(), equals(0xFF66FF99));
-        expect(AppColors.primaryDark.toARGB32(), equals(0xFF00CC52));
+        expect(AppColors.primaryLight, equals(AppColors.grey600));
+        expect(AppColors.primaryDark, equals(AppColors.black));
       });
     });
 
@@ -120,15 +120,15 @@ void main() {
       });
 
       test('should map text colors correctly', () {
-        expect(AppColors.textPrimary.toARGB32(), equals(0xFF121212));
+        expect(AppColors.textPrimary.toARGB32(), equals(0xFF111111));
         expect(AppColors.textSecondary, equals(AppColors.grey600));
-        expect(AppColors.textHint, equals(AppColors.grey400));
+        expect(AppColors.textHint, equals(AppColors.grey500));
       });
     });
 
     group('Map Colors', () {
       test('should have map-specific color constants', () {
-        expect(AppColors.mapPrimary, equals(AppColors.electricGreen));
+        expect(AppColors.mapPrimary, equals(AppColors.grey800));
         expect(AppColors.mapSecondary, equals(AppColors.grey600));
         expect(AppColors.mapAccent, equals(AppColors.grey400));
       });

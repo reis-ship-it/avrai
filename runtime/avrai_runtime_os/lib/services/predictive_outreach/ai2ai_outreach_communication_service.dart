@@ -6,10 +6,10 @@
 /// Part of Predictive Proactive Outreach System - Phase 3
 ///
 /// Uses Signal Protocol for end-to-end encryption of all outreach messages.
-/// Routes messages through AnonymousCommunicationProtocol for privacy-preserving delivery.
+/// Routes messages through ConversationOrchestrationLane for governed delivery.
 
 import 'dart:developer' as developer;
-import 'package:avrai_runtime_os/ai2ai/anonymous_communication.dart';
+import 'package:avrai_runtime_os/services/chat/conversation_orchestration_lane.dart';
 import 'package:avrai_runtime_os/services/security/hybrid_encryption_service.dart';
 import 'package:avrai_runtime_os/services/security/signal_protocol_encryption_service.dart';
 import 'package:avrai_runtime_os/services/security/message_encryption_service.dart';
@@ -63,17 +63,17 @@ class OutreachMessageResult {
 class AI2AIOutreachCommunicationService {
   static const String _logName = 'AI2AIOutreachCommunicationService';
 
-  final AnonymousCommunicationProtocol _ai2aiProtocol;
+  final ConversationOrchestrationLane _conversationOrchestrationLane;
   final HybridEncryptionService? _hybridEncryption;
   final SignalProtocolEncryptionService? _signalProtocol;
   final AtomicClockService _atomicClock;
 
   AI2AIOutreachCommunicationService({
-    required AnonymousCommunicationProtocol ai2aiProtocol,
+    required ConversationOrchestrationLane conversationOrchestrationLane,
     HybridEncryptionService? hybridEncryption,
     SignalProtocolEncryptionService? signalProtocol,
     required AtomicClockService atomicClock,
-  })  : _ai2aiProtocol = ai2aiProtocol,
+  })  : _conversationOrchestrationLane = conversationOrchestrationLane,
         _hybridEncryption = hybridEncryption,
         _signalProtocol = signalProtocol,
         _atomicClock = atomicClock;
@@ -83,7 +83,7 @@ class AI2AIOutreachCommunicationService {
   /// **Flow:**
   /// 1. Create anonymous payload (no user data)
   /// 2. Encrypt using Signal Protocol (via HybridEncryptionService)
-  /// 3. Route through AnonymousCommunicationProtocol
+  /// 3. Route through the governed private delivery adapter
   /// 4. Return result
   ///
   /// **Parameters:**
@@ -116,29 +116,26 @@ class AI2AIOutreachCommunicationService {
             .toIso8601String(),
       };
 
-      // 3. Determine MessageType for AnonymousCommunicationProtocol
-      final protocolMessageType = _mapToProtocolMessageType(messageType);
-
-      // 4. Send via AnonymousCommunicationProtocol (uses Signal Protocol internally)
-      final message = await _ai2aiProtocol.sendEncryptedMessage(
-        toAgentId,
-        protocolMessageType,
-        anonymousPayload,
+      // 3. Send via governed conversation lane.
+      final dispatch = await _conversationOrchestrationLane.sendDirectMessagePayload(
+        recipientAgentId: toAgentId,
+        payload: anonymousPayload,
+        messageCategory: 'outreach_${messageType.name}',
       );
 
       // 5. Determine encryption type used
       final encryptionType = await _getEncryptionTypeUsed();
 
       developer.log(
-        '✅ AI2AI outreach message sent successfully: ${message.messageId}, '
+        '✅ AI2AI outreach message sent successfully: ${dispatch.messageId}, '
         'encryption=${encryptionType.name}',
         name: _logName,
       );
 
       return OutreachMessageResult(
         success: true,
-        messageId: message.messageId,
-        timestamp: message.timestamp,
+        messageId: dispatch.messageId,
+        timestamp: dispatch.timestamp,
         encryptionType: encryptionType,
       );
     } catch (e, stackTrace) {
@@ -243,32 +240,6 @@ class AI2AIOutreachCommunicationService {
     }
   }
 
-  /// Map OutreachMessageType to AnonymousCommunicationProtocol MessageType
-  MessageType _mapToProtocolMessageType(OutreachMessageType outreachType) {
-    switch (outreachType) {
-      case OutreachMessageType.communityInvitation:
-      case OutreachMessageType.groupFormation:
-      case OutreachMessageType.clubMembershipInvitation:
-        return MessageType.discoverySync;
-
-      case OutreachMessageType.eventCall:
-      case OutreachMessageType.spotRecommendation:
-      case OutreachMessageType.friendSuggestion:
-      case OutreachMessageType.listSuggestion:
-        return MessageType.recommendationShare;
-
-      case OutreachMessageType.businessEventInvitation:
-      case OutreachMessageType.businessExpertPartnership:
-      case OutreachMessageType.businessBusinessPartnership:
-      case OutreachMessageType.expertLearningOpportunity:
-      case OutreachMessageType.expertBusinessPartnership:
-      case OutreachMessageType.expertCuratedList:
-        return MessageType.trustVerification;
-
-      case OutreachMessageType.clubEventInvitation:
-        return MessageType.reputationUpdate;
-    }
-  }
 }
 
 /// Batch outreach message item

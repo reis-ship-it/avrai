@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:avrai_core/models/events/event_planning.dart';
 import 'package:avrai_core/models/imports/external_sync_metadata.dart';
 import 'package:avrai_core/models/user/unified_user.dart';
 import 'package:avrai_core/models/spots/spot.dart';
@@ -39,6 +40,7 @@ class ExpertiseEvent extends Equatable {
   final DateTime updatedAt;
   final EventStatus status;
   final ExternalSyncMetadata? externalSyncMetadata;
+  final EventPlanningSnapshot? planningSnapshot;
 
   const ExpertiseEvent({
     required this.id,
@@ -65,6 +67,7 @@ class ExpertiseEvent extends Equatable {
     required this.updatedAt,
     this.status = EventStatus.upcoming,
     this.externalSyncMetadata,
+    this.planningSnapshot,
   });
 
   /// Check if event is full
@@ -147,6 +150,7 @@ class ExpertiseEvent extends Equatable {
       'updatedAt': updatedAt.toIso8601String(),
       'status': status.name,
       'externalSyncMetadata': externalSyncMetadata?.toJson(),
+      'planningSnapshot': planningSnapshot?.toJson(),
     };
   }
 
@@ -187,6 +191,11 @@ class ExpertiseEvent extends Equatable {
               json['externalSyncMetadata'] as Map<String, dynamic>,
             )
           : null,
+      planningSnapshot: json['planningSnapshot'] is Map<String, dynamic>
+          ? EventPlanningSnapshot.fromJson(
+              json['planningSnapshot'] as Map<String, dynamic>,
+            )
+          : null,
     );
   }
 
@@ -216,6 +225,7 @@ class ExpertiseEvent extends Equatable {
     DateTime? updatedAt,
     EventStatus? status,
     Object? externalSyncMetadata = _eventSentinel,
+    Object? planningSnapshot = _eventSentinel,
   }) {
     return ExpertiseEvent(
       id: id ?? this.id,
@@ -244,6 +254,9 @@ class ExpertiseEvent extends Equatable {
       externalSyncMetadata: externalSyncMetadata == _eventSentinel
           ? this.externalSyncMetadata
           : externalSyncMetadata as ExternalSyncMetadata?,
+      planningSnapshot: planningSnapshot == _eventSentinel
+          ? this.planningSnapshot
+          : planningSnapshot as EventPlanningSnapshot?,
     );
   }
 
@@ -273,6 +286,7 @@ class ExpertiseEvent extends Equatable {
         updatedAt,
         status,
         externalSyncMetadata,
+        planningSnapshot,
       ];
 }
 

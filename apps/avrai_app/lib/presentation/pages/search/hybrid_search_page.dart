@@ -163,6 +163,8 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    final resultsHeight =
+        (MediaQuery.sizeOf(context).height * 0.4).clamp(280.0, 520.0).toDouble();
     return AppSchemaPage(
       schema: buildHybridSearchPageSchema(
         content: Column(
@@ -220,8 +222,9 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
               ),
             ),
             if (_showFilters) _buildFilters(),
-            const Expanded(
-              child: HybridSearchResults(),
+            SizedBox(
+              height: resultsHeight,
+              child: const HybridSearchResults(),
             ),
           ],
         ),
@@ -236,7 +239,6 @@ class _HybridSearchPageState extends State<HybridSearchPage> {
           },
         ),
       ],
-      scrollable: false,
     );
   }
 

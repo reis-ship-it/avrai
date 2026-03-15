@@ -104,7 +104,7 @@ void main() {
 
         // Assert - Page should render and show either content or error
         expect(find.byType(AIImprovementPage), findsOneWidget);
-        expect(find.text('AI Improvement'), findsOneWidget); // AppBar title
+        expect(find.text('AI Improvement'), findsWidgets); // AppBar + header
 
         // Page should show either initialized content or error state
         final hasContent =
@@ -138,7 +138,7 @@ void main() {
         // All are valid - we just verify the page is functional
         expect(find.byType(AIImprovementPage), findsOneWidget);
         expect(find.text('AI Improvement'),
-            findsOneWidget); // AppBar title should always be visible
+            findsWidgets); // AppBar + header should always be visible
 
         // If service initialized successfully, widgets should be present
         // If service failed, error state is acceptable
@@ -318,7 +318,7 @@ void main() {
         await tester.pump(const Duration(seconds: 1));
 
         // Try to scroll to footer if page has content
-        final listView = find.byType(ListView);
+        final listView = find.byType(SingleChildScrollView);
         if (listView.evaluate().isNotEmpty) {
           try {
             await tester.scrollUntilVisible(

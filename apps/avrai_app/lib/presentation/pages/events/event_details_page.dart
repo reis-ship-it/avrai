@@ -13,6 +13,7 @@ import 'package:avrai_runtime_os/controllers/event_attendance_controller.dart';
 import 'package:avrai_runtime_os/services/intake/intake_models.dart';
 import 'package:avrai_runtime_os/services/intake/source_intake_orchestrator.dart';
 import 'package:avrai_runtime_os/services/signatures/entity_signature_service.dart';
+import 'package:avrai_runtime_os/config/bham_beta_defaults.dart';
 import 'package:avrai/theme/colors.dart';
 import 'package:avrai/presentation/blocs/auth/auth_bloc.dart';
 import 'package:avrai/presentation/pages/payment/checkout_page.dart';
@@ -73,7 +74,9 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
     _currentEvent = widget.event;
     unawaited(_recordEventViewSignal());
     _checkRegistrationStatus();
-    _checkPartnerships();
+    if (BhamBetaDefaults.enablePartnershipSurfaces) {
+      _checkPartnerships();
+    }
     _checkFraudStatus();
   }
 
@@ -113,6 +116,10 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
   }
 
   Future<void> _checkPartnerships() async {
+    if (!BhamBetaDefaults.enablePartnershipSurfaces) {
+      return;
+    }
+
     try {
       final partnerships =
           await _partnershipService.getPartnershipsForEvent(_currentEvent!.id);
@@ -899,7 +906,9 @@ SPOTS - know you belong.''';
             ],
 
             // Partnership Section (for event hosts)
-            if (userId != null && _currentEvent!.host.id == userId) ...[
+            if (BhamBetaDefaults.enablePartnershipSurfaces &&
+                userId != null &&
+                _currentEvent!.host.id == userId) ...[
               Container(
                 padding: const EdgeInsets.all(20),
                 color: AppColors.surface,

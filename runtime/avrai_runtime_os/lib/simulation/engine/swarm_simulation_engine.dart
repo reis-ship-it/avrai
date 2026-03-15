@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+import 'package:avrai_core/models/atomic_timestamp.dart';
 import '../models/city_profile.dart';
 import '../models/simulated_human.dart';
 import 'swarm_atomic_clock.dart';
@@ -42,7 +43,23 @@ class SwarmSimulationEngine {
           knowledgeExchange: knowledgeExchange,
         );
 
-  /// Starts the simulation and runs it for a specified number of days.
+  WeatherState get currentWeather {
+    if (annualWeather.isEmpty) {
+      return const WeatherState(
+        season: Season.spring,
+        temperatureFahrenheit: 70,
+        isPrecipitating: false,
+        daylightHours: 12,
+      );
+    }
+    return annualWeather[_currentDayIndex % annualWeather.length];
+  }
+
+  /// Starts a standalone single-engine simulation run.
+  ///
+  /// The authoritative multi-city replay path should use the shared runner,
+  /// which advances one atomic timeline and hands the same timestamp to every
+  /// engine for each tick.
   Future<void> runSimulation({int daysToRun = 90}) async {
     developer.log(
         'Starting Swarm Simulation for ${city.name} ($daysToRun days) with ${mapEnvironment.allPOIs.length} POIs',
@@ -60,7 +77,7 @@ class SwarmSimulationEngine {
         _currentDayIndex = 0;
       }
 
-      final currentWeather = annualWeather[_currentDayIndex];
+      final currentWeather = this.currentWeather;
       if (day % 10 == 0) {
         // Only log every 10 days to reduce console spam
         developer.log(
@@ -76,12 +93,16 @@ class SwarmSimulationEngine {
       final ticksPerDay =
           const Duration(hours: 24).inMinutes ~/ tickInterval.inMinutes;
       for (int t = 0; t < ticksPerDay; t++) {
-        await _tick(currentWeather);
+        clock.tick(tickInterval);
+        final currentAtomicTime = await clock.getAtomicTimestamp();
+        await processTickAt(
+          currentAtomicTime,
+          weather: currentWeather,
+        );
       }
 
       // End of day updates
-      _endOfDayProcessing();
-      _currentDayIndex++;
+      completeDay();
     }
 
     final endTicks = DateTime.now();
@@ -95,12 +116,11 @@ class SwarmSimulationEngine {
   }
 
   /// Processes a single time step in the simulation.
-  Future<void> _tick(WeatherState weather) async {
-    // 1. Advance the atomic clock
-    clock.tick(tickInterval);
-    final currentAtomicTime = await clock.getAtomicTimestamp();
-
-    // 2. Determine general macro routine state based on time of day
+  Future<void> processTickAt(
+    AtomicTimestamp currentAtomicTime, {
+    required WeatherState weather,
+  }) async {
+    // Determine general macro routine state based on time of day
     // (A very simplified routine logic for baseline training)
     final hour = currentAtomicTime.localTime.hour;
 
@@ -111,6 +131,13 @@ class SwarmSimulationEngine {
       _exploreInterstitialGaps(human);
 
       human.tickTime();
+    }
+  }
+
+  void completeDay() {
+    _endOfDayProcessing();
+    if (annualWeather.isNotEmpty) {
+      _currentDayIndex = (_currentDayIndex + 1) % annualWeather.length;
     }
   }
 

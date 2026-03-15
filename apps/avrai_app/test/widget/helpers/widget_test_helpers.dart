@@ -22,6 +22,7 @@ import 'package:avrai_runtime_os/services/matching/personality_sync_service.dart
 import 'package:avrai_runtime_os/controllers/sync_controller.dart';
 import 'package:avrai_runtime_os/services/network/enhanced_connectivity_service.dart';
 import 'package:avrai_runtime_os/ai/personality_learning.dart';
+import 'package:avrai_runtime_os/services/messaging/bham_notification_policy_service.dart';
 import '../../helpers/getit_test_harness.dart';
 
 /// Helper utilities for widget testing to ensure consistent test setup
@@ -77,6 +78,11 @@ class WidgetTestHelpers {
           ),
         );
       }
+      if (!GetIt.instance.isRegistered<BhamNotificationPolicyService>()) {
+        getIt.registerSingletonReplace<BhamNotificationPolicyService>(
+          BhamNotificationPolicyService(),
+        );
+      }
     } catch (e) {
       // If initialization fails, log but don't throw
       // Some tests may handle storage setup individually
@@ -96,6 +102,7 @@ class WidgetTestHelpers {
       getIt.unregisterIfRegistered<EnhancedConnectivityService>();
       getIt.unregisterIfRegistered<PersonalitySyncService>();
       getIt.unregisterIfRegistered<SupabaseService>();
+      getIt.unregisterIfRegistered<BhamNotificationPolicyService>();
       await cleanupTestStorage();
       _didGlobalSetup = false;
     } catch (e) {

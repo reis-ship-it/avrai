@@ -8,7 +8,7 @@ import 'package:avrai_runtime_os/services/admin/permissions/admin_access_control
 import 'package:avrai_runtime_os/services/infrastructure/supabase_service.dart';
 import 'package:avrai_runtime_os/ml/predictive_analytics.dart';
 import 'package:avrai_core/models/user/user.dart';
-import 'package:avrai_runtime_os/services/admin/admin_god_mode_service.dart'
+import 'package:avrai_runtime_os/services/admin/admin_runtime_governance_service.dart'
     as admin_models show AIDataSnapshot, ActiveAIAgentData, PredictionAction;
 import 'package:avrai_runtime_os/services/prediction/engagement_phase_predictor.dart';
 import 'package:avrai_runtime_os/services/prediction/markov_transition_store.dart';

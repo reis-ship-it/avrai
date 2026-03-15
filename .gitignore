@@ -86,7 +86,6 @@ Pods/
 coverage/
 *.lock
 test.db
-Runner/
 
 # Generated files
 *.g.dart

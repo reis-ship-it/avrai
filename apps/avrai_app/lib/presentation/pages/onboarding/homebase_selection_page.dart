@@ -5,8 +5,8 @@ import 'package:get_it/get_it.dart';
 import 'package:avrai/injection_container.dart' as di;
 import 'package:avrai/presentation/widgets/common/app_surface.dart';
 import 'package:avrai_runtime_os/services/infrastructure/logger.dart';
-import 'package:avrai_runtime_os/kernel/locality/locality_state.dart';
-import 'package:avrai_runtime_os/kernel/locality/locality_syscall_contract.dart';
+import 'package:avrai_runtime_os/kernel/where/where_kernel_models.dart';
+import 'package:avrai_runtime_os/kernel/where/where_kernel_contract.dart';
 import 'package:avrai_runtime_os/services/geographic/geo_hierarchy_service.dart';
 import 'package:avrai_runtime_os/services/geographic/geo_city_pack_service.dart';
 import 'package:avrai_runtime_os/services/infrastructure/storage_service.dart';
@@ -571,11 +571,11 @@ class _HomebaseSelectionPageState extends State<HomebaseSelectionPage> {
           : null;
       if (whereKernel != null) {
         final resolution = await whereKernel.resolvePoint(
-          LocalityPointQuery(
+          WherePointQuery(
             latitude: center.latitude,
             longitude: center.longitude,
             occurredAtUtc: DateTime.now().toUtc(),
-            audience: LocalityProjectionAudience.admin,
+            audience: WhereProjectionAudience.admin,
             includeGeometry: true,
           ),
         );
