@@ -86,6 +86,48 @@ elif value is False:
 PY
 }
 
+resolve_simulator_app_path() {
+  local developer_dir
+  developer_dir="$(xcode-select -p 2>/dev/null || true)"
+  if [[ -z "$developer_dir" ]]; then
+    return 1
+  fi
+  local simulator_app="$developer_dir/Applications/Simulator.app"
+  if [[ -d "$simulator_app" ]]; then
+    echo "$simulator_app"
+    return 0
+  fi
+  return 1
+}
+
+open_ios_simulator_app() {
+  local simulator_app
+  simulator_app="$(resolve_simulator_app_path || true)"
+  if [[ -n "$simulator_app" ]]; then
+    open "$simulator_app" >/dev/null 2>&1 || true
+    return 0
+  fi
+  open -a Simulator >/dev/null 2>&1 || true
+}
+
+simctl_list_devices_with_retry() {
+  local attempts=0
+  local max_attempts=5
+  local output=""
+  while [[ $attempts -lt $max_attempts ]]; do
+    if output="$(xcrun simctl list devices "$@" 2>/dev/null)"; then
+      printf '%s\n' "$output"
+      return 0
+    fi
+    attempts=$((attempts + 1))
+    if [[ -z "${CI:-}" ]]; then
+      open_ios_simulator_app
+    fi
+    sleep 2
+  done
+  return 1
+}
+
 resolve_android_tools() {
   if [[ -z "$ADB_BIN" ]]; then
     if command -v adb >/dev/null 2>&1; then
@@ -157,7 +199,7 @@ resolve_android_device() {
 }
 
 is_ios_simulator_booted() {
-  xcrun simctl list devices | grep -i "booted" | grep -q "iPhone"
+  simctl_list_devices_with_retry | grep -i "booted" | grep -q "iPhone"
 }
 
 extract_ios_udid() {
@@ -166,20 +208,23 @@ extract_ios_udid() {
 
 resolve_ios_udid() {
   local udid
+  local device_list
   if is_ios_simulator_booted; then
-    xcrun simctl list devices | grep -i "booted" | grep "iPhone" | head -1 | extract_ios_udid
+    device_list="$(simctl_list_devices_with_retry)"
+    printf '%s\n' "$device_list" | grep -i "booted" | grep "iPhone" | head -1 | extract_ios_udid
     return
   fi
 
   local simulator_name="${IOS_SIMULATOR_NAME:-iPhone 15 Pro}"
   if [[ -z "${CI:-}" ]]; then
-    open -a Simulator
+    open_ios_simulator_app
     sleep 3
   fi
 
-  udid="$(xcrun simctl list devices available | grep -i "$simulator_name" | head -1 | extract_ios_udid)"
+  device_list="$(simctl_list_devices_with_retry available)"
+  udid="$(printf '%s\n' "$device_list" | grep -i "$simulator_name" | head -1 | extract_ios_udid)"
   if [[ -z "$udid" ]]; then
-    udid="$(xcrun simctl list devices available | grep -i "iPhone" | head -1 | extract_ios_udid)"
+    udid="$(printf '%s\n' "$device_list" | grep -i "iPhone" | head -1 | extract_ios_udid)"
   fi
   if [[ -z "$udid" ]]; then
     echo "no iOS simulator available"

@@ -111,10 +111,10 @@ Future<void> _configureHostSmokeFallbacks() async {
   }
 
   SharedPreferences.setMockInitialValues(const <String, Object>{});
+  await _resetHostSmokeDocumentsRoot();
 
-  _hostSmokeDocumentsRoot ??= await Directory.systemTemp.createTemp(
-    'simulated_smoke_docs_',
-  );
+  _hostSmokeDocumentsRoot =
+      await Directory.systemTemp.createTemp('simulated_smoke_docs_');
 
   TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
       .setMockMethodCallHandler(_pathProviderChannel, (methodCall) async {
@@ -190,4 +190,21 @@ Future<void> _configureHostSmokeFallbacks() async {
             );
         return null;
       });
+}
+
+Future<void> _resetHostSmokeDocumentsRoot() async {
+  if (Platform.isAndroid || Platform.isIOS) {
+    return;
+  }
+
+  final root = _hostSmokeDocumentsRoot;
+  _hostSmokeDocumentsRoot = null;
+  if (root == null || !root.existsSync()) {
+    return;
+  }
+  try {
+    await root.delete(recursive: true);
+  } on FileSystemException {
+    // Ignore temp cleanup failures in host-only smoke mode.
+  }
 }

@@ -28,7 +28,11 @@ import 'package:avrai_runtime_os/services/validation/domain_execution_field_scen
 import 'package:avrai_runtime_os/services/validation/domain_execution_field_scenario_runner.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:get_storage/get_storage.dart';
+
+import '../../mocks/mock_storage_service.dart';
+
+const MethodChannel _pathProviderChannel =
+    MethodChannel('plugins.flutter.io/path_provider');
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -46,7 +50,7 @@ void main() {
 
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
-      const MethodChannel('plugins.flutter.io/path_provider'),
+      _pathProviderChannel,
       (MethodCall methodCall) async {
         if (methodCall.method == 'getApplicationDocumentsDirectory') {
           return docsRoot.path;
@@ -57,6 +61,8 @@ void main() {
   });
 
   tearDownAll(() async {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(_pathProviderChannel, null);
     try {
       if (docsRoot.existsSync()) {
         await docsRoot.delete(recursive: true);
@@ -71,15 +77,13 @@ void main() {
 
   test('runs deterministic simulated smoke and exports the existing bundle',
       () async {
-    await GetStorage('spots_default', storageRoot.path).initStorage;
-    await GetStorage('spots_user', storageRoot.path).initStorage;
-    await GetStorage('spots_ai', storageRoot.path).initStorage;
-    await GetStorage('spots_analytics', storageRoot.path).initStorage;
+    MockGetStorage.reset();
 
-    final defaultStorage = GetStorage('spots_default', storageRoot.path);
-    final userStorage = GetStorage('spots_user', storageRoot.path);
-    final aiStorage = GetStorage('spots_ai', storageRoot.path);
-    final analyticsStorage = GetStorage('spots_analytics', storageRoot.path);
+    final defaultStorage = MockGetStorage.getInstance(boxName: 'spots_default');
+    final userStorage = MockGetStorage.getInstance(boxName: 'spots_user');
+    final aiStorage = MockGetStorage.getInstance(boxName: 'spots_ai');
+    final analyticsStorage =
+        MockGetStorage.getInstance(boxName: 'spots_analytics');
 
     await defaultStorage.erase();
     await userStorage.erase();
@@ -252,6 +256,19 @@ void main() {
       nowUtc: () => now,
     );
 
+    await ambientService.applyObservation(
+      observation: _ambientObservation(
+        source: AmbientSocialLearningObservationSource.passiveDwell,
+        discoveredPeerIds: const <String>['seed-peer'],
+        confirmedInteractivePeerIds: const <String>[],
+        socialContext: 'dyad',
+        placeVibeLabel: 'intimate_social',
+        lineageRef: 'seed:baseline',
+      ),
+      personalAgentId: 'agent-local',
+    );
+    final baselineAmbient = ambientService.snapshot(capturedAtUtc: now);
+
     final result = await automationService.runSimulatedHeadlessSmoke(
       const SimulatedHeadlessSmokeRequest(platformMode: 'ios'),
     );
@@ -280,6 +297,26 @@ void main() {
     expect(result.fieldValidationProofCount, _requiredScenarios.length);
     expect(result.ambientCandidateCount, greaterThanOrEqualTo(1));
     expect(result.ambientConfirmedCount, greaterThanOrEqualTo(1));
+    final ambientAfter = ambientService.snapshot(capturedAtUtc: now);
+    expect(
+      result.ambientCandidateCount,
+      ambientAfter.candidateCoPresenceObservationCount -
+          baselineAmbient.candidateCoPresenceObservationCount,
+    );
+    expect(
+      result.ambientConfirmedCount,
+      ambientAfter.confirmedInteractionPromotionCount -
+          baselineAmbient.confirmedInteractionPromotionCount,
+    );
+    expect(
+      result.ambientDuplicateMergeCount,
+      ambientAfter.duplicateMergeCount - baselineAmbient.duplicateMergeCount,
+    );
+    expect(
+      result.ambientRejectedPromotionCount,
+      ambientAfter.rejectedInteractionPromotionCount -
+          baselineAmbient.rejectedInteractionPromotionCount,
+    );
 
     final exportDir = Directory(result.exportDirectoryPath);
     expect(exportDir.existsSync(), isTrue);
@@ -342,15 +379,13 @@ void main() {
 
   test('records and exports manual event-planning beta smoke milestones',
       () async {
-    await GetStorage('spots_default', storageRoot.path).initStorage;
-    await GetStorage('spots_user', storageRoot.path).initStorage;
-    await GetStorage('spots_ai', storageRoot.path).initStorage;
-    await GetStorage('spots_analytics', storageRoot.path).initStorage;
+    MockGetStorage.reset();
 
-    final defaultStorage = GetStorage('spots_default', storageRoot.path);
-    final userStorage = GetStorage('spots_user', storageRoot.path);
-    final aiStorage = GetStorage('spots_ai', storageRoot.path);
-    final analyticsStorage = GetStorage('spots_analytics', storageRoot.path);
+    final defaultStorage = MockGetStorage.getInstance(boxName: 'spots_default');
+    final userStorage = MockGetStorage.getInstance(boxName: 'spots_user');
+    final aiStorage = MockGetStorage.getInstance(boxName: 'spots_ai');
+    final analyticsStorage =
+        MockGetStorage.getInstance(boxName: 'spots_analytics');
 
     await defaultStorage.erase();
     await userStorage.erase();

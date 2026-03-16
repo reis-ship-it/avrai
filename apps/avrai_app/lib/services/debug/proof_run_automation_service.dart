@@ -105,6 +105,49 @@ class SimulatedHeadlessSmokeResult {
   };
 }
 
+class _AmbientSmokeDeltaCounts {
+  const _AmbientSmokeDeltaCounts({
+    required this.candidateCount,
+    required this.confirmedCount,
+    required this.duplicateMergeCount,
+    required this.rejectedPromotionCount,
+  });
+
+  factory _AmbientSmokeDeltaCounts.fromSnapshots({
+    required AmbientSocialLearningDiagnosticsSnapshot? before,
+    required AmbientSocialLearningDiagnosticsSnapshot? after,
+  }) {
+    int delta(int afterValue, int beforeValue) {
+      final difference = afterValue - beforeValue;
+      return difference < 0 ? 0 : difference;
+    }
+
+    return _AmbientSmokeDeltaCounts(
+      candidateCount: delta(
+        after?.candidateCoPresenceObservationCount ?? 0,
+        before?.candidateCoPresenceObservationCount ?? 0,
+      ),
+      confirmedCount: delta(
+        after?.confirmedInteractionPromotionCount ?? 0,
+        before?.confirmedInteractionPromotionCount ?? 0,
+      ),
+      duplicateMergeCount: delta(
+        after?.duplicateMergeCount ?? 0,
+        before?.duplicateMergeCount ?? 0,
+      ),
+      rejectedPromotionCount: delta(
+        after?.rejectedInteractionPromotionCount ?? 0,
+        before?.rejectedInteractionPromotionCount ?? 0,
+      ),
+    );
+  }
+
+  final int candidateCount;
+  final int confirmedCount;
+  final int duplicateMergeCount;
+  final int rejectedPromotionCount;
+}
+
 class ProofRunAutomationService {
   static const String eventPlanningBetaSmokeScenarioName =
       'event_planning_beta_smoke_v1';
@@ -296,6 +339,8 @@ class ProofRunAutomationService {
     var failureSummary = '';
     var nodeIds = const <String>[];
     var proofs = const <DomainExecutionFieldScenarioProof>[];
+    final ambientBefore =
+        _ambientSocialLearningService?.snapshot(capturedAtUtc: startedAtUtc);
 
     try {
       nodeIds = await simulateAi2AiEncounter(
@@ -382,6 +427,10 @@ class ProofRunAutomationService {
       final ambientSnapshot = _ambientSocialLearningService?.snapshot(
         capturedAtUtc: _nowUtc(),
       );
+      final ambientDelta = _AmbientSmokeDeltaCounts.fromSnapshots(
+        before: ambientBefore,
+        after: ambientSnapshot,
+      );
       final wakeRunCount = _recentSimulatedWakeRuns(
         platformMode: request.platformMode,
         startedAtUtc: startedAtUtc,
@@ -397,16 +446,12 @@ class ProofRunAutomationService {
             .toList(),
         backgroundWakeRunCount: wakeRunCount,
         fieldValidationProofCount: proofs.length,
-        fieldValidationScenarios: proofs
-            .map((entry) => entry.scenario.name)
-            .toList(growable: false),
-        ambientCandidateCount:
-            ambientSnapshot?.candidateCoPresenceObservationCount ?? 0,
-        ambientConfirmedCount:
-            ambientSnapshot?.confirmedInteractionPromotionCount ?? 0,
-        ambientDuplicateMergeCount: ambientSnapshot?.duplicateMergeCount ?? 0,
-        ambientRejectedPromotionCount:
-            ambientSnapshot?.rejectedInteractionPromotionCount ?? 0,
+        fieldValidationScenarios:
+            proofs.map((entry) => entry.scenario.name).toList(growable: false),
+        ambientCandidateCount: ambientDelta.candidateCount,
+        ambientConfirmedCount: ambientDelta.confirmedCount,
+        ambientDuplicateMergeCount: ambientDelta.duplicateMergeCount,
+        ambientRejectedPromotionCount: ambientDelta.rejectedPromotionCount,
       );
     } catch (error, stackTrace) {
       failureSummary = error.toString();
@@ -448,6 +493,10 @@ class ProofRunAutomationService {
       final ambientSnapshot = _ambientSocialLearningService?.snapshot(
         capturedAtUtc: _nowUtc(),
       );
+      final ambientDelta = _AmbientSmokeDeltaCounts.fromSnapshots(
+        before: ambientBefore,
+        after: ambientSnapshot,
+      );
       return SimulatedHeadlessSmokeResult(
         success: false,
         platformMode: request.platformMode,
@@ -462,16 +511,12 @@ class ProofRunAutomationService {
           startedAtUtc: startedAtUtc,
         ).length,
         fieldValidationProofCount: proofs.length,
-        fieldValidationScenarios: proofs
-            .map((entry) => entry.scenario.name)
-            .toList(growable: false),
-        ambientCandidateCount:
-            ambientSnapshot?.candidateCoPresenceObservationCount ?? 0,
-        ambientConfirmedCount:
-            ambientSnapshot?.confirmedInteractionPromotionCount ?? 0,
-        ambientDuplicateMergeCount: ambientSnapshot?.duplicateMergeCount ?? 0,
-        ambientRejectedPromotionCount:
-            ambientSnapshot?.rejectedInteractionPromotionCount ?? 0,
+        fieldValidationScenarios:
+            proofs.map((entry) => entry.scenario.name).toList(growable: false),
+        ambientCandidateCount: ambientDelta.candidateCount,
+        ambientConfirmedCount: ambientDelta.confirmedCount,
+        ambientDuplicateMergeCount: ambientDelta.duplicateMergeCount,
+        ambientRejectedPromotionCount: ambientDelta.rejectedPromotionCount,
         failureSummary: failureSummary,
       );
     }
