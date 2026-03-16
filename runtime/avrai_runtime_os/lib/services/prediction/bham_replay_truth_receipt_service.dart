@@ -11,9 +11,10 @@ class BhamReplayTruthReceiptService {
     final dominantDiff = comparison.branchDiffs.isEmpty
         ? null
         : comparison.branchDiffs.reduce(
-            (left, right) => left.safetyStressDelta.abs() >= right.safetyStressDelta.abs()
-                ? left
-                : right,
+            (left, right) =>
+                left.safetyStressDelta.abs() >= right.safetyStressDelta.abs()
+                    ? left
+                    : right,
           );
     return SimulationTruthReceipt(
       receiptId: '${packet.scenarioId}:receipt',

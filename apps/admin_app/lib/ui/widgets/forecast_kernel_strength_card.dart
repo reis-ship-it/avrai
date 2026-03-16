@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:avrai_admin_app/theme/colors.dart';
+import 'package:avrai_runtime_os/services/admin/replay_simulation_admin_service.dart';
 import 'package:avrai_runtime_os/services/admin/forecast_kernel_admin_service.dart';
 import 'package:avrai_runtime_os/services/prediction/forecast_strength_service.dart';
 import 'package:flutter/material.dart';
@@ -17,10 +18,12 @@ class ForecastKernelStrengthCard extends StatefulWidget {
 class _ForecastKernelStrengthCardState
     extends State<ForecastKernelStrengthCard> {
   ForecastKernelAdminService? _service;
+  ReplaySimulationAdminService? _replayService;
   StreamSubscription<ForecastKernelAdminSnapshot>? _subscription;
   bool _isLoading = true;
   String? _error;
   ForecastKernelAdminSnapshot? _snapshot;
+  ReplaySimulationAdminSnapshot? _replaySnapshot;
 
   @override
   void initState() {
@@ -28,7 +31,11 @@ class _ForecastKernelStrengthCardState
     _service = GetIt.instance.isRegistered<ForecastKernelAdminService>()
         ? GetIt.instance<ForecastKernelAdminService>()
         : null;
+    _replayService = GetIt.instance.isRegistered<ReplaySimulationAdminService>()
+        ? GetIt.instance<ReplaySimulationAdminService>()
+        : null;
     _startWatching();
+    _loadReplaySnapshot();
   }
 
   void _startWatching() {
@@ -99,6 +106,22 @@ class _ForecastKernelStrengthCardState
     }
   }
 
+  Future<void> _loadReplaySnapshot() async {
+    final service = _replayService;
+    if (service == null) {
+      return;
+    }
+    try {
+      final snapshot = await service.getSnapshot();
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _replaySnapshot = snapshot;
+      });
+    } catch (_) {}
+  }
+
   void _showUnavailableState() {
     if (!mounted) {
       return;
@@ -118,6 +141,7 @@ class _ForecastKernelStrengthCardState
   @override
   Widget build(BuildContext context) {
     final snapshot = _snapshot;
+    final replaySnapshot = _replaySnapshot;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -188,6 +212,22 @@ class _ForecastKernelStrengthCardState
                     'Change risk',
                     _formatPercent(snapshot.averageChangeRisk),
                   ),
+                  if (replaySnapshot != null)
+                    _buildSummaryChip(
+                      'Branches',
+                      replaySnapshot.comparisons
+                          .fold<int>(
+                            0,
+                            (sum, comparison) =>
+                                sum + comparison.branchDiffs.length,
+                          )
+                          .toString(),
+                    ),
+                  if (replaySnapshot != null)
+                    _buildSummaryChip(
+                      'Replay stress',
+                      replaySnapshot.contradictions.length.toString(),
+                    ),
                 ],
               ),
               const SizedBox(height: 16),

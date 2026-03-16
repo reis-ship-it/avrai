@@ -68,7 +68,8 @@ class BhamEventScenarioPackService {
     );
   }
 
-  ReplayScenarioPacket _neighborhoodActivationDay(DateTime now, String createdBy) {
+  ReplayScenarioPacket _neighborhoodActivationDay(
+      DateTime now, String createdBy) {
     return ReplayScenarioPacket(
       scenarioId: 'bham_neighborhood_activation_day',
       name: 'Neighborhood Activation Day',
@@ -104,7 +105,8 @@ class BhamEventScenarioPackService {
           effectiveStart: DateTime.utc(2023, 4, 8, 14),
           effectiveEnd: DateTime.utc(2023, 4, 8, 20),
           magnitude: 0.18,
-          notes: 'Adds caution pressure to distributed neighborhood programming.',
+          notes:
+              'Adds caution pressure to distributed neighborhood programming.',
         ),
       ],
       expectedQuestions: const <String>[
@@ -138,7 +140,8 @@ class BhamEventScenarioPackService {
           effectiveStart: DateTime.utc(2023, 5, 12, 17),
           effectiveEnd: DateTime.utc(2023, 5, 12, 23),
           magnitude: 0.35,
-          notes: 'Fast evening storm degrades outdoor comfort and path reliability.',
+          notes:
+              'Fast evening storm degrades outdoor comfort and path reliability.',
         ),
         ReplayScenarioIntervention(
           interventionId: 'staffing_loss_weather',
@@ -182,7 +185,8 @@ class BhamEventScenarioPackService {
           effectiveStart: DateTime.utc(2023, 6, 17, 18),
           effectiveEnd: DateTime.utc(2023, 6, 17, 23),
           magnitude: 0.38,
-          notes: 'Primary venue demand exceeds expected ingress and queue capacity.',
+          notes:
+              'Primary venue demand exceeds expected ingress and queue capacity.',
         ),
         ReplayScenarioIntervention(
           interventionId: 'venue_closure_partial',
@@ -280,7 +284,8 @@ class BhamEventScenarioPackService {
           effectiveStart: DateTime.utc(2023, 8, 19, 18),
           effectiveEnd: DateTime.utc(2023, 8, 19, 22),
           magnitude: 0.17,
-          notes: 'Staffing attrition compounds locality-level caution pressure.',
+          notes:
+              'Staffing attrition compounds locality-level caution pressure.',
         ),
       ],
       expectedQuestions: const <String>[

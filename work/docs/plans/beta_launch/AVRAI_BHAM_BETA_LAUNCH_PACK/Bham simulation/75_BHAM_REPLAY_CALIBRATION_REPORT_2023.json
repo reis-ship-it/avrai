@@ -1,0 +1,87 @@
+{
+  "reportId": "bham_phase1_calibration_1773550388498",
+  "replayYear": 2023,
+  "passed": false,
+  "records": [
+    {
+      "metricId": "scenario_pack_coverage",
+      "targetValue": 6.0,
+      "actualValue": 6.0,
+      "allowedVariancePct": 0.0,
+      "passed": true,
+      "rationale": "Phase 1 should cover the six Birmingham scenario families in the event scenario pack.",
+      "metadata": {
+        "comparison": "minimum",
+        "variancePct": 0.0
+      }
+    },
+    {
+      "metricId": "social_follow_through_avg",
+      "targetValue": 0.55,
+      "actualValue": 0.5887600330453201,
+      "allowedVariancePct": 30.0,
+      "passed": true,
+      "rationale": "Actor realism needs moderate social follow-through instead of purely routine-driven acceptance.",
+      "metadata": {
+        "comparison": "range",
+        "variancePct": 7.047278735512736
+      }
+    },
+    {
+      "metricId": "weather_sensitivity_avg",
+      "targetValue": 0.5,
+      "actualValue": 0.5084171941518387,
+      "allowedVariancePct": 35.0,
+      "passed": true,
+      "rationale": "Weather sensitivity should be materially present for outdoor Birmingham planning.",
+      "metadata": {
+        "comparison": "range",
+        "variancePct": 1.683438830367745
+      }
+    },
+    {
+      "metricId": "nightlife_affinity_avg",
+      "targetValue": 0.4,
+      "actualValue": 0.3956881344478907,
+      "allowedVariancePct": 45.0,
+      "passed": true,
+      "rationale": "Nightlife affinity should exist but not dominate the synthetic population.",
+      "metadata": {
+        "comparison": "range",
+        "variancePct": 1.077966388027332
+      }
+    },
+    {
+      "metricId": "branch_sensitivity_signal",
+      "targetValue": 0.6,
+      "actualValue": 0.13658333333333336,
+      "allowedVariancePct": 0.0,
+      "passed": false,
+      "rationale": "Scenario branches should generate measurable locality pressure deltas.",
+      "metadata": {
+        "comparison": "minimum",
+        "variancePct": 77.2361111111111
+      }
+    },
+    {
+      "metricId": "bham_locality_overlay_count",
+      "targetValue": 4.0,
+      "actualValue": 8.0,
+      "allowedVariancePct": 0.0,
+      "passed": true,
+      "rationale": "Neighborhood-readable Birmingham overlays should exist for multiple localities.",
+      "metadata": {
+        "comparison": "minimum",
+        "variancePct": 0.0
+      }
+    }
+  ],
+  "unresolvedMetrics": [
+    "branch_sensitivity_signal"
+  ],
+  "metadata": {
+    "cityCode": "bham",
+    "sampledPopulationCount": 64,
+    "comparisonCount": 6
+  }
+}
