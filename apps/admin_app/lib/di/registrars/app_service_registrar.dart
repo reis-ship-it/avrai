@@ -477,6 +477,13 @@ Future<void> _registerAppServiceLayer(AppLogger logger) async {
       ),
     );
   }
+  if (!sl.isRegistered<RealityModelStatusService>()) {
+    sl.registerLazySingleton<RealityModelStatusService>(
+      () => RealityModelStatusService(
+        realityModelPort: sl<RealityModelPort>(),
+      ),
+    );
+  }
   if (!sl.isRegistered<RuntimeExecutionPort>()) {
     sl.registerLazySingleton<RuntimeExecutionPort>(
       () => sl<FunctionalKernelProngPorts>(),

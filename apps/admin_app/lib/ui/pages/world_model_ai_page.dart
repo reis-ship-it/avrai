@@ -1,6 +1,7 @@
 import 'package:avrai_admin_app/navigation/admin_route_paths.dart';
 import 'package:avrai_admin_app/theme/colors.dart';
 import 'package:avrai_admin_app/ui/widgets/common/app_flow_scaffold.dart';
+import 'package:avrai_admin_app/ui/widgets/reality_model_contract_status_card.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -44,6 +45,10 @@ class WorldModelAiPage extends StatelessWidget {
                 ],
               ),
             ),
+          ),
+          const SizedBox(height: 12),
+          const RealityModelContractStatusCard(
+            surfaceLabel: 'Reality Model',
           ),
           const SizedBox(height: 12),
           Card(

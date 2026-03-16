@@ -17,6 +17,7 @@ import 'package:avrai_admin_app/ui/pages/knot_visualizer_page.dart';
 import 'package:avrai_admin_app/ui/pages/world_planes/world_planes_page.dart';
 import 'package:avrai_admin_app/ui/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai_admin_app/ui/widgets/realtime_agent_globe_widget.dart';
+import 'package:avrai_admin_app/ui/widgets/reality_model_contract_status_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -73,6 +74,7 @@ class _RealitySystemOversightPageState
       <RealityGroupingAuditEvent>[];
   final Set<String> _checkInFeedbackBusyEntryIds = <String>{};
   LanguageProfileDiagnosticsSnapshot? _operatorLanguageDiagnostics;
+  int _realityModelStatusRefreshSeed = 0;
 
   @override
   void initState() {
@@ -106,6 +108,7 @@ class _RealitySystemOversightPageState
     setState(() {
       _isLoading = true;
       _error = null;
+      _realityModelStatusRefreshSeed++;
     });
 
     try {
@@ -346,6 +349,11 @@ class _RealitySystemOversightPageState
           _buildPrivacyNoticeCard(context),
           const SizedBox(height: 12),
           _buildDirectionsCard(context),
+          const SizedBox(height: 12),
+          RealityModelContractStatusCard(
+            surfaceLabel: _layerLabel(widget.layer),
+            refreshSeed: _realityModelStatusRefreshSeed,
+          ),
           const SizedBox(height: 12),
           _buildLayerSnapshot(context),
           if (widget.layer == OversightLayer.universe ||
