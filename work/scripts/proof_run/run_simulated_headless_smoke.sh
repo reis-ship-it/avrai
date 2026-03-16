@@ -5,6 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd -P)"
 APP_DIR="$ROOT_DIR/apps/avrai_app"
 VALIDATOR_SCRIPT="$ROOT_DIR/work/tools/validate_simulated_smoke_bundle.dart"
+READINESS_SUMMARY_TOOL="$ROOT_DIR/work/tools/build_bham_beta_readiness_summary.dart"
 PLATFORM="${1:-}"
 SCENARIO_PROFILE="${2:-baseline}"
 APP_BUNDLE_ID="${APP_BUNDLE_ID:-}"
@@ -16,6 +17,7 @@ STUB_BUNDLE_DIR="${SIMULATED_SMOKE_STUB_BUNDLE_DIR:-}"
 ANDROID_SDK_DIR="${ANDROID_SDK_ROOT:-$HOME/Library/Android/sdk}"
 ADB_BIN="${ADB_BIN:-}"
 EMULATOR_BIN="${EMULATOR_BIN:-}"
+DART_BIN="${DART_BIN:-}"
 TMP_DIR=""
 FINAL_DIR=""
 ZIP_FILE=""
@@ -58,6 +60,33 @@ if [[ -z "$STUB_RESPONSE_PATH" ]] && ! command -v flutter >/dev/null 2>&1; then
   echo "flutter is required"
   exit 1
 fi
+
+resolve_dart_bin() {
+  if [[ -n "$DART_BIN" ]]; then
+    return
+  fi
+
+  if command -v flutter >/dev/null 2>&1; then
+    local flutter_bin
+    local flutter_root
+    local flutter_dart
+    flutter_bin="$(command -v flutter)"
+    flutter_root="$(cd "$(dirname "$flutter_bin")/.." && pwd -P)"
+    flutter_dart="$flutter_root/bin/cache/dart-sdk/bin/dart"
+    if [[ -x "$flutter_dart" ]]; then
+      DART_BIN="$flutter_dart"
+      return
+    fi
+  fi
+
+  if command -v dart >/dev/null 2>&1; then
+    DART_BIN="$(command -v dart)"
+    return
+  fi
+
+  echo "dart is required"
+  exit 1
+}
 
 mkdir -p "$ARTIFACT_ROOT"
 
@@ -232,6 +261,22 @@ with tempfile.NamedTemporaryFile("w", delete=False, dir=str(index_md.parent), en
     temp_md = handle.name
 os.replace(temp_md, index_md)
 PY
+}
+
+refresh_bham_beta_readiness_summary() {
+  local readiness_json="$ARTIFACT_ROOT/bham_beta_readiness_summary.json"
+  local readiness_md="$ARTIFACT_ROOT/bham_beta_readiness_summary.md"
+  if [[ ! -f "$READINESS_SUMMARY_TOOL" ]]; then
+    echo "Skipping BHAM beta readiness summary; tool not found: $READINESS_SUMMARY_TOOL" >&2
+    return 0
+  fi
+  resolve_dart_bin
+  if ! "$DART_BIN" run "$READINESS_SUMMARY_TOOL" "$ARTIFACT_ROOT" \
+    --json-output="$readiness_json" \
+    --markdown-output="$readiness_md" \
+    >/dev/null; then
+    echo "BHAM beta readiness summary updated with blocking conditions: $readiness_json" >&2
+  fi
 }
 
 json_string_field() {
@@ -581,7 +626,8 @@ cat >"$MANIFEST_FILE" <<EOF
 }
 EOF
 
-dart run "$VALIDATOR_SCRIPT" "$TMP_DIR" --summary-path="$VALIDATION_SUMMARY" >/dev/null
+resolve_dart_bin
+"$DART_BIN" run "$VALIDATOR_SCRIPT" "$TMP_DIR" --summary-path="$VALIDATION_SUMMARY" >/dev/null
 write_run_artifact_index "$TMP_DIR"
 
 FINAL_DIR="$ARTIFACT_ROOT/${TS}_${PLATFORM}_${SCENARIO_PROFILE_VALUE}_simulated_smoke_${RUN_ID}"
@@ -597,6 +643,7 @@ if command -v zip >/dev/null 2>&1; then
   )
 fi
 update_simulated_smoke_index
+refresh_bham_beta_readiness_summary
 
 echo "DONE"
 echo "Artifact folder: $FINAL_DIR"
@@ -605,6 +652,7 @@ if [[ -f "$ZIP_FILE" ]]; then
 fi
 echo "Response file:   $FINAL_DIR/$(basename "$RESPONSE_FILE")"
 echo "Validation:      $FINAL_DIR/$(basename "$VALIDATION_SUMMARY")"
+echo "Readiness:       $ARTIFACT_ROOT/bham_beta_readiness_summary.json"
 
 if [[ "$SUCCESS" != "true" ]]; then
   echo "Simulated smoke reported failure: ${FAILURE_SUMMARY:-unknown}"

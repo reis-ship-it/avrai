@@ -19,8 +19,10 @@ set -euo pipefail
 # - in-app: use the Proof Run (debug) page to Export receipts
 
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+ROOT_DIR="$(cd "$PROJECT_DIR/.." && pwd)"
 cd "$PROJECT_DIR"
 
+READINESS_SUMMARY_TOOL="$ROOT_DIR/work/tools/build_bham_beta_readiness_summary.dart"
 APP_BUNDLE_ID="${APP_BUNDLE_ID:-com.avrai.app}"
 TS="${PROOF_RUN_TIMESTAMP:-$(date +'%Y-%m-%d_%H-%M-%S')}"
 TS_UTC="${PROOF_RUN_TIMESTAMP_UTC:-$(date -u +'%Y-%m-%dT%H:%M:%SZ')}"
@@ -28,6 +30,7 @@ PROOF_RUN_AUTO="${PROOF_RUN_AUTO:-0}"
 RECORD_SECONDS="${RECORD_SECONDS:-360}"
 RUN_ID="${RUN_ID:-}"
 STUB_EXPORT_DIR="${PROOF_RUN_STUB_EXPORT_DIR:-}"
+DART_BIN="${DART_BIN:-}"
 
 BASE_DIR="${PROOF_RUN_ARTIFACT_ROOT:-$PROJECT_DIR/reports/proof_runs}"
 TMP_DIR=""
@@ -35,6 +38,33 @@ FINAL_DIR=""
 ZIP_FILE=""
 
 mkdir -p "$BASE_DIR"
+
+resolve_dart_bin() {
+  if [[ -n "$DART_BIN" ]]; then
+    return
+  fi
+
+  if command -v flutter >/dev/null 2>&1; then
+    local flutter_bin
+    local flutter_root
+    local flutter_dart
+    flutter_bin="$(command -v flutter)"
+    flutter_root="$(cd "$(dirname "$flutter_bin")/.." && pwd -P)"
+    flutter_dart="$flutter_root/bin/cache/dart-sdk/bin/dart"
+    if [[ -x "$flutter_dart" ]]; then
+      DART_BIN="$flutter_dart"
+      return
+    fi
+  fi
+
+  if command -v dart >/dev/null 2>&1; then
+    DART_BIN="$(command -v dart)"
+    return
+  fi
+
+  echo "dart is required"
+  exit 1
+}
 
 create_pending_artifact_dir() {
   mktemp -d "$BASE_DIR/${TS}_proof_run_PENDING.XXXXXX"
@@ -187,6 +217,22 @@ with tempfile.NamedTemporaryFile("w", delete=False, dir=str(index_md.parent), en
     temp_md = handle.name
 os.replace(temp_md, index_md)
 PY
+}
+
+refresh_bham_beta_readiness_summary() {
+  local readiness_json="$BASE_DIR/bham_beta_readiness_summary.json"
+  local readiness_md="$BASE_DIR/bham_beta_readiness_summary.md"
+  if [[ ! -f "$READINESS_SUMMARY_TOOL" ]]; then
+    echo "Skipping BHAM beta readiness summary; tool not found: $READINESS_SUMMARY_TOOL" >&2
+    return 0
+  fi
+  resolve_dart_bin
+  if ! "$DART_BIN" run "$READINESS_SUMMARY_TOOL" "$BASE_DIR" \
+    --json-output="$readiness_json" \
+    --markdown-output="$readiness_md" \
+    >/dev/null; then
+    echo "BHAM beta readiness summary updated with blocking conditions: $readiness_json" >&2
+  fi
 }
 
 echo "== AVRAI proof run bundle =="
@@ -374,8 +420,10 @@ echo "Creating zip: $ZIP_FILE"
   zip -r "$(basename "$ZIP_FILE")" "$(basename "$FINAL_DIR")" >/dev/null
 )
 update_proof_run_bundle_index
+refresh_bham_beta_readiness_summary
 
 echo
 echo "DONE."
 echo "Folder: $FINAL_DIR"
 echo "Zip:    $ZIP_FILE"
+echo "Readiness: $BASE_DIR/bham_beta_readiness_summary.json"

@@ -121,6 +121,12 @@ To build a BHAM beta phone-QA readiness summary from the current proof artifacts
 dart run work/tools/build_bham_beta_readiness_summary.dart reports/proof_runs
 ```
 
+Both proof-run wrappers now refresh these readiness outputs automatically after
+they update their repo-level indexes:
+
+- `reports/proof_runs/bham_beta_readiness_summary.json`
+- `reports/proof_runs/bham_beta_readiness_summary.md`
+
 Optional outputs:
 
 ```bash

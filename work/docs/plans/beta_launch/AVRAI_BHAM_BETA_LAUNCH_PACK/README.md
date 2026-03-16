@@ -143,6 +143,9 @@ Optional local outputs:
 
 - `dart run work/tools/build_bham_beta_readiness_summary.dart reports/proof_runs --json-output=reports/proof_runs/bham_beta_readiness_summary.json --markdown-output=reports/proof_runs/bham_beta_readiness_summary.md`
 
+The proof-run wrappers now refresh those readiness files automatically whenever
+they update the smoke or manual proof-run indexes under `reports/proof_runs`.
+
 Operational follow-up:
 
 - GitHub branch protection for `bham-beta` should require both checks before merge.

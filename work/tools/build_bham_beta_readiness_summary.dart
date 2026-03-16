@@ -77,38 +77,31 @@ Map<String, Object?> _buildReadinessSummary(Directory artifactRoot) {
       File('${artifactRoot.path}/simulated_headless_smoke_index.json');
   final smokeIndexMarkdownFile =
       File('${artifactRoot.path}/simulated_headless_smoke_index.md');
+  Map<String, dynamic>? smokeIndex;
+  List<Map<String, dynamic>> smokeEntries = const <Map<String, dynamic>>[];
   if (!smokeIndexJsonFile.existsSync()) {
     blockers.add('Missing simulated_headless_smoke_index.json');
   }
   if (!smokeIndexMarkdownFile.existsSync()) {
     blockers.add('Missing simulated_headless_smoke_index.md');
   }
-  if (blockers.isNotEmpty) {
-    blockers.sort();
-    return <String, Object?>{
-      'is_ready_for_phone_qa': false,
-      'artifact_root': artifactRoot.path,
-      'blockers': blockers,
-      'warnings': warnings,
-      'required_platforms': _requiredBaselinePlatforms.keys.toList(),
-    };
+  if (smokeIndexJsonFile.existsSync() && smokeIndexMarkdownFile.existsSync()) {
+    smokeIndex = _readJsonMap(
+      smokeIndexJsonFile,
+      blockers,
+      label: 'simulated_headless_smoke_index.json',
+    );
+    smokeEntries = smokeIndex == null
+        ? const <Map<String, dynamic>>[]
+        : _readList(
+            smokeIndex['entries'],
+            'simulated_headless_smoke_index.json.entries',
+            blockers,
+          )
+            .map((entry) => _asMap(entry, 'smoke index entry', blockers))
+            .whereType<Map<String, dynamic>>()
+            .toList(growable: false);
   }
-
-  final smokeIndex = _readJsonMap(
-    smokeIndexJsonFile,
-    blockers,
-    label: 'simulated_headless_smoke_index.json',
-  );
-  final smokeEntries = smokeIndex == null
-      ? const <Map<String, dynamic>>[]
-      : _readList(
-          smokeIndex['entries'],
-          'simulated_headless_smoke_index.json.entries',
-          blockers,
-        )
-          .map((entry) => _asMap(entry, 'smoke index entry', blockers))
-          .whereType<Map<String, dynamic>>()
-          .toList(growable: false);
 
   final baselineEvaluations = <String, Map<String, Object?>>{};
   for (final platformEntry in _requiredBaselinePlatforms.entries) {

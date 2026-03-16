@@ -133,6 +133,19 @@ void main() {
         '2026-03-15_20-00-00_ios_baseline_simulated_smoke_run-newer',
       ]),
     );
+
+    final readinessJson = jsonDecode(
+      File('${artifactRoot.path}/bham_beta_readiness_summary.json')
+          .readAsStringSync(),
+    ) as Map<String, dynamic>;
+    expect(readinessJson['is_ready_for_phone_qa'], isFalse);
+    expect(
+      (readinessJson['blockers'] as List<dynamic>).cast<String>(),
+      contains(
+        'Missing baseline simulated smoke artifact for android '
+        '(android_simulator)',
+      ),
+    );
   });
 }
 

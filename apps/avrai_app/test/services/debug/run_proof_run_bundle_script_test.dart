@@ -100,6 +100,19 @@ void main() {
         '2026-03-15_20-00-00_proof_run_run-newer',
       ]),
     );
+
+    final readinessJson = jsonDecode(
+      File('${artifactRoot.path}/bham_beta_readiness_summary.json')
+          .readAsStringSync(),
+    ) as Map<String, dynamic>;
+    expect(readinessJson['is_ready_for_phone_qa'], isFalse);
+    expect(
+      (readinessJson['blockers'] as List<dynamic>).cast<String>(),
+      contains('Missing simulated_headless_smoke_index.json'),
+    );
+    final latestProofRun =
+        readinessJson['latest_manual_proof_run'] as Map<String, dynamic>;
+    expect(latestProofRun['run_id'], 'run-newer');
   });
 }
 
