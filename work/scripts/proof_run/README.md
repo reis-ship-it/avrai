@@ -97,6 +97,12 @@ The validator is:
 dart run work/tools/validate_simulated_smoke_bundle.dart <bundle_dir>
 ```
 
+To validate the repo-level smoke index after one or more runs:
+
+```bash
+dart run work/tools/validate_simulated_smoke_artifact_index.dart reports/proof_runs
+```
+
 It checks:
 
 - required bundle files exist
@@ -106,6 +112,7 @@ It checks:
 - ambient-social diagnostics include candidate/confirmed counts, merge/rejection counts, and promotion lineage
 - the manifest explicitly labels the artifact as simulated
 - profile-specific expectations for the supported failure-mode matrix
+- repo-level index entries match the on-disk smoke artifact directories
 
 ## Manual debug page
 

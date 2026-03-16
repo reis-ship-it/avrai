@@ -8,12 +8,17 @@ VALIDATOR_SCRIPT="$ROOT_DIR/work/tools/validate_simulated_smoke_bundle.dart"
 PLATFORM="${1:-}"
 SCENARIO_PROFILE="${2:-baseline}"
 APP_BUNDLE_ID="${APP_BUNDLE_ID:-}"
-TS="$(date +'%Y-%m-%d_%H-%M-%S')"
-TS_UTC="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-ARTIFACT_ROOT="$ROOT_DIR/reports/proof_runs"
+TS="${SIMULATED_SMOKE_TIMESTAMP:-$(date +'%Y-%m-%d_%H-%M-%S')}"
+TS_UTC="${SIMULATED_SMOKE_TIMESTAMP_UTC:-$(date -u +'%Y-%m-%dT%H:%M:%SZ')}"
+ARTIFACT_ROOT="${SIMULATED_SMOKE_ARTIFACT_ROOT:-$ROOT_DIR/reports/proof_runs}"
+STUB_RESPONSE_PATH="${SIMULATED_SMOKE_STUB_RESPONSE_PATH:-}"
+STUB_BUNDLE_DIR="${SIMULATED_SMOKE_STUB_BUNDLE_DIR:-}"
 ANDROID_SDK_DIR="${ANDROID_SDK_ROOT:-$HOME/Library/Android/sdk}"
 ADB_BIN="${ADB_BIN:-}"
 EMULATOR_BIN="${EMULATOR_BIN:-}"
+TMP_DIR=""
+FINAL_DIR=""
+ZIP_FILE=""
 
 if [[ -z "$PLATFORM" ]]; then
   echo "usage: ./scripts/proof_run/run_simulated_headless_smoke.sh <ios|android> [baseline|duplicate_wake_delivery|restart_mid_headless_run|trusted_route_unavailable_deferred|multi_peer_single_confirmation]"
@@ -42,15 +47,52 @@ if [[ -z "$APP_BUNDLE_ID" ]]; then
   APP_BUNDLE_ID="com.avrai.app"
 fi
 
-if ! command -v flutter >/dev/null 2>&1; then
+if [[ -n "$STUB_RESPONSE_PATH" || -n "$STUB_BUNDLE_DIR" ]]; then
+  if [[ -z "$STUB_RESPONSE_PATH" || -z "$STUB_BUNDLE_DIR" ]]; then
+    echo "stub smoke mode requires both SIMULATED_SMOKE_STUB_RESPONSE_PATH and SIMULATED_SMOKE_STUB_BUNDLE_DIR"
+    exit 1
+  fi
+fi
+
+if [[ -z "$STUB_RESPONSE_PATH" ]] && ! command -v flutter >/dev/null 2>&1; then
   echo "flutter is required"
   exit 1
 fi
 
 mkdir -p "$ARTIFACT_ROOT"
 
-TMP_DIR="$ARTIFACT_ROOT/${TS}_${PLATFORM}_${SCENARIO_PROFILE}_simulated_smoke_PENDING"
+create_pending_artifact_dir() {
+  mktemp -d "$ARTIFACT_ROOT/${TS}_${PLATFORM}_${SCENARIO_PROFILE}_simulated_smoke_PENDING.XXXXXX"
+}
+
+reserve_final_artifact_dir() {
+  local base_dir="$ARTIFACT_ROOT/${TS}_${PLATFORM}_${SCENARIO_PROFILE_VALUE:-$SCENARIO_PROFILE}_simulated_smoke_${RUN_ID}"
+  local candidate="$base_dir"
+  local suffix=1
+  while [[ -e "$candidate" || -e "${candidate}.zip" ]]; do
+    candidate="${base_dir}_$suffix"
+    suffix=$((suffix + 1))
+  done
+  printf '%s\n' "$candidate"
+}
+
+on_failure() {
+  local exit_code="$1"
+  if [[ "$exit_code" -eq 0 ]]; then
+    return
+  fi
+  if [[ -n "$TMP_DIR" && -d "$TMP_DIR" ]]; then
+    echo "Simulated smoke failed. Pending artifacts kept at: $TMP_DIR" >&2
+  fi
+  if [[ -n "${DRIVE_LOG:-}" && -f "$DRIVE_LOG" ]]; then
+    echo "Last flutter_drive log lines:" >&2
+    tail -n 40 "$DRIVE_LOG" >&2 || true
+  fi
+}
+
+TMP_DIR="$(create_pending_artifact_dir)"
 mkdir -p "$TMP_DIR"
+trap 'on_failure $?' EXIT
 
 RESPONSE_FILE="$TMP_DIR/simulated_smoke_response.json"
 DRIVE_LOG="$TMP_DIR/flutter_drive.log"
@@ -99,6 +141,97 @@ write_run_artifact_index() {
     echo
     echo "This artifact proves simulated wake and encounter behavior only. It is not a claim of physical BLE or live-radio validation."
   } >"$index_file"
+}
+
+update_simulated_smoke_index() {
+  local index_json="$ARTIFACT_ROOT/simulated_headless_smoke_index.json"
+  local index_md="$ARTIFACT_ROOT/simulated_headless_smoke_index.md"
+  python3 - "$ARTIFACT_ROOT" "$index_json" "$index_md" <<'PY'
+import json
+import os
+import pathlib
+import tempfile
+import sys
+
+root = pathlib.Path(sys.argv[1])
+index_json = pathlib.Path(sys.argv[2])
+index_md = pathlib.Path(sys.argv[3])
+
+entries = []
+for child in sorted(root.iterdir()):
+    if not child.is_dir():
+        continue
+    if "_PENDING" in child.name:
+        continue
+    manifest_path = child / "manifest.json"
+    if not manifest_path.exists():
+        continue
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except Exception:
+        continue
+    is_simulated_smoke = manifest.get("artifact_kind") == "simulated_headless_smoke"
+    if not is_simulated_smoke:
+        continue
+    entries.append(
+        {
+            "artifact_dir": child.name,
+            "artifact_dir_path": str(child),
+            "zip_path": str(child.with_suffix(".zip")) if child.with_suffix(".zip").exists() else None,
+            "run_id": manifest.get("run_id"),
+            "platform": manifest.get("platform"),
+            "scenario_profile": manifest.get("scenario_profile"),
+            "timestamp": manifest.get("timestamp"),
+            "timestamp_utc": manifest.get("timestamp_utc"),
+            "git_sha": manifest.get("git_sha"),
+            "success": manifest.get("smoke_response_success"),
+            "failure_summary": manifest.get("failure_summary"),
+        }
+    )
+
+entries.sort(
+    key=lambda entry: (
+        entry.get("timestamp") or "",
+        entry.get("run_id") or "",
+        entry.get("artifact_dir") or "",
+    ),
+    reverse=True,
+)
+
+payload = {"artifact_kind": "simulated_headless_smoke_index", "entries": entries}
+with tempfile.NamedTemporaryFile("w", delete=False, dir=str(index_json.parent), encoding="utf-8") as handle:
+    json.dump(payload, handle, indent=2)
+    handle.write("\n")
+    temp_json = handle.name
+os.replace(temp_json, index_json)
+
+lines = [
+    "# Simulated Headless Smoke Index",
+    "",
+    f"- Artifact root: `{root}`",
+    f"- Indexed runs: `{len(entries)}`",
+    "",
+    "| Timestamp | Platform | Scenario | Run ID | Success | Artifact Dir |",
+    "| --- | --- | --- | --- | --- | --- |",
+]
+for entry in entries:
+    lines.append(
+        "| {timestamp} | {platform} | {scenario} | {run_id} | {success} | `{artifact_dir}` |".format(
+            timestamp=entry.get("timestamp_utc") or entry.get("timestamp") or "-",
+            platform=entry.get("platform") or "-",
+            scenario=entry.get("scenario_profile") or "-",
+            run_id=entry.get("run_id") or "-",
+            success=str(entry.get("success")).lower() if entry.get("success") is not None else "-",
+            artifact_dir=entry.get("artifact_dir") or "-",
+        )
+    )
+
+with tempfile.NamedTemporaryFile("w", delete=False, dir=str(index_md.parent), encoding="utf-8") as handle:
+    handle.write("\n".join(lines))
+    handle.write("\n")
+    temp_md = handle.name
+os.replace(temp_md, index_md)
+PY
 }
 
 json_string_field() {
@@ -314,6 +447,11 @@ run_flutter_drive() {
   popd >/dev/null
 }
 
+use_stub_bundle() {
+  cp "$STUB_RESPONSE_PATH" "$RESPONSE_FILE"
+  cp -R "$STUB_BUNDLE_DIR"/. "$TMP_DIR"/
+}
+
 copy_ios_bundle() {
   local simulator_udid="$1"
   local run_id="$2"
@@ -364,26 +502,31 @@ bundle_files_present() {
 }
 
 DEVICE_ID=""
-if [[ "$PLATFORM" == "ios" ]]; then
-  if [[ "$OSTYPE" != "darwin"* ]]; then
-    echo "iOS simulator smoke requires macOS"
-    exit 1
-  fi
-  DEVICE_ID="$(resolve_ios_udid)"
+if [[ -n "$STUB_RESPONSE_PATH" ]]; then
+  echo "Running simulated headless smoke in stub mode on $PLATFORM"
+  use_stub_bundle
 else
-  resolve_android_tools
-  if [[ -z "$ADB_BIN" ]]; then
-    echo "adb is required for Android simulator smoke runs"
+  if [[ "$PLATFORM" == "ios" ]]; then
+    if [[ "$OSTYPE" != "darwin"* ]]; then
+      echo "iOS simulator smoke requires macOS"
+      exit 1
+    fi
+    DEVICE_ID="$(resolve_ios_udid)"
+  else
+    resolve_android_tools
+    if [[ -z "$ADB_BIN" ]]; then
+      echo "adb is required for Android simulator smoke runs"
+      exit 1
+    fi
+    DEVICE_ID="$(resolve_android_device)"
+  fi
+
+  echo "Running simulated headless smoke on $PLATFORM ($DEVICE_ID)"
+  if ! run_flutter_drive "$DEVICE_ID"; then
+    echo "flutter drive failed"
+    echo "See $DRIVE_LOG for details"
     exit 1
   fi
-  DEVICE_ID="$(resolve_android_device)"
-fi
-
-echo "Running simulated headless smoke on $PLATFORM ($DEVICE_ID)"
-if ! run_flutter_drive "$DEVICE_ID"; then
-  echo "flutter drive failed"
-  echo "See $DRIVE_LOG for details"
-  exit 1
 fi
 
 if [[ ! -f "$RESPONSE_FILE" ]]; then
@@ -442,15 +585,18 @@ dart run "$VALIDATOR_SCRIPT" "$TMP_DIR" --summary-path="$VALIDATION_SUMMARY" >/d
 write_run_artifact_index "$TMP_DIR"
 
 FINAL_DIR="$ARTIFACT_ROOT/${TS}_${PLATFORM}_${SCENARIO_PROFILE_VALUE}_simulated_smoke_${RUN_ID}"
+FINAL_DIR="$(reserve_final_artifact_dir)"
 mv "$TMP_DIR" "$FINAL_DIR"
+TMP_DIR=""
 
-ZIP_FILE="$ARTIFACT_ROOT/${TS}_${PLATFORM}_${SCENARIO_PROFILE_VALUE}_simulated_smoke_${RUN_ID}.zip"
+ZIP_FILE="${FINAL_DIR}.zip"
 if command -v zip >/dev/null 2>&1; then
   (
     cd "$ARTIFACT_ROOT"
     zip -rq "$(basename "$ZIP_FILE")" "$(basename "$FINAL_DIR")"
   )
 fi
+update_simulated_smoke_index
 
 echo "DONE"
 echo "Artifact folder: $FINAL_DIR"
