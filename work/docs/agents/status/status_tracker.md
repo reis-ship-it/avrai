@@ -35,6 +35,23 @@ To avoid drift and contradictory “status snapshots” across docs:
 
 ## 📊 **Current Status**
 
+### **BHAM Beta Integration Branch + Smoke Gate**
+**Status:** ✅ **Active branch and pre-phone gate established**  
+**Last Updated:** March 15, 2026  
+**Canonical active branch:** `bham-beta`
+
+- Agents continuing BHAM beta, replay, smoke, governance, or related launch work should start from `bham-beta`.
+- Treat `bham-beta` as the only canonical active branch for ongoing BHAM implementation.
+- Treat `bham-beta-local` as historical rescue context only, not the active branch instruction.
+- Treat the split `agent/...` branches as review/reference slices, not as the main ongoing work line.
+- GitHub branch protection follow-up for `bham-beta` should require both smoke checks:
+  - `iOS Simulated Headless Smoke`
+  - `Android Simulated Headless Smoke`
+- The baseline pre-phone smoke gate is:
+  - `bash work/scripts/proof_run/run_simulated_headless_smoke.sh ios baseline`
+  - `bash work/scripts/proof_run/run_simulated_headless_smoke.sh android baseline`
+
+**Historical handoff note:** `work/docs/agents/reports/BHAM_BETA_LOCAL_BRANCH_HANDOFF_2026-03-15.md`
 ### **v0.5 Beta Day 12-14 Gate (Release Readiness)**
 **Status:** ✅ **Deterministic gate passing**  
 **Last Updated:** March 4, 2026  

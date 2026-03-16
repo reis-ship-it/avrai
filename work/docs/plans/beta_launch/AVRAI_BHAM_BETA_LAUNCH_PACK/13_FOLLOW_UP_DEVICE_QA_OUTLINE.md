@@ -51,6 +51,39 @@ Before real phones are available, BHAM beta now has a deterministic simulated sm
 This does not replace live-phone QA.
 It means live-phone QA should begin from a boring baseline instead of discovering basic orchestration, proof-export, or artifact-shape regressions for the first time on physical devices.
 
+## Real-Device Acceptance Pack Requirement
+
+Before a live-phone BHAM QA block starts, attach both latest baseline simulated smoke artifact folders:
+
+- latest iOS baseline smoke artifact folder
+- latest Android baseline smoke artifact folder
+
+Minimum proof files to attach or link from those folders:
+
+- `validation_summary.json`
+- `background_wake_runs.json`
+- `field_validation_proofs.json`
+- `ambient_social_diagnostics.json`
+
+During live-phone execution, the admin/debug observer should inspect these surfaces when exposed:
+
+- mesh trust diagnostics
+- AI2AI rendezvous / exchange diagnostics
+- ambient-social diagnostics
+
+Expected count movement during field runs:
+
+- passive nearby discovery should move candidate presence counts
+- only a trusted completed AI2AI interaction should move confirmed interaction counts
+- if trust/routing is unavailable, blocked or deferred state should remain visible instead of silently promoting interaction truth
+
+Blockers before any wider beta session starts:
+
+- missing green iOS or Android baseline simulated smoke artifact
+- missing `validation_summary.json` proof of `is_valid: true`
+- candidate vs confirmed interaction counts behaving backwards or collapsing into one bucket
+- blocked/deferred AI2AI state not surfacing when trust/routing is unavailable
+
 ## What This Outline Is Not For
 
 - replacing automated test gates

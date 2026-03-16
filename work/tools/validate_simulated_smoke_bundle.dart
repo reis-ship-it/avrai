@@ -10,6 +10,14 @@ const List<String> _requiredBundleFiles = <String>[
   'ambient_social_diagnostics.json',
 ];
 
+const Set<String> _supportedScenarioProfiles = <String>{
+  'baseline',
+  'duplicate_wake_delivery',
+  'restart_mid_headless_run',
+  'trusted_route_unavailable_deferred',
+  'multi_peer_single_confirmation',
+};
+
 const Set<String> _requiredWakeReasons = <String>{
   'ble_encounter',
   'trusted_announce_refresh',
@@ -120,7 +128,8 @@ Map<String, Object?> _validateBundle(Directory bundleDir) {
   }
 
   final files = <String, File>{
-    for (final name in _requiredBundleFiles) name: File('${bundleDir.path}/$name'),
+    for (final name in _requiredBundleFiles)
+      name: File('${bundleDir.path}/$name'),
   };
   for (final entry in files.entries) {
     if (!entry.value.existsSync()) {
@@ -138,10 +147,11 @@ Map<String, Object?> _validateBundle(Directory bundleDir) {
 
   final manifest =
       _readJsonMap(files['manifest.json']!, errors, label: 'manifest.json');
-  final background =
-      _readJsonMap(files['background_wake_runs.json']!, errors, label: 'background_wake_runs.json');
-  final fieldProofs =
-      _readJsonMap(files['field_validation_proofs.json']!, errors, label: 'field_validation_proofs.json');
+  final background = _readJsonMap(files['background_wake_runs.json']!, errors,
+      label: 'background_wake_runs.json');
+  final fieldProofs = _readJsonMap(
+      files['field_validation_proofs.json']!, errors,
+      label: 'field_validation_proofs.json');
   final ambient = _readJsonMap(
     files['ambient_social_diagnostics.json']!,
     errors,
@@ -149,17 +159,42 @@ Map<String, Object?> _validateBundle(Directory bundleDir) {
   );
 
   if (manifest != null) {
+    if (manifest['artifact_kind'] != 'simulated_headless_smoke') {
+      errors
+          .add('manifest.json artifact_kind must be simulated_headless_smoke');
+    }
     if (manifest['simulated'] != true) {
       errors.add('manifest.json must label the run as simulated');
     }
+    final platform = manifest['platform']?.toString() ?? '';
+    if (!platform.endsWith('_simulator')) {
+      errors.add('manifest.json platform must end with _simulator');
+    }
+    final scenarioProfile = manifest['scenario_profile']?.toString() ?? '';
+    if (scenarioProfile.isEmpty) {
+      errors.add('manifest.json must include scenario_profile');
+    } else if (!_supportedScenarioProfiles.contains(scenarioProfile)) {
+      errors.add(
+        'manifest.json scenario_profile must be one of '
+        '${_supportedScenarioProfiles.toList()..sort()}',
+      );
+    }
+    final timestampUtc = manifest['timestamp_utc']?.toString() ?? '';
+    if (timestampUtc.isEmpty) {
+      errors.add('manifest.json must include timestamp_utc');
+    } else if (DateTime.tryParse(timestampUtc) == null) {
+      errors.add('manifest.json timestamp_utc must be an ISO-8601 timestamp');
+    }
     final notes = manifest['notes']?.toString().toLowerCase() ?? '';
     if (!notes.contains('simulated')) {
-      errors.add('manifest.json notes must explicitly describe simulated coverage');
+      errors.add(
+          'manifest.json notes must explicitly describe simulated coverage');
     }
   }
 
   if (background != null) {
-    final runs = _readList(background['runs'], 'background_wake_runs.json.runs', errors);
+    final runs =
+        _readList(background['runs'], 'background_wake_runs.json.runs', errors);
     if (runs.isEmpty) {
       errors.add('background_wake_runs.json must contain at least one run');
     } else {
@@ -187,7 +222,8 @@ Map<String, Object?> _validateBundle(Directory bundleDir) {
   }
 
   if (fieldProofs != null) {
-    final proofs = _readList(fieldProofs['proofs'], 'field_validation_proofs.json.proofs', errors);
+    final proofs = _readList(
+        fieldProofs['proofs'], 'field_validation_proofs.json.proofs', errors);
     final scenarioNames = <String>{};
     for (final proof in proofs) {
       final proofMap = _asMap(proof, 'field validation proof', errors);
@@ -211,17 +247,20 @@ Map<String, Object?> _validateBundle(Directory bundleDir) {
   if (ambient != null) {
     for (final key in _requiredAmbientKeys) {
       if (!ambient.containsKey(key)) {
-        errors.add('ambient_social_diagnostics.json missing required key: $key');
+        errors
+            .add('ambient_social_diagnostics.json missing required key: $key');
       }
     }
     final trace = ambient['last_promotion_trace'];
     if (trace is! Map) {
-      errors.add('ambient_social_diagnostics.json.last_promotion_trace must be present');
+      errors.add(
+          'ambient_social_diagnostics.json.last_promotion_trace must be present');
     } else {
       final traceMap = Map<String, dynamic>.from(trace);
       for (final key in _requiredPromotionTraceKeys) {
         if (!traceMap.containsKey(key)) {
-          errors.add('ambient_social_diagnostics.json.last_promotion_trace missing key: $key');
+          errors.add(
+              'ambient_social_diagnostics.json.last_promotion_trace missing key: $key');
         }
       }
     }
@@ -236,7 +275,7 @@ Map<String, Object?> _validateBundle(Directory bundleDir) {
     errors.add('ledger_rows.jsonl must contain proof_run_started');
   }
   if (!ledgerEventTypes.contains('proof_run_finished')) {
-    warnings.add('ledger_rows.jsonl does not contain proof_run_finished');
+    errors.add('ledger_rows.jsonl must contain proof_run_finished');
   }
 
   return <String, Object?>{
@@ -245,8 +284,12 @@ Map<String, Object?> _validateBundle(Directory bundleDir) {
     'errors': errors,
     'warnings': warnings,
     'summary': <String, Object?>{
+      'artifact_kind': manifest?['artifact_kind'],
       'run_id': manifest?['run_id'],
       'platform': manifest?['platform'],
+      'scenario_profile': manifest?['scenario_profile'],
+      'timestamp_utc': manifest?['timestamp_utc'],
+      'smoke_response_success': manifest?['smoke_response_success'],
       'background_wake_run_count': (background?['runs'] as List?)?.length ?? 0,
       'field_validation_proof_count':
           (fieldProofs?['proofs'] as List?)?.length ?? 0,

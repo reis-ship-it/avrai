@@ -6,15 +6,17 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd -P)"
 APP_DIR="$ROOT_DIR/apps/avrai_app"
 VALIDATOR_SCRIPT="$ROOT_DIR/work/tools/validate_simulated_smoke_bundle.dart"
 PLATFORM="${1:-}"
+SCENARIO_PROFILE="${2:-baseline}"
 APP_BUNDLE_ID="${APP_BUNDLE_ID:-}"
 TS="$(date +'%Y-%m-%d_%H-%M-%S')"
+TS_UTC="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
 ARTIFACT_ROOT="$ROOT_DIR/reports/proof_runs"
 ANDROID_SDK_DIR="${ANDROID_SDK_ROOT:-$HOME/Library/Android/sdk}"
 ADB_BIN="${ADB_BIN:-}"
 EMULATOR_BIN="${EMULATOR_BIN:-}"
 
 if [[ -z "$PLATFORM" ]]; then
-  echo "usage: ./scripts/proof_run/run_simulated_headless_smoke.sh <ios|android>"
+  echo "usage: ./scripts/proof_run/run_simulated_headless_smoke.sh <ios|android> [baseline|duplicate_wake_delivery|restart_mid_headless_run|trusted_route_unavailable_deferred|multi_peer_single_confirmation]"
   exit 1
 fi
 
@@ -27,12 +29,17 @@ case "$PLATFORM" in
     ;;
 esac
 
+case "$SCENARIO_PROFILE" in
+  baseline|duplicate_wake_delivery|restart_mid_headless_run|trusted_route_unavailable_deferred|multi_peer_single_confirmation)
+    ;;
+  *)
+    echo "unsupported simulated smoke scenario profile: $SCENARIO_PROFILE"
+    exit 1
+    ;;
+esac
+
 if [[ -z "$APP_BUNDLE_ID" ]]; then
-  if [[ "$PLATFORM" == "android" ]]; then
-    APP_BUNDLE_ID="com.avrai.avrai"
-  else
-    APP_BUNDLE_ID="com.avrai.app"
-  fi
+  APP_BUNDLE_ID="com.avrai.app"
 fi
 
 if ! command -v flutter >/dev/null 2>&1; then
@@ -42,13 +49,14 @@ fi
 
 mkdir -p "$ARTIFACT_ROOT"
 
-TMP_DIR="$ARTIFACT_ROOT/${TS}_${PLATFORM}_simulated_smoke_PENDING"
+TMP_DIR="$ARTIFACT_ROOT/${TS}_${PLATFORM}_${SCENARIO_PROFILE}_simulated_smoke_PENDING"
 mkdir -p "$TMP_DIR"
 
 RESPONSE_FILE="$TMP_DIR/simulated_smoke_response.json"
 DRIVE_LOG="$TMP_DIR/flutter_drive.log"
 VALIDATION_SUMMARY="$TMP_DIR/validation_summary.json"
 MANIFEST_FILE="$TMP_DIR/manifest.json"
+ARTIFACT_INDEX_FILE="$TMP_DIR/ARTIFACT_INDEX.md"
 REQUIRED_BUNDLE_FILES=(
   "ledger_rows.csv"
   "ledger_rows.jsonl"
@@ -56,6 +64,42 @@ REQUIRED_BUNDLE_FILES=(
   "field_validation_proofs.json"
   "ambient_social_diagnostics.json"
 )
+
+write_run_artifact_index() {
+  local run_dir="$1"
+  local index_file="$run_dir/ARTIFACT_INDEX.md"
+  {
+    echo "# Simulated Headless Smoke Artifact Index"
+    echo
+    echo "- Run ID: \`$RUN_ID\`"
+    echo "- Platform: \`${PLATFORM}_simulator\`"
+    echo "- Platform mode: \`$PLATFORM\`"
+    echo "- Scenario profile: \`${SCENARIO_PROFILE_VALUE:-$SCENARIO_PROFILE}\`"
+    echo "- Timestamp (local): \`$TS\`"
+    echo "- Timestamp (UTC): \`$TS_UTC\`"
+    echo "- Git SHA: \`${GIT_SHA:-unknown}\`"
+    echo "- Run status: \`${RUN_STATUS:-unknown}\`"
+    echo "- Success: \`${SUCCESS:-false}\`"
+    echo "- Simulated-only coverage: \`true\`"
+    if [[ -n "${FAILURE_SUMMARY:-}" ]]; then
+      echo "- Failure summary: \`${FAILURE_SUMMARY}\`"
+    fi
+    echo
+    echo "## Primary Files"
+    echo
+    echo "- \`manifest.json\`: run identity, platform, scenario profile, simulated labeling, pass/fail status"
+    echo "- \`validation_summary.json\`: machine-readable validator output used by CI"
+    echo "- \`simulated_smoke_response.json\`: direct automation response from the app runtime"
+    echo "- \`background_wake_runs.json\`: exported headless wake execution records"
+    echo "- \`field_validation_proofs.json\`: controlled trust, AI2AI, and ambient validation proofs"
+    echo "- \`ambient_social_diagnostics.json\`: candidate vs confirmed social presence and promotion lineage"
+    echo "- \`ledger_rows.jsonl\`: run-scoped milestone ledger receipts"
+    echo
+    echo "## Truth Note"
+    echo
+    echo "This artifact proves simulated wake and encounter behavior only. It is not a claim of physical BLE or live-radio validation."
+  } >"$index_file"
+}
 
 json_string_field() {
   python3 - "$1" "$2" <<'PY'
@@ -251,7 +295,7 @@ resolve_ios_udid() {
 run_flutter_drive() {
   local device_id="$1"
   pushd "$APP_DIR" >/dev/null
-  SIMULATED_SMOKE_RESPONSE_PATH="$RESPONSE_FILE" \
+  if ! SIMULATED_SMOKE_RESPONSE_PATH="$RESPONSE_FILE" \
     SIMULATED_SMOKE_DEVICE_ID="$device_id" \
     SIMULATED_SMOKE_ADB_BIN="${ADB_BIN:-adb}" \
     flutter drive \
@@ -261,8 +305,12 @@ run_flutter_drive() {
       --dart-define=AVRAI_ENABLE_DART_WHAT_FALLBACK=true \
       --dart-define=AVRAI_REQUIRE_NATIVE_LOCALITY=false \
       --dart-define="SIMULATED_SMOKE_PLATFORM=$PLATFORM" \
+      --dart-define="SIMULATED_SMOKE_SCENARIO_PROFILE=$SCENARIO_PROFILE" \
       -d "$device_id" \
-      >"$DRIVE_LOG" 2>&1
+      >"$DRIVE_LOG" 2>&1; then
+    popd >/dev/null
+    return 1
+  fi
   popd >/dev/null
 }
 
@@ -332,7 +380,11 @@ else
 fi
 
 echo "Running simulated headless smoke on $PLATFORM ($DEVICE_ID)"
-run_flutter_drive "$DEVICE_ID"
+if ! run_flutter_drive "$DEVICE_ID"; then
+  echo "flutter drive failed"
+  echo "See $DRIVE_LOG for details"
+  exit 1
+fi
 
 if [[ ! -f "$RESPONSE_FILE" ]]; then
   echo "smoke response file was not created: $RESPONSE_FILE"
@@ -344,6 +396,12 @@ RUN_ID="$(json_string_field "$RESPONSE_FILE" run_id)"
 SUCCESS="$(json_bool_field "$RESPONSE_FILE" success)"
 FAILURE_SUMMARY="$(json_string_field "$RESPONSE_FILE" failure_summary)"
 EXPORT_DIRECTORY_PATH="$(json_string_field "$RESPONSE_FILE" export_directory_path)"
+RESPONSE_SCENARIO_PROFILE="$(json_string_field "$RESPONSE_FILE" scenario_profile)"
+SCENARIO_PROFILE_VALUE="${RESPONSE_SCENARIO_PROFILE:-$SCENARIO_PROFILE}"
+RUN_STATUS="failed"
+if [[ "$SUCCESS" == "true" ]]; then
+  RUN_STATUS="passed"
+fi
 FAILURE_SUMMARY_ESCAPED="${FAILURE_SUMMARY//\"/\\\"}"
 
 if [[ -z "$RUN_ID" ]]; then
@@ -363,12 +421,17 @@ fi
 GIT_SHA="$(git -C "$ROOT_DIR" rev-parse HEAD 2>/dev/null || true)"
 cat >"$MANIFEST_FILE" <<EOF
 {
+  "artifact_kind": "simulated_headless_smoke",
   "run_id": "$RUN_ID",
   "platform": "${PLATFORM}_simulator",
+  "platform_mode": "$PLATFORM",
+  "scenario_profile": "$SCENARIO_PROFILE_VALUE",
+  "run_status": "$RUN_STATUS",
   "simulated": true,
   "bundle_id": "$APP_BUNDLE_ID",
   "git_sha": "$GIT_SHA",
   "timestamp": "$TS",
+  "timestamp_utc": "$TS_UTC",
   "notes": "Automated simulated headless smoke artifact. Encounter and wake coverage are simulated only; no physical BLE or radio claim is made.",
   "smoke_response_success": ${SUCCESS:-false},
   "failure_summary": "${FAILURE_SUMMARY_ESCAPED}"
@@ -376,11 +439,12 @@ cat >"$MANIFEST_FILE" <<EOF
 EOF
 
 dart run "$VALIDATOR_SCRIPT" "$TMP_DIR" --summary-path="$VALIDATION_SUMMARY" >/dev/null
+write_run_artifact_index "$TMP_DIR"
 
-FINAL_DIR="$ARTIFACT_ROOT/${TS}_${PLATFORM}_simulated_smoke_${RUN_ID}"
+FINAL_DIR="$ARTIFACT_ROOT/${TS}_${PLATFORM}_${SCENARIO_PROFILE_VALUE}_simulated_smoke_${RUN_ID}"
 mv "$TMP_DIR" "$FINAL_DIR"
 
-ZIP_FILE="$ARTIFACT_ROOT/${TS}_${PLATFORM}_simulated_smoke_${RUN_ID}.zip"
+ZIP_FILE="$ARTIFACT_ROOT/${TS}_${PLATFORM}_${SCENARIO_PROFILE_VALUE}_simulated_smoke_${RUN_ID}.zip"
 if command -v zip >/dev/null 2>&1; then
   (
     cd "$ARTIFACT_ROOT"

@@ -38,7 +38,21 @@ From repo root, the deterministic smoke entrypoint is:
 ./scripts/proof_run/run_simulated_headless_smoke.sh android
 ```
 
+Optional focused failure/profile runs use the same entrypoint with a second argument:
+
+```bash
+./scripts/proof_run/run_simulated_headless_smoke.sh ios duplicate_wake_delivery
+./scripts/proof_run/run_simulated_headless_smoke.sh android trusted_route_unavailable_deferred
+```
+
 This boots the simulator/emulator if needed, launches the app, runs the in-app automation service through `flutter drive`, pulls the exported proof bundle, validates it, and zips the final artifact.
+
+For BHAM beta, the required regression gate is the `baseline` profile on both platforms. The additional profiles are the compact failure-mode matrix:
+
+- `duplicate_wake_delivery`
+- `restart_mid_headless_run`
+- `trusted_route_unavailable_deferred`
+- `multi_peer_single_confirmation`
 
 CI uses the same contract through:
 
@@ -86,10 +100,12 @@ dart run work/tools/validate_simulated_smoke_bundle.dart <bundle_dir>
 It checks:
 
 - required bundle files exist
+- manifest includes simulated labeling, scenario profile, and `run_status: passed`
 - background wake runs are present and include all required simulated wake reasons
 - field validation proofs include trust, AI2AI, and ambient-social scenarios
 - ambient-social diagnostics include candidate/confirmed counts, merge/rejection counts, and promotion lineage
 - the manifest explicitly labels the artifact as simulated
+- profile-specific expectations for the supported failure-mode matrix
 
 ## Manual debug page
 

@@ -275,6 +275,10 @@ void main() {
 
     expect(result.success, isTrue);
     expect(
+      result.scenarioProfile,
+      SimulatedHeadlessSmokeScenarioProfile.baseline.wireName,
+    );
+    expect(
       sequence,
       <String>[
         'encounter:simulated_headless_smoke_v1:debug_simulated_smoke_user',
@@ -375,6 +379,401 @@ void main() {
       greaterThanOrEqualTo(1),
     );
     expect(ambientDiagnostics['last_promotion_trace'], isNotNull);
+
+    final ledgerRows = _readLedgerRowsJsonl(
+      File('${exportDir.path}/ledger_rows.jsonl'),
+    );
+    expect(
+      ledgerRows
+          .map((entry) => entry['event_type']?.toString())
+          .whereType<String>(),
+      contains('proof_run_finished'),
+    );
+  });
+
+  test('supports duplicate wake delivery profile without corrupting counts',
+      () async {
+    final now = DateTime.utc(2026, 3, 14, 10, 0);
+    final fixture = await _createSmokeRuntimeFixture(now);
+
+    final sequence = <String>[];
+    final automationService = ProofRunAutomationService(
+      proofRunService: fixture.proofRunService,
+      prefs: fixture.prefs,
+      storageService: StorageService.instance,
+      supabaseService: SupabaseService(),
+      backgroundWakeRunRecordStore: fixture.runRecordStore,
+      ambientSocialLearningService: fixture.ambientService,
+      simulateEncounterOverride: ({
+        required String runId,
+        required String userId,
+        required String scenarioName,
+      }) async {
+        sequence.add('encounter:$scenarioName');
+        return const <String>['node-sim-1'];
+      },
+      startHeadlessRuntimeEnvelopeOverride: () async {
+        sequence.add('start_headless');
+      },
+      handleWakeOverride: ({
+        required BackgroundWakeReason reason,
+        bool? isWifiAvailable,
+        bool? isIdle,
+        String? platformSource,
+      }) async {
+        sequence.add('wake:${reason.wireName}');
+        if (reason == BackgroundWakeReason.bleEncounter) {
+          await fixture.ambientService.applyObservation(
+            observation: _ambientObservation(
+              source: AmbientSocialLearningObservationSource.passiveDwell,
+              discoveredPeerIds: const <String>['peer-a', 'peer-b'],
+              confirmedInteractivePeerIds: const <String>[],
+              socialContext: 'social_cluster',
+              placeVibeLabel: 'social_hub',
+              lineageRef: 'duplicate:${reason.wireName}',
+            ),
+            personalAgentId: 'agent-local',
+          );
+        } else if (reason == BackgroundWakeReason.trustedAnnounceRefresh) {
+          await fixture.ambientService.applyObservation(
+            observation: _ambientObservation(
+              source: AmbientSocialLearningObservationSource
+                  .ai2aiCompletedInteraction,
+              discoveredPeerIds: const <String>['peer-a', 'peer-b'],
+              confirmedInteractivePeerIds: const <String>['peer-a'],
+              socialContext: 'social_cluster',
+              placeVibeLabel: 'social_hub',
+              lineageRef: 'duplicate:${reason.wireName}',
+            ),
+            personalAgentId: 'agent-local',
+          );
+        }
+        return _recordSimulatedWakeRun(
+          store: fixture.runRecordStore,
+          now: now,
+          reason: reason,
+          platformSource:
+              platformSource ?? 'simulated_smoke:test:${reason.wireName}',
+          ai2aiReleasedCount:
+              reason == BackgroundWakeReason.backgroundTaskWindow ? 1 : 0,
+          passiveIngestedDwellEventCount:
+              reason == BackgroundWakeReason.bleEncounter ? 1 : 0,
+          ambientCandidateObservationDeltaCount:
+              reason == BackgroundWakeReason.bleEncounter ? 1 : 0,
+          ambientConfirmedPromotionDeltaCount:
+              reason == BackgroundWakeReason.trustedAnnounceRefresh ? 1 : 0,
+          segmentRefreshCount:
+              reason == BackgroundWakeReason.backgroundTaskWindow ? 1 : 0,
+        );
+      },
+      runFieldAcceptanceValidationOverride: () => _persistRequiredProofs(
+        fixture.proofStore,
+      ),
+      nowUtc: () => now,
+    );
+
+    final result = await automationService.runSimulatedHeadlessSmoke(
+      const SimulatedHeadlessSmokeRequest(
+        platformMode: 'android',
+        scenarioProfile:
+            SimulatedHeadlessSmokeScenarioProfile.duplicateWakeDelivery,
+      ),
+    );
+
+    expect(result.success, isTrue);
+    expect(
+      result.scenarioProfile,
+      SimulatedHeadlessSmokeScenarioProfile.duplicateWakeDelivery.wireName,
+    );
+    expect(
+      result.executedWakeReasons.where(
+        (entry) => entry == BackgroundWakeReason.bleEncounter.wireName,
+      ),
+      hasLength(2),
+    );
+    expect(
+      result.executedWakeReasons.where(
+        (entry) =>
+            entry == BackgroundWakeReason.trustedAnnounceRefresh.wireName,
+      ),
+      hasLength(2),
+    );
+    expect(result.ambientDuplicateMergeCount, greaterThan(0));
+
+    final exportDir = Directory(result.exportDirectoryPath);
+    final backgroundRuns = jsonDecode(
+      File('${exportDir.path}/background_wake_runs.json').readAsStringSync(),
+    ) as Map<String, dynamic>;
+    final wakeReasons = (backgroundRuns['runs'] as List<dynamic>)
+        .cast<Map<String, dynamic>>()
+        .map((entry) => entry['reason'] as String)
+        .toList(growable: false);
+    expect(
+      wakeReasons.where(
+        (entry) => entry == BackgroundWakeReason.bleEncounter.wireName,
+      ),
+      hasLength(2),
+    );
+    expect(
+      wakeReasons.where(
+        (entry) =>
+            entry == BackgroundWakeReason.trustedAnnounceRefresh.wireName,
+      ),
+      hasLength(2),
+    );
+  });
+
+  test('records restart-mid-headless-run recovery in the exported ledger',
+      () async {
+    final now = DateTime.utc(2026, 3, 14, 11, 0);
+    final fixture = await _createSmokeRuntimeFixture(now);
+
+    final automationService = ProofRunAutomationService(
+      proofRunService: fixture.proofRunService,
+      prefs: fixture.prefs,
+      storageService: StorageService.instance,
+      supabaseService: SupabaseService(),
+      backgroundWakeRunRecordStore: fixture.runRecordStore,
+      ambientSocialLearningService: fixture.ambientService,
+      simulateEncounterOverride: ({
+        required String runId,
+        required String userId,
+        required String scenarioName,
+      }) async {
+        return const <String>['node-restart-1'];
+      },
+      startHeadlessRuntimeEnvelopeOverride: () async {},
+      handleWakeOverride: ({
+        required BackgroundWakeReason reason,
+        bool? isWifiAvailable,
+        bool? isIdle,
+        String? platformSource,
+      }) async {
+        if (reason == BackgroundWakeReason.bleEncounter) {
+          await fixture.ambientService.applyObservation(
+            observation: _ambientObservation(
+              source: AmbientSocialLearningObservationSource.passiveDwell,
+              discoveredPeerIds: const <String>['peer-restart'],
+              confirmedInteractivePeerIds: const <String>[],
+              socialContext: 'dyad',
+              placeVibeLabel: 'intimate_social',
+              lineageRef: 'restart:${reason.wireName}',
+            ),
+            personalAgentId: 'agent-local',
+          );
+        }
+        return _recordSimulatedWakeRun(
+          store: fixture.runRecordStore,
+          now: now,
+          reason: reason,
+          platformSource:
+              platformSource ?? 'simulated_smoke:test:${reason.wireName}',
+          passiveIngestedDwellEventCount:
+              reason == BackgroundWakeReason.bleEncounter ? 1 : 0,
+          ambientCandidateObservationDeltaCount:
+              reason == BackgroundWakeReason.bleEncounter ? 1 : 0,
+        );
+      },
+      runFieldAcceptanceValidationOverride: () => _persistRequiredProofs(
+        fixture.proofStore,
+      ),
+      nowUtc: () => now,
+    );
+
+    final result = await automationService.runSimulatedHeadlessSmoke(
+      const SimulatedHeadlessSmokeRequest(
+        platformMode: 'ios',
+        scenarioProfile:
+            SimulatedHeadlessSmokeScenarioProfile.restartMidHeadlessRun,
+      ),
+    );
+
+    expect(result.success, isTrue);
+    final ledgerRows = _readLedgerRowsJsonl(
+      File('${result.exportDirectoryPath}/ledger_rows.jsonl'),
+    );
+    final profileContext = ledgerRows.firstWhere(
+      (entry) => entry['event_type'] == 'proof_simulated_smoke_profile_context',
+      orElse: () => <String, dynamic>{},
+    );
+    expect(profileContext, isNotEmpty);
+    final payload = profileContext['payload'] as Map<String, dynamic>;
+    expect(payload['scenario_profile'], 'restart_mid_headless_run');
+    expect(payload['stale_run_recovered'], isTrue);
+  });
+
+  test('keeps trusted-route-unavailable exchange deferred in failure profile',
+      () async {
+    final now = DateTime.utc(2026, 3, 14, 12, 0);
+    final fixture = await _createSmokeRuntimeFixture(now);
+
+    final automationService = ProofRunAutomationService(
+      proofRunService: fixture.proofRunService,
+      prefs: fixture.prefs,
+      storageService: StorageService.instance,
+      supabaseService: SupabaseService(),
+      backgroundWakeRunRecordStore: fixture.runRecordStore,
+      ambientSocialLearningService: fixture.ambientService,
+      simulateEncounterOverride: ({
+        required String runId,
+        required String userId,
+        required String scenarioName,
+      }) async {
+        return const <String>['node-blocked-1'];
+      },
+      startHeadlessRuntimeEnvelopeOverride: () async {},
+      handleWakeOverride: ({
+        required BackgroundWakeReason reason,
+        bool? isWifiAvailable,
+        bool? isIdle,
+        String? platformSource,
+      }) async {
+        if (reason == BackgroundWakeReason.bleEncounter) {
+          await fixture.ambientService.applyObservation(
+            observation: _ambientObservation(
+              source: AmbientSocialLearningObservationSource.passiveDwell,
+              discoveredPeerIds: const <String>['peer-blocked'],
+              confirmedInteractivePeerIds: const <String>[],
+              socialContext: 'dyad',
+              placeVibeLabel: 'intimate_social',
+              lineageRef: 'blocked:${reason.wireName}',
+            ),
+            personalAgentId: 'agent-local',
+          );
+        }
+        final blockedByTrust =
+            reason == BackgroundWakeReason.backgroundTaskWindow ? 1 : 0;
+        return _recordSimulatedWakeRun(
+          store: fixture.runRecordStore,
+          now: now,
+          reason: reason,
+          platformSource:
+              platformSource ?? 'simulated_smoke:test:${reason.wireName}',
+          ai2aiBlockedCount: blockedByTrust,
+          ai2aiTrustedRouteUnavailableBlockCount: blockedByTrust,
+          passiveIngestedDwellEventCount:
+              reason == BackgroundWakeReason.bleEncounter ? 1 : 0,
+          ambientCandidateObservationDeltaCount:
+              reason == BackgroundWakeReason.bleEncounter ? 1 : 0,
+        );
+      },
+      runFieldAcceptanceValidationOverride: () => _persistRequiredProofs(
+        fixture.proofStore,
+      ),
+      nowUtc: () => now,
+    );
+
+    final result = await automationService.runSimulatedHeadlessSmoke(
+      const SimulatedHeadlessSmokeRequest(
+        platformMode: 'android',
+        scenarioProfile: SimulatedHeadlessSmokeScenarioProfile
+            .trustedRouteUnavailableDeferred,
+      ),
+    );
+
+    expect(result.success, isTrue);
+    final backgroundRuns = jsonDecode(
+      File('${result.exportDirectoryPath}/background_wake_runs.json')
+          .readAsStringSync(),
+    ) as Map<String, dynamic>;
+    final blockedCounts = (backgroundRuns['runs'] as List<dynamic>)
+        .cast<Map<String, dynamic>>()
+        .map(
+          (entry) =>
+              entry['ai2ai_trusted_route_unavailable_block_count'] as int,
+        );
+    expect(blockedCounts.any((count) => count > 0), isTrue);
+  });
+
+  test('supports multi-peer single-confirmation profile', () async {
+    final now = DateTime.utc(2026, 3, 14, 13, 0);
+    final fixture = await _createSmokeRuntimeFixture(now);
+
+    final automationService = ProofRunAutomationService(
+      proofRunService: fixture.proofRunService,
+      prefs: fixture.prefs,
+      storageService: StorageService.instance,
+      supabaseService: SupabaseService(),
+      backgroundWakeRunRecordStore: fixture.runRecordStore,
+      ambientSocialLearningService: fixture.ambientService,
+      simulateEncounterOverride: ({
+        required String runId,
+        required String userId,
+        required String scenarioName,
+      }) async {
+        return const <String>['node-a', 'node-b', 'node-c'];
+      },
+      startHeadlessRuntimeEnvelopeOverride: () async {},
+      handleWakeOverride: ({
+        required BackgroundWakeReason reason,
+        bool? isWifiAvailable,
+        bool? isIdle,
+        String? platformSource,
+      }) async {
+        if (reason == BackgroundWakeReason.bleEncounter) {
+          await fixture.ambientService.applyObservation(
+            observation: _ambientObservation(
+              source: AmbientSocialLearningObservationSource.passiveDwell,
+              discoveredPeerIds: const <String>['peer-a', 'peer-b', 'peer-c'],
+              confirmedInteractivePeerIds: const <String>[],
+              socialContext: 'crowd',
+              placeVibeLabel: 'crowd_energy',
+              lineageRef: 'multi-peer:${reason.wireName}',
+            ),
+            personalAgentId: 'agent-local',
+          );
+        } else if (reason == BackgroundWakeReason.trustedAnnounceRefresh) {
+          await fixture.ambientService.applyObservation(
+            observation: _ambientObservation(
+              source: AmbientSocialLearningObservationSource
+                  .ai2aiCompletedInteraction,
+              discoveredPeerIds: const <String>['peer-a', 'peer-b', 'peer-c'],
+              confirmedInteractivePeerIds: const <String>['peer-a'],
+              socialContext: 'crowd',
+              placeVibeLabel: 'crowd_energy',
+              lineageRef: 'multi-peer:${reason.wireName}',
+            ),
+            personalAgentId: 'agent-local',
+          );
+        }
+        return _recordSimulatedWakeRun(
+          store: fixture.runRecordStore,
+          now: now,
+          reason: reason,
+          platformSource:
+              platformSource ?? 'simulated_smoke:test:${reason.wireName}',
+          ai2aiReleasedCount:
+              reason == BackgroundWakeReason.backgroundTaskWindow ? 1 : 0,
+          passiveIngestedDwellEventCount:
+              reason == BackgroundWakeReason.bleEncounter ? 1 : 0,
+          ambientCandidateObservationDeltaCount:
+              reason == BackgroundWakeReason.bleEncounter ? 1 : 0,
+          ambientConfirmedPromotionDeltaCount:
+              reason == BackgroundWakeReason.trustedAnnounceRefresh ? 1 : 0,
+        );
+      },
+      runFieldAcceptanceValidationOverride: () => _persistRequiredProofs(
+        fixture.proofStore,
+      ),
+      nowUtc: () => now,
+    );
+
+    final result = await automationService.runSimulatedHeadlessSmoke(
+      const SimulatedHeadlessSmokeRequest(
+        platformMode: 'ios',
+        scenarioProfile:
+            SimulatedHeadlessSmokeScenarioProfile.multiPeerSingleConfirmation,
+      ),
+    );
+
+    expect(result.success, isTrue);
+    expect(result.simulatedNodeIds, hasLength(3));
+    final ambientDiagnostics = jsonDecode(
+      File('${result.exportDirectoryPath}/ambient_social_diagnostics.json')
+          .readAsStringSync(),
+    ) as Map<String, dynamic>;
+    expect(ambientDiagnostics['latest_nearby_peer_count'], 3);
+    expect(ambientDiagnostics['latest_confirmed_interactive_peer_count'], 1);
   });
 
   test('records and exports manual event-planning beta smoke milestones',
@@ -623,4 +1022,171 @@ DomainExecutionFieldScenarioProof _proof({
       peers: const <Ai2AiRuntimePeerState>[],
     ),
   );
+}
+
+class _SmokeRuntimeFixture {
+  const _SmokeRuntimeFixture({
+    required this.prefs,
+    required this.runRecordStore,
+    required this.proofStore,
+    required this.ambientService,
+    required this.proofRunService,
+  });
+
+  final SharedPreferencesCompat prefs;
+  final BackgroundWakeExecutionRunRecordStore runRecordStore;
+  final DomainExecutionFieldScenarioProofStore proofStore;
+  final AmbientSocialRealityLearningService ambientService;
+  final ProofRunServiceV0 proofRunService;
+}
+
+Future<_SmokeRuntimeFixture> _createSmokeRuntimeFixture(DateTime now) async {
+  MockGetStorage.reset();
+
+  final defaultStorage = MockGetStorage.getInstance(boxName: 'spots_default');
+  final userStorage = MockGetStorage.getInstance(boxName: 'spots_user');
+  final aiStorage = MockGetStorage.getInstance(boxName: 'spots_ai');
+  final analyticsStorage =
+      MockGetStorage.getInstance(boxName: 'spots_analytics');
+
+  await defaultStorage.erase();
+  await userStorage.erase();
+  await aiStorage.erase();
+  await analyticsStorage.erase();
+
+  await StorageService.instance.initForTesting(
+    defaultStorage: defaultStorage,
+    userStorage: userStorage,
+    aiStorage: aiStorage,
+    analyticsStorage: analyticsStorage,
+  );
+
+  final prefs = await SharedPreferencesCompat.getInstance(
+    storage: defaultStorage,
+  );
+  final runRecordStore = BackgroundWakeExecutionRunRecordStore(
+    storageService: StorageService.instance,
+    nowUtc: () => now,
+  );
+  final proofStore = DomainExecutionFieldScenarioProofStore(
+    storageService: StorageService.instance,
+    nowUtc: () => now,
+  );
+  final ambientService = AmbientSocialRealityLearningService(
+    nowUtc: () => now,
+  );
+  final proofRunService = ProofRunServiceV0(
+    ledger: LedgerRecorderServiceV0(
+      supabaseService: SupabaseService(),
+      agentIdService: AgentIdService(
+        supabaseService: SupabaseService(),
+      ),
+      storage: StorageService.instance,
+    ),
+    supabase: SupabaseService(),
+    prefs: prefs,
+    backgroundWakeRunRecordStore: runRecordStore,
+    fieldScenarioProofStore: proofStore,
+    ambientSocialLearningService: ambientService,
+  );
+
+  return _SmokeRuntimeFixture(
+    prefs: prefs,
+    runRecordStore: runRecordStore,
+    proofStore: proofStore,
+    ambientService: ambientService,
+    proofRunService: proofRunService,
+  );
+}
+
+Future<List<DomainExecutionFieldScenarioProof>> _persistRequiredProofs(
+  DomainExecutionFieldScenarioProofStore proofStore,
+) async {
+  final proofs = _requiredScenarios
+      .map(
+        (scenario) => _proof(
+          scenario: scenario,
+          summary: 'proof-${scenario.name}',
+        ),
+      )
+      .toList(growable: false);
+  for (final proof in proofs) {
+    await proofStore.record(proof);
+  }
+  return proofs;
+}
+
+Future<HeadlessBackgroundRuntimeExecutionResult> _recordSimulatedWakeRun({
+  required BackgroundWakeExecutionRunRecordStore store,
+  required DateTime now,
+  required BackgroundWakeReason reason,
+  required String platformSource,
+  int meshDueReplayCount = 1,
+  int meshRecoveredReplayCount = 0,
+  int meshDiscoveredPeerCount = 1,
+  int ai2aiReleasedCount = 0,
+  int ai2aiBlockedCount = 0,
+  int ai2aiTrustedRouteUnavailableBlockCount = 0,
+  int passiveIngestedDwellEventCount = 0,
+  int ambientCandidateObservationDeltaCount = 0,
+  int ambientConfirmedPromotionDeltaCount = 0,
+  int segmentRefreshCount = 0,
+}) async {
+  await store.record(
+    BackgroundWakeExecutionRunRecord(
+      reason: reason,
+      platformSource: platformSource,
+      wakeTimestampUtc: now,
+      startedAtUtc: now,
+      completedAtUtc: now.add(const Duration(seconds: 1)),
+      bootstrapSuccess: true,
+      meshDueReplayCount: meshDueReplayCount,
+      meshRecoveredReplayCount: meshRecoveredReplayCount,
+      meshDiscoveredPeerCount: meshDiscoveredPeerCount,
+      ai2aiReleasedCount: ai2aiReleasedCount,
+      ai2aiBlockedCount: ai2aiBlockedCount,
+      ai2aiTrustedRouteUnavailableBlockCount:
+          ai2aiTrustedRouteUnavailableBlockCount,
+      passiveIngestedDwellEventCount: passiveIngestedDwellEventCount,
+      ambientCandidateObservationDeltaCount:
+          ambientCandidateObservationDeltaCount,
+      ambientConfirmedPromotionDeltaCount: ambientConfirmedPromotionDeltaCount,
+      segmentRefreshCount: segmentRefreshCount,
+    ),
+  );
+
+  return HeadlessBackgroundRuntimeExecutionResult(
+    capabilitySnapshot: BackgroundCapabilitySnapshot(
+      observedAtUtc: now,
+      wakeReason: reason,
+      privacyMode: MeshTransportPrivacyMode.privateMesh,
+      isWifiAvailable: reason == BackgroundWakeReason.backgroundTaskWindow,
+      isIdle: reason == BackgroundWakeReason.backgroundTaskWindow,
+      reticulumTransportControlPlaneEnabled: true,
+      trustedMeshAnnounceEnforcementEnabled: true,
+    ),
+    meshResult: MeshBackgroundExecutionResult(
+      dueReplayCount: meshDueReplayCount,
+      recoveredReachabilityReplayCount: meshRecoveredReplayCount,
+      discoveredPeerCount: meshDiscoveredPeerCount,
+    ),
+    ai2aiResult: Ai2AiBackgroundExecutionResult(
+      releasedCount: ai2aiReleasedCount,
+      blockedCount: ai2aiBlockedCount,
+      trustedRouteUnavailableBlockCount: ai2aiTrustedRouteUnavailableBlockCount,
+    ),
+    passiveResult: PassiveKernelSignalIntakeResult(
+      ingestedDwellEventCount: passiveIngestedDwellEventCount,
+    ),
+    segmentRefreshCount: segmentRefreshCount,
+    bootstrapReady: true,
+  );
+}
+
+List<Map<String, dynamic>> _readLedgerRowsJsonl(File file) {
+  return file
+      .readAsLinesSync()
+      .where((line) => line.trim().isNotEmpty)
+      .map((line) => jsonDecode(line) as Map<String, dynamic>)
+      .toList(growable: false);
 }

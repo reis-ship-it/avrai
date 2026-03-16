@@ -23,12 +23,51 @@ import 'package:avrai_runtime_os/services/passive_collection/passive_dwell_reali
 import 'package:avrai_runtime_os/services/validation/domain_execution_field_scenario_runner.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 
+enum SimulatedHeadlessSmokeScenarioProfile {
+  baseline,
+  duplicateWakeDelivery,
+  restartMidHeadlessRun,
+  trustedRouteUnavailableDeferred,
+  multiPeerSingleConfirmation,
+}
+
+extension SimulatedHeadlessSmokeScenarioProfileWireFormat
+    on SimulatedHeadlessSmokeScenarioProfile {
+  String get wireName => switch (this) {
+        SimulatedHeadlessSmokeScenarioProfile.baseline => 'baseline',
+        SimulatedHeadlessSmokeScenarioProfile.duplicateWakeDelivery =>
+          'duplicate_wake_delivery',
+        SimulatedHeadlessSmokeScenarioProfile.restartMidHeadlessRun =>
+          'restart_mid_headless_run',
+        SimulatedHeadlessSmokeScenarioProfile.trustedRouteUnavailableDeferred =>
+          'trusted_route_unavailable_deferred',
+        SimulatedHeadlessSmokeScenarioProfile.multiPeerSingleConfirmation =>
+          'multi_peer_single_confirmation',
+      };
+
+  static SimulatedHeadlessSmokeScenarioProfile? fromWireName(String value) {
+    return switch (value) {
+      'baseline' => SimulatedHeadlessSmokeScenarioProfile.baseline,
+      'duplicate_wake_delivery' =>
+        SimulatedHeadlessSmokeScenarioProfile.duplicateWakeDelivery,
+      'restart_mid_headless_run' =>
+        SimulatedHeadlessSmokeScenarioProfile.restartMidHeadlessRun,
+      'trusted_route_unavailable_deferred' =>
+        SimulatedHeadlessSmokeScenarioProfile.trustedRouteUnavailableDeferred,
+      'multi_peer_single_confirmation' =>
+        SimulatedHeadlessSmokeScenarioProfile.multiPeerSingleConfirmation,
+      _ => null,
+    };
+  }
+}
+
 class SimulatedHeadlessSmokeRequest {
   const SimulatedHeadlessSmokeRequest({
     required this.platformMode,
     this.userId,
     this.scenarioName = 'simulated_headless_smoke_v1',
     this.wakeReasons = defaultWakeReasons,
+    this.scenarioProfile = SimulatedHeadlessSmokeScenarioProfile.baseline,
   });
 
   static const List<BackgroundWakeReason> defaultWakeReasons =
@@ -43,6 +82,7 @@ class SimulatedHeadlessSmokeRequest {
   final String? userId;
   final String scenarioName;
   final List<BackgroundWakeReason> wakeReasons;
+  final SimulatedHeadlessSmokeScenarioProfile scenarioProfile;
 }
 
 enum EventPlanningBetaSmokeMilestone {
@@ -60,6 +100,7 @@ class SimulatedHeadlessSmokeResult {
     required this.platformMode,
     required this.runId,
     required this.exportDirectoryPath,
+    required this.scenarioProfile,
     required this.simulatedNodeIds,
     required this.executedWakeReasons,
     required this.backgroundWakeRunCount,
@@ -76,6 +117,7 @@ class SimulatedHeadlessSmokeResult {
   final String platformMode;
   final String runId;
   final String exportDirectoryPath;
+  final String scenarioProfile;
   final List<String> simulatedNodeIds;
   final List<String> executedWakeReasons;
   final int backgroundWakeRunCount;
@@ -88,21 +130,22 @@ class SimulatedHeadlessSmokeResult {
   final String? failureSummary;
 
   Map<String, Object?> toJson() => <String, Object?>{
-    'success': success,
-    'platform_mode': platformMode,
-    'run_id': runId,
-    'export_directory_path': exportDirectoryPath,
-    'simulated_node_ids': simulatedNodeIds,
-    'executed_wake_reasons': executedWakeReasons,
-    'background_wake_run_count': backgroundWakeRunCount,
-    'field_validation_proof_count': fieldValidationProofCount,
-    'field_validation_scenarios': fieldValidationScenarios,
-    'ambient_candidate_count': ambientCandidateCount,
-    'ambient_confirmed_count': ambientConfirmedCount,
-    'ambient_duplicate_merge_count': ambientDuplicateMergeCount,
-    'ambient_rejected_promotion_count': ambientRejectedPromotionCount,
-    if (failureSummary != null) 'failure_summary': failureSummary,
-  };
+        'success': success,
+        'platform_mode': platformMode,
+        'run_id': runId,
+        'export_directory_path': exportDirectoryPath,
+        'scenario_profile': scenarioProfile,
+        'simulated_node_ids': simulatedNodeIds,
+        'executed_wake_reasons': executedWakeReasons,
+        'background_wake_run_count': backgroundWakeRunCount,
+        'field_validation_proof_count': fieldValidationProofCount,
+        'field_validation_scenarios': fieldValidationScenarios,
+        'ambient_candidate_count': ambientCandidateCount,
+        'ambient_confirmed_count': ambientConfirmedCount,
+        'ambient_duplicate_merge_count': ambientDuplicateMergeCount,
+        'ambient_rejected_promotion_count': ambientRejectedPromotionCount,
+        if (failureSummary != null) 'failure_summary': failureSummary,
+      };
 }
 
 class _AmbientSmokeDeltaCounts {
@@ -233,6 +276,8 @@ class ProofRunAutomationService {
     required String runId,
     String? userId,
     String scenarioName = 'manual_debug_encounter',
+    SimulatedHeadlessSmokeScenarioProfile scenarioProfile =
+        SimulatedHeadlessSmokeScenarioProfile.baseline,
   }) async {
     _assertDebugOnly();
     final resolvedUserId = _resolveUserId(userId);
@@ -284,22 +329,12 @@ class ProofRunAutomationService {
       expiresAt: now.add(const Duration(hours: 24)),
     );
 
-    final devices = <DiscoveredDevice>[
-      DiscoveredDevice(
-        deviceId: 'sim_peer_1',
-        deviceName: 'SimulatedPeer1',
-        type: DeviceType.bluetooth,
-        isSpotsEnabled: true,
-        personalityData: peerVibe,
-        signalStrength: -55,
-        discoveredAt: now,
-        metadata: <String, dynamic>{
-          'proof_run': true,
-          'scenario_name': scenarioName,
-          'simulated': true,
-        },
-      ),
-    ];
+    final devices = _simulatedDevicesForProfile(
+      now: now,
+      scenarioName: scenarioName,
+      scenarioProfile: scenarioProfile,
+      peerVibe: peerVibe,
+    );
 
     await orchestrator.debugSimulateWalkByHotPath(
       userId: resolvedUserId,
@@ -324,12 +359,20 @@ class ProofRunAutomationService {
     _assertDebugOnly();
     await _finishStaleRunIfPresent();
     await _ensureDebugAdminAuthorization();
+    final effectiveScenarioName = _effectiveScenarioName(request);
+    final effectiveWakeReasons = _effectiveWakeReasons(request);
+    final staleRunRecovered = await _seedRestartProfileIfNeeded(
+      platformMode: request.platformMode,
+      scenarioName: effectiveScenarioName,
+      scenarioProfile: request.scenarioProfile,
+    );
 
     final startedAtUtc = _nowUtc();
     final runId = await _proofRunService.startRun(
       payload: <String, Object?>{
         'platform_mode': request.platformMode,
-        'scenario_name': request.scenarioName,
+        'scenario_name': effectiveScenarioName,
+        'scenario_profile': request.scenarioProfile.wireName,
         'simulated': true,
         'notes': 'Automated simulated headless smoke run',
       },
@@ -343,10 +386,19 @@ class ProofRunAutomationService {
         _ambientSocialLearningService?.snapshot(capturedAtUtc: startedAtUtc);
 
     try {
+      await _recordProfileContextMilestone(
+        runId: runId,
+        platformMode: request.platformMode,
+        scenarioName: effectiveScenarioName,
+        scenarioProfile: request.scenarioProfile,
+        wakeReasons: effectiveWakeReasons,
+        staleRunRecovered: staleRunRecovered,
+      );
       nodeIds = await simulateAi2AiEncounter(
         runId: runId,
         userId: request.userId,
-        scenarioName: request.scenarioName,
+        scenarioName: effectiveScenarioName,
+        scenarioProfile: request.scenarioProfile,
       );
 
       final startHeadlessRuntimeEnvelope =
@@ -356,7 +408,7 @@ class ProofRunAutomationService {
         throw StateError('Background coordinator unavailable');
       }
       await startHeadlessRuntimeEnvelope();
-      for (final reason in request.wakeReasons) {
+      for (final reason in effectiveWakeReasons) {
         final handleWake =
             _handleWakeOverride ?? _backgroundCoordinator?.handleWake;
         if (handleWake == null) {
@@ -378,6 +430,7 @@ class ProofRunAutomationService {
           eventType: 'proof_simulated_headless_wake_executed',
           payload: <String, Object?>{
             'platform_mode': request.platformMode,
+            'scenario_profile': request.scenarioProfile.wireName,
             'reason': reason.wireName,
             'simulated': true,
             'mesh_due_replay_count': result.meshResult.dueReplayCount,
@@ -405,7 +458,8 @@ class ProofRunAutomationService {
         eventType: 'proof_simulated_field_validation_completed',
         payload: <String, Object?>{
           'platform_mode': request.platformMode,
-          'scenario_name': request.scenarioName,
+          'scenario_name': effectiveScenarioName,
+          'scenario_profile': request.scenarioProfile.wireName,
           'simulated': true,
           'proof_count': proofs.length,
           'validation_scenarios': proofs
@@ -417,7 +471,8 @@ class ProofRunAutomationService {
       await _proofRunService.finishActiveRun(
         payload: <String, Object?>{
           'platform_mode': request.platformMode,
-          'scenario_name': request.scenarioName,
+          'scenario_name': effectiveScenarioName,
+          'scenario_profile': request.scenarioProfile.wireName,
           'simulated': true,
           'notes': 'Finished via ProofRunAutomationService',
         },
@@ -440,10 +495,10 @@ class ProofRunAutomationService {
         platformMode: request.platformMode,
         runId: runId,
         exportDirectoryPath: exportDirectory.path,
+        scenarioProfile: request.scenarioProfile.wireName,
         simulatedNodeIds: nodeIds,
-        executedWakeReasons: request.wakeReasons
-            .map((entry) => entry.wireName)
-            .toList(),
+        executedWakeReasons:
+            effectiveWakeReasons.map((entry) => entry.wireName).toList(),
         backgroundWakeRunCount: wakeRunCount,
         fieldValidationProofCount: proofs.length,
         fieldValidationScenarios:
@@ -467,7 +522,8 @@ class ProofRunAutomationService {
           eventType: 'proof_simulated_smoke_failed',
           payload: <String, Object?>{
             'platform_mode': request.platformMode,
-            'scenario_name': request.scenarioName,
+            'scenario_name': effectiveScenarioName,
+            'scenario_profile': request.scenarioProfile.wireName,
             'simulated': true,
             'failure_summary': failureSummary,
           },
@@ -480,7 +536,8 @@ class ProofRunAutomationService {
           await _proofRunService.finishActiveRun(
             payload: <String, Object?>{
               'platform_mode': request.platformMode,
-              'scenario_name': request.scenarioName,
+              'scenario_name': effectiveScenarioName,
+              'scenario_profile': request.scenarioProfile.wireName,
               'simulated': true,
               'failed': true,
               'failure_summary': failureSummary,
@@ -502,10 +559,10 @@ class ProofRunAutomationService {
         platformMode: request.platformMode,
         runId: runId,
         exportDirectoryPath: exportDirectory?.path ?? '',
+        scenarioProfile: request.scenarioProfile.wireName,
         simulatedNodeIds: nodeIds,
-        executedWakeReasons: request.wakeReasons
-            .map((entry) => entry.wireName)
-            .toList(),
+        executedWakeReasons:
+            effectiveWakeReasons.map((entry) => entry.wireName).toList(),
         backgroundWakeRunCount: _recentSimulatedWakeRuns(
           platformMode: request.platformMode,
           startedAtUtc: startedAtUtc,
@@ -520,6 +577,103 @@ class ProofRunAutomationService {
         failureSummary: failureSummary,
       );
     }
+  }
+
+  String _effectiveScenarioName(SimulatedHeadlessSmokeRequest request) {
+    if (request.scenarioProfile ==
+        SimulatedHeadlessSmokeScenarioProfile.baseline) {
+      return request.scenarioName;
+    }
+    return '${request.scenarioName}_${request.scenarioProfile.wireName}';
+  }
+
+  List<BackgroundWakeReason> _effectiveWakeReasons(
+    SimulatedHeadlessSmokeRequest request,
+  ) {
+    if (request.scenarioProfile !=
+        SimulatedHeadlessSmokeScenarioProfile.duplicateWakeDelivery) {
+      return request.wakeReasons;
+    }
+    final duplicatedReasons = <BackgroundWakeReason>[];
+    for (final reason in request.wakeReasons) {
+      duplicatedReasons.add(reason);
+      if (reason == BackgroundWakeReason.bleEncounter ||
+          reason == BackgroundWakeReason.trustedAnnounceRefresh) {
+        duplicatedReasons.add(reason);
+      }
+    }
+    return duplicatedReasons;
+  }
+
+  Future<bool> _seedRestartProfileIfNeeded({
+    required String platformMode,
+    required String scenarioName,
+    required SimulatedHeadlessSmokeScenarioProfile scenarioProfile,
+  }) async {
+    if (scenarioProfile !=
+        SimulatedHeadlessSmokeScenarioProfile.restartMidHeadlessRun) {
+      return false;
+    }
+    final interruptedRunId = await _proofRunService.startRun(
+      payload: <String, Object?>{
+        'platform_mode': platformMode,
+        'scenario_name': scenarioName,
+        'scenario_profile': scenarioProfile.wireName,
+        'simulated': true,
+        'interrupted': true,
+        'notes': 'Synthetic interrupted run seeded for restart profile',
+      },
+    );
+    await _proofRunService.recordMilestone(
+      runId: interruptedRunId,
+      eventType: 'proof_simulated_smoke_interrupted',
+      payload: <String, Object?>{
+        'platform_mode': platformMode,
+        'scenario_name': scenarioName,
+        'scenario_profile': scenarioProfile.wireName,
+        'simulated': true,
+        'interrupted': true,
+      },
+    );
+    await _finishStaleRunIfPresent();
+    return true;
+  }
+
+  Future<void> _recordProfileContextMilestone({
+    required String runId,
+    required String platformMode,
+    required String scenarioName,
+    required SimulatedHeadlessSmokeScenarioProfile scenarioProfile,
+    required List<BackgroundWakeReason> wakeReasons,
+    required bool staleRunRecovered,
+  }) {
+    final payload = <String, Object?>{
+      'platform_mode': platformMode,
+      'scenario_name': scenarioName,
+      'scenario_profile': scenarioProfile.wireName,
+      'simulated': true,
+      'expected_wake_reasons':
+          wakeReasons.map((entry) => entry.wireName).toList(growable: false),
+      if (staleRunRecovered) 'stale_run_recovered': true,
+      if (scenarioProfile ==
+          SimulatedHeadlessSmokeScenarioProfile.duplicateWakeDelivery)
+        'duplicate_wake_reason_count':
+            wakeReasons.length - wakeReasons.toSet().length,
+      if (scenarioProfile ==
+          SimulatedHeadlessSmokeScenarioProfile.trustedRouteUnavailableDeferred)
+        'expected_blocked_reason': 'trusted_route_unavailable',
+      if (scenarioProfile ==
+          SimulatedHeadlessSmokeScenarioProfile.multiPeerSingleConfirmation)
+        'expected_discovered_peer_count': 3,
+      if (scenarioProfile ==
+          SimulatedHeadlessSmokeScenarioProfile.multiPeerSingleConfirmation)
+        'expected_confirmed_peer_count': 1,
+    };
+    return _proofRunService.recordMilestone(
+      runId: runId,
+      eventType: 'proof_simulated_smoke_profile_context',
+      payload: payload,
+    );
   }
 
   Future<String> startEventPlanningBetaSmoke({
@@ -658,6 +812,37 @@ class ProofRunAutomationService {
         'node_ids': nodeIds,
         'node_count': nodeIds.length,
       },
+    );
+  }
+
+  List<DiscoveredDevice> _simulatedDevicesForProfile({
+    required DateTime now,
+    required String scenarioName,
+    required SimulatedHeadlessSmokeScenarioProfile scenarioProfile,
+    required AnonymizedVibeData peerVibe,
+  }) {
+    final deviceCount = scenarioProfile ==
+            SimulatedHeadlessSmokeScenarioProfile.multiPeerSingleConfirmation
+        ? 3
+        : 1;
+    return List<DiscoveredDevice>.generate(
+      deviceCount,
+      (index) => DiscoveredDevice(
+        deviceId: 'sim_peer_${index + 1}',
+        deviceName: 'SimulatedPeer${index + 1}',
+        type: DeviceType.bluetooth,
+        isSpotsEnabled: true,
+        personalityData: peerVibe,
+        signalStrength: -55 - (index * 3),
+        discoveredAt: now,
+        metadata: <String, dynamic>{
+          'proof_run': true,
+          'scenario_name': scenarioName,
+          'scenario_profile': scenarioProfile.wireName,
+          'simulated': true,
+        },
+      ),
+      growable: false,
     );
   }
 

@@ -54,28 +54,50 @@ void main() {
       final result = await service.runSimulatedHeadlessSmoke(
         const SimulatedHeadlessSmokeRequest(platformMode: platformMode),
       );
-
-      binding.reportData = result.toJson();
-      expect(result.success, isTrue, reason: result.failureSummary);
-      expect(result.runId, isNotEmpty);
-      expect(result.exportDirectoryPath, isNotEmpty);
-      expect(Directory(result.exportDirectoryPath).existsSync(), isTrue);
-    } catch (error, stackTrace) {
-      final failure = <String, Object?>{
-        'success': false,
-        'platform_mode': platformMode,
-        'failure_summary': error.toString(),
-      };
-      binding.reportData = failure;
-      developer.log(
-        'Simulated headless smoke integration run failed',
-        name: 'simulated_headless_smoke_test',
-        error: error,
-        stackTrace: stackTrace,
+      const scenarioProfileWireName = String.fromEnvironment(
+        'SIMULATED_SMOKE_SCENARIO_PROFILE',
+        defaultValue: 'baseline',
       );
-      rethrow;
-    }
-  });
+      final scenarioProfile =
+          SimulatedHeadlessSmokeScenarioProfileWireFormat.fromWireName(
+                scenarioProfileWireName,
+              ) ??
+              SimulatedHeadlessSmokeScenarioProfile.baseline;
+
+      try {
+        await _initializeSmokeRuntime();
+
+        final service = di.sl<ProofRunAutomationService>();
+        final result = await service.runSimulatedHeadlessSmoke(
+          SimulatedHeadlessSmokeRequest(
+            platformMode: platformMode,
+            scenarioProfile: scenarioProfile,
+          ),
+        );
+
+        binding.reportData = result.toJson();
+        expect(result.success, isTrue, reason: result.failureSummary);
+        expect(result.runId, isNotEmpty);
+        expect(result.exportDirectoryPath, isNotEmpty);
+        expect(Directory(result.exportDirectoryPath).existsSync(), isTrue);
+      } catch (error, stackTrace) {
+        final failure = <String, Object?>{
+          'success': false,
+          'platform_mode': platformMode,
+          'scenario_profile': scenarioProfile.wireName,
+          'failure_summary': error.toString(),
+        };
+        binding.reportData = failure;
+        developer.log(
+          'Simulated headless smoke integration run failed',
+          name: 'simulated_headless_smoke_test',
+          error: error,
+          stackTrace: stackTrace,
+        );
+        rethrow;
+      }
+    },
+  );
 }
 
 Future<void> _initializeSmokeRuntime() async {

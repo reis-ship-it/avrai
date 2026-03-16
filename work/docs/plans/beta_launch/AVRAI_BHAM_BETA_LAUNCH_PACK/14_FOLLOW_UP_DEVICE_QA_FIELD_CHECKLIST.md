@@ -37,6 +37,14 @@ These items should already be complete before the team starts real-phone QA.
 - [ ] Latest iOS `validation_summary.json` is `is_valid: true`
 - [ ] Latest Android `validation_summary.json` is `is_valid: true`
 - [ ] Simulated smoke artifact paths are attached to the QA notes
+- [ ] Latest iOS baseline artifact includes:
+  - `background_wake_runs.json`
+  - `field_validation_proofs.json`
+  - `ambient_social_diagnostics.json`
+- [ ] Latest Android baseline artifact includes:
+  - `background_wake_runs.json`
+  - `field_validation_proofs.json`
+  - `ambient_social_diagnostics.json`
 - [ ] Team agrees live-phone QA is confirming field behavior, not discovering basic smoke regressions
 
 ## Team Checklist
@@ -78,6 +86,7 @@ These items should already be complete before the team starts real-phone QA.
 - [ ] Kernel / agent health view is reachable if exposed
 - [ ] Learning / recommendation audit trail is reachable if exposed
 - [ ] Locality / higher-agent movement view is reachable if exposed
+- [ ] Ambient-social diagnostics view is reachable if exposed
 
 ### Kernel-By-Kernel Learning Verification
 
@@ -110,6 +119,9 @@ The beta contract is explicit: simulation and replay are priors, not reality.
 
 - [ ] Meaningful user actions register learning
 - [ ] AI2AI exchange creates bounded learning evidence if surfaced
+- [ ] Passive nearby discovery moves candidate presence counts without falsely promoting confirmed interaction
+- [ ] Trusted completed AI2AI interaction moves confirmed interaction counts when exercised
+- [ ] Route-unavailable or trust-blocked interaction remains visibly blocked/deferred if surfaced
 - [ ] Recommendation or daily-drop behavior moves directionally after meaningful inputs
 - [ ] Spot or locality truth can move directionally from behavior
 - [ ] Raw private text or direct human identity does not leak through learning or audit surfaces
@@ -221,6 +233,9 @@ For consumer-only device QA, mark these items `N/A`.
 - [ ] Latest iOS simulated smoke artifact path captured
 - [ ] Latest Android simulated smoke artifact path captured
 - [ ] Latest iOS and Android validation summaries attached
+- [ ] Latest iOS and Android `background_wake_runs.json` paths attached
+- [ ] Latest iOS and Android `field_validation_proofs.json` paths attached
+- [ ] Latest iOS and Android `ambient_social_diagnostics.json` paths attached
 - [ ] Mesh health snapshot captured if pairing was exercised
 - [ ] Kernel health snapshot captured if exposed
 - [ ] Learning-registration evidence captured

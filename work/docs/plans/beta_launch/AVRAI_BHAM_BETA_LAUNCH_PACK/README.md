@@ -122,3 +122,27 @@ AVRAI beta should help Birmingham users:
 - expert accounts as a first-class role
 - full multi-device continuity
 - public release claims beyond Birmingham wave 1
+
+## Required Pre-Phone Smoke Gate
+
+Before any live-phone BHAM beta QA begins, `bham-beta` must have a green baseline simulated smoke run on both platforms:
+
+- `bash work/scripts/proof_run/run_simulated_headless_smoke.sh ios baseline`
+- `bash work/scripts/proof_run/run_simulated_headless_smoke.sh android baseline`
+
+Required GitHub check names for `bham-beta`:
+
+- `iOS Simulated Headless Smoke`
+- `Android Simulated Headless Smoke`
+
+Operational follow-up:
+
+- GitHub branch protection for `bham-beta` should require both checks before merge.
+- The artifact contract stays the same:
+  - `ledger_rows.csv`
+  - `ledger_rows.jsonl`
+  - `background_wake_runs.json`
+  - `field_validation_proofs.json`
+  - `ambient_social_diagnostics.json`
+  - `manifest.json`
+  - `validation_summary.json`

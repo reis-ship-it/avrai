@@ -1,8 +1,18 @@
 name: Simulated Headless Smoke Guard
 
 on:
+  push:
+    branches: [ bham-beta ]
+    paths:
+      - 'apps/avrai_app/**'
+      - 'runtime/**'
+      - 'shared/**'
+      - 'work/scripts/proof_run/**'
+      - 'work/scripts/ci/bootstrap_avrai_app_ci_env.sh'
+      - 'work/tools/validate_simulated_smoke_bundle.dart'
+      - '.github/workflows/simulated-headless-smoke-guard.yml'
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main, develop, bham-beta ]
     paths:
       - 'apps/avrai_app/**'
       - 'runtime/**'
