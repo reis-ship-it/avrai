@@ -20,8 +20,24 @@ void main() {
     expect(result.response, contains('Locality oversight remains bounded'));
     expect(result.contract?.contractId, 'reality_model_test_contract');
     expect(result.evaluation?.domain, RealityModelDomain.locality);
+    expect(result.trace?.disposition, RealityDecisionDisposition.recommend);
     expect(result.explanation?.summary,
         contains('Locality oversight remains bounded'));
+  });
+
+  test('low-confidence evaluations remain in observe mode', () async {
+    final service = RealityModelCheckInService(
+      realityModelPort: _LowConfidenceRealityModelPort(),
+    );
+
+    final result = await service.runCheckIn(
+      layer: 'reality',
+      prompt: '',
+      context: const <String, dynamic>{},
+      approvedGroupings: const <String>['music_cluster'],
+    );
+
+    expect(result.trace?.disposition, RealityDecisionDisposition.observe);
   });
 }
 
@@ -52,8 +68,8 @@ class _FakeRealityModelPort implements RealityModelPort {
       contractId: 'reality_model_test_contract',
       domain: request.domain,
       candidateRef: request.candidateRef,
-      score: 0.78,
-      confidence: 0.66,
+      score: 0.82,
+      confidence: 0.74,
       uncertaintySummary: 'Bounded by deterministic test coverage.',
       supportingEvidenceRefs: request.evidenceRefs.take(4).toList(),
       generatedAtUtc: request.requestedAtUtc,
@@ -101,6 +117,27 @@ class _FakeRealityModelPort implements RealityModelPort {
       ],
       uncertaintySummary: evaluation.uncertaintySummary,
       createdAtUtc: evaluation.generatedAtUtc,
+    );
+  }
+}
+
+class _LowConfidenceRealityModelPort extends _FakeRealityModelPort {
+  @override
+  Future<RealityModelEvaluation> evaluate(
+    RealityModelEvaluationRequest request,
+  ) async {
+    return RealityModelEvaluation(
+      evaluationId: 'evaluation-low',
+      requestId: request.requestId,
+      contractId: 'reality_model_test_contract',
+      domain: request.domain,
+      candidateRef: request.candidateRef,
+      score: 0.31,
+      confidence: 0.33,
+      uncertaintySummary: 'Thin bounded evidence.',
+      supportingEvidenceRefs: request.evidenceRefs.take(2).toList(),
+      generatedAtUtc: request.requestedAtUtc,
+      localityCode: request.localityCode,
     );
   }
 }

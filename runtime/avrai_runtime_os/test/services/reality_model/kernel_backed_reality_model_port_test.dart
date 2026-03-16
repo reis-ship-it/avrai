@@ -36,7 +36,7 @@ void main() {
       final trace = await port.traceDecision(
         request: request,
         evaluation: evaluation,
-        disposition: RealityDecisionDisposition.observe,
+        disposition: RealityDecisionDisposition.recommend,
         evidenceRefs: evaluation.supportingEvidenceRefs,
         localityCode: request.localityCode,
       );
@@ -54,6 +54,7 @@ void main() {
         containsAll(<String>['where', 'why', 'what']),
       );
       expect(trace.metadata['source'], 'kernel_backed_reality_model_port');
+      expect(explanation.summary, contains('recommend mode'));
       expect(explanation.summary, contains('kernel-fused'));
       expect(explanation.highlights, isNotEmpty);
       expect(validator.validateContract(contract).isValid, isTrue);

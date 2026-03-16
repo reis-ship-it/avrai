@@ -691,10 +691,14 @@ class RealityModelCheckInService {
         },
       );
       final evaluation = await port.evaluate(request);
+      final disposition = _resolveRealityModelDisposition(
+        activeContract: activeContract,
+        evaluation: evaluation,
+      );
       final trace = await port.traceDecision(
         request: request,
         evaluation: evaluation,
-        disposition: RealityDecisionDisposition.observe,
+        disposition: disposition,
         evidenceRefs: evaluation.supportingEvidenceRefs,
         localityCode: evaluation.localityCode,
         metadata: <String, dynamic>{
@@ -723,6 +727,28 @@ class RealityModelCheckInService {
       );
       return null;
     }
+  }
+
+  RealityDecisionDisposition _resolveRealityModelDisposition({
+    required RealityModelContract activeContract,
+    required RealityModelEvaluation evaluation,
+  }) {
+    if (evaluation.confidence < 0.35 || evaluation.score < 0.35) {
+      return RealityDecisionDisposition.observe;
+    }
+    if (evaluation.confidence < 0.55) {
+      return activeContract.uncertaintyDisposition ==
+              RealityUncertaintyDisposition.askFollowUp
+          ? RealityDecisionDisposition.askFollowUp
+          : RealityDecisionDisposition.observe;
+    }
+    if (evaluation.score >= 0.8 && evaluation.confidence >= 0.7) {
+      return RealityDecisionDisposition.recommend;
+    }
+    if (evaluation.score >= 0.6) {
+      return RealityDecisionDisposition.compare;
+    }
+    return RealityDecisionDisposition.observe;
   }
 
   String _safePromptEcho(

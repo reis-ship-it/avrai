@@ -107,10 +107,9 @@ class KernelBackedRealityModelPort implements RealityModelPort {
             projection.domain.name:
                 _clampScore(projection.confidence.clamp(0.0, 1.0)),
         },
-        'summary_seed': _buildSummarySeed(
-          request: normalizedRequest,
-          selectedProjections: selectedProjections,
-        ),
+        'domain_mix': selectedProjections
+            .map((projection) => projection.domain.name)
+            .join('/'),
         'highlights': _buildHighlights(
           request: normalizedRequest,
           selectedProjections: selectedProjections,
@@ -260,12 +259,10 @@ class KernelBackedRealityModelPort implements RealityModelPort {
         traceId: trace.traceId,
         evaluationId: evaluation.evaluationId,
         rendererKind: rendererKind,
-        summary: (evaluation.metadata['summary_seed'] as String?)
-                    ?.trim()
-                    .isNotEmpty ==
-                true
-            ? (evaluation.metadata['summary_seed'] as String).trim()
-            : '${_candidateLabel(evaluation.candidateRef)} remains in ${trace.disposition.toWireValue()} mode for ${_domainLabel(evaluation.domain)} decisions.',
+        summary: _buildExplanationSummary(
+          trace: trace,
+          evaluation: evaluation,
+        ),
         highlights: highlights,
         uncertaintySummary: evaluation.uncertaintySummary,
         createdAtUtc: trace.createdAtUtc,
@@ -505,16 +502,6 @@ class KernelBackedRealityModelPort implements RealityModelPort {
         .toList(growable: false);
   }
 
-  String _buildSummarySeed({
-    required RealityModelEvaluationRequest request,
-    required List<KernelRealityProjection> selectedProjections,
-  }) {
-    final domainMix = selectedProjections
-        .map((projection) => projection.domain.name)
-        .join('/');
-    return '${_candidateLabel(request.candidateRef)} is in observe mode for ${_domainLabel(request.domain)} decisions using kernel-fused $domainMix signals.';
-  }
-
   String _buildUncertaintySummary({
     required RealityModelEvaluationRequest request,
     required List<KernelRealityProjection> selectedProjections,
@@ -595,5 +582,16 @@ class KernelBackedRealityModelPort implements RealityModelPort {
       return 'Unknown candidate';
     }
     return trimmed.replaceAll(':', ' / ');
+  }
+
+  String _buildExplanationSummary({
+    required RealityDecisionTrace trace,
+    required RealityModelEvaluation evaluation,
+  }) {
+    final domainMix = (evaluation.metadata['domain_mix'] as String?)?.trim();
+    final mixSuffix = domainMix == null || domainMix.isEmpty
+        ? 'kernel-fused signals'
+        : 'kernel-fused $domainMix signals';
+    return '${_candidateLabel(evaluation.candidateRef)} is in ${trace.disposition.toWireValue()} mode for ${_domainLabel(evaluation.domain)} decisions using $mixSuffix.';
   }
 }
