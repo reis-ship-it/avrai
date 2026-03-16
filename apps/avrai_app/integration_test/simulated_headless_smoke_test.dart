@@ -3,10 +3,12 @@ import 'dart:io';
 
 import 'package:avrai/configs/firebase_options.dart';
 import 'package:avrai/injection_container.dart' as di;
+import 'package:avrai_runtime_os/config/supabase_config.dart';
 import 'package:avrai/services/debug/proof_run_automation_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -20,7 +22,7 @@ void main() {
       );
 
       try {
-        await _initializeSmokeRuntime(tester);
+        await _initializeSmokeRuntime();
 
         final service = di.sl<ProofRunAutomationService>();
         final result = await service.runSimulatedHeadlessSmoke(
@@ -53,7 +55,7 @@ void main() {
   );
 }
 
-Future<void> _initializeSmokeRuntime(WidgetTester tester) async {
+Future<void> _initializeSmokeRuntime() async {
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
@@ -62,6 +64,18 @@ Future<void> _initializeSmokeRuntime(WidgetTester tester) async {
     // The smoke lane is allowed to proceed when Firebase is already initialized
     // or unavailable in the current simulator environment.
   }
+  try {
+    await Supabase.initialize(
+      url: SupabaseConfig.url.isNotEmpty
+          ? SupabaseConfig.url
+          : 'https://example.supabase.co',
+      anonKey:
+          SupabaseConfig.anonKey.isNotEmpty ? SupabaseConfig.anonKey : 'smoke',
+      debug: false,
+    );
+  } catch (_) {
+    // The Supabase singleton may already be initialized from an earlier launch
+    // in the same simulator session. Reuse it when available.
+  }
   await di.init();
-  await tester.pump(const Duration(milliseconds: 200));
 }

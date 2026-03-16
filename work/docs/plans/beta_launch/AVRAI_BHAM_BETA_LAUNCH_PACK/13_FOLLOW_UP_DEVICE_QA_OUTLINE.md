@@ -1,6 +1,6 @@
 # Follow-Up Device QA Outline
 
-**Date:** March 14, 2026  
+**Date:** March 15, 2026  
 **Status:** Ready  
 **Scope:** Follow-up manual beta QA once real phones are available for Birmingham wave-1
 
@@ -89,6 +89,13 @@ Before manual QA starts:
   - kernel health
   - learning / recommendation audit trail
   - locality / spot truth movement where exposed
+- if this QA cycle includes admin/autoresearch, confirm the private control-plane preflight is complete:
+  - Supabase migration history aligned with repo
+  - private admin gateway deployed on a controlled private host/VM
+  - private-mesh-only access with no public ingress
+  - gateway-issued sessions with OIDC + MFA and managed-device enforcement
+  - server-side redaction and audit logging active
+  - brokered open-web blocked by default unless explicitly approved
 - confirm the event-planning runbook is available:
   - [BETA_EVENT_PLANNING_IOS_SMOKE_RUNBOOK.md](./../easy_event_hosting/BETA_EVENT_PLANNING_IOS_SMOKE_RUNBOOK.md)
 
@@ -250,6 +257,11 @@ Pass if:
 - oversight is present where expected
 - privacy boundaries remain intact
 - kernel/agent/runtime health can be inspected without ambiguity
+
+If admin/autoresearch is part of the same cycle, also pass only if:
+- the private control plane is reachable only over the intended private path
+- privileged actions are enforced server-side rather than by client-only UI state
+- no raw external payload or direct human identifier appears in admin surfaces
 
 ### Pass 9: Learning Registration And Directional Movement
 
