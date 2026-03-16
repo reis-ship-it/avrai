@@ -28,7 +28,7 @@ services:
     restart: unless-stopped
 
   opa:
-    image: openpolicyagent/opa:0.69.0
+    image: openpolicyagent/opa:0.69.0-static
     command:
       - "run"
       - "--server"

@@ -50,3 +50,10 @@ docker compose up --build -d
 - OPA: `GET /health?plugins`
 
 Use `work/scripts/deploy/deploy_admin_private_control_plane.sh` and `work/scripts/verify_admin_private_control_plane.sh` for rollout and readiness checks.
+
+## Runbooks
+
+- [LOCAL_MAC_UBUNTU_VM_RUNBOOK.md](./LOCAL_MAC_UBUNTU_VM_RUNBOOK.md)
+- [SECRETS_AND_GO_LIVE_CHECKLIST.md](./SECRETS_AND_GO_LIVE_CHECKLIST.md)
+- [DEPLOYMENT_MODEL.md](./DEPLOYMENT_MODEL.md)
+- [MAC_ADMIN_DEVICE_ONBOARDING.md](./MAC_ADMIN_DEVICE_ONBOARDING.md)
