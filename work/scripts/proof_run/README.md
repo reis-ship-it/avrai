@@ -74,6 +74,12 @@ The manual page-driven capture flow still exists:
 ./scripts/proof_run/run_proof_run_bundle.sh
 ```
 
+That manual bundle flow now also writes:
+
+- a per-run `ARTIFACT_INDEX.md`
+- repo-level `proof_run_bundle_index.json`
+- repo-level `proof_run_bundle_index.md`
+
 ## Simulated smoke contract
 
 The automated smoke run always drives the same sequence:
@@ -103,6 +109,12 @@ To validate the repo-level smoke index after one or more runs:
 dart run work/tools/validate_simulated_smoke_artifact_index.dart reports/proof_runs
 ```
 
+To validate the repo-level manual proof-run bundle index:
+
+```bash
+dart run work/tools/validate_proof_run_bundle_artifact_index.dart reports/proof_runs
+```
+
 It checks:
 
 - required bundle files exist
@@ -113,6 +125,7 @@ It checks:
 - the manifest explicitly labels the artifact as simulated
 - profile-specific expectations for the supported failure-mode matrix
 - repo-level index entries match the on-disk smoke artifact directories
+- manual proof-run bundle index entries match the on-disk bundle artifact directories
 
 ## Manual debug page
 
