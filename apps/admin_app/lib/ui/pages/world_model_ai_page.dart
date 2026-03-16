@@ -10,7 +10,7 @@ class WorldModelAiPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppFlowScaffold(
-      title: 'World Model',
+      title: 'Reality Model',
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -21,12 +21,12 @@ class WorldModelAiPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Admin-only world model oversight',
+                    'Admin-only reality-model oversight',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'World-model reasoning, locality context, and research guidance are now an admin/operator surface. They are intentionally disconnected from the BHAM consumer shell.',
+                    'Reality-model reasoning, locality context, and research guidance are now an admin/operator surface. They are intentionally disconnected from the BHAM consumer shell.',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: AppColors.textSecondary,
                         ),
@@ -62,7 +62,7 @@ class WorldModelAiPage extends StatelessWidget {
               leading: const Icon(Icons.science_outlined),
               title: const Text('Research Center'),
               subtitle: const Text(
-                'Review research feed, alerts, and operator-facing world-model work.',
+                'Review research feed, alerts, and operator-facing reality-model work.',
               ),
               trailing: const Icon(Icons.chevron_right),
               onTap: () => context.go(AdminRoutePaths.researchCenter),

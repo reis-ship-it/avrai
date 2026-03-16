@@ -123,6 +123,7 @@ export 'models/vibe/vibe_models.dart';
 export 'models/user/language_profile.dart';
 export 'models/user/language_profile_diagnostics.dart';
 export 'models/research/governed_autoresearch_models.dart';
+export 'models/reality/reality_model_contracts.dart';
 
 // Quantum models (moved from avrai_quantum)
 export 'models/quantum_entity_type.dart';
