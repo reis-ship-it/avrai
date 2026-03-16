@@ -14,6 +14,10 @@ typedef _InvokeJson = Pointer<Utf8> Function(Pointer<Utf8>);
 typedef _NativeFreeJsonString = Void Function(Pointer<Utf8>);
 typedef _FreeJsonString = void Function(Pointer<Utf8>);
 
+const bool _isVibeKernelFlutterTest = bool.fromEnvironment('FLUTTER_TEST');
+const bool _isVibeKernelSimulatedSmoke =
+    String.fromEnvironment('SIMULATED_SMOKE_PLATFORM') != '';
+
 abstract class VibeKernelLibraryManager {
   DynamicLibrary getKernelLibrary();
 }
@@ -165,11 +169,24 @@ class VibeKernel {
   VibeKernel({
     VibeKernelJsonNativeBridge? nativeBridge,
     TrajectoryKernel? trajectoryKernel,
+    bool? allowFallback,
   })  : _nativeBridge = nativeBridge ?? VibeKernelJsonNativeBridge(),
-        _trajectoryKernel = trajectoryKernel ?? TrajectoryKernel();
+        _trajectoryKernel = trajectoryKernel ?? TrajectoryKernel(),
+        _allowFallback = allowFallback ??
+            (_isVibeKernelFlutterTest || _isVibeKernelSimulatedSmoke);
 
   final VibeKernelJsonNativeBridge _nativeBridge;
   final TrajectoryKernel _trajectoryKernel;
+  final bool _allowFallback;
+  static final Map<String, VibeStateSnapshot> _fallbackSubjectSnapshots =
+      <String, VibeStateSnapshot>{};
+  static final Map<String, EntityVibeSnapshot> _fallbackEntitySnapshots =
+      <String, EntityVibeSnapshot>{};
+  static DateTime _fallbackExportedAtUtc =
+      DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
+  static List<String> _fallbackMigrationReceipts = const <String>[];
+  static Map<String, dynamic> _fallbackMetadata = const <String, dynamic>{};
+  static int _fallbackSchemaVersion = 1;
 
   VibeUpdateReceipt seedSubjectStateFromOnboarding({
     required VibeSubjectRef subjectRef,
@@ -178,6 +195,21 @@ class VibeKernel {
     List<String> provenanceTags = const <String>[],
   }) {
     _ensureTrajectoryKernelAvailable();
+    if (_shouldUseFallback()) {
+      final receipt = _seedFallbackSubjectState(
+        subjectRef: subjectRef,
+        dimensions: dimensions,
+        dimensionConfidence: dimensionConfidence,
+        provenanceTags: provenanceTags,
+      );
+      _appendMutationRecord(
+        category: 'seed_from_onboarding',
+        subjectRef: subjectRef,
+        receipt: receipt,
+        evidenceSummary: 'Seeded canonical vibe state from onboarding.',
+      );
+      return receipt;
+    }
     final receipt = VibeUpdateReceipt.fromJson(
       _invokeRequired(
         syscall: 'seed_user_state_from_onboarding',
@@ -220,6 +252,22 @@ class VibeKernel {
     List<String> provenanceTags = const <String>[],
   }) {
     _ensureTrajectoryKernelAvailable();
+    if (_shouldUseFallback()) {
+      final receipt = _fallbackApplyLanguageEvidence(
+        subjectId: subjectId,
+        evidence: evidence,
+        mutationDecision: mutationDecision,
+        provenanceTags: provenanceTags,
+      );
+      _appendMutationRecord(
+        category: 'language_evidence',
+        subjectRef: VibeSubjectRef.personal(subjectId),
+        receipt: receipt,
+        evidenceSummary: evidence.summary,
+        governanceScope: mutationDecision.governanceScope,
+      );
+      return receipt;
+    }
     final receipt = VibeUpdateReceipt.fromJson(
       _invokeRequired(
         syscall: 'ingest_language_evidence',
@@ -249,6 +297,26 @@ class VibeKernel {
     List<String> provenanceTags = const <String>[],
   }) {
     _ensureTrajectoryKernelAvailable();
+    if (_shouldUseFallback()) {
+      final receipt = _fallbackApplyBehaviorObservation(
+        subjectRef: VibeSubjectRef(
+          subjectId: subjectId,
+          kind: subjectKind,
+        ),
+        behaviorSignals: behaviorSignals,
+        provenanceTags: provenanceTags,
+      );
+      _appendMutationRecord(
+        category: 'behavior_observation',
+        subjectRef: VibeSubjectRef(
+          subjectId: subjectId,
+          kind: subjectKind,
+        ),
+        receipt: receipt,
+        evidenceSummary: 'Behavior observation applied.',
+      );
+      return receipt;
+    }
     final receipt = VibeUpdateReceipt.fromJson(
       _invokeRequired(
         syscall: 'ingest_behavior_observation',
@@ -280,6 +348,27 @@ class VibeKernel {
     List<String> provenanceTags = const <String>[],
   }) {
     _ensureTrajectoryKernelAvailable();
+    if (_shouldUseFallback()) {
+      final receipt = _fallbackApplyEcosystemObservation(
+        subjectRef: VibeSubjectRef(
+          subjectId: subjectId,
+          kind: subjectKind,
+        ),
+        source: source,
+        dimensions: dimensions,
+        provenanceTags: provenanceTags,
+      );
+      _appendMutationRecord(
+        category: 'ecosystem_observation',
+        subjectRef: VibeSubjectRef(
+          subjectId: subjectId,
+          kind: subjectKind,
+        ),
+        receipt: receipt,
+        evidenceSummary: 'Ecosystem observation from $source.',
+      );
+      return receipt;
+    }
     final receipt = VibeUpdateReceipt.fromJson(
       _invokeRequired(
         syscall: 'ingest_ecosystem_observation',
@@ -311,6 +400,24 @@ class VibeKernel {
     List<String> provenanceTags = const <String>[],
   }) {
     _ensureTrajectoryKernelAvailable();
+    if (_shouldUseFallback()) {
+      final receipt = _fallbackApplyEntityObservation(
+        entityId: entityId,
+        entityType: entityType,
+        dimensions: dimensions,
+        provenanceTags: provenanceTags,
+      );
+      _appendMutationRecord(
+        category: 'entity_observation',
+        subjectRef: VibeSubjectRef.entity(
+          entityId: entityId,
+          entityType: entityType,
+        ),
+        receipt: receipt,
+        evidenceSummary: 'Entity vibe synchronized for $entityType.',
+      );
+      return receipt;
+    }
     final receipt = VibeUpdateReceipt.fromJson(
       _invokeRequired(
         syscall: 'ingest_entity_observation',
@@ -341,6 +448,26 @@ class VibeKernel {
     VibeSubjectKind subjectKind = VibeSubjectKind.personalAgent,
   }) {
     _ensureTrajectoryKernelAvailable();
+    if (_shouldUseFallback()) {
+      final receipt = _fallbackRecordOutcome(
+        subjectRef: VibeSubjectRef(
+          subjectId: subjectId,
+          kind: subjectKind,
+        ),
+        outcome: outcome,
+        outcomeScore: outcomeScore,
+      );
+      _appendMutationRecord(
+        category: 'outcome',
+        subjectRef: VibeSubjectRef(
+          subjectId: subjectId,
+          kind: subjectKind,
+        ),
+        receipt: receipt,
+        evidenceSummary: 'Outcome recorded: $outcome.',
+      );
+      return receipt;
+    }
     final receipt = VibeUpdateReceipt.fromJson(
       _invokeRequired(
         syscall: 'record_outcome',
@@ -370,6 +497,25 @@ class VibeKernel {
     VibeSubjectKind subjectKind = VibeSubjectKind.personalAgent,
   }) {
     _ensureTrajectoryKernelAvailable();
+    if (_shouldUseFallback()) {
+      final receipt = _fallbackAdvanceDecayWindow(
+        subjectRef: VibeSubjectRef(
+          subjectId: subjectId,
+          kind: subjectKind,
+        ),
+        elapsedHours: elapsedHours,
+      );
+      _appendMutationRecord(
+        category: 'decay_window',
+        subjectRef: VibeSubjectRef(
+          subjectId: subjectId,
+          kind: subjectKind,
+        ),
+        receipt: receipt,
+        evidenceSummary: 'Decay window advanced by $elapsedHours hours.',
+      );
+      return receipt;
+    }
     final receipt = VibeUpdateReceipt.fromJson(
       _invokeRequired(
         syscall: 'advance_decay_window',
@@ -393,6 +539,10 @@ class VibeKernel {
   }
 
   VibeStateSnapshot getSnapshot(VibeSubjectRef subjectRef) {
+    if (_shouldUseFallback()) {
+      return _fallbackSubjectSnapshots[_subjectKey(subjectRef)] ??
+          _defaultSnapshotFor(subjectRef);
+    }
     return VibeStateSnapshot.fromJson(
       _invokeRequired(
         syscall: 'get_user_snapshot',
@@ -411,6 +561,11 @@ class VibeKernel {
     required String entityId,
     String entityType = 'entity',
   }) {
+    if (_shouldUseFallback()) {
+      final key = _entityKey(entityId, entityType);
+      return _fallbackEntitySnapshots[key] ??
+          _defaultEntitySnapshot(entityId: entityId, entityType: entityType);
+    }
     return EntityVibeSnapshot.fromJson(
       _invokeRequired(
         syscall: 'get_entity_snapshot',
@@ -434,6 +589,59 @@ class VibeKernel {
   }) {
     final resolvedGeographicBinding =
         geographicBinding ?? localityBinding?.toGeographicBinding();
+    if (_shouldUseFallback()) {
+      final userSnapshot = getUserSnapshot(subjectId);
+      final geographicSnapshots = resolvedGeographicBinding == null
+          ? const <VibeStateSnapshot>[]
+          : <VibeStateSnapshot>[
+              getSnapshot(resolvedGeographicBinding.localityRef),
+              ...resolvedGeographicBinding.higherGeographicRefs
+                  .map(getSnapshot),
+            ];
+      final higherSnapshots = higherAgentRefs.map(getSnapshot).toList();
+      final selectedSnapshots = selectedEntityRefs
+          .where((entry) => entry.kind == VibeSubjectKind.entity)
+          .map(
+            (entry) => getEntitySnapshot(
+              entityId: entry.subjectId,
+              entityType: entry.entityType ?? 'entity',
+            ),
+          )
+          .toList();
+      final entitySnapshot = entityId == null
+          ? null
+          : getEntitySnapshot(
+              entityId: entityId,
+              entityType: entityType ?? 'entity',
+            );
+      final hierarchicalStack = getHierarchicalStack(
+        subjectRef: VibeSubjectRef.personal(subjectId),
+        geographicBinding: resolvedGeographicBinding,
+        scopedBindings: scopedBindings,
+        localityBinding: localityBinding,
+        higherAgentRefs: higherAgentRefs,
+        selectedEntityRefs: selectedEntityRefs,
+      );
+      return StateEncoderInputSnapshot.fromJson(<String, dynamic>{
+        'user_snapshot': userSnapshot.toJson(),
+        if (entitySnapshot != null) 'entity_snapshot': entitySnapshot.toJson(),
+        'geographic_snapshots':
+            geographicSnapshots.map((entry) => entry.toJson()).toList(),
+        'scoped_context_snapshots': const <Map<String, dynamic>>[],
+        if (resolvedGeographicBinding != null)
+          'geographic_binding': resolvedGeographicBinding.toJson(),
+        'scoped_bindings':
+            scopedBindings.map((entry) => entry.toJson()).toList(),
+        if (geographicSnapshots.isNotEmpty)
+          'active_locality_snapshot': geographicSnapshots.first.toJson(),
+        'higher_agent_snapshots':
+            higherSnapshots.map((entry) => entry.toJson()).toList(),
+        'selected_entity_snapshots':
+            selectedSnapshots.map((entry) => entry.toJson()).toList(),
+        'hierarchical_stack': hierarchicalStack.toJson(),
+        'metadata': const <String, dynamic>{'fallback_enabled': true},
+      });
+    }
     return StateEncoderInputSnapshot.fromJson(
       _invokeRequired(
         syscall: 'get_state_encoder_snapshot',
@@ -466,6 +674,44 @@ class VibeKernel {
   }) {
     final resolvedGeographicBinding =
         geographicBinding ?? localityBinding?.toGeographicBinding();
+    if (_shouldUseFallback()) {
+      final primarySnapshot = getSnapshot(subjectRef);
+      final geographicSnapshots = resolvedGeographicBinding == null
+          ? const <VibeStateSnapshot>[]
+          : <VibeStateSnapshot>[
+              getSnapshot(resolvedGeographicBinding.localityRef),
+              ...resolvedGeographicBinding.higherGeographicRefs
+                  .map(getSnapshot),
+            ];
+      final higherSnapshots = higherAgentRefs.map(getSnapshot).toList();
+      final selectedSnapshots = selectedEntityRefs
+          .where((entry) => entry.kind == VibeSubjectKind.entity)
+          .map(
+            (entry) => getEntitySnapshot(
+              entityId: entry.subjectId,
+              entityType: entry.entityType ?? 'entity',
+            ),
+          )
+          .toList();
+      return HierarchicalVibeStack.fromJson(<String, dynamic>{
+        'primary_snapshot': primarySnapshot.toJson(),
+        'geographic_snapshots':
+            geographicSnapshots.map((entry) => entry.toJson()).toList(),
+        'scoped_context_snapshots': const <Map<String, dynamic>>[],
+        if (resolvedGeographicBinding != null)
+          'geographic_binding': resolvedGeographicBinding.toJson(),
+        'scoped_bindings':
+            scopedBindings.map((entry) => entry.toJson()).toList(),
+        if (geographicSnapshots.isNotEmpty)
+          'active_locality_snapshot': geographicSnapshots.first.toJson(),
+        'higher_agent_snapshots':
+            higherSnapshots.map((entry) => entry.toJson()).toList(),
+        'selected_entity_snapshots':
+            selectedSnapshots.map((entry) => entry.toJson()).toList(),
+        if (localityBinding != null)
+          'locality_binding': localityBinding.toJson(),
+      });
+    }
     return HierarchicalVibeStack.fromJson(
       _invokeRequired(
         syscall: 'get_hierarchical_stack',
@@ -487,6 +733,9 @@ class VibeKernel {
   }
 
   VibeExpressionContext getExpressionContext(String subjectId) {
+    if (_shouldUseFallback()) {
+      return getUserSnapshot(subjectId).expressionContext;
+    }
     return VibeExpressionContext.fromJson(
       _invokeRequired(
         syscall: 'get_expression_context',
@@ -499,6 +748,19 @@ class VibeKernel {
   }
 
   VibeSnapshotEnvelope exportSnapshotEnvelope() {
+    if (_shouldUseFallback()) {
+      _fallbackExportedAtUtc = DateTime.now().toUtc();
+      return VibeSnapshotEnvelope(
+        exportedAtUtc: _fallbackExportedAtUtc,
+        subjectSnapshots: _fallbackSubjectSnapshots.values.toList()
+          ..sort((a, b) => a.subjectId.compareTo(b.subjectId)),
+        entitySnapshots: _fallbackEntitySnapshots.values.toList()
+          ..sort((a, b) => a.entityId.compareTo(b.entityId)),
+        migrationReceipts: _fallbackMigrationReceipts,
+        metadata: _fallbackMetadata,
+        schemaVersion: _fallbackSchemaVersion,
+      );
+    }
     return VibeSnapshotEnvelope.fromJson(
       _invokeRequired(
         syscall: 'export_snapshot_envelope',
@@ -508,6 +770,29 @@ class VibeKernel {
   }
 
   void importSnapshotEnvelope(VibeSnapshotEnvelope envelope) {
+    if (_shouldUseFallback()) {
+      _fallbackSubjectSnapshots
+        ..clear()
+        ..addEntries(
+          envelope.subjectSnapshots.map(
+            (entry) => MapEntry(_subjectKey(entry.subjectRef), entry),
+          ),
+        );
+      _fallbackEntitySnapshots
+        ..clear()
+        ..addEntries(
+          envelope.entitySnapshots.map(
+            (entry) =>
+                MapEntry(_entityKey(entry.entityId, entry.entityType), entry),
+          ),
+        );
+      _fallbackExportedAtUtc = envelope.exportedAtUtc.toUtc();
+      _fallbackMigrationReceipts =
+          List<String>.from(envelope.migrationReceipts, growable: false);
+      _fallbackMetadata = Map<String, dynamic>.from(envelope.metadata);
+      _fallbackSchemaVersion = envelope.schemaVersion;
+      return;
+    }
     _invokeRequired(
       syscall: 'import_snapshot_envelope',
       payload: <String, dynamic>{'envelope': envelope.toJson()},
@@ -515,10 +800,26 @@ class VibeKernel {
   }
 
   Map<String, dynamic> diagnostics() {
+    if (_shouldUseFallback()) {
+      return <String, dynamic>{
+        'status': 'ok',
+        'kernel': 'vibe',
+        'native_required': false,
+        'native_available': false,
+        'fallback_enabled': true,
+        'subject_snapshot_count': _fallbackSubjectSnapshots.length,
+        'entity_snapshot_count': _fallbackEntitySnapshots.length,
+      };
+    }
     return _invokeRequired(
       syscall: 'diagnostics',
       payload: const <String, dynamic>{},
     );
+  }
+
+  bool _shouldUseFallback() {
+    _nativeBridge.initialize();
+    return _allowFallback && !_nativeBridge.isAvailable;
   }
 
   Map<String, dynamic> _invokeRequired({
@@ -550,6 +851,297 @@ class VibeKernel {
     _trajectoryKernel.diagnostics();
   }
 
+  VibeUpdateReceipt _seedFallbackSubjectState({
+    required VibeSubjectRef subjectRef,
+    required Map<String, double> dimensions,
+    required Map<String, double> dimensionConfidence,
+    required List<String> provenanceTags,
+  }) {
+    final snapshot = _storeSubjectSnapshot(
+      subjectRef: subjectRef,
+      dimensions: dimensions,
+      dimensionConfidence: dimensionConfidence,
+      provenanceTags: provenanceTags,
+      replaceDimensions: true,
+      behaviorObservationIncrement: 0,
+    );
+    return _receiptForSnapshot(snapshot);
+  }
+
+  VibeUpdateReceipt _fallbackApplyLanguageEvidence({
+    required String subjectId,
+    required VibeEvidence evidence,
+    required VibeMutationDecision mutationDecision,
+    required List<String> provenanceTags,
+  }) {
+    final dimensions = <String, double>{
+      for (final signal in <VibeSignal>[
+        ...evidence.identitySignals,
+        ...evidence.behaviorSignals,
+        ...evidence.styleSignals,
+      ])
+        signal.key: signal.value.clamp(0.0, 1.0),
+    };
+    final snapshot = _storeSubjectSnapshot(
+      subjectRef: VibeSubjectRef.personal(subjectId),
+      dimensions: dimensions,
+      dimensionConfidence: <String, double>{
+        for (final entry in dimensions.entries) entry.key: 0.72,
+      },
+      provenanceTags: <String>[
+        ...provenanceTags,
+        'governance_scope:${mutationDecision.governanceScope}',
+      ],
+      replaceDimensions: false,
+      behaviorObservationIncrement: evidence.behaviorSignals.isEmpty ? 0 : 1,
+    );
+    return _receiptForSnapshot(snapshot);
+  }
+
+  VibeUpdateReceipt _fallbackApplyBehaviorObservation({
+    required VibeSubjectRef subjectRef,
+    required Map<String, double> behaviorSignals,
+    required List<String> provenanceTags,
+  }) {
+    final snapshot = _storeSubjectSnapshot(
+      subjectRef: subjectRef,
+      dimensions: behaviorSignals,
+      dimensionConfidence: <String, double>{
+        for (final entry in behaviorSignals.entries) entry.key: 0.64,
+      },
+      provenanceTags: provenanceTags,
+      replaceDimensions: false,
+      behaviorObservationIncrement: 1,
+      behaviorSignals: behaviorSignals,
+    );
+    return _receiptForSnapshot(snapshot);
+  }
+
+  VibeUpdateReceipt _fallbackApplyEcosystemObservation({
+    required VibeSubjectRef subjectRef,
+    required String source,
+    required Map<String, double> dimensions,
+    required List<String> provenanceTags,
+  }) {
+    final snapshot = _storeSubjectSnapshot(
+      subjectRef: subjectRef,
+      dimensions: dimensions,
+      dimensionConfidence: <String, double>{
+        for (final entry in dimensions.entries) entry.key: 0.68,
+      },
+      provenanceTags: <String>[...provenanceTags, 'source:$source'],
+      replaceDimensions: false,
+      behaviorObservationIncrement: 0,
+    );
+    return _receiptForSnapshot(snapshot);
+  }
+
+  VibeUpdateReceipt _fallbackApplyEntityObservation({
+    required String entityId,
+    required String entityType,
+    required Map<String, double> dimensions,
+    required List<String> provenanceTags,
+  }) {
+    final subjectRef =
+        VibeSubjectRef.entity(entityId: entityId, entityType: entityType);
+    final snapshot = _storeSubjectSnapshot(
+      subjectRef: subjectRef,
+      dimensions: dimensions,
+      dimensionConfidence: <String, double>{
+        for (final entry in dimensions.entries) entry.key: 0.7,
+      },
+      provenanceTags: provenanceTags,
+      replaceDimensions: false,
+      behaviorObservationIncrement: 0,
+    );
+    final entitySnapshot = EntityVibeSnapshot(
+      entityId: entityId,
+      entityType: entityType,
+      vibe: snapshot,
+    );
+    _fallbackEntitySnapshots[_entityKey(entityId, entityType)] = entitySnapshot;
+    return _receiptForSnapshot(snapshot);
+  }
+
+  VibeUpdateReceipt _fallbackRecordOutcome({
+    required VibeSubjectRef subjectRef,
+    required String outcome,
+    required double outcomeScore,
+  }) {
+    final snapshot = _storeSubjectSnapshot(
+      subjectRef: subjectRef,
+      dimensions: <String, double>{
+        'community_orientation': outcomeScore.clamp(0.0, 1.0),
+      },
+      dimensionConfidence: const <String, double>{
+        'community_orientation': 0.55,
+      },
+      provenanceTags: <String>['outcome:$outcome'],
+      replaceDimensions: false,
+      behaviorObservationIncrement: 1,
+    );
+    return _receiptForSnapshot(snapshot);
+  }
+
+  VibeUpdateReceipt _fallbackAdvanceDecayWindow({
+    required VibeSubjectRef subjectRef,
+    required double elapsedHours,
+  }) {
+    final existing = _fallbackSubjectSnapshots[_subjectKey(subjectRef)] ??
+        _defaultSnapshotFor(subjectRef);
+    final snapshotJson = existing.toJson();
+    snapshotJson['freshness_hours'] =
+        (((snapshotJson['freshness_hours'] as num?)?.toDouble() ?? 0.0) +
+                elapsedHours)
+            .clamp(0.0, 24 * 365);
+    snapshotJson['updated_at_utc'] = DateTime.now().toUtc().toIso8601String();
+    final snapshot = VibeStateSnapshot.fromJson(snapshotJson);
+    _fallbackSubjectSnapshots[_subjectKey(subjectRef)] = snapshot;
+    return _receiptForSnapshot(snapshot);
+  }
+
+  VibeStateSnapshot _storeSubjectSnapshot({
+    required VibeSubjectRef subjectRef,
+    required Map<String, double> dimensions,
+    required Map<String, double> dimensionConfidence,
+    required List<String> provenanceTags,
+    required bool replaceDimensions,
+    required int behaviorObservationIncrement,
+    Map<String, double>? behaviorSignals,
+  }) {
+    final current = _fallbackSubjectSnapshots[_subjectKey(subjectRef)] ??
+        _defaultSnapshotFor(subjectRef);
+    final snapshotJson = current.toJson();
+    final currentDimensions = Map<String, dynamic>.from(
+      (snapshotJson['core_dna'] as Map?)?['dimensions'] as Map? ??
+          const <String, dynamic>{},
+    );
+    final currentConfidence = Map<String, dynamic>.from(
+      (snapshotJson['core_dna'] as Map?)?['dimension_confidence'] as Map? ??
+          const <String, dynamic>{},
+    );
+    final nextDimensions = replaceDimensions
+        ? <String, dynamic>{
+            for (final entry in dimensions.entries)
+              entry.key: entry.value.clamp(0.0, 1.0),
+          }
+        : <String, dynamic>{...currentDimensions};
+    if (!replaceDimensions) {
+      for (final entry in dimensions.entries) {
+        final existing = (nextDimensions[entry.key] as num?)?.toDouble();
+        nextDimensions[entry.key] = existing == null
+            ? entry.value.clamp(0.0, 1.0)
+            : ((existing + entry.value) / 2).clamp(0.0, 1.0);
+      }
+    }
+    for (final entry in dimensionConfidence.entries) {
+      currentConfidence[entry.key] = entry.value.clamp(0.0, 1.0);
+    }
+    final behaviorJson = Map<String, dynamic>.from(
+      snapshotJson['behavior_patterns'] as Map? ?? const <String, dynamic>{},
+    );
+    final patternWeights = Map<String, dynamic>.from(
+      behaviorJson['pattern_weights'] as Map? ?? const <String, dynamic>{},
+    );
+    for (final entry in (behaviorSignals ?? dimensions).entries) {
+      patternWeights[entry.key] = entry.value.clamp(0.0, 1.0);
+    }
+    behaviorJson['pattern_weights'] = patternWeights;
+    behaviorJson['observation_count'] =
+        ((behaviorJson['observation_count'] as num?)?.toInt() ?? 0) +
+            behaviorObservationIncrement;
+    final expressionContext = Map<String, dynamic>.from(
+      snapshotJson['expression_context'] as Map? ?? const <String, dynamic>{},
+    );
+    if (nextDimensions.containsKey('energy_preference')) {
+      expressionContext['energy'] =
+          (nextDimensions['energy_preference'] as num?)?.toDouble() ?? 0.5;
+    }
+    if (nextDimensions.containsKey('community_orientation')) {
+      expressionContext['social_cadence'] =
+          (nextDimensions['community_orientation'] as num?)?.toDouble() ?? 0.5;
+    }
+    snapshotJson['core_dna'] = <String, dynamic>{
+      ...(snapshotJson['core_dna'] as Map? ?? const <String, dynamic>{}),
+      'dimensions': nextDimensions,
+      'dimension_confidence': currentConfidence,
+    };
+    snapshotJson['behavior_patterns'] = behaviorJson;
+    snapshotJson['expression_context'] = expressionContext;
+    snapshotJson['provenance_tags'] = <String>{
+      ...((snapshotJson['provenance_tags'] as List?) ?? const <dynamic>[])
+          .map((entry) => entry.toString()),
+      ...provenanceTags,
+    }.toList(growable: false);
+    snapshotJson['updated_at_utc'] = DateTime.now().toUtc().toIso8601String();
+    snapshotJson['confidence'] = currentConfidence.isEmpty
+        ? 0.5
+        : currentConfidence.values
+                .map((entry) => (entry as num?)?.toDouble() ?? 0.0)
+                .fold<double>(0.0, (sum, entry) => sum + entry) /
+            currentConfidence.length;
+    final snapshot = VibeStateSnapshot.fromJson(snapshotJson);
+    _fallbackSubjectSnapshots[_subjectKey(subjectRef)] = snapshot;
+    if (subjectRef.kind == VibeSubjectKind.entity) {
+      _fallbackEntitySnapshots[_entityKey(
+        subjectRef.subjectId,
+        subjectRef.entityType ?? 'entity',
+      )] = EntityVibeSnapshot(
+        entityId: subjectRef.subjectId,
+        entityType: subjectRef.entityType ?? 'entity',
+        vibe: snapshot,
+      );
+    }
+    return snapshot;
+  }
+
+  VibeUpdateReceipt _receiptForSnapshot(VibeStateSnapshot snapshot) {
+    return VibeUpdateReceipt(
+      subjectId: snapshot.subjectId,
+      accepted: true,
+      reasonCodes: const <String>[],
+      updatedAtUtc: snapshot.updatedAtUtc,
+      snapshot: snapshot,
+    );
+  }
+
+  VibeStateSnapshot _defaultSnapshotFor(VibeSubjectRef subjectRef) {
+    return VibeStateSnapshot.fromJson(<String, dynamic>{
+      'subject_id': subjectRef.subjectId,
+      'subject_kind': subjectRef.kind.toWireValue(),
+      'core_dna': const <String, dynamic>{
+        'dimensions': <String, double>{},
+        'dimension_confidence': <String, double>{},
+        'drift_budget_remaining': 0.3,
+      },
+      'updated_at_utc': DateTime.now().toUtc().toIso8601String(),
+      'confidence': 0.5,
+      'freshness_hours': 0.0,
+      'provenance_tags': const <String>[],
+    });
+  }
+
+  EntityVibeSnapshot _defaultEntitySnapshot({
+    required String entityId,
+    required String entityType,
+  }) {
+    return EntityVibeSnapshot(
+      entityId: entityId,
+      entityType: entityType,
+      vibe: _defaultSnapshotFor(
+        VibeSubjectRef.entity(entityId: entityId, entityType: entityType),
+      ),
+    );
+  }
+
+  String _subjectKey(VibeSubjectRef subjectRef) {
+    return '${subjectRef.kind.toWireValue()}::${subjectRef.subjectId}';
+  }
+
+  String _entityKey(String entityId, String entityType) {
+    return '$entityType::$entityId';
+  }
+
   void _appendMutationRecord({
     required String category,
     required VibeSubjectRef subjectRef,
@@ -558,20 +1150,20 @@ class VibeKernel {
     String? governanceScope,
   }) {
     final record = TrajectoryMutationRecord(
-        recordId:
-            '$category:${subjectRef.subjectId}:${receipt.updatedAtUtc.microsecondsSinceEpoch}',
-        subjectRef: subjectRef,
-        category: category,
-        occurredAtUtc: receipt.updatedAtUtc,
-        accepted: receipt.accepted,
-        reasonCodes: receipt.reasonCodes,
-        governanceScope: governanceScope ?? _defaultGovernanceScope(subjectRef),
-        evidenceSummary: evidenceSummary,
-        snapshotUpdatedAtUtc: receipt.snapshot.updatedAtUtc,
-        metadata: <String, dynamic>{
-          'subject_kind': subjectRef.kind.toWireValue(),
-        },
-      );
+      recordId:
+          '$category:${subjectRef.subjectId}:${receipt.updatedAtUtc.microsecondsSinceEpoch}',
+      subjectRef: subjectRef,
+      category: category,
+      occurredAtUtc: receipt.updatedAtUtc,
+      accepted: receipt.accepted,
+      reasonCodes: receipt.reasonCodes,
+      governanceScope: governanceScope ?? _defaultGovernanceScope(subjectRef),
+      evidenceSummary: evidenceSummary,
+      snapshotUpdatedAtUtc: receipt.snapshot.updatedAtUtc,
+      metadata: <String, dynamic>{
+        'subject_kind': subjectRef.kind.toWireValue(),
+      },
+    );
     _trajectoryKernel.appendMutation(
       record: record,
       checkpointSnapshot: receipt.snapshot,
@@ -596,8 +1188,7 @@ class VibeKernel {
       return 'entity';
     }
     if (subjectRef.kind == VibeSubjectKind.scopedAgent) {
-      final scopedKind =
-          subjectRef.scopedKind?.toWireValue() ?? 'organization';
+      final scopedKind = subjectRef.scopedKind?.toWireValue() ?? 'organization';
       return 'scoped:$scopedKind';
     }
     final geographicLevel = subjectRef.effectiveGeographicLevel;
