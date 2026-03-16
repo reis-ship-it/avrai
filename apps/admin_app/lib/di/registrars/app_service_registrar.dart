@@ -471,7 +471,10 @@ Future<void> _registerAppServiceLayer(AppLogger logger) async {
   }
   if (!sl.isRegistered<RealityModelPort>()) {
     sl.registerLazySingleton<RealityModelPort>(
-      () => DefaultRealityModelPort(),
+      () => KernelBackedRealityModelPort(
+        modelTruthPort: sl<ModelTruthPort>(),
+        fallback: DefaultRealityModelPort(),
+      ),
     );
   }
   if (!sl.isRegistered<RuntimeExecutionPort>()) {
