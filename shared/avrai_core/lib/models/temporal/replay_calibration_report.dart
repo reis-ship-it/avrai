@@ -34,7 +34,8 @@ class ReplayCalibrationRecord {
       metricId: json['metricId'] as String? ?? '',
       targetValue: (json['targetValue'] as num?)?.toDouble() ?? 0.0,
       actualValue: (json['actualValue'] as num?)?.toDouble() ?? 0.0,
-      allowedVariancePct: (json['allowedVariancePct'] as num?)?.toDouble() ?? 0.0,
+      allowedVariancePct:
+          (json['allowedVariancePct'] as num?)?.toDouble() ?? 0.0,
       passed: json['passed'] as bool? ?? false,
       rationale: json['rationale'] as String? ?? '',
       metadata: Map<String, dynamic>.from(

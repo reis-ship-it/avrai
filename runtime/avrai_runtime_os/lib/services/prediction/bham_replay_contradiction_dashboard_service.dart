@@ -25,11 +25,15 @@ class BhamReplayContradictionDashboardService {
         ReplayContradictionSnapshot(
           snapshotId: '${diff.branchRunId}:attendance',
           runId: diff.branchRunId,
-          entityRef: packet.seedEntityRefs.isEmpty ? packet.scenarioId : packet.seedEntityRefs.first,
+          entityRef: packet.seedEntityRefs.isEmpty
+              ? packet.scenarioId
+              : packet.seedEntityRefs.first,
           localityCode: _dominantLocality(diff),
           contradictionType: _typeForDiff(diff),
-          replayExpectation: 'Baseline replay branch remains within ordinary Birmingham pressure.',
-          liveObserved: 'Intervention branch diverges from replay prior under ${diff.branchRunId}.',
+          replayExpectation:
+              'Baseline replay branch remains within ordinary Birmingham pressure.',
+          liveObserved:
+              'Intervention branch diverges from replay prior under ${diff.branchRunId}.',
           severity: _severityForDiff(diff),
           status: ReplayContradictionStatus.open,
           capturedAt: DateTime.now().toUtc(),
@@ -53,7 +57,8 @@ class BhamReplayContradictionDashboardService {
   }) {
     final buckets = <String, List<ReplayContradictionSnapshot>>{};
     for (final snapshot in snapshots) {
-      buckets.putIfAbsent(snapshot.localityCode, () => <ReplayContradictionSnapshot>[]);
+      buckets.putIfAbsent(
+          snapshot.localityCode, () => <ReplayContradictionSnapshot>[]);
       buckets[snapshot.localityCode]!.add(snapshot);
     }
     return buckets.entries.map((entry) {
@@ -64,10 +69,12 @@ class BhamReplayContradictionDashboardService {
       return ReplayContradictionLocalitySummary(
         localityCode: entry.key,
         count: entry.value.length,
-        averageSeverity: entry.value.isEmpty ? 0.0 : totalSeverity / entry.value.length,
+        averageSeverity:
+            entry.value.isEmpty ? 0.0 : totalSeverity / entry.value.length,
       );
     }).toList(growable: false)
-      ..sort((left, right) => right.averageSeverity.compareTo(left.averageSeverity));
+      ..sort((left, right) =>
+          right.averageSeverity.compareTo(left.averageSeverity));
   }
 
   ReplayContradictionType _typeForDiff(ReplayScenarioBranchDiff diff) {
@@ -95,8 +102,10 @@ class BhamReplayContradictionDashboardService {
     if (diff.localityPressureDeltas.isEmpty) {
       return 'bham_downtown';
     }
-    return diff.localityPressureDeltas.entries.reduce(
-      (left, right) => left.value.abs() >= right.value.abs() ? left : right,
-    ).key;
+    return diff.localityPressureDeltas.entries
+        .reduce(
+          (left, right) => left.value.abs() >= right.value.abs() ? left : right,
+        )
+        .key;
   }
 }

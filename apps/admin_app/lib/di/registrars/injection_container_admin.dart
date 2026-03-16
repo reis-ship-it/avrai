@@ -12,6 +12,7 @@ import 'package:avrai_runtime_os/services/admin/governed_run_kernel_service.dart
 import 'package:avrai_runtime_os/services/admin/security_immune_system_admin_service.dart';
 import 'package:avrai_runtime_os/services/admin/planning_truth_surface_admin_service.dart';
 import 'package:avrai_runtime_os/services/admin/remote_source_health_service.dart';
+import 'package:avrai_runtime_os/services/admin/replay_simulation_admin_service.dart';
 import 'package:avrai_runtime_os/services/admin/signature_health_admin_service.dart';
 import 'package:avrai_runtime_os/services/admin/temporal_kernel_admin_service.dart';
 import 'package:avrai_runtime_os/services/admin/bham_admin_operations_service.dart';
@@ -203,6 +204,12 @@ Future<void> registerAdminServices(GetIt sl) async {
         temporalKernel:
             sl.isRegistered<TemporalKernel>() ? sl<TemporalKernel>() : null,
       ),
+    );
+  }
+
+  if (!sl.isRegistered<ReplaySimulationAdminService>()) {
+    sl.registerLazySingleton<ReplaySimulationAdminService>(
+      ReplaySimulationAdminService.new,
     );
   }
 

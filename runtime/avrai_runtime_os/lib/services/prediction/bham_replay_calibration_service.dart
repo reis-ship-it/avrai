@@ -87,7 +87,8 @@ class BhamReplayCalibrationService {
         .map((record) => record.metricId)
         .toList(growable: false);
     return ReplayCalibrationReport(
-      reportId: 'bham_phase1_calibration_${DateTime.now().toUtc().millisecondsSinceEpoch}',
+      reportId:
+          'bham_phase1_calibration_${DateTime.now().toUtc().millisecondsSinceEpoch}',
       replayYear: bhamReplayBaseYear,
       passed: unresolved.isEmpty,
       records: records,

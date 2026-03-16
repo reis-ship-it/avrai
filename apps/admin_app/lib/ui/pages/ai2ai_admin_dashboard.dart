@@ -29,6 +29,10 @@ import 'package:avrai_admin_app/ui/widgets/network_health_gauge.dart';
 import 'package:avrai_admin_app/ui/widgets/performance_issues_list.dart';
 import 'package:avrai_admin_app/ui/widgets/planning_truth_surface_card.dart';
 import 'package:avrai_admin_app/ui/widgets/privacy_compliance_card.dart';
+import 'package:avrai_admin_app/ui/widgets/replay_contradiction_dashboard_card.dart';
+import 'package:avrai_admin_app/ui/widgets/replay_locality_overlay_card.dart';
+import 'package:avrai_admin_app/ui/widgets/replay_scenario_comparison_card.dart';
+import 'package:avrai_admin_app/ui/widgets/replay_scenario_packet_card.dart';
 import 'package:avrai_admin_app/ui/widgets/temporal_kernel_diagnostics_card.dart';
 import 'package:avrai_admin_app/ui/widgets/common/app_flow_scaffold.dart';
 import 'package:avrai_core/models/atomic_timestamp.dart';
@@ -607,6 +611,14 @@ class _AI2AIAdminDashboardState extends State<AI2AIAdminDashboard> {
             const ForecastKernelStrengthCard(),
             const SizedBox(height: 24),
             const PlanningTruthSurfaceCard(),
+            const SizedBox(height: 24),
+            const ReplayScenarioPacketCard(),
+            const SizedBox(height: 24),
+            const ReplayScenarioComparisonCard(),
+            const SizedBox(height: 24),
+            const ReplayContradictionDashboardCard(),
+            const SizedBox(height: 24),
+            const ReplayLocalityOverlayCard(),
             const SizedBox(height: 24),
             const SecurityImmuneSystemCard(),
             const SizedBox(height: 24),

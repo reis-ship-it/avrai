@@ -58,14 +58,16 @@ class ReplaySimulationAdminService {
   final DateTime Function() _nowProvider;
 
   Future<ReplaySimulationAdminSnapshot> getSnapshot() async {
-    final scenarios = _scenarioPackService.buildScenarioPack(createdAt: _nowProvider());
+    final scenarios =
+        _scenarioPackService.buildScenarioPack(createdAt: _nowProvider());
     final comparisons = <ReplayScenarioComparison>[];
     final receipts = <SimulationTruthReceipt>[];
     final contradictions = <ReplayContradictionSnapshot>[];
     final overlays = <ReplayLocalityOverlaySnapshot>[];
 
     for (final scenario in scenarios) {
-      final batchItems = _scenarioPacketService.materializeScenarioBatchItems(scenario);
+      final batchItems =
+          _scenarioPacketService.materializeScenarioBatchItems(scenario);
       final comparison = _scenarioComparisonService.compareScenarioRuns(
         packet: scenario,
         items: batchItems,

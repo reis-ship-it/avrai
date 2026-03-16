@@ -1,0 +1,293 @@
+[
+  {
+    "scenarioId": "bham_citywide_spring_event",
+    "name": "Citywide Spring Event",
+    "description": "Tests a Birmingham-wide spring celebration with strong downtown and neighborhood pull.",
+    "cityCode": "bham",
+    "baseReplayYear": 2023,
+    "scenarioKind": "eventOps",
+    "scope": "city",
+    "seedEntityRefs": [
+      "event:spring_festival",
+      "venue:railroad"
+    ],
+    "seedLocalityCodes": [
+      "bham_downtown",
+      "bham_avondale",
+      "bham_lakeview"
+    ],
+    "seedObservationRefs": [
+      "obs:spring_seed"
+    ],
+    "interventions": [
+      {
+        "interventionId": "attendance_surge_core",
+        "kind": "attendanceSurge",
+        "targetType": "locality",
+        "targetRef": "bham_downtown",
+        "effectiveStart": "2023-03-20T16:00:00.000Z",
+        "effectiveEnd": "2023-03-20T23:00:00.000Z",
+        "magnitude": 0.32,
+        "notes": "Peak attendance pushes downtown pressure above baseline."
+      },
+      {
+        "interventionId": "route_block_southside",
+        "kind": "routeBlock",
+        "targetType": "corridor",
+        "targetRef": "bham_southside",
+        "effectiveStart": "2023-03-20T18:00:00.000Z",
+        "effectiveEnd": "2023-03-20T22:00:00.000Z",
+        "magnitude": 0.21,
+        "notes": "Tests reroute sensitivity across the entertainment corridor."
+      }
+    ],
+    "expectedQuestions": [
+      "Which localities absorb overflow most cleanly?",
+      "How quickly does route friction degrade attendance delivery?"
+    ],
+    "createdAt": "2026-03-14T00:00:00.000Z",
+    "createdBy": "internal_beta_pack",
+    "isReplayOnly": true
+  },
+  {
+    "scenarioId": "bham_neighborhood_activation_day",
+    "name": "Neighborhood Activation Day",
+    "description": "Tests smaller neighborhood-centered programming distributed across Birmingham.",
+    "cityCode": "bham",
+    "baseReplayYear": 2023,
+    "scenarioKind": "eventOps",
+    "scope": "locality",
+    "seedEntityRefs": [
+      "event:activation_day"
+    ],
+    "seedLocalityCodes": [
+      "bham_avondale",
+      "bham_woodlawn",
+      "bham_homewood"
+    ],
+    "seedObservationRefs": [
+      "obs:activation_seed"
+    ],
+    "interventions": [
+      {
+        "interventionId": "attendance_surge_avondale",
+        "kind": "attendanceSurge",
+        "targetType": "locality",
+        "targetRef": "bham_avondale",
+        "effectiveStart": "2023-04-08T12:00:00.000Z",
+        "effectiveEnd": "2023-04-08T21:00:00.000Z",
+        "magnitude": 0.24,
+        "notes": "Localized neighborhood lift with overflow risk."
+      },
+      {
+        "interventionId": "locality_caution_woodlawn",
+        "kind": "localityCaution",
+        "targetType": "locality",
+        "targetRef": "bham_woodlawn",
+        "effectiveStart": "2023-04-08T14:00:00.000Z",
+        "effectiveEnd": "2023-04-08T20:00:00.000Z",
+        "magnitude": 0.18,
+        "notes": "Adds caution pressure to distributed neighborhood programming."
+      }
+    ],
+    "expectedQuestions": [
+      "Which neighborhood handles distributed programming best?",
+      "Where does caution pressure create the largest falloff?"
+    ],
+    "createdAt": "2026-03-14T00:00:00.000Z",
+    "createdBy": "internal_beta_pack",
+    "isReplayOnly": true
+  },
+  {
+    "scenarioId": "bham_outdoor_weather_stress",
+    "name": "Outdoor Weather Stress",
+    "description": "Tests how weather shift changes turnout, movement, and safety pressure for outdoor programming.",
+    "cityCode": "bham",
+    "baseReplayYear": 2023,
+    "scenarioKind": "weather",
+    "scope": "city",
+    "seedEntityRefs": [
+      "event:outdoor_series"
+    ],
+    "seedLocalityCodes": [
+      "bham_downtown",
+      "bham_uptown"
+    ],
+    "seedObservationRefs": [
+      "obs:weather_seed"
+    ],
+    "interventions": [
+      {
+        "interventionId": "weather_shift_evening",
+        "kind": "weatherShift",
+        "targetType": "city",
+        "targetRef": "bham",
+        "effectiveStart": "2023-05-12T17:00:00.000Z",
+        "effectiveEnd": "2023-05-12T23:00:00.000Z",
+        "magnitude": 0.35,
+        "notes": "Fast evening storm degrades outdoor comfort and path reliability."
+      },
+      {
+        "interventionId": "staffing_loss_weather",
+        "kind": "staffingLoss",
+        "targetType": "event",
+        "targetRef": "event:outdoor_series",
+        "effectiveStart": "2023-05-12T18:00:00.000Z",
+        "effectiveEnd": "2023-05-12T22:00:00.000Z",
+        "magnitude": 0.16,
+        "notes": "Weather compounds staffing pressure during the peak window."
+      }
+    ],
+    "expectedQuestions": [
+      "How quickly should outdoor programming collapse into contingency mode?",
+      "Which localities become fragile under weather plus staffing stress?"
+    ],
+    "createdAt": "2026-03-14T00:00:00.000Z",
+    "createdBy": "internal_beta_pack",
+    "isReplayOnly": true
+  },
+  {
+    "scenarioId": "bham_venue_overload",
+    "name": "Venue Overload",
+    "description": "Tests overload at a key Birmingham venue and how it redistributes pressure.",
+    "cityCode": "bham",
+    "baseReplayYear": 2023,
+    "scenarioKind": "venueOverload",
+    "scope": "venue",
+    "seedEntityRefs": [
+      "venue:district_stage"
+    ],
+    "seedLocalityCodes": [
+      "bham_downtown",
+      "bham_uptown"
+    ],
+    "seedObservationRefs": [
+      "obs:venue_overload_seed"
+    ],
+    "interventions": [
+      {
+        "interventionId": "attendance_surge_venue",
+        "kind": "attendanceSurge",
+        "targetType": "venue",
+        "targetRef": "venue:district_stage",
+        "effectiveStart": "2023-06-17T18:00:00.000Z",
+        "effectiveEnd": "2023-06-17T23:00:00.000Z",
+        "magnitude": 0.38,
+        "notes": "Primary venue demand exceeds expected ingress and queue capacity."
+      },
+      {
+        "interventionId": "venue_closure_partial",
+        "kind": "venueClosure",
+        "targetType": "venue",
+        "targetRef": "venue:district_stage",
+        "effectiveStart": "2023-06-17T20:00:00.000Z",
+        "effectiveEnd": "2023-06-17T21:00:00.000Z",
+        "magnitude": 0.22,
+        "notes": "Tests partial shutdown and redistribution pressure."
+      }
+    ],
+    "expectedQuestions": [
+      "Where does overload pressure reroute first?",
+      "How severe is the safety-stress delta under partial closure?"
+    ],
+    "createdAt": "2026-03-14T00:00:00.000Z",
+    "createdBy": "internal_beta_pack",
+    "isReplayOnly": true
+  },
+  {
+    "scenarioId": "bham_transit_friction",
+    "name": "Transit Friction",
+    "description": "Tests route friction around clustered destinations and its effect on delivery.",
+    "cityCode": "bham",
+    "baseReplayYear": 2023,
+    "scenarioKind": "transitFriction",
+    "scope": "corridor",
+    "seedEntityRefs": [
+      "corridor:entertainment_axis"
+    ],
+    "seedLocalityCodes": [
+      "bham_southside",
+      "bham_five_points"
+    ],
+    "seedObservationRefs": [
+      "obs:transit_seed"
+    ],
+    "interventions": [
+      {
+        "interventionId": "transit_delay_corridor",
+        "kind": "transitDelay",
+        "targetType": "corridor",
+        "targetRef": "corridor:entertainment_axis",
+        "effectiveStart": "2023-07-22T17:00:00.000Z",
+        "effectiveEnd": "2023-07-22T23:00:00.000Z",
+        "magnitude": 0.27,
+        "notes": "Clustered destinations create route lag and slower arrival."
+      },
+      {
+        "interventionId": "route_block_five_points",
+        "kind": "routeBlock",
+        "targetType": "locality",
+        "targetRef": "bham_five_points",
+        "effectiveStart": "2023-07-22T18:00:00.000Z",
+        "effectiveEnd": "2023-07-22T22:00:00.000Z",
+        "magnitude": 0.19,
+        "notes": "Adds route interruption on top of transit delay."
+      }
+    ],
+    "expectedQuestions": [
+      "Does delivery degrade before attendance, or at the same rate?",
+      "Which corridor-localities absorb the largest pathflow stress?"
+    ],
+    "createdAt": "2026-03-14T00:00:00.000Z",
+    "createdBy": "internal_beta_pack",
+    "isReplayOnly": true
+  },
+  {
+    "scenarioId": "bham_staffing_shortfall",
+    "name": "Staffing Shortfall",
+    "description": "Tests worker and volunteer attrition against a Birmingham event baseline.",
+    "cityCode": "bham",
+    "baseReplayYear": 2023,
+    "scenarioKind": "staffingPressure",
+    "scope": "city",
+    "seedEntityRefs": [
+      "event:city_showcase"
+    ],
+    "seedLocalityCodes": [
+      "bham_downtown",
+      "bham_southside"
+    ],
+    "seedObservationRefs": [
+      "obs:staffing_seed"
+    ],
+    "interventions": [
+      {
+        "interventionId": "staffing_loss_ops",
+        "kind": "staffingLoss",
+        "targetType": "event",
+        "targetRef": "event:city_showcase",
+        "effectiveStart": "2023-08-19T15:00:00.000Z",
+        "effectiveEnd": "2023-08-19T22:00:00.000Z",
+        "magnitude": 0.29,
+        "notes": "Operational staffing drops below target late in the day."
+      },
+      {
+        "interventionId": "locality_caution_downtown",
+        "kind": "localityCaution",
+        "targetType": "locality",
+        "targetRef": "bham_downtown",
+        "effectiveStart": "2023-08-19T18:00:00.000Z",
+        "effectiveEnd": "2023-08-19T22:00:00.000Z",
+        "magnitude": 0.17,
+        "notes": "Staffing attrition compounds locality-level caution pressure."
+      }
+    ],
+    "expectedQuestions": [
+      "How quickly does staffing loss convert into safety stress?",
+      "Which localities remain stable under degraded staffing?"
+    ],
+    "createdAt": "2026-03-14T00:00:00.000Z",
+    "createdBy": "internal_beta_pack",
+    "isReplayOnly": true
+  }
+]

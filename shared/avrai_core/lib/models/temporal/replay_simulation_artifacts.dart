@@ -170,8 +170,9 @@ class ReplayScenarioPacket {
       'seedEntityRefs': normalizedPacket.seedEntityRefs,
       'seedLocalityCodes': normalizedPacket.seedLocalityCodes,
       'seedObservationRefs': normalizedPacket.seedObservationRefs,
-      'interventions':
-          normalizedPacket.interventions.map((entry) => entry.toJson()).toList(),
+      'interventions': normalizedPacket.interventions
+          .map((entry) => entry.toJson())
+          .toList(),
       'expectedQuestions': normalizedPacket.expectedQuestions,
       'createdAt': normalizedPacket.createdAt.toIso8601String(),
       'createdBy': normalizedPacket.createdBy,
@@ -253,8 +254,7 @@ class ReplayScenarioBranchDiff {
       attendanceDelta: (json['attendanceDelta'] as num?)?.toDouble() ?? 0.0,
       movementDelta: (json['movementDelta'] as num?)?.toDouble() ?? 0.0,
       deliveryDelta: (json['deliveryDelta'] as num?)?.toDouble() ?? 0.0,
-      safetyStressDelta:
-          (json['safetyStressDelta'] as num?)?.toDouble() ?? 0.0,
+      safetyStressDelta: (json['safetyStressDelta'] as num?)?.toDouble() ?? 0.0,
       localityPressureDeltas: (json['localityPressureDeltas'] as Map?)?.map(
             (key, value) => MapEntry(
               key.toString(),
@@ -532,8 +532,7 @@ class ReplayLocalityOverlaySnapshot {
       pressureBand: json['pressureBand'] as String? ?? 'moderate',
       attentionBand: json['attentionBand'] as String? ?? 'watch',
       primarySignals: _stringList(json['primarySignals']),
-      branchSensitivity:
-          (json['branchSensitivity'] as num?)?.toDouble() ?? 0.0,
+      branchSensitivity: (json['branchSensitivity'] as num?)?.toDouble() ?? 0.0,
       contradictionCount: (json['contradictionCount'] as num?)?.toInt() ?? 0,
       updatedAt:
           DateTime.tryParse(json['updatedAt'] as String? ?? '')?.toUtc() ??
@@ -544,14 +543,11 @@ class ReplayLocalityOverlaySnapshot {
 
 List<String> _stringList(Object? raw) {
   return (raw as List?)?.map((entry) => _sanitizeText(entry.toString())).toList(
-        growable: false,
-      ) ??
+            growable: false,
+          ) ??
       const <String>[];
 }
 
 String _sanitizeText(String value) {
-  return value
-      .replaceAll(RegExp(r'\s+'), ' ')
-      .replaceAll('\n', ' ')
-      .trim();
+  return value.replaceAll(RegExp(r'\s+'), ' ').replaceAll('\n', ' ').trim();
 }

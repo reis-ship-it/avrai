@@ -1,0 +1,712 @@
+{
+  "generatedAt": "2026-03-15T04:53:08.392184Z",
+  "comparisons": [
+    {
+      "scenarioId": "bham_citywide_spring_event",
+      "baselineRunId": "bham_citywide_spring_event:baseline",
+      "branchRunIds": [
+        "bham_citywide_spring_event:attendance_surge_core",
+        "bham_citywide_spring_event:route_block_southside"
+      ],
+      "branchDiffs": [
+        {
+          "branchRunId": "bham_citywide_spring_event:attendance_surge_core",
+          "attendanceDelta": -0.03200000000000003,
+          "movementDelta": -0.03839999999999999,
+          "deliveryDelta": -0.04479999999999995,
+          "safetyStressDelta": 0.11199999999999999,
+          "localityPressureDeltas": {
+            "bham_downtown": 0.176,
+            "bham_avondale": 0.0,
+            "bham_lakeview": 0.0
+          },
+          "keyNarrativeLines": [
+            "attendanceSurge shifts attendance by -3.2% against baseline.",
+            "Movement changes by -3.8% and delivery changes by -4.5%.",
+            "The largest locality pressure change lands in Downtown."
+          ]
+        },
+        {
+          "branchRunId": "bham_citywide_spring_event:route_block_southside",
+          "attendanceDelta": -0.037800000000000056,
+          "movementDelta": -0.04620000000000002,
+          "deliveryDelta": -0.02939999999999998,
+          "safetyStressDelta": 0.07350000000000001,
+          "localityPressureDeltas": {
+            "bham_downtown": 0.11549999999999999,
+            "bham_avondale": 0.0,
+            "bham_lakeview": 0.0
+          },
+          "keyNarrativeLines": [
+            "routeBlock shifts attendance by -3.8% against baseline.",
+            "Movement changes by -4.6% and delivery changes by -2.9%.",
+            "The largest locality pressure change lands in Downtown."
+          ]
+        }
+      ],
+      "summary": "Citywide Spring Event shifts most strongly around Downtown with 2 intervention branches.",
+      "generatedAt": "2026-03-15T04:53:08.389313Z"
+    },
+    {
+      "scenarioId": "bham_neighborhood_activation_day",
+      "baselineRunId": "bham_neighborhood_activation_day:baseline",
+      "branchRunIds": [
+        "bham_neighborhood_activation_day:attendance_surge_avondale",
+        "bham_neighborhood_activation_day:locality_caution_woodlawn"
+      ],
+      "branchDiffs": [
+        {
+          "branchRunId": "bham_neighborhood_activation_day:attendance_surge_avondale",
+          "attendanceDelta": -0.02400000000000002,
+          "movementDelta": -0.028800000000000048,
+          "deliveryDelta": -0.03359999999999996,
+          "safetyStressDelta": 0.08399999999999996,
+          "localityPressureDeltas": {
+            "bham_avondale": 0.132,
+            "bham_woodlawn": 0.0,
+            "bham_homewood": 0.0
+          },
+          "keyNarrativeLines": [
+            "attendanceSurge shifts attendance by -2.4% against baseline.",
+            "Movement changes by -2.9% and delivery changes by -3.4%.",
+            "The largest locality pressure change lands in Avondale."
+          ]
+        },
+        {
+          "branchRunId": "bham_neighborhood_activation_day:locality_caution_woodlawn",
+          "attendanceDelta": -0.032399999999999984,
+          "movementDelta": -0.021599999999999953,
+          "deliveryDelta": -0.0252,
+          "safetyStressDelta": 0.063,
+          "localityPressureDeltas": {
+            "bham_avondale": 0.0,
+            "bham_woodlawn": 0.09899999999999998,
+            "bham_homewood": 0.0
+          },
+          "keyNarrativeLines": [
+            "localityCaution shifts attendance by -3.2% against baseline.",
+            "Movement changes by -2.2% and delivery changes by -2.5%.",
+            "The largest locality pressure change lands in Woodlawn."
+          ]
+        }
+      ],
+      "summary": "Neighborhood Activation Day shifts most strongly around Avondale with 2 intervention branches.",
+      "generatedAt": "2026-03-15T04:53:08.391355Z"
+    },
+    {
+      "scenarioId": "bham_outdoor_weather_stress",
+      "baselineRunId": "bham_outdoor_weather_stress:baseline",
+      "branchRunIds": [
+        "bham_outdoor_weather_stress:weather_shift_evening",
+        "bham_outdoor_weather_stress:staffing_loss_weather"
+      ],
+      "branchDiffs": [
+        {
+          "branchRunId": "bham_outdoor_weather_stress:weather_shift_evening",
+          "attendanceDelta": -0.06299999999999994,
+          "movementDelta": -0.04200000000000004,
+          "deliveryDelta": -0.049000000000000044,
+          "safetyStressDelta": 0.1225,
+          "localityPressureDeltas": {
+            "bham_downtown": 0.19249999999999995,
+            "bham_uptown": 0.0
+          },
+          "keyNarrativeLines": [
+            "weatherShift shifts attendance by -6.3% against baseline.",
+            "Movement changes by -4.2% and delivery changes by -4.9%.",
+            "The largest locality pressure change lands in Downtown."
+          ]
+        },
+        {
+          "branchRunId": "bham_outdoor_weather_stress:staffing_loss_weather",
+          "attendanceDelta": -0.028800000000000048,
+          "movementDelta": -0.019199999999999995,
+          "deliveryDelta": -0.03839999999999999,
+          "safetyStressDelta": 0.055999999999999994,
+          "localityPressureDeltas": {
+            "bham_downtown": 0.08800000000000002,
+            "bham_uptown": 0.0
+          },
+          "keyNarrativeLines": [
+            "staffingLoss shifts attendance by -2.9% against baseline.",
+            "Movement changes by -1.9% and delivery changes by -3.8%.",
+            "The largest locality pressure change lands in Downtown."
+          ]
+        }
+      ],
+      "summary": "Outdoor Weather Stress shifts most strongly around Downtown with 2 intervention branches.",
+      "generatedAt": "2026-03-15T04:53:08.391611Z"
+    },
+    {
+      "scenarioId": "bham_venue_overload",
+      "baselineRunId": "bham_venue_overload:baseline",
+      "branchRunIds": [
+        "bham_venue_overload:attendance_surge_venue",
+        "bham_venue_overload:venue_closure_partial"
+      ],
+      "branchDiffs": [
+        {
+          "branchRunId": "bham_venue_overload:attendance_surge_venue",
+          "attendanceDelta": -0.038000000000000034,
+          "movementDelta": -0.045599999999999974,
+          "deliveryDelta": -0.053200000000000025,
+          "safetyStressDelta": 0.133,
+          "localityPressureDeltas": {
+            "bham_downtown": 0.20900000000000002,
+            "bham_uptown": 0.0
+          },
+          "keyNarrativeLines": [
+            "attendanceSurge shifts attendance by -3.8% against baseline.",
+            "Movement changes by -4.6% and delivery changes by -5.3%.",
+            "The largest locality pressure change lands in Downtown."
+          ]
+        },
+        {
+          "branchRunId": "bham_venue_overload:venue_closure_partial",
+          "attendanceDelta": -0.03959999999999997,
+          "movementDelta": -0.02639999999999998,
+          "deliveryDelta": -0.03080000000000005,
+          "safetyStressDelta": 0.07700000000000001,
+          "localityPressureDeltas": {
+            "bham_downtown": 0.121,
+            "bham_uptown": 0.0
+          },
+          "keyNarrativeLines": [
+            "venueClosure shifts attendance by -4.0% against baseline.",
+            "Movement changes by -2.6% and delivery changes by -3.1%.",
+            "The largest locality pressure change lands in Downtown."
+          ]
+        }
+      ],
+      "summary": "Venue Overload shifts most strongly around Downtown with 2 intervention branches.",
+      "generatedAt": "2026-03-15T04:53:08.391766Z"
+    },
+    {
+      "scenarioId": "bham_transit_friction",
+      "baselineRunId": "bham_transit_friction:baseline",
+      "branchRunIds": [
+        "bham_transit_friction:transit_delay_corridor",
+        "bham_transit_friction:route_block_five_points"
+      ],
+      "branchDiffs": [
+        {
+          "branchRunId": "bham_transit_friction:transit_delay_corridor",
+          "attendanceDelta": -0.04859999999999998,
+          "movementDelta": -0.05940000000000001,
+          "deliveryDelta": -0.037800000000000056,
+          "safetyStressDelta": 0.09450000000000003,
+          "localityPressureDeltas": {
+            "bham_southside": 0.14850000000000002,
+            "bham_five_points": 0.0
+          },
+          "keyNarrativeLines": [
+            "transitDelay shifts attendance by -4.9% against baseline.",
+            "Movement changes by -5.9% and delivery changes by -3.8%.",
+            "The largest locality pressure change lands in Southside."
+          ]
+        },
+        {
+          "branchRunId": "bham_transit_friction:route_block_five_points",
+          "attendanceDelta": -0.03420000000000001,
+          "movementDelta": -0.04179999999999995,
+          "deliveryDelta": -0.026599999999999957,
+          "safetyStressDelta": 0.0665,
+          "localityPressureDeltas": {
+            "bham_southside": 0.0,
+            "bham_five_points": 0.10450000000000004
+          },
+          "keyNarrativeLines": [
+            "routeBlock shifts attendance by -3.4% against baseline.",
+            "Movement changes by -4.2% and delivery changes by -2.7%.",
+            "The largest locality pressure change lands in Five Points South."
+          ]
+        }
+      ],
+      "summary": "Transit Friction shifts most strongly around Southside with 2 intervention branches.",
+      "generatedAt": "2026-03-15T04:53:08.391890Z"
+    },
+    {
+      "scenarioId": "bham_staffing_shortfall",
+      "baselineRunId": "bham_staffing_shortfall:baseline",
+      "branchRunIds": [
+        "bham_staffing_shortfall:staffing_loss_ops",
+        "bham_staffing_shortfall:locality_caution_downtown"
+      ],
+      "branchDiffs": [
+        {
+          "branchRunId": "bham_staffing_shortfall:staffing_loss_ops",
+          "attendanceDelta": -0.052200000000000024,
+          "movementDelta": -0.03480000000000005,
+          "deliveryDelta": -0.0696,
+          "safetyStressDelta": 0.10149999999999998,
+          "localityPressureDeltas": {
+            "bham_downtown": 0.15950000000000003,
+            "bham_southside": 0.0
+          },
+          "keyNarrativeLines": [
+            "staffingLoss shifts attendance by -5.2% against baseline.",
+            "Movement changes by -3.5% and delivery changes by -7.0%.",
+            "The largest locality pressure change lands in Downtown."
+          ]
+        },
+        {
+          "branchRunId": "bham_staffing_shortfall:locality_caution_downtown",
+          "attendanceDelta": -0.03059999999999996,
+          "movementDelta": -0.020399999999999974,
+          "deliveryDelta": -0.023800000000000043,
+          "safetyStressDelta": 0.0595,
+          "localityPressureDeltas": {
+            "bham_downtown": 0.09350000000000003,
+            "bham_southside": 0.0
+          },
+          "keyNarrativeLines": [
+            "localityCaution shifts attendance by -3.1% against baseline.",
+            "Movement changes by -2.0% and delivery changes by -2.4%.",
+            "The largest locality pressure change lands in Downtown."
+          ]
+        }
+      ],
+      "summary": "Staffing Shortfall shifts most strongly around Downtown with 2 intervention branches.",
+      "generatedAt": "2026-03-15T04:53:08.392070Z"
+    }
+  ],
+  "receipts": [
+    {
+      "receiptId": "bham_citywide_spring_event:receipt",
+      "runId": "bham_citywide_spring_event:baseline",
+      "scenarioId": "bham_citywide_spring_event",
+      "forecastTraceRefs": [
+        "bham_citywide_spring_event:attendance_surge_core:trace",
+        "bham_citywide_spring_event:route_block_southside:trace"
+      ],
+      "replayPriorSummary": {
+        "title": "Replay Prior",
+        "lines": [
+          "Phase 1 receipt remains replay-only prior for Birmingham beta.",
+          "Citywide Spring Event started from 3 seeded localities."
+        ],
+        "metadata": {
+          "baseReplayYear": 2023,
+          "scope": "city"
+        }
+      },
+      "liveEvidenceSummary": {
+        "title": "Live Evidence",
+        "lines": [
+          "No live user data is promoted here; this receipt is an internal simulation artifact.",
+          "Most volatile branch was bham_citywide_spring_event:attendance_surge_core with safety delta 0.11."
+        ],
+        "metadata": {
+          "liveEvidencePromoted": false
+        }
+      },
+      "localityConsensusSummary": {
+        "title": "Locality Consensus",
+        "lines": [
+          "Comparison synthesized locality pressure deltas across all seeded Birmingham localities.",
+          "Branch sensitivity remains bounded and admin-visible only."
+        ],
+        "metadata": {}
+      },
+      "adminCorrectionSummary": {
+        "title": "Admin Correction",
+        "lines": [
+          "No admin correction is auto-applied in phase 1.",
+          "Receipts are for operator inspection and calibration only."
+        ],
+        "metadata": {}
+      },
+      "contradictionSummary": {
+        "title": "Contradiction Summary",
+        "lines": [
+          "2 contradiction snapshots were generated from branch deltas.",
+          "Highest contradiction severity is 0.07."
+        ],
+        "metadata": {}
+      },
+      "generatedAt": "2026-03-15T04:53:08.390381Z"
+    },
+    {
+      "receiptId": "bham_neighborhood_activation_day:receipt",
+      "runId": "bham_neighborhood_activation_day:baseline",
+      "scenarioId": "bham_neighborhood_activation_day",
+      "forecastTraceRefs": [
+        "bham_neighborhood_activation_day:attendance_surge_avondale:trace",
+        "bham_neighborhood_activation_day:locality_caution_woodlawn:trace"
+      ],
+      "replayPriorSummary": {
+        "title": "Replay Prior",
+        "lines": [
+          "Phase 1 receipt remains replay-only prior for Birmingham beta.",
+          "Neighborhood Activation Day started from 3 seeded localities."
+        ],
+        "metadata": {
+          "baseReplayYear": 2023,
+          "scope": "locality"
+        }
+      },
+      "liveEvidenceSummary": {
+        "title": "Live Evidence",
+        "lines": [
+          "No live user data is promoted here; this receipt is an internal simulation artifact.",
+          "Most volatile branch was bham_neighborhood_activation_day:attendance_surge_avondale with safety delta 0.08."
+        ],
+        "metadata": {
+          "liveEvidencePromoted": false
+        }
+      },
+      "localityConsensusSummary": {
+        "title": "Locality Consensus",
+        "lines": [
+          "Comparison synthesized locality pressure deltas across all seeded Birmingham localities.",
+          "Branch sensitivity remains bounded and admin-visible only."
+        ],
+        "metadata": {}
+      },
+      "adminCorrectionSummary": {
+        "title": "Admin Correction",
+        "lines": [
+          "No admin correction is auto-applied in phase 1.",
+          "Receipts are for operator inspection and calibration only."
+        ],
+        "metadata": {}
+      },
+      "contradictionSummary": {
+        "title": "Contradiction Summary",
+        "lines": [
+          "2 contradiction snapshots were generated from branch deltas.",
+          "Highest contradiction severity is 0.05."
+        ],
+        "metadata": {}
+      },
+      "generatedAt": "2026-03-15T04:53:08.391389Z"
+    },
+    {
+      "receiptId": "bham_outdoor_weather_stress:receipt",
+      "runId": "bham_outdoor_weather_stress:baseline",
+      "scenarioId": "bham_outdoor_weather_stress",
+      "forecastTraceRefs": [
+        "bham_outdoor_weather_stress:weather_shift_evening:trace",
+        "bham_outdoor_weather_stress:staffing_loss_weather:trace"
+      ],
+      "replayPriorSummary": {
+        "title": "Replay Prior",
+        "lines": [
+          "Phase 1 receipt remains replay-only prior for Birmingham beta.",
+          "Outdoor Weather Stress started from 2 seeded localities."
+        ],
+        "metadata": {
+          "baseReplayYear": 2023,
+          "scope": "city"
+        }
+      },
+      "liveEvidenceSummary": {
+        "title": "Live Evidence",
+        "lines": [
+          "No live user data is promoted here; this receipt is an internal simulation artifact.",
+          "Most volatile branch was bham_outdoor_weather_stress:weather_shift_evening with safety delta 0.12."
+        ],
+        "metadata": {
+          "liveEvidencePromoted": false
+        }
+      },
+      "localityConsensusSummary": {
+        "title": "Locality Consensus",
+        "lines": [
+          "Comparison synthesized locality pressure deltas across all seeded Birmingham localities.",
+          "Branch sensitivity remains bounded and admin-visible only."
+        ],
+        "metadata": {}
+      },
+      "adminCorrectionSummary": {
+        "title": "Admin Correction",
+        "lines": [
+          "No admin correction is auto-applied in phase 1.",
+          "Receipts are for operator inspection and calibration only."
+        ],
+        "metadata": {}
+      },
+      "contradictionSummary": {
+        "title": "Contradiction Summary",
+        "lines": [
+          "2 contradiction snapshots were generated from branch deltas.",
+          "Highest contradiction severity is 0.08."
+        ],
+        "metadata": {}
+      },
+      "generatedAt": "2026-03-15T04:53:08.391645Z"
+    },
+    {
+      "receiptId": "bham_venue_overload:receipt",
+      "runId": "bham_venue_overload:baseline",
+      "scenarioId": "bham_venue_overload",
+      "forecastTraceRefs": [
+        "bham_venue_overload:attendance_surge_venue:trace",
+        "bham_venue_overload:venue_closure_partial:trace"
+      ],
+      "replayPriorSummary": {
+        "title": "Replay Prior",
+        "lines": [
+          "Phase 1 receipt remains replay-only prior for Birmingham beta.",
+          "Venue Overload started from 2 seeded localities."
+        ],
+        "metadata": {
+          "baseReplayYear": 2023,
+          "scope": "venue"
+        }
+      },
+      "liveEvidenceSummary": {
+        "title": "Live Evidence",
+        "lines": [
+          "No live user data is promoted here; this receipt is an internal simulation artifact.",
+          "Most volatile branch was bham_venue_overload:attendance_surge_venue with safety delta 0.13."
+        ],
+        "metadata": {
+          "liveEvidencePromoted": false
+        }
+      },
+      "localityConsensusSummary": {
+        "title": "Locality Consensus",
+        "lines": [
+          "Comparison synthesized locality pressure deltas across all seeded Birmingham localities.",
+          "Branch sensitivity remains bounded and admin-visible only."
+        ],
+        "metadata": {}
+      },
+      "adminCorrectionSummary": {
+        "title": "Admin Correction",
+        "lines": [
+          "No admin correction is auto-applied in phase 1.",
+          "Receipts are for operator inspection and calibration only."
+        ],
+        "metadata": {}
+      },
+      "contradictionSummary": {
+        "title": "Contradiction Summary",
+        "lines": [
+          "2 contradiction snapshots were generated from branch deltas.",
+          "Highest contradiction severity is 0.09."
+        ],
+        "metadata": {}
+      },
+      "generatedAt": "2026-03-15T04:53:08.391789Z"
+    },
+    {
+      "receiptId": "bham_transit_friction:receipt",
+      "runId": "bham_transit_friction:baseline",
+      "scenarioId": "bham_transit_friction",
+      "forecastTraceRefs": [
+        "bham_transit_friction:transit_delay_corridor:trace",
+        "bham_transit_friction:route_block_five_points:trace"
+      ],
+      "replayPriorSummary": {
+        "title": "Replay Prior",
+        "lines": [
+          "Phase 1 receipt remains replay-only prior for Birmingham beta.",
+          "Transit Friction started from 2 seeded localities."
+        ],
+        "metadata": {
+          "baseReplayYear": 2023,
+          "scope": "corridor"
+        }
+      },
+      "liveEvidenceSummary": {
+        "title": "Live Evidence",
+        "lines": [
+          "No live user data is promoted here; this receipt is an internal simulation artifact.",
+          "Most volatile branch was bham_transit_friction:transit_delay_corridor with safety delta 0.09."
+        ],
+        "metadata": {
+          "liveEvidencePromoted": false
+        }
+      },
+      "localityConsensusSummary": {
+        "title": "Locality Consensus",
+        "lines": [
+          "Comparison synthesized locality pressure deltas across all seeded Birmingham localities.",
+          "Branch sensitivity remains bounded and admin-visible only."
+        ],
+        "metadata": {}
+      },
+      "adminCorrectionSummary": {
+        "title": "Admin Correction",
+        "lines": [
+          "No admin correction is auto-applied in phase 1.",
+          "Receipts are for operator inspection and calibration only."
+        ],
+        "metadata": {}
+      },
+      "contradictionSummary": {
+        "title": "Contradiction Summary",
+        "lines": [
+          "2 contradiction snapshots were generated from branch deltas.",
+          "Highest contradiction severity is 0.07."
+        ],
+        "metadata": {}
+      },
+      "generatedAt": "2026-03-15T04:53:08.391914Z"
+    },
+    {
+      "receiptId": "bham_staffing_shortfall:receipt",
+      "runId": "bham_staffing_shortfall:baseline",
+      "scenarioId": "bham_staffing_shortfall",
+      "forecastTraceRefs": [
+        "bham_staffing_shortfall:staffing_loss_ops:trace",
+        "bham_staffing_shortfall:locality_caution_downtown:trace"
+      ],
+      "replayPriorSummary": {
+        "title": "Replay Prior",
+        "lines": [
+          "Phase 1 receipt remains replay-only prior for Birmingham beta.",
+          "Staffing Shortfall started from 2 seeded localities."
+        ],
+        "metadata": {
+          "baseReplayYear": 2023,
+          "scope": "city"
+        }
+      },
+      "liveEvidenceSummary": {
+        "title": "Live Evidence",
+        "lines": [
+          "No live user data is promoted here; this receipt is an internal simulation artifact.",
+          "Most volatile branch was bham_staffing_shortfall:staffing_loss_ops with safety delta 0.10."
+        ],
+        "metadata": {
+          "liveEvidencePromoted": false
+        }
+      },
+      "localityConsensusSummary": {
+        "title": "Locality Consensus",
+        "lines": [
+          "Comparison synthesized locality pressure deltas across all seeded Birmingham localities.",
+          "Branch sensitivity remains bounded and admin-visible only."
+        ],
+        "metadata": {}
+      },
+      "adminCorrectionSummary": {
+        "title": "Admin Correction",
+        "lines": [
+          "No admin correction is auto-applied in phase 1.",
+          "Receipts are for operator inspection and calibration only."
+        ],
+        "metadata": {}
+      },
+      "contradictionSummary": {
+        "title": "Contradiction Summary",
+        "lines": [
+          "2 contradiction snapshots were generated from branch deltas.",
+          "Highest contradiction severity is 0.08."
+        ],
+        "metadata": {}
+      },
+      "generatedAt": "2026-03-15T04:53:08.392093Z"
+    }
+  ],
+  "overlays": [
+    {
+      "localityCode": "bham_downtown",
+      "displayName": "Downtown",
+      "pressureBand": "moderate",
+      "attentionBand": "escalate",
+      "primarySignals": [
+        "scenario_seed",
+        "branch_sensitive",
+        "contradiction_present"
+      ],
+      "branchSensitivity": 0.33,
+      "contradictionCount": 2,
+      "updatedAt": "2026-03-15T04:53:08.391803Z"
+    },
+    {
+      "localityCode": "bham_southside",
+      "displayName": "Southside",
+      "pressureBand": "low",
+      "attentionBand": "watch",
+      "primarySignals": [
+        "scenario_seed",
+        "branch_sensitive",
+        "contradiction_present"
+      ],
+      "branchSensitivity": 0.14850000000000002,
+      "contradictionCount": 1,
+      "updatedAt": "2026-03-15T04:53:08.391929Z"
+    },
+    {
+      "localityCode": "bham_avondale",
+      "displayName": "Avondale",
+      "pressureBand": "low",
+      "attentionBand": "watch",
+      "primarySignals": [
+        "scenario_seed",
+        "branch_sensitive",
+        "contradiction_present"
+      ],
+      "branchSensitivity": 0.132,
+      "contradictionCount": 1,
+      "updatedAt": "2026-03-15T04:53:08.391406Z"
+    },
+    {
+      "localityCode": "bham_five_points",
+      "displayName": "Five Points South",
+      "pressureBand": "low",
+      "attentionBand": "watch",
+      "primarySignals": [
+        "scenario_seed",
+        "branch_sensitive",
+        "contradiction_present"
+      ],
+      "branchSensitivity": 0.10450000000000004,
+      "contradictionCount": 1,
+      "updatedAt": "2026-03-15T04:53:08.391928Z"
+    },
+    {
+      "localityCode": "bham_woodlawn",
+      "displayName": "Woodlawn",
+      "pressureBand": "low",
+      "attentionBand": "watch",
+      "primarySignals": [
+        "scenario_seed",
+        "contradiction_present"
+      ],
+      "branchSensitivity": 0.09899999999999998,
+      "contradictionCount": 1,
+      "updatedAt": "2026-03-15T04:53:08.391409Z"
+    },
+    {
+      "localityCode": "bham_lakeview",
+      "displayName": "Lakeview",
+      "pressureBand": "low",
+      "attentionBand": "watch",
+      "primarySignals": [
+        "scenario_seed"
+      ],
+      "branchSensitivity": 0.0,
+      "contradictionCount": 0,
+      "updatedAt": "2026-03-15T04:53:08.391221Z"
+    },
+    {
+      "localityCode": "bham_homewood",
+      "displayName": "Homewood",
+      "pressureBand": "low",
+      "attentionBand": "watch",
+      "primarySignals": [
+        "scenario_seed"
+      ],
+      "branchSensitivity": 0.0,
+      "contradictionCount": 0,
+      "updatedAt": "2026-03-15T04:53:08.391407Z"
+    },
+    {
+      "localityCode": "bham_uptown",
+      "displayName": "Uptown",
+      "pressureBand": "low",
+      "attentionBand": "watch",
+      "primarySignals": [
+        "scenario_seed"
+      ],
+      "branchSensitivity": 0.0,
+      "contradictionCount": 0,
+      "updatedAt": "2026-03-15T04:53:08.391673Z"
+    }
+  ]
+}

@@ -127,7 +127,8 @@ class BhamReplayScenarioPacketService {
               ? intervention.magnitude * 0.24
               : intervention.magnitude * 0.14;
       final safetyStress =
-          (baseline.safetyStress + intervention.magnitude * 0.35).clamp(0.0, 1.0);
+          (baseline.safetyStress + intervention.magnitude * 0.35)
+              .clamp(0.0, 1.0);
       return BhamReplayScenarioBatchItem(
         runId: '${normalized.scenarioId}:${intervention.interventionId}',
         branchLabel: intervention.kind.name,

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:avrai_admin_app/theme/colors.dart';
+import 'package:avrai_runtime_os/services/admin/replay_simulation_admin_service.dart';
 import 'package:avrai_runtime_os/services/admin/planning_truth_surface_admin_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -15,10 +16,12 @@ class PlanningTruthSurfaceCard extends StatefulWidget {
 
 class _PlanningTruthSurfaceCardState extends State<PlanningTruthSurfaceCard> {
   PlanningTruthSurfaceAdminService? _service;
+  ReplaySimulationAdminService? _replayService;
   StreamSubscription<PlanningTruthSurfaceAdminSnapshot>? _subscription;
   bool _isLoading = true;
   String? _error;
   PlanningTruthSurfaceAdminSnapshot? _snapshot;
+  ReplaySimulationAdminSnapshot? _replaySnapshot;
 
   @override
   void initState() {
@@ -26,7 +29,11 @@ class _PlanningTruthSurfaceCardState extends State<PlanningTruthSurfaceCard> {
     _service = GetIt.instance.isRegistered<PlanningTruthSurfaceAdminService>()
         ? GetIt.instance<PlanningTruthSurfaceAdminService>()
         : null;
+    _replayService = GetIt.instance.isRegistered<ReplaySimulationAdminService>()
+        ? GetIt.instance<ReplaySimulationAdminService>()
+        : null;
     _startWatching();
+    _loadReplaySnapshot();
   }
 
   void _startWatching() {
@@ -97,6 +104,22 @@ class _PlanningTruthSurfaceCardState extends State<PlanningTruthSurfaceCard> {
     }
   }
 
+  Future<void> _loadReplaySnapshot() async {
+    final service = _replayService;
+    if (service == null) {
+      return;
+    }
+    try {
+      final snapshot = await service.getSnapshot();
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _replaySnapshot = snapshot;
+      });
+    } catch (_) {}
+  }
+
   void _showUnavailableState() {
     if (!mounted) {
       return;
@@ -116,6 +139,7 @@ class _PlanningTruthSurfaceCardState extends State<PlanningTruthSurfaceCard> {
   @override
   Widget build(BuildContext context) {
     final snapshot = _snapshot;
+    final replaySnapshot = _replaySnapshot;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -188,6 +212,16 @@ class _PlanningTruthSurfaceCardState extends State<PlanningTruthSurfaceCard> {
                     'Avg rating',
                     snapshot.averageAverageRating.toStringAsFixed(1),
                   ),
+                  if (replaySnapshot != null)
+                    _buildSummaryChip(
+                      'Receipts',
+                      replaySnapshot.receipts.length.toString(),
+                    ),
+                  if (replaySnapshot != null)
+                    _buildSummaryChip(
+                      'Overlays',
+                      replaySnapshot.localityOverlays.length.toString(),
+                    ),
                 ],
               ),
               const SizedBox(height: 16),
