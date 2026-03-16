@@ -25,8 +25,9 @@ void main() {
         defaultStorage: MockGetStorage.getInstance(boxName: 'spots_default'),
         userStorage: MockGetStorage.getInstance(boxName: 'spots_user'),
         aiStorage: MockGetStorage.getInstance(boxName: 'spots_ai'),
-        analyticsStorage:
-            MockGetStorage.getInstance(boxName: 'spots_analytics'),
+        analyticsStorage: MockGetStorage.getInstance(
+          boxName: 'spots_analytics',
+        ),
       );
     });
 
@@ -39,6 +40,7 @@ void main() {
       VibeKernel().importSnapshotEnvelope(
         VibeSnapshotEnvelope(exportedAtUtc: DateTime.utc(2026, 3, 12)),
       );
+      TrajectoryKernel.resetFallbackStateForTesting();
       TrajectoryKernel().importJournalWindow(
         records: const <TrajectoryMutationRecord>[],
       );
@@ -49,35 +51,32 @@ void main() {
     });
 
     test(
-        'projects canonical personal vibe without writing legacy personality storage keys',
-        () async {
-      const userId = 'user-freeze-user';
-      final defaultStorage = MockGetStorage.getInstance(boxName: 'spots_default');
-      final prefs = await SharedPreferencesCompat.getInstance(
-        storage: defaultStorage,
-      );
-      final learning = PersonalityLearning.withPrefs(prefs);
-      final agentId = await AgentIdService().getUserAgentId(userId);
+      'projects canonical personal vibe without writing legacy personality storage keys',
+      () async {
+        const userId = 'user-freeze-user';
+        final defaultStorage = MockGetStorage.getInstance(
+          boxName: 'spots_default',
+        );
+        final prefs = await SharedPreferencesCompat.getInstance(
+          storage: defaultStorage,
+        );
+        final learning = PersonalityLearning.withPrefs(prefs);
+        final agentId = await AgentIdService().getUserAgentId(userId);
 
-      final profile = await learning.initializePersonality(userId);
+        final profile = await learning.initializePersonality(userId);
 
-      expect(profile.agentId, agentId);
-      expect(
-        defaultStorage.hasData('personality_profile_$agentId'),
-        isFalse,
-      );
-      expect(
-        defaultStorage.hasData('personality_profile_$userId'),
-        isFalse,
-      );
-      expect(
-        defaultStorage.hasData('personality_learning_history_$agentId'),
-        isFalse,
-      );
-      expect(
-        defaultStorage.hasData('dimension_confidence_$agentId'),
-        isFalse,
-      );
-    });
+        expect(profile.agentId, agentId);
+        expect(defaultStorage.hasData('personality_profile_$agentId'), isFalse);
+        expect(defaultStorage.hasData('personality_profile_$userId'), isFalse);
+        expect(
+          defaultStorage.hasData('personality_learning_history_$agentId'),
+          isFalse,
+        );
+        expect(
+          defaultStorage.hasData('dimension_confidence_$agentId'),
+          isFalse,
+        );
+      },
+    );
   });
 }

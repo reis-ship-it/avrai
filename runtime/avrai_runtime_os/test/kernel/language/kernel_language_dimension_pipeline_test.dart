@@ -7,26 +7,29 @@ import '../../support/fake_language_kernels.dart';
 
 void main() {
   group('Kernel language dimension pipeline', () {
-    test('synthesizes initial DNA from sanitized onboarding language',
-        () async {
+    setUp(() {
+      VibeKernel.resetFallbackStateForTesting();
+      TrajectoryKernel.resetFallbackStateForTesting();
+      TrajectoryKernel().importJournalWindow(records: const []);
+    });
+
+    test('synthesizes initial DNA from sanitized onboarding language', () async {
       final vibeKernel = VibeKernel();
       final service = InitialDNASynthesisService(
-        languageKernelOrchestrator: buildDeterministicLanguageKernelOrchestrator(
-          vibeKernel: vibeKernel,
-        ),
+        languageKernelOrchestrator:
+            buildDeterministicLanguageKernelOrchestrator(
+              vibeKernel: vibeKernel,
+            ),
         vibeKernel: vibeKernel,
       );
 
       const actorAgentId = 'agt_test_onboarding';
-      final result = await service.synthesizeInitialDNA(
-        <String, String>{
-          'favorite_places':
-              'I love quiet local coffee shops, hidden gems, and relaxed mornings with friends.',
-          'goals':
-              'I like exploring new neighborhoods and trying different places.',
-        },
-        actorAgentId: actorAgentId,
-      );
+      final result = await service.synthesizeInitialDNA(<String, String>{
+        'favorite_places':
+            'I love quiet local coffee shops, hidden gems, and relaxed mornings with friends.',
+        'goals':
+            'I like exploring new neighborhoods and trying different places.',
+      }, actorAgentId: actorAgentId);
 
       expect(
         result.baselineDimensions['authenticity_preference'],
@@ -55,9 +58,10 @@ void main() {
 
     test('parses aspirational shifts through the language kernel', () async {
       final parser = AspirationalIntentParser(
-        languageKernelOrchestrator: buildDeterministicLanguageKernelOrchestrator(
-          vibeKernel: VibeKernel(),
-        ),
+        languageKernelOrchestrator:
+            buildDeterministicLanguageKernelOrchestrator(
+              vibeKernel: VibeKernel(),
+            ),
       );
 
       final shifts = await parser.parseIntent(

@@ -20,99 +20,108 @@ import 'package:reality_engine/reality_engine.dart';
 
 void main() {
   group('FunctionalKernelOrchestrator ambient reality fusion', () {
-    test('builds fused reality input with ambient-social what and locality vibe evidence',
-        () async {
-      final vibeKernel = VibeKernel();
-      vibeKernel.ingestEcosystemObservation(
-        subjectId: 'agent-local',
-        source: 'ambient_social_place_vibe',
-        dimensions: const <String, double>{
-          'community_orientation': 0.84,
-          'energy_preference': 0.74,
-        },
-        provenanceTags: const <String>[
-          'ambient_social_runtime',
-          'place_vibe:intimate_social',
-        ],
-      );
-      final orchestrator = _buildOrchestrator(vibeKernel: vibeKernel);
-
-      final fusion = await orchestrator.buildRealityKernelFusionInput(
-        envelope: _ambientEnvelope(),
-        whyRequest: const KernelWhyRequest(
-          bundle: KernelContextBundleWithoutWhy(),
-          goal: 'forecast_place_vibe',
-        ),
-      );
-
-      expect(
-        (fusion.what.payload['projectedTypes'] as List<dynamic>),
-        contains('ambient_social_scene'),
-      );
-      expect(
-        (fusion.what.payload['projectedVibeSignature']
-            as Map<String, dynamic>)['intimate_social'],
-        greaterThan(0.0),
-      );
-      expect(
-        (fusion.where.payload['metadata'] as Map<String, dynamic>)[
-            'locality_stable_key'],
-        'bham-downtown',
-      );
-      expect(
-        (fusion.vibe!.payload['provenance_tags'] as List<dynamic>),
-        contains('ambient_social_runtime'),
-      );
+    setUp(() {
+      VibeKernel.resetFallbackStateForTesting();
+      TrajectoryKernel.resetFallbackStateForTesting();
+      TrajectoryKernel().importJournalWindow(records: const []);
     });
 
     test(
-        'headless host model truth uses the same fused reality path without a forecast bypass API',
-        () async {
-      final orchestrator = _buildOrchestrator(vibeKernel: VibeKernel());
-      final ports = FunctionalKernelProngPorts(
-        kernelOs: orchestrator,
-        whoKernel: orchestrator.whoKernel,
-        whatKernel: orchestrator.whatKernel,
-        whenKernel: orchestrator.whenKernel,
-        whereKernel: orchestrator.spatialWhereKernel,
-        howKernel: orchestrator.howKernel,
-        whyKernel: orchestrator.whyKernel,
-      );
-      final host = DefaultHeadlessAvraiOsHost(
-        modelTruthPort: ports,
-        runtimeExecutionPort: ports,
-        trustGovernancePort: ports,
-        whoKernel: orchestrator.whoKernel,
-        whatKernel: orchestrator.whatKernel,
-        whenKernel: orchestrator.whenKernel,
-        whereKernel: orchestrator.spatialWhereKernel,
-        howKernel: orchestrator.howKernel,
-        whyKernel: orchestrator.whyKernel,
-      );
+      'builds fused reality input with ambient-social what and locality vibe evidence',
+      () async {
+        final vibeKernel = VibeKernel();
+        vibeKernel.ingestEcosystemObservation(
+          subjectId: 'agent-local',
+          source: 'ambient_social_place_vibe',
+          dimensions: const <String, double>{
+            'community_orientation': 0.84,
+            'energy_preference': 0.74,
+          },
+          provenanceTags: const <String>[
+            'ambient_social_runtime',
+            'place_vibe:intimate_social',
+          ],
+        );
+        final orchestrator = _buildOrchestrator(vibeKernel: vibeKernel);
 
-      final fusion = await host.buildModelTruth(
-        envelope: _ambientEnvelope(),
-        whyRequest: const KernelWhyRequest(
-          bundle: KernelContextBundleWithoutWhy(),
-          goal: 'forecast_place_vibe',
-        ),
-      );
-      final orchestratorSource = File(
-        'runtime/avrai_runtime_os/lib/kernel/os/functional_kernel_orchestrator.dart',
-      ).readAsStringSync();
+        final fusion = await orchestrator.buildRealityKernelFusionInput(
+          envelope: _ambientEnvelope(),
+          whyRequest: const KernelWhyRequest(
+            bundle: KernelContextBundleWithoutWhy(),
+            goal: 'forecast_place_vibe',
+          ),
+        );
 
-      expect(
-        (fusion.what.payload['projectedTypes'] as List<dynamic>),
-        contains('ambient_social_scene'),
-      );
-      expect(
-        (fusion.where.payload['metadata'] as Map<String, dynamic>)[
-            'locality_stable_key'],
-        'bham-downtown',
-      );
-      expect(orchestratorSource, isNot(contains('forecastIngress')));
-      expect(orchestratorSource, isNot(contains('ambientSocialForecast')));
-    });
+        expect(
+          (fusion.what.payload['projectedTypes'] as List<dynamic>),
+          contains('ambient_social_scene'),
+        );
+        expect(
+          (fusion.what.payload['projectedVibeSignature']
+              as Map<String, dynamic>)['intimate_social'],
+          greaterThan(0.0),
+        );
+        expect(
+          (fusion.where.payload['metadata']
+              as Map<String, dynamic>)['locality_stable_key'],
+          'bham-downtown',
+        );
+        expect(
+          (fusion.vibe!.payload['provenance_tags'] as List<dynamic>),
+          contains('ambient_social_runtime'),
+        );
+      },
+    );
+
+    test(
+      'headless host model truth uses the same fused reality path without a forecast bypass API',
+      () async {
+        final orchestrator = _buildOrchestrator(vibeKernel: VibeKernel());
+        final ports = FunctionalKernelProngPorts(
+          kernelOs: orchestrator,
+          whoKernel: orchestrator.whoKernel,
+          whatKernel: orchestrator.whatKernel,
+          whenKernel: orchestrator.whenKernel,
+          whereKernel: orchestrator.spatialWhereKernel,
+          howKernel: orchestrator.howKernel,
+          whyKernel: orchestrator.whyKernel,
+        );
+        final host = DefaultHeadlessAvraiOsHost(
+          modelTruthPort: ports,
+          runtimeExecutionPort: ports,
+          trustGovernancePort: ports,
+          whoKernel: orchestrator.whoKernel,
+          whatKernel: orchestrator.whatKernel,
+          whenKernel: orchestrator.whenKernel,
+          whereKernel: orchestrator.spatialWhereKernel,
+          howKernel: orchestrator.howKernel,
+          whyKernel: orchestrator.whyKernel,
+        );
+
+        final fusion = await host.buildModelTruth(
+          envelope: _ambientEnvelope(),
+          whyRequest: const KernelWhyRequest(
+            bundle: KernelContextBundleWithoutWhy(),
+            goal: 'forecast_place_vibe',
+          ),
+        );
+        final orchestratorSource = File(
+          'runtime/avrai_runtime_os/lib/kernel/os/functional_kernel_orchestrator.dart',
+        ).readAsStringSync();
+
+        expect(
+          (fusion.what.payload['projectedTypes'] as List<dynamic>),
+          contains('ambient_social_scene'),
+        );
+        expect(
+          (fusion.where.payload['metadata']
+              as Map<String, dynamic>)['locality_stable_key'],
+          'bham-downtown',
+        );
+        expect(orchestratorSource, isNot(contains('forecastIngress')));
+        expect(orchestratorSource, isNot(contains('ambientSocialForecast')));
+      },
+    );
   });
 }
 

@@ -21,6 +21,7 @@ void main() {
       VibeKernel().importSnapshotEnvelope(
         VibeSnapshotEnvelope(exportedAtUtc: DateTime.utc(2026, 3, 12)),
       );
+      TrajectoryKernel.resetFallbackStateForTesting();
       TrajectoryKernel().importJournalWindow(
         records: const <TrajectoryMutationRecord>[],
       );
@@ -30,40 +31,43 @@ void main() {
       VibeKernelRuntimeBindings.persistenceBridge = null;
     });
 
-    test('returns canonical locality projection and ignores legacy mutations',
-        () async {
-      final vibeKernel = VibeKernel();
-      vibeKernel.seedSubjectStateFromOnboarding(
-        subjectRef: VibeSubjectRef.locality('brooklyn'),
-        dimensions: const <String, double>{
-          'community_orientation': 0.82,
-          'exploration_eagerness': 0.24,
-        },
-        provenanceTags: const <String>['test:canonical_locality_projection'],
-      );
+    test(
+      'returns canonical locality projection and ignores legacy mutations',
+      () async {
+        final vibeKernel = VibeKernel();
+        vibeKernel.seedSubjectStateFromOnboarding(
+          subjectRef: VibeSubjectRef.locality('brooklyn'),
+          dimensions: const <String, double>{
+            'community_orientation': 0.82,
+            'exploration_eagerness': 0.24,
+          },
+          provenanceTags: const <String>['test:canonical_locality_projection'],
+        );
 
-      final service = LocalityPersonalityService();
-      final before = await service.getLocalityPersonality('brooklyn');
-      final after = await service.updateLocalityPersonality(
-        locality: 'brooklyn',
-        userBehavior: const <String, dynamic>{
-          'communityScore': 0.1,
-          'explorationScore': 1.0,
-        },
-      );
-      final influenced = await service.incorporateGoldenExpertInfluence(
-        locality: 'brooklyn',
-        goldenExpertBehavior: const <String, dynamic>{
-          'communityScore': 1.0,
-        },
-        localExpertise: _goldenExpert(),
-      );
+        final service = LocalityPersonalityService();
+        final before = await service.getLocalityPersonality('brooklyn');
+        final after = await service.updateLocalityPersonality(
+          locality: 'brooklyn',
+          userBehavior: const <String, dynamic>{
+            'communityScore': 0.1,
+            'explorationScore': 1.0,
+          },
+        );
+        final influenced = await service.incorporateGoldenExpertInfluence(
+          locality: 'brooklyn',
+          goldenExpertBehavior: const <String, dynamic>{'communityScore': 1.0},
+          localExpertise: _goldenExpert(),
+        );
 
-      expect(before.agentId, 'agent_locality_brooklyn');
-      expect(before.dimensions['community_orientation'], closeTo(0.82, 0.001));
-      expect(after.dimensions, before.dimensions);
-      expect(influenced.dimensions, before.dimensions);
-    });
+        expect(before.agentId, 'agent_locality_brooklyn');
+        expect(
+          before.dimensions['community_orientation'],
+          closeTo(0.82, 0.001),
+        );
+        expect(after.dimensions, before.dimensions);
+        expect(influenced.dimensions, before.dimensions);
+      },
+    );
   });
 }
 

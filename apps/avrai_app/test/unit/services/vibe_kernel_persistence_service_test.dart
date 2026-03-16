@@ -15,8 +15,9 @@ void main() {
         defaultStorage: MockGetStorage.getInstance(boxName: 'spots_default'),
         userStorage: MockGetStorage.getInstance(boxName: 'spots_user'),
         aiStorage: MockGetStorage.getInstance(boxName: 'spots_ai'),
-        analyticsStorage:
-            MockGetStorage.getInstance(boxName: 'spots_analytics'),
+        analyticsStorage: MockGetStorage.getInstance(
+          boxName: 'spots_analytics',
+        ),
       );
     });
 
@@ -28,79 +29,79 @@ void main() {
       final vibeKernel = VibeKernel();
       final trajectoryKernel = TrajectoryKernel();
       vibeKernel.importSnapshotEnvelope(
-        VibeSnapshotEnvelope(
-          exportedAtUtc: DateTime.utc(2026, 3, 12),
-        ),
+        VibeSnapshotEnvelope(exportedAtUtc: DateTime.utc(2026, 3, 12)),
       );
+      TrajectoryKernel.resetFallbackStateForTesting();
       trajectoryKernel.importJournalWindow(
         records: const <TrajectoryMutationRecord>[],
       );
     });
 
-    test('restores canonical snapshot and journal window from storage',
-        () async {
-      final service = VibeKernelPersistenceService(
-        storage: StorageService.instance,
-      );
-      final vibeKernel = VibeKernel();
-      final trajectoryKernel = TrajectoryKernel();
-      const agentId = 'agt_vibe_persistence_test';
+    test(
+      'restores canonical snapshot and journal window from storage',
+      () async {
+        final service = VibeKernelPersistenceService(
+          storage: StorageService.instance,
+        );
+        final vibeKernel = VibeKernel();
+        final trajectoryKernel = TrajectoryKernel();
+        const agentId = 'agt_vibe_persistence_test';
 
-      vibeKernel.seedUserStateFromOnboarding(
-        subjectId: agentId,
-        dimensions: const <String, double>{
-          'energy_preference': 0.18,
-          'community_orientation': 0.71,
-        },
-      );
-      await service.persistCanonicalState(
-        envelope: vibeKernel.exportSnapshotEnvelope(),
-        journalWindow: trajectoryKernel.exportJournalWindow(limit: 64),
-      );
+        vibeKernel.seedUserStateFromOnboarding(
+          subjectId: agentId,
+          dimensions: const <String, double>{
+            'energy_preference': 0.18,
+            'community_orientation': 0.71,
+          },
+        );
+        await service.persistCanonicalState(
+          envelope: vibeKernel.exportSnapshotEnvelope(),
+          journalWindow: trajectoryKernel.exportJournalWindow(limit: 64),
+        );
 
-      final manifest = service.loadManifest();
-      expect(manifest, isNotNull);
-      expect(manifest!.subjects, isNotEmpty);
+        final manifest = service.loadManifest();
+        expect(manifest, isNotNull);
+        expect(manifest!.subjects, isNotEmpty);
 
-      vibeKernel.importSnapshotEnvelope(
-        VibeSnapshotEnvelope(
-          exportedAtUtc: DateTime.utc(2026, 3, 12),
-        ),
-      );
-      trajectoryKernel.importJournalWindow(
-        records: const <TrajectoryMutationRecord>[],
-      );
+        vibeKernel.importSnapshotEnvelope(
+          VibeSnapshotEnvelope(exportedAtUtc: DateTime.utc(2026, 3, 12)),
+        );
+        TrajectoryKernel.resetFallbackStateForTesting();
+        trajectoryKernel.importJournalWindow(
+          records: const <TrajectoryMutationRecord>[],
+        );
 
-      final cleared = vibeKernel.getUserSnapshot(agentId);
-      expect(cleared.coreDna.dimensions['energy_preference'], 0.5);
+        final cleared = vibeKernel.getUserSnapshot(agentId);
+        expect(cleared.coreDna.dimensions['energy_preference'], 0.5);
 
-      await service.restore();
+        await service.restore();
 
-      final restored = vibeKernel.getUserSnapshot(agentId);
-      final restoredJournal = trajectoryKernel.replaySubject(
-        subjectRef: VibeSubjectRef.personal(agentId),
-      );
+        final restored = vibeKernel.getUserSnapshot(agentId);
+        final restoredJournal = trajectoryKernel.replaySubject(
+          subjectRef: VibeSubjectRef.personal(agentId),
+        );
 
-      expect(restored.coreDna.dimensions['energy_preference'], lessThan(0.5));
-      expect(
-        restored.coreDna.dimensions['community_orientation'],
-        greaterThan(0.5),
-      );
-      expect(restoredJournal, isNotEmpty);
-      expect(
-        StorageService.instance.getObject<Map<String, dynamic>>(
-          'vibe_kernel_snapshot_envelope_v2',
-          box: VibeKernelPersistenceService.box,
-        ),
-        isNull,
-      );
-      expect(
-        StorageService.instance.getObject<List<dynamic>>(
-          'trajectory_kernel_journal_window_v1',
-          box: VibeKernelPersistenceService.box,
-        ),
-        isNull,
-      );
-    });
+        expect(restored.coreDna.dimensions['energy_preference'], lessThan(0.5));
+        expect(
+          restored.coreDna.dimensions['community_orientation'],
+          greaterThan(0.5),
+        );
+        expect(restoredJournal, isNotEmpty);
+        expect(
+          StorageService.instance.getObject<Map<String, dynamic>>(
+            'vibe_kernel_snapshot_envelope_v2',
+            box: VibeKernelPersistenceService.box,
+          ),
+          isNull,
+        );
+        expect(
+          StorageService.instance.getObject<List<dynamic>>(
+            'trajectory_kernel_journal_window_v1',
+            box: VibeKernelPersistenceService.box,
+          ),
+          isNull,
+        );
+      },
+    );
   });
 }

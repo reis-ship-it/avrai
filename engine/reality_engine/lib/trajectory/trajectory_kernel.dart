@@ -11,8 +11,9 @@ typedef _InvokeJson = Pointer<Utf8> Function(Pointer<Utf8>);
 typedef _NativeFreeJsonString = Void Function(Pointer<Utf8>);
 typedef _FreeJsonString = void Function(Pointer<Utf8>);
 
-const bool _isTrajectoryKernelFlutterTest =
-    bool.fromEnvironment('FLUTTER_TEST');
+const bool _isTrajectoryKernelFlutterTest = bool.fromEnvironment(
+  'FLUTTER_TEST',
+);
 const bool _isTrajectoryKernelSimulatedSmoke =
     String.fromEnvironment('SIMULATED_SMOKE_PLATFORM') != '';
 
@@ -66,7 +67,7 @@ class TrajectoryKernelJsonNativeBridge {
   TrajectoryKernelJsonNativeBridge({
     TrajectoryKernelLibraryManager? libraryManager,
   }) : _libraryManager =
-            libraryManager ?? DefaultTrajectoryKernelLibraryManager();
+           libraryManager ?? DefaultTrajectoryKernelLibraryManager();
 
   final TrajectoryKernelLibraryManager _libraryManager;
 
@@ -150,7 +151,8 @@ class TrajectoryKernelJsonNativeBridge {
       final decoded = jsonDecode(responsePtr.toDartString());
       if (decoded is! Map<String, dynamic>) {
         throw StateError(
-            'Trajectory native bridge returned a non-map response.');
+          'Trajectory native bridge returned a non-map response.',
+        );
       }
       if (decoded['ok'] == false) {
         throw StateError(
@@ -173,10 +175,11 @@ class TrajectoryKernel {
   TrajectoryKernel({
     TrajectoryKernelJsonNativeBridge? nativeBridge,
     bool? allowFallback,
-  })  : _nativeBridge = nativeBridge ?? TrajectoryKernelJsonNativeBridge(),
-        _allowFallback = allowFallback ??
-            (_isTrajectoryKernelFlutterTest ||
-                _isTrajectoryKernelSimulatedSmoke);
+  }) : _nativeBridge = nativeBridge ?? TrajectoryKernelJsonNativeBridge(),
+       _allowFallback =
+           allowFallback ??
+           (_isTrajectoryKernelFlutterTest ||
+               _isTrajectoryKernelSimulatedSmoke);
 
   final TrajectoryKernelJsonNativeBridge _nativeBridge;
   final bool _allowFallback;
@@ -184,6 +187,11 @@ class TrajectoryKernel {
       <String, List<TrajectoryMutationRecord>>{};
   static final Map<String, TrajectoryHydrationCheckpoint> _fallbackCheckpoints =
       <String, TrajectoryHydrationCheckpoint>{};
+
+  static void resetFallbackStateForTesting() {
+    _fallbackJournals.clear();
+    _fallbackCheckpoints.clear();
+  }
 
   void appendMutation({
     required TrajectoryMutationRecord record,
@@ -250,11 +258,14 @@ class TrajectoryKernel {
       if (subjectRef != null) {
         return replaySubject(subjectRef: subjectRef, limit: limit);
       }
-      final records = _fallbackJournals.values
-          .expand((entries) => entries)
-          .toList(growable: false)
-        ..sort(
-            (left, right) => left.occurredAtUtc.compareTo(right.occurredAtUtc));
+      final records =
+          _fallbackJournals.values
+              .expand((entries) => entries)
+              .toList(growable: false)
+            ..sort(
+              (left, right) =>
+                  left.occurredAtUtc.compareTo(right.occurredAtUtc),
+            );
       return _takeTail(records, limit);
     }
     return _invokeList(
@@ -303,8 +314,10 @@ class TrajectoryKernel {
         'native_available': false,
         'fallback_enabled': true,
         'journal_subject_count': _fallbackJournals.length,
-        'mutation_count': _fallbackJournals.values
-            .fold<int>(0, (sum, entries) => sum + entries.length),
+        'mutation_count': _fallbackJournals.values.fold<int>(
+          0,
+          (sum, entries) => sum + entries.length,
+        ),
         'checkpoint_count': _fallbackCheckpoints.length,
       };
     }
@@ -331,7 +344,8 @@ class TrajectoryKernel {
     journal.removeWhere((entry) => entry.recordId == record.recordId);
     journal.add(record);
     journal.sort(
-        (left, right) => left.occurredAtUtc.compareTo(right.occurredAtUtc));
+      (left, right) => left.occurredAtUtc.compareTo(right.occurredAtUtc),
+    );
     if (checkpointSnapshot != null) {
       _fallbackCheckpoints[subjectKey] = TrajectoryHydrationCheckpoint(
         checkpointId: 'checkpoint:${record.recordId}',

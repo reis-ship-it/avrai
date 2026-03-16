@@ -33,11 +33,11 @@ class SimulatedHeadlessSmokeRequest {
 
   static const List<BackgroundWakeReason> defaultWakeReasons =
       <BackgroundWakeReason>[
-    BackgroundWakeReason.bleEncounter,
-    BackgroundWakeReason.trustedAnnounceRefresh,
-    BackgroundWakeReason.significantLocation,
-    BackgroundWakeReason.backgroundTaskWindow,
-  ];
+        BackgroundWakeReason.bleEncounter,
+        BackgroundWakeReason.trustedAnnounceRefresh,
+        BackgroundWakeReason.significantLocation,
+        BackgroundWakeReason.backgroundTaskWindow,
+      ];
 
   final String platformMode;
   final String? userId;
@@ -88,21 +88,21 @@ class SimulatedHeadlessSmokeResult {
   final String? failureSummary;
 
   Map<String, Object?> toJson() => <String, Object?>{
-        'success': success,
-        'platform_mode': platformMode,
-        'run_id': runId,
-        'export_directory_path': exportDirectoryPath,
-        'simulated_node_ids': simulatedNodeIds,
-        'executed_wake_reasons': executedWakeReasons,
-        'background_wake_run_count': backgroundWakeRunCount,
-        'field_validation_proof_count': fieldValidationProofCount,
-        'field_validation_scenarios': fieldValidationScenarios,
-        'ambient_candidate_count': ambientCandidateCount,
-        'ambient_confirmed_count': ambientConfirmedCount,
-        'ambient_duplicate_merge_count': ambientDuplicateMergeCount,
-        'ambient_rejected_promotion_count': ambientRejectedPromotionCount,
-        if (failureSummary != null) 'failure_summary': failureSummary,
-      };
+    'success': success,
+    'platform_mode': platformMode,
+    'run_id': runId,
+    'export_directory_path': exportDirectoryPath,
+    'simulated_node_ids': simulatedNodeIds,
+    'executed_wake_reasons': executedWakeReasons,
+    'background_wake_run_count': backgroundWakeRunCount,
+    'field_validation_proof_count': fieldValidationProofCount,
+    'field_validation_scenarios': fieldValidationScenarios,
+    'ambient_candidate_count': ambientCandidateCount,
+    'ambient_confirmed_count': ambientConfirmedCount,
+    'ambient_duplicate_merge_count': ambientDuplicateMergeCount,
+    'ambient_rejected_promotion_count': ambientRejectedPromotionCount,
+    if (failureSummary != null) 'failure_summary': failureSummary,
+  };
 }
 
 class ProofRunAutomationService {
@@ -124,34 +124,36 @@ class ProofRunAutomationService {
       required String runId,
       required String userId,
       required String scenarioName,
-    })? simulateEncounterOverride,
+    })?
+    simulateEncounterOverride,
     Future<void> Function()? startHeadlessRuntimeEnvelopeOverride,
     Future<HeadlessBackgroundRuntimeExecutionResult> Function({
       required BackgroundWakeReason reason,
       bool? isWifiAvailable,
       bool? isIdle,
       String? platformSource,
-    })? handleWakeOverride,
+    })?
+    handleWakeOverride,
     Future<List<DomainExecutionFieldScenarioProof>> Function()?
-        runFieldAcceptanceValidationOverride,
+    runFieldAcceptanceValidationOverride,
     DateTime Function()? nowUtc,
-  })  : _proofRunService = proofRunService,
-        _adminRuntimeGovernanceService = adminRuntimeGovernanceService,
-        _backgroundCoordinator = backgroundCoordinator,
-        _prefs = prefs,
-        _storageService = storageService,
-        _personalityLearning = personalityLearning,
-        _orchestrator = orchestrator,
-        _supabaseService = supabaseService,
-        _ambientSocialLearningService = ambientSocialLearningService,
-        _backgroundWakeRunRecordStore = backgroundWakeRunRecordStore,
-        _simulateEncounterOverride = simulateEncounterOverride,
-        _startHeadlessRuntimeEnvelopeOverride =
-            startHeadlessRuntimeEnvelopeOverride,
-        _handleWakeOverride = handleWakeOverride,
-        _runFieldAcceptanceValidationOverride =
-            runFieldAcceptanceValidationOverride,
-        _nowUtc = nowUtc ?? (() => DateTime.now().toUtc());
+  }) : _proofRunService = proofRunService,
+       _adminRuntimeGovernanceService = adminRuntimeGovernanceService,
+       _backgroundCoordinator = backgroundCoordinator,
+       _prefs = prefs,
+       _storageService = storageService,
+       _personalityLearning = personalityLearning,
+       _orchestrator = orchestrator,
+       _supabaseService = supabaseService,
+       _ambientSocialLearningService = ambientSocialLearningService,
+       _backgroundWakeRunRecordStore = backgroundWakeRunRecordStore,
+       _simulateEncounterOverride = simulateEncounterOverride,
+       _startHeadlessRuntimeEnvelopeOverride =
+           startHeadlessRuntimeEnvelopeOverride,
+       _handleWakeOverride = handleWakeOverride,
+       _runFieldAcceptanceValidationOverride =
+           runFieldAcceptanceValidationOverride,
+       _nowUtc = nowUtc ?? (() => DateTime.now().toUtc());
 
   static const String _logName = 'ProofRunAutomationService';
   static const String _debugFallbackUserId = 'debug_simulated_smoke_user';
@@ -170,16 +172,18 @@ class ProofRunAutomationService {
     required String runId,
     required String userId,
     required String scenarioName,
-  })? _simulateEncounterOverride;
+  })?
+  _simulateEncounterOverride;
   final Future<void> Function()? _startHeadlessRuntimeEnvelopeOverride;
   final Future<HeadlessBackgroundRuntimeExecutionResult> Function({
     required BackgroundWakeReason reason,
     bool? isWifiAvailable,
     bool? isIdle,
     String? platformSource,
-  })? _handleWakeOverride;
+  })?
+  _handleWakeOverride;
   final Future<List<DomainExecutionFieldScenarioProof>> Function()?
-      _runFieldAcceptanceValidationOverride;
+  _runFieldAcceptanceValidationOverride;
   final DateTime Function() _nowUtc;
 
   Future<List<String>> simulateAi2AiEncounter({
@@ -213,7 +217,7 @@ class ProofRunAutomationService {
     await _storageService.setBool('discovery_enabled', true);
     final profile =
         await personalityLearning.getCurrentPersonality(resolvedUserId) ??
-            await personalityLearning.initializePersonality(resolvedUserId);
+        await personalityLearning.initializePersonality(resolvedUserId);
     final now = _nowUtc();
     final dimensions = <String, double>{
       for (final dimension in VibeConstants.coreDimensions) dimension: 0.62,
@@ -302,7 +306,7 @@ class ProofRunAutomationService {
 
       final startHeadlessRuntimeEnvelope =
           _startHeadlessRuntimeEnvelopeOverride ??
-              _backgroundCoordinator?.startHeadlessRuntimeEnvelope;
+          _backgroundCoordinator?.startHeadlessRuntimeEnvelope;
       if (startHeadlessRuntimeEnvelope == null) {
         throw StateError('Background coordinator unavailable');
       }
@@ -345,8 +349,8 @@ class ProofRunAutomationService {
 
       final runFieldAcceptanceValidation =
           _runFieldAcceptanceValidationOverride ??
-              _adminRuntimeGovernanceService
-                  ?.runControlledPrivateMeshFieldAcceptanceValidation;
+          _adminRuntimeGovernanceService
+              ?.runControlledPrivateMeshFieldAcceptanceValidation;
       if (runFieldAcceptanceValidation == null) {
         throw StateError('Admin runtime governance service unavailable');
       }
@@ -365,7 +369,6 @@ class ProofRunAutomationService {
         },
       );
 
-      exportDirectory = await _proofRunService.exportRunReceipts(runId: runId);
       await _proofRunService.finishActiveRun(
         payload: <String, Object?>{
           'platform_mode': request.platformMode,
@@ -374,6 +377,7 @@ class ProofRunAutomationService {
           'notes': 'Finished via ProofRunAutomationService',
         },
       );
+      exportDirectory = await _proofRunService.exportRunReceipts(runId: runId);
 
       final ambientSnapshot = _ambientSocialLearningService?.snapshot(
         capturedAtUtc: _nowUtc(),
@@ -388,8 +392,9 @@ class ProofRunAutomationService {
         runId: runId,
         exportDirectoryPath: exportDirectory.path,
         simulatedNodeIds: nodeIds,
-        executedWakeReasons:
-            request.wakeReasons.map((entry) => entry.wireName).toList(),
+        executedWakeReasons: request.wakeReasons
+            .map((entry) => entry.wireName)
+            .toList(),
         backgroundWakeRunCount: wakeRunCount,
         fieldValidationProofCount: proofs.length,
         fieldValidationScenarios: proofs
@@ -449,8 +454,9 @@ class ProofRunAutomationService {
         runId: runId,
         exportDirectoryPath: exportDirectory?.path ?? '',
         simulatedNodeIds: nodeIds,
-        executedWakeReasons:
-            request.wakeReasons.map((entry) => entry.wireName).toList(),
+        executedWakeReasons: request.wakeReasons
+            .map((entry) => entry.wireName)
+            .toList(),
         backgroundWakeRunCount: _recentSimulatedWakeRuns(
           platformMode: request.platformMode,
           startedAtUtc: startedAtUtc,
@@ -521,8 +527,9 @@ class ProofRunAutomationService {
     required String runId,
     String platformMode = 'ios',
   }) async {
-    final Directory exportDirectory =
-        await _proofRunService.exportRunReceipts(runId: runId);
+    final Directory exportDirectory = await _proofRunService.exportRunReceipts(
+      runId: runId,
+    );
     if (_proofRunService.getActiveRunId() == runId) {
       await _proofRunService.finishActiveRun(
         payload: <String, Object?>{
@@ -628,7 +635,9 @@ class ProofRunAutomationService {
         .toList(growable: false);
   }
 
-  String _eventPlanningSmokeEventType(EventPlanningBetaSmokeMilestone milestone) {
+  String _eventPlanningSmokeEventType(
+    EventPlanningBetaSmokeMilestone milestone,
+  ) {
     return switch (milestone) {
       EventPlanningBetaSmokeMilestone.eventTruthEntered =>
         'proof_event_planning_event_truth_entered',

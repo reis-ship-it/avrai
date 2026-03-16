@@ -50,8 +50,9 @@ class _FakeWhatRuntimeIngestionService implements WhatRuntimeIngestionService {
         aliases: const <String>[],
         placeType: 'third_place',
         activityTypes: const <String>['ambient_socializing'],
-        socialContexts:
-            socialContext == null ? const <String>[] : <String>[socialContext],
+        socialContexts: socialContext == null
+            ? const <String>[]
+            : <String>[socialContext],
         affordanceVector: const <String, double>{},
         vibeSignature: const <String, double>{},
         confidence: confidence,
@@ -59,7 +60,9 @@ class _FakeWhatRuntimeIngestionService implements WhatRuntimeIngestionService {
         firstObservedAtUtc: observedAtUtc,
         lastObservedAtUtc: observedAtUtc,
         sourceMix: const WhatSourceMix(structured: 1.0),
-        lineageRefs: lineageRef == null ? const <String>[] : <String>[lineageRef],
+        lineageRefs: lineageRef == null
+            ? const <String>[]
+            : <String>[lineageRef],
       ),
     );
   }
@@ -157,6 +160,7 @@ void main() {
     VibeKernel().importSnapshotEnvelope(
       VibeSnapshotEnvelope(exportedAtUtc: DateTime.utc(2026, 3, 12)),
     );
+    TrajectoryKernel.resetFallbackStateForTesting();
     TrajectoryKernel().importJournalWindow(
       records: const <TrajectoryMutationRecord>[],
     );
@@ -174,11 +178,7 @@ void main() {
           endTime: DateTime.utc(2026, 3, 13, 19, 15),
           latitude: 33.5207,
           longitude: -86.8025,
-          encounteredAgentIds: const <String>[
-            'peer-a',
-            'peer-b',
-            'peer-c',
-          ],
+          encounteredAgentIds: const <String>['peer-a', 'peer-b', 'peer-c'],
         ),
       );
 
@@ -189,211 +189,217 @@ void main() {
       expect(projection.structuredSignals['autonomousCrowdRecognition'], true);
       expect(projection.personalDimensions, isNotEmpty);
       expect(
-        projection.derivedSemanticTuples
-            .any((entry) => entry.predicate == 'expresses_place_vibe'),
+        projection.derivedSemanticTuples.any(
+          (entry) => entry.predicate == 'expresses_place_vibe',
+        ),
         isTrue,
       );
     });
 
     test(
-        'keeps personal DNA feedback off for solo dwell while preserving place vibe',
-        () {
-      final projection = PassiveDwellLearningProjection.fromEvent(
-        DwellEvent(
-          startTime: DateTime.utc(2026, 3, 13, 8, 0),
-          endTime: DateTime.utc(2026, 3, 13, 8, 45),
-          latitude: 33.5001,
-          longitude: -86.7999,
-        ),
-      );
+      'keeps personal DNA feedback off for solo dwell while preserving place vibe',
+      () {
+        final projection = PassiveDwellLearningProjection.fromEvent(
+          DwellEvent(
+            startTime: DateTime.utc(2026, 3, 13, 8, 0),
+            endTime: DateTime.utc(2026, 3, 13, 8, 45),
+            latitude: 33.5001,
+            longitude: -86.7999,
+          ),
+        );
 
-      expect(projection.socialContext, 'solo');
-      expect(projection.placeVibeLabel, 'quiet_retreat');
-      expect(projection.crowdRecognitionScore, 0.0);
-      expect(projection.personalDimensions, isEmpty);
-      expect(
-        projection.structuredSignals['coPresenceDetected'],
-        isFalse,
-      );
-    });
+        expect(projection.socialContext, 'solo');
+        expect(projection.placeVibeLabel, 'quiet_retreat');
+        expect(projection.crowdRecognitionScore, 0.0);
+        expect(projection.personalDimensions, isEmpty);
+        expect(projection.structuredSignals['coPresenceDetected'], isFalse);
+      },
+    );
 
-    test('ambient social learning merges passive presence with confirmed interaction',
-        () async {
-      final whatIngestion = _FakeWhatRuntimeIngestionService();
-      final service = AmbientSocialRealityLearningService(
-        whatIngestion: whatIngestion,
-        nowUtc: () => DateTime.utc(2026, 3, 13, 20),
-      );
-      final passiveProjection = PassiveDwellLearningProjection.fromEvent(
-        DwellEvent(
-          startTime: DateTime.utc(2026, 3, 13, 18, 0),
-          endTime: DateTime.utc(2026, 3, 13, 19, 15),
-          latitude: 33.5207,
-          longitude: -86.8025,
-          encounteredAgentIds: const <String>['peer-a', 'peer-b'],
-        ),
-      );
-
-      await service.applyObservation(
-        observation: AmbientSocialLearningObservation.fromPassiveDwell(
-          event: DwellEvent(
+    test(
+      'ambient social learning merges passive presence with confirmed interaction',
+      () async {
+        final whatIngestion = _FakeWhatRuntimeIngestionService();
+        final service = AmbientSocialRealityLearningService(
+          whatIngestion: whatIngestion,
+          nowUtc: () => DateTime.utc(2026, 3, 13, 20),
+        );
+        final passiveProjection = PassiveDwellLearningProjection.fromEvent(
+          DwellEvent(
             startTime: DateTime.utc(2026, 3, 13, 18, 0),
             endTime: DateTime.utc(2026, 3, 13, 19, 15),
             latitude: 33.5207,
             longitude: -86.8025,
             encounteredAgentIds: const <String>['peer-a', 'peer-b'],
           ),
-          projection: passiveProjection,
-        ),
-        personalAgentId: 'agent-passive-1',
-      );
+        );
 
-      await service.applyObservation(
-        observation: AmbientSocialLearningObservation(
-          source:
-              AmbientSocialLearningObservationSource.ai2aiCompletedInteraction,
-          observedAtUtc: DateTime.utc(2026, 3, 13, 19, 18),
-          localityBinding: passiveProjection.localityBinding,
-          discoveredPeerIds: const <String>['peer-a'],
-          confirmedInteractivePeerIds: const <String>['peer-a'],
-          confidence: 0.84,
-          interactionQuality: 0.81,
-        ),
-        personalAgentId: 'agent-passive-1',
-      );
+        await service.applyObservation(
+          observation: AmbientSocialLearningObservation.fromPassiveDwell(
+            event: DwellEvent(
+              startTime: DateTime.utc(2026, 3, 13, 18, 0),
+              endTime: DateTime.utc(2026, 3, 13, 19, 15),
+              latitude: 33.5207,
+              longitude: -86.8025,
+              encounteredAgentIds: const <String>['peer-a', 'peer-b'],
+            ),
+            projection: passiveProjection,
+          ),
+          personalAgentId: 'agent-passive-1',
+        );
 
-      final snapshot = service.snapshot(
-        capturedAtUtc: DateTime.utc(2026, 3, 13, 20),
-      );
-      expect(snapshot.normalizedObservationCount, 2);
-      expect(snapshot.confirmedInteractionPromotionCount, 1);
-      expect(snapshot.duplicateMergeCount, 0);
-      expect(snapshot.rejectedInteractionPromotionCount, 0);
-      expect(snapshot.crowdUpgradeCount, 1);
-      expect(snapshot.whatIngestionCount, 2);
-      expect(snapshot.latestNearbyPeerCount, 2);
-      expect(snapshot.latestConfirmedInteractivePeerCount, 1);
-      expect(snapshot.latestPlaceVibeLabel, 'intimate_social');
-      expect(snapshot.latestSocialContext, 'small_group');
-      expect(snapshot.lastPromotionTrace, isNotNull);
-      expect(
-        snapshot.lastPromotionTrace?.confirmedInteractivePeerIds,
-        contains('peer-a'),
-      );
-      expect(whatIngestion.lastEntityRef, startsWith('ambient_social_scene:'));
-      expect(
-        whatIngestion.lastStructuredSignals?['interactivePresenceConfirmed'],
-        isTrue,
-      );
-      expect(
-        whatIngestion.lastSemanticTuples
-                ?.any((entry) => entry.predicate == 'confirmed_interactive_presence'),
-        isTrue,
-      );
-    });
+        await service.applyObservation(
+          observation: AmbientSocialLearningObservation(
+            source: AmbientSocialLearningObservationSource
+                .ai2aiCompletedInteraction,
+            observedAtUtc: DateTime.utc(2026, 3, 13, 19, 18),
+            localityBinding: passiveProjection.localityBinding,
+            discoveredPeerIds: const <String>['peer-a'],
+            confirmedInteractivePeerIds: const <String>['peer-a'],
+            confidence: 0.84,
+            interactionQuality: 0.81,
+          ),
+          personalAgentId: 'agent-passive-1',
+        );
+
+        final snapshot = service.snapshot(
+          capturedAtUtc: DateTime.utc(2026, 3, 13, 20),
+        );
+        expect(snapshot.normalizedObservationCount, 2);
+        expect(snapshot.confirmedInteractionPromotionCount, 1);
+        expect(snapshot.duplicateMergeCount, 0);
+        expect(snapshot.rejectedInteractionPromotionCount, 0);
+        expect(snapshot.crowdUpgradeCount, 1);
+        expect(snapshot.whatIngestionCount, 2);
+        expect(snapshot.latestNearbyPeerCount, 2);
+        expect(snapshot.latestConfirmedInteractivePeerCount, 1);
+        expect(snapshot.latestPlaceVibeLabel, 'intimate_social');
+        expect(snapshot.latestSocialContext, 'small_group');
+        expect(snapshot.lastPromotionTrace, isNotNull);
+        expect(
+          snapshot.lastPromotionTrace?.confirmedInteractivePeerIds,
+          contains('peer-a'),
+        );
+        expect(
+          whatIngestion.lastEntityRef,
+          startsWith('ambient_social_scene:'),
+        );
+        expect(
+          whatIngestion.lastStructuredSignals?['interactivePresenceConfirmed'],
+          isTrue,
+        );
+        expect(
+          whatIngestion.lastSemanticTuples?.any(
+            (entry) => entry.predicate == 'confirmed_interactive_presence',
+          ),
+          isTrue,
+        );
+      },
+    );
 
     test(
-        'rejects untrusted AI2AI promotion and counts duplicate merges without double-writing',
-        () async {
-      final whatIngestion = _FakeWhatRuntimeIngestionService();
-      final service = AmbientSocialRealityLearningService(
-        whatIngestion: whatIngestion,
-        nowUtc: () => DateTime.utc(2026, 3, 13, 21),
-      );
-      final passiveProjection = PassiveDwellLearningProjection.fromEvent(
-        DwellEvent(
-          startTime: DateTime.utc(2026, 3, 13, 19, 0),
-          endTime: DateTime.utc(2026, 3, 13, 19, 20),
-          latitude: 33.5207,
-          longitude: -86.8025,
-          encounteredAgentIds: const <String>['peer-a'],
-        ),
-      );
-
-      await service.applyObservation(
-        observation: AmbientSocialLearningObservation.fromPassiveDwell(
-          event: DwellEvent(
+      'rejects untrusted AI2AI promotion and counts duplicate merges without double-writing',
+      () async {
+        final whatIngestion = _FakeWhatRuntimeIngestionService();
+        final service = AmbientSocialRealityLearningService(
+          whatIngestion: whatIngestion,
+          nowUtc: () => DateTime.utc(2026, 3, 13, 21),
+        );
+        final passiveProjection = PassiveDwellLearningProjection.fromEvent(
+          DwellEvent(
             startTime: DateTime.utc(2026, 3, 13, 19, 0),
             endTime: DateTime.utc(2026, 3, 13, 19, 20),
             latitude: 33.5207,
             longitude: -86.8025,
             encounteredAgentIds: const <String>['peer-a'],
           ),
-          projection: passiveProjection,
-        ),
-        personalAgentId: 'agent-passive-1',
-      );
-      await service.applyObservation(
-        observation: AmbientSocialLearningObservation(
-          source:
-              AmbientSocialLearningObservationSource.ai2aiCompletedInteraction,
-          observedAtUtc: DateTime.utc(2026, 3, 13, 19, 22),
-          localityBinding: passiveProjection.localityBinding,
-          discoveredPeerIds: const <String>['peer-a'],
-          confirmedInteractivePeerIds: const <String>['peer-a'],
-          confidence: 0.8,
-          interactionQuality: 0.77,
-          structuredSignals: const <String, dynamic>{
-            'interactionTrusted': true,
-            'promotionEligible': true,
-          },
-          lineageRef: 'ambient:ai2ai:peer-a',
-        ),
-        personalAgentId: 'agent-passive-1',
-      );
-      final beforeRejected = service.snapshot(
-        capturedAtUtc: DateTime.utc(2026, 3, 13, 21),
-      );
-      await service.applyObservation(
-        observation: AmbientSocialLearningObservation(
-          source:
-              AmbientSocialLearningObservationSource.ai2aiCompletedInteraction,
-          observedAtUtc: DateTime.utc(2026, 3, 13, 19, 23),
-          localityBinding: passiveProjection.localityBinding,
-          discoveredPeerIds: const <String>['peer-a'],
-          confirmedInteractivePeerIds: const <String>['peer-a'],
-          confidence: 0.8,
-          interactionQuality: 0.77,
-          structuredSignals: const <String, dynamic>{
-            'interactionTrusted': true,
-            'promotionEligible': true,
-          },
-          lineageRef: 'ambient:ai2ai:peer-a',
-        ),
-        personalAgentId: 'agent-passive-1',
-      );
-      await service.applyObservation(
-        observation: AmbientSocialLearningObservation(
-          source:
-              AmbientSocialLearningObservationSource.ai2aiCompletedInteraction,
-          observedAtUtc: DateTime.utc(2026, 3, 13, 19, 25),
-          localityBinding: passiveProjection.localityBinding,
-          discoveredPeerIds: const <String>['peer-a'],
-          confidence: 0.2,
-          structuredSignals: const <String, dynamic>{
-            'interactionTrusted': false,
-            'promotionEligible': false,
-          },
-          lineageRef: 'ambient:ai2ai:peer-a:rejected',
-        ),
-        personalAgentId: 'agent-passive-1',
-      );
+        );
 
-      final snapshot = service.snapshot(
-        capturedAtUtc: DateTime.utc(2026, 3, 13, 21),
-      );
-      expect(snapshot.confirmedInteractionPromotionCount, 1);
-      expect(snapshot.duplicateMergeCount, 1);
-      expect(snapshot.rejectedInteractionPromotionCount, 1);
-      expect(snapshot.whatIngestionCount, beforeRejected.whatIngestionCount);
-      expect(
-        snapshot.localityVibeUpdateCount,
-        beforeRejected.localityVibeUpdateCount,
-      );
-      expect(
-        snapshot.personalDnaAppliedCount,
-        beforeRejected.personalDnaAppliedCount,
-      );
-    });
+        await service.applyObservation(
+          observation: AmbientSocialLearningObservation.fromPassiveDwell(
+            event: DwellEvent(
+              startTime: DateTime.utc(2026, 3, 13, 19, 0),
+              endTime: DateTime.utc(2026, 3, 13, 19, 20),
+              latitude: 33.5207,
+              longitude: -86.8025,
+              encounteredAgentIds: const <String>['peer-a'],
+            ),
+            projection: passiveProjection,
+          ),
+          personalAgentId: 'agent-passive-1',
+        );
+        await service.applyObservation(
+          observation: AmbientSocialLearningObservation(
+            source: AmbientSocialLearningObservationSource
+                .ai2aiCompletedInteraction,
+            observedAtUtc: DateTime.utc(2026, 3, 13, 19, 22),
+            localityBinding: passiveProjection.localityBinding,
+            discoveredPeerIds: const <String>['peer-a'],
+            confirmedInteractivePeerIds: const <String>['peer-a'],
+            confidence: 0.8,
+            interactionQuality: 0.77,
+            structuredSignals: const <String, dynamic>{
+              'interactionTrusted': true,
+              'promotionEligible': true,
+            },
+            lineageRef: 'ambient:ai2ai:peer-a',
+          ),
+          personalAgentId: 'agent-passive-1',
+        );
+        final beforeRejected = service.snapshot(
+          capturedAtUtc: DateTime.utc(2026, 3, 13, 21),
+        );
+        await service.applyObservation(
+          observation: AmbientSocialLearningObservation(
+            source: AmbientSocialLearningObservationSource
+                .ai2aiCompletedInteraction,
+            observedAtUtc: DateTime.utc(2026, 3, 13, 19, 23),
+            localityBinding: passiveProjection.localityBinding,
+            discoveredPeerIds: const <String>['peer-a'],
+            confirmedInteractivePeerIds: const <String>['peer-a'],
+            confidence: 0.8,
+            interactionQuality: 0.77,
+            structuredSignals: const <String, dynamic>{
+              'interactionTrusted': true,
+              'promotionEligible': true,
+            },
+            lineageRef: 'ambient:ai2ai:peer-a',
+          ),
+          personalAgentId: 'agent-passive-1',
+        );
+        await service.applyObservation(
+          observation: AmbientSocialLearningObservation(
+            source: AmbientSocialLearningObservationSource
+                .ai2aiCompletedInteraction,
+            observedAtUtc: DateTime.utc(2026, 3, 13, 19, 25),
+            localityBinding: passiveProjection.localityBinding,
+            discoveredPeerIds: const <String>['peer-a'],
+            confidence: 0.2,
+            structuredSignals: const <String, dynamic>{
+              'interactionTrusted': false,
+              'promotionEligible': false,
+            },
+            lineageRef: 'ambient:ai2ai:peer-a:rejected',
+          ),
+          personalAgentId: 'agent-passive-1',
+        );
+
+        final snapshot = service.snapshot(
+          capturedAtUtc: DateTime.utc(2026, 3, 13, 21),
+        );
+        expect(snapshot.confirmedInteractionPromotionCount, 1);
+        expect(snapshot.duplicateMergeCount, 1);
+        expect(snapshot.rejectedInteractionPromotionCount, 1);
+        expect(snapshot.whatIngestionCount, beforeRejected.whatIngestionCount);
+        expect(
+          snapshot.localityVibeUpdateCount,
+          beforeRejected.localityVibeUpdateCount,
+        );
+        expect(
+          snapshot.personalDnaAppliedCount,
+          beforeRejected.personalDnaAppliedCount,
+        );
+      },
+    );
   });
 }

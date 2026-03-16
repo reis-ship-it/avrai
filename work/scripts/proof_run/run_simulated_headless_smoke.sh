@@ -6,7 +6,7 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd -P)"
 APP_DIR="$ROOT_DIR/apps/avrai_app"
 VALIDATOR_SCRIPT="$ROOT_DIR/work/tools/validate_simulated_smoke_bundle.dart"
 PLATFORM="${1:-}"
-APP_BUNDLE_ID="${APP_BUNDLE_ID:-com.avrai.app}"
+APP_BUNDLE_ID="${APP_BUNDLE_ID:-}"
 TS="$(date +'%Y-%m-%d_%H-%M-%S')"
 ARTIFACT_ROOT="$ROOT_DIR/reports/proof_runs"
 ANDROID_SDK_DIR="${ANDROID_SDK_ROOT:-$HOME/Library/Android/sdk}"
@@ -27,6 +27,14 @@ case "$PLATFORM" in
     ;;
 esac
 
+if [[ -z "$APP_BUNDLE_ID" ]]; then
+  if [[ "$PLATFORM" == "android" ]]; then
+    APP_BUNDLE_ID="com.avrai.avrai"
+  else
+    APP_BUNDLE_ID="com.avrai.app"
+  fi
+fi
+
 if ! command -v flutter >/dev/null 2>&1; then
   echo "flutter is required"
   exit 1
@@ -41,13 +49,41 @@ RESPONSE_FILE="$TMP_DIR/simulated_smoke_response.json"
 DRIVE_LOG="$TMP_DIR/flutter_drive.log"
 VALIDATION_SUMMARY="$TMP_DIR/validation_summary.json"
 MANIFEST_FILE="$TMP_DIR/manifest.json"
+REQUIRED_BUNDLE_FILES=(
+  "ledger_rows.csv"
+  "ledger_rows.jsonl"
+  "background_wake_runs.json"
+  "field_validation_proofs.json"
+  "ambient_social_diagnostics.json"
+)
 
 json_string_field() {
-  sed -n "s/.*\"$2\":\"\\([^\"]*\\)\".*/\\1/p" "$1" | head -n 1
+  python3 - "$1" "$2" <<'PY'
+import json
+import sys
+
+path, key = sys.argv[1], sys.argv[2]
+with open(path, 'r', encoding='utf-8') as handle:
+    value = json.load(handle).get(key)
+if value is None:
+    sys.exit(0)
+print(value)
+PY
 }
 
 json_bool_field() {
-  sed -n "s/.*\"$2\":\\(true\\|false\\).*/\\1/p" "$1" | head -n 1
+  python3 - "$1" "$2" <<'PY'
+import json
+import sys
+
+path, key = sys.argv[1], sys.argv[2]
+with open(path, 'r', encoding='utf-8') as handle:
+    value = json.load(handle).get(key)
+if value is True:
+    print('true')
+elif value is False:
+    print('false')
+PY
 }
 
 resolve_android_tools() {
@@ -102,7 +138,7 @@ resolve_android_device() {
     exit 1
   fi
 
-  echo "Booting Android emulator: $avd_name"
+  echo "Booting Android emulator: $avd_name" >&2
   "$EMULATOR_BIN" -avd "$avd_name" >/dev/null 2>&1 &
   local waited=0
   while [[ $waited -lt 120 ]]; do
@@ -171,6 +207,8 @@ run_flutter_drive() {
   local device_id="$1"
   pushd "$APP_DIR" >/dev/null
   SIMULATED_SMOKE_RESPONSE_PATH="$RESPONSE_FILE" \
+    SIMULATED_SMOKE_DEVICE_ID="$device_id" \
+    SIMULATED_SMOKE_ADB_BIN="${ADB_BIN:-adb}" \
     flutter drive \
       --driver=test/integration_test_driver/simulated_headless_smoke_driver.dart \
       --target=integration_test/simulated_headless_smoke_test.dart \
@@ -186,13 +224,16 @@ run_flutter_drive() {
 copy_ios_bundle() {
   local simulator_udid="$1"
   local run_id="$2"
-  local container
-  container="$(xcrun simctl get_app_container "$simulator_udid" "$APP_BUNDLE_ID" data)"
-  if [[ -z "$container" ]]; then
-    echo "failed to resolve iOS simulator app container"
-    exit 1
+  local export_dir="${3:-}"
+  if [[ -z "$export_dir" || ! -d "$export_dir" ]]; then
+    local container
+    container="$(xcrun simctl get_app_container "$simulator_udid" "$APP_BUNDLE_ID" data)"
+    if [[ -z "$container" ]]; then
+      echo "failed to resolve iOS simulator app container"
+      exit 1
+    fi
+    export_dir="$container/Documents/proof_runs/$run_id"
   fi
-  local export_dir="$container/Documents/proof_runs/$run_id"
   if [[ ! -d "$export_dir" ]]; then
     echo "proof export directory not found in iOS simulator container: $export_dir"
     exit 1
@@ -217,6 +258,16 @@ copy_android_bundle() {
     sh -c "cd '$proof_run_dir' && tar -cf - ." >"$TMP_DIR/proof_bundle.tar"
   tar -xf "$TMP_DIR/proof_bundle.tar" -C "$TMP_DIR"
   rm -f "$TMP_DIR/proof_bundle.tar"
+}
+
+bundle_files_present() {
+  local file_name
+  for file_name in "${REQUIRED_BUNDLE_FILES[@]}"; do
+    if [[ ! -f "$TMP_DIR/$file_name" ]]; then
+      return 1
+    fi
+  done
+  return 0
 }
 
 DEVICE_ID=""
@@ -247,6 +298,7 @@ fi
 RUN_ID="$(json_string_field "$RESPONSE_FILE" run_id)"
 SUCCESS="$(json_bool_field "$RESPONSE_FILE" success)"
 FAILURE_SUMMARY="$(json_string_field "$RESPONSE_FILE" failure_summary)"
+EXPORT_DIRECTORY_PATH="$(json_string_field "$RESPONSE_FILE" export_directory_path)"
 FAILURE_SUMMARY_ESCAPED="${FAILURE_SUMMARY//\"/\\\"}"
 
 if [[ -z "$RUN_ID" ]]; then
@@ -255,10 +307,12 @@ if [[ -z "$RUN_ID" ]]; then
   exit 1
 fi
 
-if [[ "$PLATFORM" == "ios" ]]; then
-  copy_ios_bundle "$DEVICE_ID" "$RUN_ID"
-else
-  copy_android_bundle "$DEVICE_ID" "$RUN_ID"
+if ! bundle_files_present; then
+  if [[ "$PLATFORM" == "ios" ]]; then
+    copy_ios_bundle "$DEVICE_ID" "$RUN_ID" "$EXPORT_DIRECTORY_PATH"
+  else
+    copy_android_bundle "$DEVICE_ID" "$RUN_ID"
+  fi
 fi
 
 GIT_SHA="$(git -C "$ROOT_DIR" rev-parse HEAD 2>/dev/null || true)"

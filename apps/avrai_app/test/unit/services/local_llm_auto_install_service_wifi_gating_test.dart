@@ -15,7 +15,7 @@ import '../../mocks/mock_storage_service.dart';
 
 class _FakeConnectivity implements Connectivity {
   _FakeConnectivity({List<ConnectivityResult>? initial})
-      : _current = initial ?? const [ConnectivityResult.none];
+    : _current = initial ?? const [ConnectivityResult.none];
 
   final StreamController<List<ConnectivityResult>> _controller =
       StreamController<List<ConnectivityResult>>.broadcast();
@@ -71,6 +71,8 @@ class _FakePacks extends LocalLlmModelPackManager {
   @override
   Future<void> downloadAndActivate({
     required Uri manifestUrl,
+    bool operatorApproved = false,
+    String actorAlias = 'local_llm_manager',
     void Function(int receivedBytes, int totalBytes)? onProgress,
   }) async {
     downloadCalled = true;
@@ -98,8 +100,9 @@ void main() {
         sl.unregister<LocalLlmPostInstallBootstrapService>();
       }
       final bootstrap = _MockBootstrapService();
-      when(() => bootstrap.maybeBootstrapCurrentUser())
-          .thenAnswer((_) async {});
+      when(
+        () => bootstrap.maybeBootstrapCurrentUser(),
+      ).thenAnswer((_) async {});
       sl.registerSingleton<LocalLlmPostInstallBootstrapService>(bootstrap);
     });
 
@@ -111,48 +114,57 @@ void main() {
       }
     });
 
-    test('queues for Wi‑Fi and then downloads when Wi‑Fi becomes available',
-        () async {
-      final storage = MockGetStorage.getInstance(boxName: 'prefs_wifi_gate');
-      final prefs = await SharedPreferencesCompat.getInstance(storage: storage);
+    test(
+      'queues for Wi‑Fi and then downloads when Wi‑Fi becomes available',
+      () async {
+        final storage = MockGetStorage.getInstance(boxName: 'prefs_wifi_gate');
+        final prefs = await SharedPreferencesCompat.getInstance(
+          storage: storage,
+        );
 
-      // User has opted in (or defaulted) already.
-      await prefs.setBool('offline_llm_enabled_v1', true);
-      await prefs.setString(
-          'local_llm_manifest_url_v1', 'https://example.com/manifest.json');
+        // User has opted in (or defaulted) already.
+        await prefs.setBool('offline_llm_enabled_v1', true);
+        await prefs.setString(
+          'local_llm_manifest_url_v1',
+          'https://example.com/manifest.json',
+        );
 
-      final fakeConnectivity =
-          _FakeConnectivity(initial: const [ConnectivityResult.none]);
-      final fakeBattery = _FakeBatteryFacade(BatteryState.charging);
-      final fakePacks = _FakePacks();
-      final provisioning =
-          LocalLlmProvisioningStateService(packs: fakePacks, prefs: prefs);
+        final fakeConnectivity = _FakeConnectivity(
+          initial: const [ConnectivityResult.none],
+        );
+        final fakeBattery = _FakeBatteryFacade(BatteryState.charging);
+        final fakePacks = _FakePacks();
+        final provisioning = LocalLlmProvisioningStateService(
+          packs: fakePacks,
+          prefs: prefs,
+        );
 
-      final service = LocalLlmAutoInstallService(
-        connectivity: fakeConnectivity,
-        battery: fakeBattery,
-        packs: fakePacks,
-        provisioning: provisioning,
-        prefs: prefs,
-        now: () => DateTime(2025, 1, 1, 1, 0), // within idle window
-      );
+        final service = LocalLlmAutoInstallService(
+          connectivity: fakeConnectivity,
+          battery: fakeBattery,
+          packs: fakePacks,
+          provisioning: provisioning,
+          prefs: prefs,
+          now: () => DateTime(2025, 1, 1, 1, 0), // within idle window
+        );
 
-      // Not on Wi‑Fi: should queue and NOT download.
-      await service.maybeAutoInstall();
-      expect(fakePacks.downloadCalled, isFalse);
+        // Not on Wi‑Fi: should queue and NOT download.
+        await service.maybeAutoInstall();
+        expect(fakePacks.downloadCalled, isFalse);
 
-      var state = await provisioning.getState();
-      expect(state.phase, LocalLlmProvisioningPhase.queuedWifi);
+        var state = await provisioning.getState();
+        expect(state.phase, LocalLlmProvisioningPhase.queuedWifi);
 
-      // Wi‑Fi appears: should download and mark installed.
-      fakeConnectivity.emit(const [ConnectivityResult.wifi]);
-      await Future<void>.delayed(const Duration(milliseconds: 10));
+        // Wi‑Fi appears: should download and mark installed.
+        fakeConnectivity.emit(const [ConnectivityResult.wifi]);
+        await Future<void>.delayed(const Duration(milliseconds: 10));
 
-      expect(fakePacks.downloadCalled, isTrue);
-      expect(fakePacks.progressReported, isTrue);
-      state = await provisioning.getState();
-      expect(state.phase, LocalLlmProvisioningPhase.installed);
-      expect(state.packStatus.isInstalled, isTrue);
-    });
+        expect(fakePacks.downloadCalled, isTrue);
+        expect(fakePacks.progressReported, isTrue);
+        state = await provisioning.getState();
+        expect(state.phase, LocalLlmProvisioningPhase.installed);
+        expect(state.packStatus.isInstalled, isTrue);
+      },
+    );
   });
 }

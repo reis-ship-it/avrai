@@ -1,5 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:avrai_core/avra_core.dart';
+import 'package:avrai_runtime_os/services/ai_infrastructure/kernel_governance_native_bridge_bindings.dart';
+import 'package:avrai_runtime_os/services/ai_infrastructure/kernel_governance_native_priority.dart';
 import 'package:avrai_runtime_os/services/security/governance_kernel_service.dart';
 import '../../support/fake_kernel_governance.dart';
 
@@ -26,35 +28,47 @@ void main() {
 
     group('Outgoing Interception (Structure & Category Enforcement)', () {
       test('should allow valid vectors from approved categories', () {
-        final vector =
-            createVector(category: 'spot_affinity', weights: [0.5, -0.2, 0.9]);
+        final vector = createVector(
+          category: 'spot_affinity',
+          weights: [0.5, -0.2, 0.9],
+        );
         final result = kernel.interceptOutgoing(vector);
 
         expect(result.isApproved, isTrue);
         expect(result.sanitizedVector, isNotNull);
         expect(
-            result.sanitizedVector!.insightWeights, equals([0.5, -0.2, 0.9]));
+          result.sanitizedVector!.insightWeights,
+          equals([0.5, -0.2, 0.9]),
+        );
       });
 
-      test('should reject unauthorized categories (preventing data tunnels)',
-          () {
-        final vector =
-            createVector(category: 'custom_chat_tunnel', weights: [0.1]);
-        final result = kernel.interceptOutgoing(vector);
+      test(
+        'should reject unauthorized categories (preventing data tunnels)',
+        () {
+          final vector = createVector(
+            category: 'custom_chat_tunnel',
+            weights: [0.1],
+          );
+          final result = kernel.interceptOutgoing(vector);
 
-        expect(result.isApproved, isFalse);
-        expect(result.rejectionReason, contains('Unauthorized'));
-      });
+          expect(result.isApproved, isFalse);
+          expect(result.rejectionReason, contains('Unauthorized'));
+        },
+      );
 
       test('should clamp outgoing weights to prevent extreme values', () {
         final vector = createVector(
-            category: 'event_resonance', weights: [0.5, 50.0, -100.0]);
+          category: 'event_resonance',
+          weights: [0.5, 50.0, -100.0],
+        );
         final result = kernel.interceptOutgoing(vector);
 
         expect(result.isApproved, isTrue);
         // 50.0 clamps to 1.0, -100.0 clamps to -1.0
         expect(
-            result.sanitizedVector!.insightWeights, equals([0.5, 1.0, -1.0]));
+          result.sanitizedVector!.insightWeights,
+          equals([0.5, 1.0, -1.0]),
+        );
       });
 
       test('should reject excessively large vectors', () {
@@ -71,22 +85,28 @@ void main() {
 
     group('Incoming Interception (Poisoning Defense)', () {
       test('should allow normal incoming vectors', () {
-        final vector =
-            createVector(category: 'spot_affinity', weights: [0.2, -0.8, 0.0]);
+        final vector = createVector(
+          category: 'spot_affinity',
+          weights: [0.2, -0.8, 0.0],
+        );
         final result = kernel.interceptIncoming(vector);
 
         expect(result.isApproved, isTrue);
       });
 
-      test('should reject vectors with out-of-bounds weights (Data Poisoning)',
-          () {
-        final vector =
-            createVector(category: 'spot_affinity', weights: [0.5, 2.5]);
-        final result = kernel.interceptIncoming(vector);
+      test(
+        'should reject vectors with out-of-bounds weights (Data Poisoning)',
+        () {
+          final vector = createVector(
+            category: 'spot_affinity',
+            weights: [0.5, 2.5],
+          );
+          final result = kernel.interceptIncoming(vector);
 
-        expect(result.isApproved, isFalse);
-        expect(result.rejectionReason, contains('poisoning attempt'));
-      });
+          expect(result.isApproved, isFalse);
+          expect(result.rejectionReason, contains('poisoning attempt'));
+        },
+      );
 
       test('should reject expired vectors (Replay Attack)', () {
         final oldTimestamp = DateTime.now().subtract(const Duration(days: 10));
@@ -111,21 +131,21 @@ void main() {
     });
 
     VibeEvidence evidence() => const VibeEvidence(
-          summary: 'test evidence',
-          identitySignals: <VibeSignal>[
-            VibeSignal(
-              key: 'exploration_eagerness',
-              kind: VibeSignalKind.identity,
-              value: 0.7,
-              confidence: 0.8,
-              provenance: <String>['test'],
-            ),
-          ],
-          pheromoneSignals: <VibeSignal>[],
-          behaviorSignals: <VibeSignal>[],
-          affectiveSignals: <VibeSignal>[],
-          styleSignals: <VibeSignal>[],
-        );
+      summary: 'test evidence',
+      identitySignals: <VibeSignal>[
+        VibeSignal(
+          key: 'exploration_eagerness',
+          kind: VibeSignalKind.identity,
+          value: 0.7,
+          confidence: 0.8,
+          provenance: <String>['test'],
+        ),
+      ],
+      pheromoneSignals: <VibeSignal>[],
+      behaviorSignals: <VibeSignal>[],
+      affectiveSignals: <VibeSignal>[],
+      styleSignals: <VibeSignal>[],
+    );
 
     test('allows supported geographic scope for matching subject', () {
       final decision = kernel.authorizeVibeMutation(
@@ -224,9 +244,7 @@ void main() {
       final decision = kernel.authorizeSecurityIntervention(
         actionId: 'quarantine-agent',
         scopeChannels: scopeChannels,
-        evidenceEnvelope: buildEvidenceEnvelope(
-          scopeChannels.observationScope,
-        ),
+        evidenceEnvelope: buildEvidenceEnvelope(scopeChannels.observationScope),
       );
 
       expect(decision.isApproved, isTrue);
@@ -238,10 +256,7 @@ void main() {
         decision.scopeChannels.observationScope.truthSurfaceKind,
         TruthSurfaceKind.security,
       );
-      expect(
-        decision.disposition,
-        SecurityInterventionDisposition.observe,
-      );
+      expect(decision.disposition, SecurityInterventionDisposition.observe);
     });
 
     test('rejects intervention when promotion scope widens surveillance', () {
@@ -252,9 +267,7 @@ void main() {
       final decision = kernel.authorizeSecurityIntervention(
         actionId: 'quarantine-agent',
         scopeChannels: scopeChannels,
-        evidenceEnvelope: buildEvidenceEnvelope(
-          scopeChannels.observationScope,
-        ),
+        evidenceEnvelope: buildEvidenceEnvelope(scopeChannels.observationScope),
       );
 
       expect(decision.isApproved, isFalse);
@@ -262,68 +275,68 @@ void main() {
         decision.reasonCodes,
         contains('promotion_scope_widens_surveillance'),
       );
-      expect(
-        decision.disposition,
-        SecurityInterventionDisposition.hardStop,
-      );
+      expect(decision.disposition, SecurityInterventionDisposition.hardStop);
     });
 
     test(
-        'uses bounded degrade for credible scoped risk without invariant breach',
-        () {
-      final scopeChannels = buildSecurityScopeChannels();
-      final decision = kernel.authorizeSecurityIntervention(
-        actionId: 'shadow-only',
-        scopeChannels: scopeChannels,
-        evidenceEnvelope: buildEvidenceEnvelope(
-          scopeChannels.observationScope,
-        ),
-        metadata: const <String, dynamic>{
-          'confidence': 0.86,
-          'recurrence_count': 2,
-        },
-      );
+      'uses bounded degrade for credible scoped risk without invariant breach',
+      () {
+        final scopeChannels = buildSecurityScopeChannels();
+        final decision = kernel.authorizeSecurityIntervention(
+          actionId: 'shadow-only',
+          scopeChannels: scopeChannels,
+          evidenceEnvelope: buildEvidenceEnvelope(
+            scopeChannels.observationScope,
+          ),
+          metadata: const <String, dynamic>{
+            'confidence': 0.86,
+            'recurrence_count': 2,
+          },
+        );
 
-      expect(decision.isApproved, isTrue);
-      expect(
-        decision.disposition,
-        SecurityInterventionDisposition.boundedDegrade,
-      );
-    });
+        expect(decision.isApproved, isTrue);
+        expect(
+          decision.disposition,
+          SecurityInterventionDisposition.boundedDegrade,
+        );
+      },
+    );
 
-    test('approves countermeasure review when evidence and approvals match',
-        () {
-      final targetScope = TruthScopeDescriptor.defaultSecurity(
-        governanceStratum: GovernanceStratum.locality,
-        sphereId: 'security_redteam',
-        familyId: 'sandbox_countermeasure',
-      );
-      final evidenceEnvelope = buildEvidenceEnvelope(targetScope);
-      final review = kernel.reviewCountermeasureBundle(
-        bundle: SecurityCountermeasureBundle(
-          bundleId: 'bundle-1',
-          targetScope: targetScope,
-          allowedStrata: const <GovernanceStratum>[
-            GovernanceStratum.personal,
-            GovernanceStratum.locality,
-          ],
-          tenantScope: TruthTenantScope.avraiNative,
-          evidenceEnvelopeTraceIds: const <String>['trace-1'],
-          requiredApprovals: const <String>[
-            'security_lead',
-            'mesh_governance',
-          ],
-          signature: 'signed-bundle',
-          signedBy: 'security_lead',
-          signedAt: DateTime.utc(2026, 3, 14, 11),
-        ),
-        evidenceEnvelope: evidenceEnvelope,
-      );
+    test(
+      'approves countermeasure review when evidence and approvals match',
+      () {
+        final targetScope = TruthScopeDescriptor.defaultSecurity(
+          governanceStratum: GovernanceStratum.locality,
+          sphereId: 'security_redteam',
+          familyId: 'sandbox_countermeasure',
+        );
+        final evidenceEnvelope = buildEvidenceEnvelope(targetScope);
+        final review = kernel.reviewCountermeasureBundle(
+          bundle: SecurityCountermeasureBundle(
+            bundleId: 'bundle-1',
+            targetScope: targetScope,
+            allowedStrata: const <GovernanceStratum>[
+              GovernanceStratum.personal,
+              GovernanceStratum.locality,
+            ],
+            tenantScope: TruthTenantScope.avraiNative,
+            evidenceEnvelopeTraceIds: const <String>['trace-1'],
+            requiredApprovals: const <String>[
+              'security_lead',
+              'mesh_governance',
+            ],
+            signature: 'signed-bundle',
+            signedBy: 'security_lead',
+            signedAt: DateTime.utc(2026, 3, 14, 11),
+          ),
+          evidenceEnvelope: evidenceEnvelope,
+        );
 
-      expect(review.isApproved, isTrue);
-      expect(review.propagationAuthorized, isTrue);
-      expect(review.reasonCodes, contains('countermeasure_bundle_approved'));
-    });
+        expect(review.isApproved, isTrue);
+        expect(review.propagationAuthorized, isTrue);
+        expect(review.reasonCodes, contains('countermeasure_bundle_approved'));
+      },
+    );
 
     test('rejects countermeasure review when air gap bypass is requested', () {
       final targetScope = TruthScopeDescriptor.defaultSecurity(
@@ -335,9 +348,7 @@ void main() {
         bundle: SecurityCountermeasureBundle(
           bundleId: 'bundle-2',
           targetScope: targetScope,
-          allowedStrata: const <GovernanceStratum>[
-            GovernanceStratum.world,
-          ],
+          allowedStrata: const <GovernanceStratum>[GovernanceStratum.world],
           tenantScope: TruthTenantScope.avraiNative,
           evidenceEnvelopeTraceIds: const <String>['trace-1'],
           requiredApprovals: const <String>['security_lead'],
@@ -353,4 +364,102 @@ void main() {
       );
     });
   });
+
+  group('GovernanceKernelService (Fallback Security Boundaries)', () {
+    late GovernanceKernelService kernel;
+
+    setUp(() {
+      kernel = GovernanceKernelService(
+        nativeBridge: const _UnavailableGovernanceBridge(),
+        policy: const KernelGovernanceNativeExecutionPolicy(
+          requireNative: false,
+        ),
+      );
+    });
+
+    test('fallback intervention stays observe-only and not approved', () {
+      final scope = TruthScopeDescriptor.defaultSecurity(
+        governanceStratum: GovernanceStratum.locality,
+        sphereId: 'security_redteam',
+        familyId: 'sandbox_countermeasure',
+      );
+      final decision = kernel.authorizeSecurityIntervention(
+        actionId: 'shadow-only',
+        scopeChannels: SecurityScopeChannels(
+          observationScope: scope,
+          interventionScope: scope,
+          promotionScope: scope,
+          propagationScope: scope,
+        ),
+        evidenceEnvelope: TruthEvidenceEnvelope(
+          scope: scope,
+          traceId: 'trace-fallback',
+          evidenceClass: 'sandbox_redteam',
+          privacyLadderTag: 'redacted',
+        ),
+      );
+
+      expect(decision.isApproved, isFalse);
+      expect(
+        decision.reasonCodes,
+        contains('governance_native_fallback_requires_native_review'),
+      );
+      expect(decision.disposition, SecurityInterventionDisposition.observe);
+      expect(decision.metadata['sandbox_only'], isTrue);
+    });
+
+    test('fallback countermeasure review cannot authorize propagation', () {
+      final scope = TruthScopeDescriptor.defaultSecurity(
+        governanceStratum: GovernanceStratum.locality,
+        sphereId: 'security_redteam',
+        familyId: 'sandbox_countermeasure',
+      );
+      final review = kernel.reviewCountermeasureBundle(
+        bundle: SecurityCountermeasureBundle(
+          bundleId: 'bundle-fallback',
+          targetScope: scope,
+          allowedStrata: const <GovernanceStratum>[GovernanceStratum.locality],
+          tenantScope: TruthTenantScope.avraiNative,
+          evidenceEnvelopeTraceIds: const <String>['trace-fallback'],
+          requiredApprovals: const <String>['security_lead'],
+          signature: 'signed-bundle',
+          signedBy: 'security_lead',
+          signedAt: DateTime.utc(2026, 3, 15, 12),
+        ),
+        evidenceEnvelope: TruthEvidenceEnvelope(
+          scope: scope,
+          traceId: 'trace-fallback',
+          evidenceClass: 'sandbox_redteam',
+          privacyLadderTag: 'redacted',
+          approvals: const <String>['security_lead'],
+        ),
+      );
+
+      expect(review.isApproved, isFalse);
+      expect(review.propagationAuthorized, isFalse);
+      expect(
+        review.reasonCodes,
+        contains('governance_native_fallback_requires_native_review'),
+      );
+    });
+  });
+}
+
+class _UnavailableGovernanceBridge
+    implements KernelGovernanceNativeInvocationBridge {
+  const _UnavailableGovernanceBridge();
+
+  @override
+  bool get isAvailable => false;
+
+  @override
+  void initialize() {}
+
+  @override
+  Map<String, dynamic> invoke({
+    required String syscall,
+    required Map<String, dynamic> payload,
+  }) {
+    throw UnimplementedError('Fallback tests should not invoke native bridge.');
+  }
 }

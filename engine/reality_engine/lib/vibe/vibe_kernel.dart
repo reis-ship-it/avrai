@@ -60,9 +60,8 @@ class DefaultVibeKernelLibraryManager implements VibeKernelLibraryManager {
 }
 
 class VibeKernelJsonNativeBridge {
-  VibeKernelJsonNativeBridge({
-    VibeKernelLibraryManager? libraryManager,
-  }) : _libraryManager = libraryManager ?? DefaultVibeKernelLibraryManager();
+  VibeKernelJsonNativeBridge({VibeKernelLibraryManager? libraryManager})
+    : _libraryManager = libraryManager ?? DefaultVibeKernelLibraryManager();
 
   final VibeKernelLibraryManager _libraryManager;
 
@@ -82,8 +81,9 @@ class VibeKernelJsonNativeBridge {
     try {
       if (Platform.isIOS) {
         try {
-          _lib =
-              DynamicLibrary.open('AVRAIVibeKernel.framework/AVRAIVibeKernel');
+          _lib = DynamicLibrary.open(
+            'AVRAIVibeKernel.framework/AVRAIVibeKernel',
+          );
         } catch (_) {
           _lib = DynamicLibrary.process();
         }
@@ -105,8 +105,10 @@ class VibeKernelJsonNativeBridge {
           )
           .asFunction<_FreeJsonString>();
       _available = true;
-      developer.log('VibeKernelJsonNativeBridge initialized',
-          name: 'VibeKernelJsonNativeBridge');
+      developer.log(
+        'VibeKernelJsonNativeBridge initialized',
+        name: 'VibeKernelJsonNativeBridge',
+      );
     } catch (error, stackTrace) {
       _available = false;
       developer.log(
@@ -165,11 +167,23 @@ class VibeKernel {
   VibeKernel({
     VibeKernelJsonNativeBridge? nativeBridge,
     TrajectoryKernel? trajectoryKernel,
-  })  : _nativeBridge = nativeBridge ?? VibeKernelJsonNativeBridge(),
-        _trajectoryKernel = trajectoryKernel ?? TrajectoryKernel();
+  }) : _nativeBridge = nativeBridge ?? VibeKernelJsonNativeBridge(),
+       _trajectoryKernel = trajectoryKernel ?? TrajectoryKernel();
 
   final VibeKernelJsonNativeBridge _nativeBridge;
   final TrajectoryKernel _trajectoryKernel;
+
+  static void resetFallbackStateForTesting() {
+    _fallbackSubjectSnapshots.clear();
+    _fallbackEntitySnapshots.clear();
+    _fallbackExportedAtUtc = DateTime.fromMillisecondsSinceEpoch(
+      0,
+      isUtc: true,
+    );
+    _fallbackMigrationReceipts = const <String>[];
+    _fallbackMetadata = const <String, dynamic>{};
+    _fallbackSchemaVersion = 1;
+  }
 
   VibeUpdateReceipt seedSubjectStateFromOnboarding({
     required VibeSubjectRef subjectRef,
@@ -262,10 +276,7 @@ class VibeKernel {
     );
     _appendMutationRecord(
       category: 'behavior_observation',
-      subjectRef: VibeSubjectRef(
-        subjectId: subjectId,
-        kind: subjectKind,
-      ),
+      subjectRef: VibeSubjectRef(subjectId: subjectId, kind: subjectKind),
       receipt: receipt,
       evidenceSummary: 'Behavior observation applied.',
     );
@@ -294,10 +305,7 @@ class VibeKernel {
     );
     _appendMutationRecord(
       category: 'ecosystem_observation',
-      subjectRef: VibeSubjectRef(
-        subjectId: subjectId,
-        kind: subjectKind,
-      ),
+      subjectRef: VibeSubjectRef(subjectId: subjectId, kind: subjectKind),
       receipt: receipt,
       evidenceSummary: 'Ecosystem observation from $source.',
     );
@@ -354,10 +362,7 @@ class VibeKernel {
     );
     _appendMutationRecord(
       category: 'outcome',
-      subjectRef: VibeSubjectRef(
-        subjectId: subjectId,
-        kind: subjectKind,
-      ),
+      subjectRef: VibeSubjectRef(subjectId: subjectId, kind: subjectKind),
       receipt: receipt,
       evidenceSummary: 'Outcome recorded: $outcome.',
     );
@@ -382,10 +387,7 @@ class VibeKernel {
     );
     _appendMutationRecord(
       category: 'decay_window',
-      subjectRef: VibeSubjectRef(
-        subjectId: subjectId,
-        kind: subjectKind,
-      ),
+      subjectRef: VibeSubjectRef(subjectId: subjectId, kind: subjectKind),
       receipt: receipt,
       evidenceSummary: 'Decay window advanced by $elapsedHours hours.',
     );
@@ -445,12 +447,15 @@ class VibeKernel {
             'geographic_binding': resolvedGeographicBinding.toJson(),
           if (localityBinding != null)
             'locality_binding': localityBinding.toJson(),
-          'scoped_bindings':
-              scopedBindings.map((entry) => entry.toJson()).toList(),
-          'higher_agent_refs':
-              higherAgentRefs.map((entry) => entry.toJson()).toList(),
-          'selected_entity_refs':
-              selectedEntityRefs.map((entry) => entry.toJson()).toList(),
+          'scoped_bindings': scopedBindings
+              .map((entry) => entry.toJson())
+              .toList(),
+          'higher_agent_refs': higherAgentRefs
+              .map((entry) => entry.toJson())
+              .toList(),
+          'selected_entity_refs': selectedEntityRefs
+              .map((entry) => entry.toJson())
+              .toList(),
         },
       ),
     );
@@ -475,12 +480,15 @@ class VibeKernel {
             'geographic_binding': resolvedGeographicBinding.toJson(),
           if (localityBinding != null)
             'locality_binding': localityBinding.toJson(),
-          'scoped_bindings':
-              scopedBindings.map((entry) => entry.toJson()).toList(),
-          'higher_agent_refs':
-              higherAgentRefs.map((entry) => entry.toJson()).toList(),
-          'selected_entity_refs':
-              selectedEntityRefs.map((entry) => entry.toJson()).toList(),
+          'scoped_bindings': scopedBindings
+              .map((entry) => entry.toJson())
+              .toList(),
+          'higher_agent_refs': higherAgentRefs
+              .map((entry) => entry.toJson())
+              .toList(),
+          'selected_entity_refs': selectedEntityRefs
+              .map((entry) => entry.toJson())
+              .toList(),
         },
       ),
     );
@@ -543,7 +551,8 @@ class VibeKernel {
       return Map<String, dynamic>.from(nativePayload);
     }
     throw StateError(
-        'Native VibeKernel returned an invalid payload for "$syscall".');
+      'Native VibeKernel returned an invalid payload for "$syscall".',
+    );
   }
 
   void _ensureTrajectoryKernelAvailable() {
@@ -558,20 +567,20 @@ class VibeKernel {
     String? governanceScope,
   }) {
     final record = TrajectoryMutationRecord(
-        recordId:
-            '$category:${subjectRef.subjectId}:${receipt.updatedAtUtc.microsecondsSinceEpoch}',
-        subjectRef: subjectRef,
-        category: category,
-        occurredAtUtc: receipt.updatedAtUtc,
-        accepted: receipt.accepted,
-        reasonCodes: receipt.reasonCodes,
-        governanceScope: governanceScope ?? _defaultGovernanceScope(subjectRef),
-        evidenceSummary: evidenceSummary,
-        snapshotUpdatedAtUtc: receipt.snapshot.updatedAtUtc,
-        metadata: <String, dynamic>{
-          'subject_kind': subjectRef.kind.toWireValue(),
-        },
-      );
+      recordId:
+          '$category:${subjectRef.subjectId}:${receipt.updatedAtUtc.microsecondsSinceEpoch}',
+      subjectRef: subjectRef,
+      category: category,
+      occurredAtUtc: receipt.updatedAtUtc,
+      accepted: receipt.accepted,
+      reasonCodes: receipt.reasonCodes,
+      governanceScope: governanceScope ?? _defaultGovernanceScope(subjectRef),
+      evidenceSummary: evidenceSummary,
+      snapshotUpdatedAtUtc: receipt.snapshot.updatedAtUtc,
+      metadata: <String, dynamic>{
+        'subject_kind': subjectRef.kind.toWireValue(),
+      },
+    );
     _trajectoryKernel.appendMutation(
       record: record,
       checkpointSnapshot: receipt.snapshot,
@@ -596,8 +605,7 @@ class VibeKernel {
       return 'entity';
     }
     if (subjectRef.kind == VibeSubjectKind.scopedAgent) {
-      final scopedKind =
-          subjectRef.scopedKind?.toWireValue() ?? 'organization';
+      final scopedKind = subjectRef.scopedKind?.toWireValue() ?? 'organization';
       return 'scoped:$scopedKind';
     }
     final geographicLevel = subjectRef.effectiveGeographicLevel;

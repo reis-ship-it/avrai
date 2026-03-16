@@ -26,6 +26,19 @@ Use [13_FOLLOW_UP_DEVICE_QA_OUTLINE.md](./13_FOLLOW_UP_DEVICE_QA_OUTLINE.md) for
 - Nearby-pair operator:
 - Notes / evidence location:
 
+## Pre-Phone Gate
+
+These items should already be complete before the team starts real-phone QA.
+
+- [ ] Latest iOS simulated smoke run passed:
+  - `bash work/scripts/proof_run/run_simulated_headless_smoke.sh ios`
+- [ ] Latest Android simulated smoke run passed:
+  - `bash work/scripts/proof_run/run_simulated_headless_smoke.sh android`
+- [ ] Latest iOS `validation_summary.json` is `is_valid: true`
+- [ ] Latest Android `validation_summary.json` is `is_valid: true`
+- [ ] Simulated smoke artifact paths are attached to the QA notes
+- [ ] Team agrees live-phone QA is confirming field behavior, not discovering basic smoke regressions
+
 ## Team Checklist
 
 ### Roles And Readiness
@@ -45,6 +58,7 @@ Use [13_FOLLOW_UP_DEVICE_QA_OUTLINE.md](./13_FOLLOW_UP_DEVICE_QA_OUTLINE.md) for
 - [ ] One iPhone ↔ Android pairing session is scheduled
 - [ ] Screenshots / recordings can be captured
 - [ ] Receipt / log destinations are prepared
+- [ ] Simulated smoke artifact destinations are prepared
 - [ ] Event-planning smoke runbook is available
 - [ ] Blocker escalation path is understood before testing starts
 
@@ -204,6 +218,9 @@ For consumer-only device QA, mark these items `N/A`.
 - [ ] Accounts used logged
 - [ ] Screenshots or recordings captured
 - [ ] Receipt / log artifact paths captured
+- [ ] Latest iOS simulated smoke artifact path captured
+- [ ] Latest Android simulated smoke artifact path captured
+- [ ] Latest iOS and Android validation summaries attached
 - [ ] Mesh health snapshot captured if pairing was exercised
 - [ ] Kernel health snapshot captured if exposed
 - [ ] Learning-registration evidence captured

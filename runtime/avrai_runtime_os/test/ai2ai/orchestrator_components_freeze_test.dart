@@ -56,10 +56,7 @@ class _MockGetStorage {
       <String, _InMemoryGetStorage>{};
 
   static GetStorage getInstance({String boxName = 'test_box'}) {
-    return _instances.putIfAbsent(
-      boxName,
-      () => _InMemoryGetStorage(boxName),
-    );
+    return _instances.putIfAbsent(boxName, () => _InMemoryGetStorage(boxName));
   }
 
   static void clear({String boxName = 'test_box'}) {
@@ -70,10 +67,11 @@ class _MockGetStorage {
 class _FakeLegacyProtocolCodecAdapter implements LegacyProtocolCodecAdapter {
   _FakeLegacyProtocolCodecAdapter({
     CanonicalPeerResolutionService? peerResolutionService,
-  }) : _peerResolutionService = peerResolutionService ??
-            CanonicalPeerResolutionService(
-              governanceKernelService: buildTestGovernanceKernelService(),
-            );
+  }) : _peerResolutionService =
+           peerResolutionService ??
+           CanonicalPeerResolutionService(
+             governanceKernelService: buildTestGovernanceKernelService(),
+           );
 
   int personalityExchangeCalls = 0;
   int canonicalPeerPayloadCalls = 0;
@@ -156,6 +154,7 @@ void main() {
     vibeKernel.importSnapshotEnvelope(
       VibeSnapshotEnvelope(exportedAtUtc: DateTime.utc(2026, 3, 12)),
     );
+    TrajectoryKernel.resetFallbackStateForTesting();
     trajectoryKernel.importJournalWindow(
       records: const <TrajectoryMutationRecord>[],
     );
@@ -166,38 +165,80 @@ void main() {
   });
 
   test(
-      'offline peer setup exchanges governed canonical peer payloads and returns live metrics',
-      () async {
-    final prefs = await SharedPreferencesCompat.getInstance(
-      storage: _MockGetStorage.getInstance(boxName: 'spots_default'),
-    );
-    final vibeKernel = VibeKernel();
-    vibeKernel.seedUserStateFromOnboarding(
-      subjectId: 'agent-test-user',
-      dimensions: const <String, double>{
-        'exploration_eagerness': 0.71,
-        'community_orientation': 0.64,
-        'authenticity_preference': 0.66,
-        'temporal_flexibility': 0.62,
-        'energy_preference': 0.6,
-        'novelty_seeking': 0.68,
-        'value_orientation': 0.5,
-        'crowd_tolerance': 0.57,
-      },
-      provenanceTags: const <String>['test:ai2ai_freeze'],
-    );
+    'offline peer setup exchanges governed canonical peer payloads and returns live metrics',
+    () async {
+      final prefs = await SharedPreferencesCompat.getInstance(
+        storage: _MockGetStorage.getInstance(boxName: 'spots_default'),
+      );
+      final vibeKernel = VibeKernel();
+      vibeKernel.seedUserStateFromOnboarding(
+        subjectId: 'agent-test-user',
+        dimensions: const <String, double>{
+          'exploration_eagerness': 0.71,
+          'community_orientation': 0.64,
+          'authenticity_preference': 0.66,
+          'temporal_flexibility': 0.62,
+          'energy_preference': 0.6,
+          'novelty_seeking': 0.68,
+          'value_orientation': 0.5,
+          'crowd_tolerance': 0.57,
+        },
+        provenanceTags: const <String>['test:ai2ai_freeze'],
+      );
 
-    final adapter = _FakeLegacyProtocolCodecAdapter(
-      peerResolutionService: CanonicalPeerResolutionService(
-        vibeKernel: vibeKernel,
-        governanceKernelService: buildTestGovernanceKernelService(),
-      ),
-    );
-    adapter.remotePeerPayload = Ai2AiCanonicalPeerPayload(
-      reference: Ai2AiVibeReference(
-        subjectRef: VibeSubjectRef.personal('agent-remote-user'),
-        scope: 'personal',
-        confidence: 0.82,
+      final adapter = _FakeLegacyProtocolCodecAdapter(
+        peerResolutionService: CanonicalPeerResolutionService(
+          vibeKernel: vibeKernel,
+          governanceKernelService: buildTestGovernanceKernelService(),
+        ),
+      );
+      adapter.remotePeerPayload = Ai2AiCanonicalPeerPayload(
+        reference: Ai2AiVibeReference(
+          subjectRef: VibeSubjectRef.personal('agent-remote-user'),
+          scope: 'personal',
+          confidence: 0.82,
+          geographicBinding: GeographicVibeBinding(
+            localityRef: VibeSubjectRef.locality('bham-downtown'),
+            stableKey: 'bham-downtown',
+            higherGeographicRefs: <VibeSubjectRef>[
+              VibeSubjectRef.city('bham'),
+              VibeSubjectRef.region('al'),
+              VibeSubjectRef.global('earth'),
+            ],
+            cityCode: 'bham',
+            regionCode: 'al',
+            globalCode: 'earth',
+          ),
+          scopedBindings: <ScopedVibeBinding>[
+            ScopedVibeBinding(
+              contextRef: VibeSubjectRef.scoped(
+                scopedId: 'scene:locality-agent:bham-downtown:indie-music',
+                scopedKind: ScopedAgentKind.scene,
+              ),
+              scopedKind: ScopedAgentKind.scene,
+              anchorGeographicRef: VibeSubjectRef.locality('bham-downtown'),
+            ),
+          ],
+          snapshotUpdatedAtUtc: DateTime.now().toUtc(),
+        ),
+        personalSurface: const CanonicalPeerCompatibilitySurface(
+          signatureHash: 'remote-signature-hash',
+          archetype: 'social_connector',
+          dimensionWindow: <String, double>{
+            'exploration_eagerness': 0.73,
+            'community_orientation': 0.68,
+            'authenticity_preference': 0.66,
+            'temporal_flexibility': 0.61,
+            'energy_preference': 0.64,
+            'novelty_seeking': 0.69,
+            'value_orientation': 0.51,
+            'crowd_tolerance': 0.62,
+          },
+          energy: 0.64,
+          socialCadence: 0.72,
+          directness: 0.59,
+          confidence: 0.82,
+        ),
         geographicBinding: GeographicVibeBinding(
           localityRef: VibeSubjectRef.locality('bham-downtown'),
           stableKey: 'bham-downtown',
@@ -220,147 +261,110 @@ void main() {
             anchorGeographicRef: VibeSubjectRef.locality('bham-downtown'),
           ),
         ],
-        snapshotUpdatedAtUtc: DateTime.now().toUtc(),
-      ),
-      personalSurface: const CanonicalPeerCompatibilitySurface(
-        signatureHash: 'remote-signature-hash',
-        archetype: 'social_connector',
-        dimensionWindow: <String, double>{
-          'exploration_eagerness': 0.73,
-          'community_orientation': 0.68,
-          'authenticity_preference': 0.66,
-          'temporal_flexibility': 0.61,
-          'energy_preference': 0.64,
-          'novelty_seeking': 0.69,
-          'value_orientation': 0.51,
-          'crowd_tolerance': 0.62,
-        },
-        energy: 0.64,
-        socialCadence: 0.72,
-        directness: 0.59,
+        freshnessHours: 2.0,
         confidence: 0.82,
-      ),
-      geographicBinding: GeographicVibeBinding(
-        localityRef: VibeSubjectRef.locality('bham-downtown'),
-        stableKey: 'bham-downtown',
-        higherGeographicRefs: <VibeSubjectRef>[
-          VibeSubjectRef.city('bham'),
-          VibeSubjectRef.region('al'),
-          VibeSubjectRef.global('earth'),
-        ],
-        cityCode: 'bham',
-        regionCode: 'al',
-        globalCode: 'earth',
-      ),
-      scopedBindings: <ScopedVibeBinding>[
-        ScopedVibeBinding(
-          contextRef: VibeSubjectRef.scoped(
-            scopedId: 'scene:locality-agent:bham-downtown:indie-music',
-            scopedKind: ScopedAgentKind.scene,
-          ),
-          scopedKind: ScopedAgentKind.scene,
-          anchorGeographicRef: VibeSubjectRef.locality('bham-downtown'),
-        ),
-      ],
-      freshnessHours: 2.0,
-      confidence: 0.82,
-      generatedAtUtc: DateTime.now().toUtc(),
-    );
-    final manager = ConnectionManager(
-      vibeAnalyzer: UserVibeAnalyzer(prefs: prefs),
-      protocolCodecAdapter: adapter,
-      canonicalPeerResolutionService: CanonicalPeerResolutionService(
-        vibeKernel: vibeKernel,
-        governanceKernelService: buildTestGovernanceKernelService(),
-      ),
-    );
-
-    final result = await manager.establishOfflinePeerConnection(
-      'user-test',
-      PersonalityProfile.initial('agent-test-user', userId: 'user-test'),
-      'remote-device-1',
-    );
-
-    expect(result, isNotNull);
-    expect(adapter.canonicalPeerPayloadCalls, 1);
-    expect(adapter.personalityExchangeCalls, 0);
-    expect(
-      adapter.lastPeerPayload,
-      isNotNull,
-    );
-    expect(
-      adapter.lastPeerPayload!.reference.subjectRef,
-      equals(VibeSubjectRef.personal('agent-test-user')),
-    );
-    expect(adapter.lastPeerPayload!.reference.scope, equals('personal'));
-    expect(
-      result!.currentCompatibility,
-      greaterThan(VibeConstants.minimumCompatibilityThreshold),
-    );
-    expect(
-      result.learningOutcomes['canonical_reason_codes'],
-      isA<List<dynamic>>(),
-    );
-    expect(result.learningOutcomes['peer_why_summary'], isA<String>());
-  });
-
-  test('legacy profile exchange degrades into canonical peer context only',
-      () async {
-    final prefs = await SharedPreferencesCompat.getInstance(
-      storage: _MockGetStorage.getInstance(boxName: 'spots_default'),
-    );
-    final vibeKernel = VibeKernel();
-    vibeKernel.seedUserStateFromOnboarding(
-      subjectId: 'agent-test-user',
-      dimensions: const <String, double>{
-        'exploration_eagerness': 0.7,
-        'community_orientation': 0.62,
-        'authenticity_preference': 0.66,
-        'temporal_flexibility': 0.6,
-        'energy_preference': 0.57,
-        'novelty_seeking': 0.65,
-      },
-      provenanceTags: const <String>['test:ai2ai_freeze'],
-    );
-
-    final adapter = _FakeLegacyProtocolCodecAdapter(
-      peerResolutionService: CanonicalPeerResolutionService(
-        vibeKernel: vibeKernel,
-        governanceKernelService: buildTestGovernanceKernelService(),
-      ),
-    )..legacyRemoteProfile = PersonalityProfile.initial(
-        'agent-legacy-remote',
-        userId: 'legacy-user',
-      ).evolve(
-        newArchetype: 'legacy_social_connector',
-        newDimensions: const <String, double>{
-          'exploration_eagerness': 0.71,
-          'community_orientation': 0.67,
-          'authenticity_preference': 0.63,
-          'temporal_flexibility': 0.62,
-          'energy_preference': 0.59,
-          'novelty_seeking': 0.68,
-        },
+        generatedAtUtc: DateTime.now().toUtc(),
       );
-    final manager = ConnectionManager(
-      vibeAnalyzer: UserVibeAnalyzer(prefs: prefs),
-      protocolCodecAdapter: adapter,
-      canonicalPeerResolutionService: CanonicalPeerResolutionService(
-        vibeKernel: vibeKernel,
-        governanceKernelService: buildTestGovernanceKernelService(),
-      ),
-    );
+      final manager = ConnectionManager(
+        vibeAnalyzer: UserVibeAnalyzer(prefs: prefs),
+        protocolCodecAdapter: adapter,
+        canonicalPeerResolutionService: CanonicalPeerResolutionService(
+          vibeKernel: vibeKernel,
+          governanceKernelService: buildTestGovernanceKernelService(),
+        ),
+      );
 
-    final resolved = await manager.resolveRemotePeerContextForDevice(
-      localUserId: 'user-test',
-      localPersonality:
-          PersonalityProfile.initial('agent-test-user', userId: 'user-test'),
-      remoteDeviceId: 'legacy-remote-device',
-    );
+      final result = await manager.establishOfflinePeerConnection(
+        'user-test',
+        PersonalityProfile.initial('agent-test-user', userId: 'user-test'),
+        'remote-device-1',
+      );
 
-    expect(resolved, isNotNull);
-    expect(adapter.canonicalPeerPayloadCalls, 1);
-    expect(adapter.personalityExchangeCalls, 1);
-    expect(resolved!.metadata['legacy_personality_exchange'], isTrue);
-  });
+      expect(result, isNotNull);
+      expect(adapter.canonicalPeerPayloadCalls, 1);
+      expect(adapter.personalityExchangeCalls, 0);
+      expect(adapter.lastPeerPayload, isNotNull);
+      expect(
+        adapter.lastPeerPayload!.reference.subjectRef,
+        equals(VibeSubjectRef.personal('agent-test-user')),
+      );
+      expect(adapter.lastPeerPayload!.reference.scope, equals('personal'));
+      expect(
+        result!.currentCompatibility,
+        greaterThan(VibeConstants.minimumCompatibilityThreshold),
+      );
+      expect(
+        result.learningOutcomes['canonical_reason_codes'],
+        isA<List<dynamic>>(),
+      );
+      expect(result.learningOutcomes['peer_why_summary'], isA<String>());
+    },
+  );
+
+  test(
+    'legacy profile exchange degrades into canonical peer context only',
+    () async {
+      final prefs = await SharedPreferencesCompat.getInstance(
+        storage: _MockGetStorage.getInstance(boxName: 'spots_default'),
+      );
+      final vibeKernel = VibeKernel();
+      vibeKernel.seedUserStateFromOnboarding(
+        subjectId: 'agent-test-user',
+        dimensions: const <String, double>{
+          'exploration_eagerness': 0.7,
+          'community_orientation': 0.62,
+          'authenticity_preference': 0.66,
+          'temporal_flexibility': 0.6,
+          'energy_preference': 0.57,
+          'novelty_seeking': 0.65,
+        },
+        provenanceTags: const <String>['test:ai2ai_freeze'],
+      );
+
+      final adapter =
+          _FakeLegacyProtocolCodecAdapter(
+              peerResolutionService: CanonicalPeerResolutionService(
+                vibeKernel: vibeKernel,
+                governanceKernelService: buildTestGovernanceKernelService(),
+              ),
+            )
+            ..legacyRemoteProfile =
+                PersonalityProfile.initial(
+                  'agent-legacy-remote',
+                  userId: 'legacy-user',
+                ).evolve(
+                  newArchetype: 'legacy_social_connector',
+                  newDimensions: const <String, double>{
+                    'exploration_eagerness': 0.71,
+                    'community_orientation': 0.67,
+                    'authenticity_preference': 0.63,
+                    'temporal_flexibility': 0.62,
+                    'energy_preference': 0.59,
+                    'novelty_seeking': 0.68,
+                  },
+                );
+      final manager = ConnectionManager(
+        vibeAnalyzer: UserVibeAnalyzer(prefs: prefs),
+        protocolCodecAdapter: adapter,
+        canonicalPeerResolutionService: CanonicalPeerResolutionService(
+          vibeKernel: vibeKernel,
+          governanceKernelService: buildTestGovernanceKernelService(),
+        ),
+      );
+
+      final resolved = await manager.resolveRemotePeerContextForDevice(
+        localUserId: 'user-test',
+        localPersonality: PersonalityProfile.initial(
+          'agent-test-user',
+          userId: 'user-test',
+        ),
+        remoteDeviceId: 'legacy-remote-device',
+      );
+
+      expect(resolved, isNotNull);
+      expect(adapter.canonicalPeerPayloadCalls, 1);
+      expect(adapter.personalityExchangeCalls, 1);
+      expect(resolved!.metadata['legacy_personality_exchange'], isTrue);
+    },
+  );
 }

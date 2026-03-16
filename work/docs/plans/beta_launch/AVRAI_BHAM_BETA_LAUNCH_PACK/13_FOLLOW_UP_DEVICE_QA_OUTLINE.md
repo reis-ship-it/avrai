@@ -32,6 +32,25 @@ For live phone testing, use the companion master checklist:
 - checking real-world flows that are hard to prove fully in simulator-only work
 - collecting evidence and blockers in a consistent way
 
+## Current Pre-Phone Baseline
+
+Before real phones are available, BHAM beta now has a deterministic simulated smoke gate on both platforms.
+
+- Canonical command:
+  - `bash work/scripts/proof_run/run_simulated_headless_smoke.sh ios`
+  - `bash work/scripts/proof_run/run_simulated_headless_smoke.sh android`
+- Expected outputs:
+  - proof bundle artifact folder + zip
+  - `simulated_smoke_response.json`
+  - `validation_summary.json`
+- Current expectation before any live-phone QA pass starts:
+  - latest iOS simulator smoke is green
+  - latest Android emulator smoke is green
+  - both validation summaries are `is_valid: true`
+
+This does not replace live-phone QA.
+It means live-phone QA should begin from a boring baseline instead of discovering basic orchestration, proof-export, or artifact-shape regressions for the first time on physical devices.
+
 ## What This Outline Is Not For
 
 - replacing automated test gates
@@ -72,6 +91,10 @@ Capture for every device:
 
 Before manual QA starts:
 
+- confirm the latest simulated smoke gate is green on both platforms:
+  - `bash work/scripts/proof_run/run_simulated_headless_smoke.sh ios`
+  - `bash work/scripts/proof_run/run_simulated_headless_smoke.sh android`
+- capture the latest artifact folders and validation summaries for both simulated runs
 - install the intended beta build on every test phone
 - confirm required feature flags/defaults are enabled
 - confirm admin oversight surfaces are reachable
@@ -84,6 +107,7 @@ Before manual QA starts:
   - screen recordings if useful
   - log notes
   - proof-run receipts where applicable
+  - latest simulated smoke artifact paths
 - confirm the relevant oversight/debug views are reachable for:
   - AI2AI activity / mesh health
   - kernel health

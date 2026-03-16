@@ -58,6 +58,7 @@ void main() {
       confidenceService = const SignatureConfidenceService();
       freshnessTracker = const SignatureFreshnessTracker();
       matchService = const SignatureMatchService();
+      TrajectoryKernel.resetFallbackStateForTesting();
       userSignatureBuilder = UserSignatureBuilder(
         confidenceService: confidenceService,
         freshnessTracker: freshnessTracker,
@@ -81,58 +82,59 @@ void main() {
     });
 
     test(
-        'uses signature score when confidence is strong and falls back when weak',
-        () {
-      final userSignature = EntitySignature(
-        signatureId: 'user:u1',
-        entityId: 'u1',
-        entityKind: SignatureEntityKind.user,
-        dna: <String, double>{'exploration_eagerness': 0.9},
-        pheromones: <String, double>{'community_orientation': 0.9},
-        confidence: 0.9,
-        freshness: 0.9,
-        updatedAt: DateTime(2026, 3, 5),
-        summary: 'user',
-      );
-      final strongEntity = EntitySignature(
-        signatureId: 'spot:s1',
-        entityId: 's1',
-        entityKind: SignatureEntityKind.spot,
-        dna: <String, double>{'exploration_eagerness': 0.9},
-        pheromones: <String, double>{'community_orientation': 0.9},
-        confidence: 0.9,
-        freshness: 0.9,
-        updatedAt: DateTime(2026, 3, 5),
-        summary: 'strong',
-      );
-      final weakEntity = EntitySignature(
-        signatureId: 'spot:s2',
-        entityId: 's2',
-        entityKind: SignatureEntityKind.spot,
-        dna: <String, double>{'exploration_eagerness': 0.9},
-        pheromones: <String, double>{'community_orientation': 0.9},
-        confidence: 0.3,
-        freshness: 0.9,
-        updatedAt: DateTime(2026, 3, 5),
-        summary: 'weak',
-      );
+      'uses signature score when confidence is strong and falls back when weak',
+      () {
+        final userSignature = EntitySignature(
+          signatureId: 'user:u1',
+          entityId: 'u1',
+          entityKind: SignatureEntityKind.user,
+          dna: <String, double>{'exploration_eagerness': 0.9},
+          pheromones: <String, double>{'community_orientation': 0.9},
+          confidence: 0.9,
+          freshness: 0.9,
+          updatedAt: DateTime(2026, 3, 5),
+          summary: 'user',
+        );
+        final strongEntity = EntitySignature(
+          signatureId: 'spot:s1',
+          entityId: 's1',
+          entityKind: SignatureEntityKind.spot,
+          dna: <String, double>{'exploration_eagerness': 0.9},
+          pheromones: <String, double>{'community_orientation': 0.9},
+          confidence: 0.9,
+          freshness: 0.9,
+          updatedAt: DateTime(2026, 3, 5),
+          summary: 'strong',
+        );
+        final weakEntity = EntitySignature(
+          signatureId: 'spot:s2',
+          entityId: 's2',
+          entityKind: SignatureEntityKind.spot,
+          dna: <String, double>{'exploration_eagerness': 0.9},
+          pheromones: <String, double>{'community_orientation': 0.9},
+          confidence: 0.3,
+          freshness: 0.9,
+          updatedAt: DateTime(2026, 3, 5),
+          summary: 'weak',
+        );
 
-      final strong = matchService.match(
-        userSignature: userSignature,
-        entitySignature: strongEntity,
-        fallbackScore: 0.2,
-      );
-      final weak = matchService.match(
-        userSignature: userSignature,
-        entitySignature: weakEntity,
-        fallbackScore: 0.2,
-      );
+        final strong = matchService.match(
+          userSignature: userSignature,
+          entitySignature: strongEntity,
+          fallbackScore: 0.2,
+        );
+        final weak = matchService.match(
+          userSignature: userSignature,
+          entitySignature: weakEntity,
+          fallbackScore: 0.2,
+        );
 
-      expect(strong.mode, SignatureScoreMode.signaturePrimary);
-      expect(strong.finalScore, greaterThan(0.9));
-      expect(weak.mode, SignatureScoreMode.fallback);
-      expect(weak.finalScore, 0.2);
-    });
+        expect(strong.mode, SignatureScoreMode.signaturePrimary);
+        expect(strong.finalScore, greaterThan(0.9));
+        expect(weak.mode, SignatureScoreMode.fallback);
+        expect(weak.finalScore, 0.2);
+      },
+    );
 
     test('keeps Birmingham shaping in pheromones rather than DNA', () {
       final birminghamSpot = Spot(
@@ -155,8 +157,9 @@ void main() {
         localityCode: null,
       );
 
-      final birminghamSignature =
-          spotSignatureBuilder.build(spot: birminghamSpot);
+      final birminghamSignature = spotSignatureBuilder.build(
+        spot: birminghamSpot,
+      );
       final genericSignature = spotSignatureBuilder.build(spot: genericSpot);
 
       expect(birminghamSignature.dna, genericSignature.dna);
@@ -204,736 +207,764 @@ void main() {
     });
 
     test(
-        'onboarding initialization seeds a persisted signature and later refreshes preserve dna baseline',
-        () async {
-      final defaultStorage =
-          MockGetStorage.getInstance(boxName: 'spots_default');
-      final userStorage = MockGetStorage.getInstance(boxName: 'spots_user');
-      final aiStorage = MockGetStorage.getInstance(boxName: 'spots_ai');
-      final analyticsStorage =
-          MockGetStorage.getInstance(boxName: 'spots_analytics');
-      await StorageService.instance.initForTesting(
-        defaultStorage: defaultStorage,
-        userStorage: userStorage,
-        aiStorage: aiStorage,
-        analyticsStorage: analyticsStorage,
-      );
-      final prefs = await SharedPreferencesCompat.getInstance(
-        storage: defaultStorage,
-      );
-      final userVibeAnalyzer = UserVibeAnalyzer(prefs: prefs);
-      final service = EntitySignatureService(
-        repository: SignatureRepository(),
-        storageService: StorageService.instance,
-        matchService: matchService,
-        userSignatureBuilder: userSignatureBuilder,
-        spotSignatureBuilder: spotSignatureBuilder,
-        communitySignatureBuilder: communitySignatureBuilder,
-        eventSignatureBuilder: eventSignatureBuilder,
-        performerVenueEventBundleBuilder: PerformerVenueEventBundleBuilder(
-          bundleSignatureBuilder: bundleSignatureBuilder,
-          spotSignatureBuilder: spotSignatureBuilder,
+      'onboarding initialization seeds a persisted signature and later refreshes preserve dna baseline',
+      () async {
+        final defaultStorage = MockGetStorage.getInstance(
+          boxName: 'spots_default',
+        );
+        final userStorage = MockGetStorage.getInstance(boxName: 'spots_user');
+        final aiStorage = MockGetStorage.getInstance(boxName: 'spots_ai');
+        final analyticsStorage = MockGetStorage.getInstance(
+          boxName: 'spots_analytics',
+        );
+        await StorageService.instance.initForTesting(
+          defaultStorage: defaultStorage,
+          userStorage: userStorage,
+          aiStorage: aiStorage,
+          analyticsStorage: analyticsStorage,
+        );
+        final prefs = await SharedPreferencesCompat.getInstance(
+          storage: defaultStorage,
+        );
+        final userVibeAnalyzer = UserVibeAnalyzer(prefs: prefs);
+        final service = EntitySignatureService(
+          repository: SignatureRepository(),
+          storageService: StorageService.instance,
+          matchService: matchService,
           userSignatureBuilder: userSignatureBuilder,
-        ),
-        communityEventBundleBuilder: CommunityEventBundleBuilder(
-          bundleSignatureBuilder: bundleSignatureBuilder,
+          spotSignatureBuilder: spotSignatureBuilder,
           communitySignatureBuilder: communitySignatureBuilder,
           eventSignatureBuilder: eventSignatureBuilder,
-        ),
-        userVibeAnalyzer: userVibeAnalyzer,
-        personalityLearning: PersonalityLearning(),
-      );
+          performerVenueEventBundleBuilder: PerformerVenueEventBundleBuilder(
+            bundleSignatureBuilder: bundleSignatureBuilder,
+            spotSignatureBuilder: spotSignatureBuilder,
+            userSignatureBuilder: userSignatureBuilder,
+          ),
+          communityEventBundleBuilder: CommunityEventBundleBuilder(
+            bundleSignatureBuilder: bundleSignatureBuilder,
+            communitySignatureBuilder: communitySignatureBuilder,
+            eventSignatureBuilder: eventSignatureBuilder,
+          ),
+          userVibeAnalyzer: userVibeAnalyzer,
+          personalityLearning: PersonalityLearning(),
+        );
 
-      final initialDimensions = <String, double>{
-        for (final dimension in VibeConstants.coreDimensions) dimension: 0.2,
-      }..['exploration_eagerness'] = 0.1;
-      final evolvedDimensions = <String, double>{
-        for (final dimension in VibeConstants.coreDimensions) dimension: 0.8,
-      }..['exploration_eagerness'] = 0.95;
-      final confidence = <String, double>{
-        for (final dimension in VibeConstants.coreDimensions) dimension: 0.8,
-      };
-      final initialPersonality = PersonalityProfile(
-        agentId: 'agent-1',
-        userId: 'user-1',
-        dimensions: initialDimensions,
-        dimensionConfidence: confidence,
-        archetype: 'Explorer',
-        authenticity: 0.88,
-        createdAt: DateTime(2026, 3, 5),
-        lastUpdated: DateTime(2026, 3, 5),
-        evolutionGeneration: 1,
-        learningHistory: const <String, dynamic>{},
-        corePersonality: initialDimensions,
-      );
-      final evolvedPersonality = PersonalityProfile(
-        agentId: 'agent-1',
-        userId: 'user-1',
-        dimensions: evolvedDimensions,
-        dimensionConfidence: confidence,
-        archetype: 'Explorer',
-        authenticity: 0.9,
-        createdAt: DateTime(2026, 3, 5),
-        lastUpdated: DateTime(2026, 3, 8),
-        evolutionGeneration: 2,
-        learningHistory: const <String, dynamic>{},
-        corePersonality: evolvedDimensions,
-      );
-      final onboardingData = OnboardingData(
-        agentId: 'agent-1',
-        homebase: 'Birmingham',
-        favoritePlaces: const <String>['Crestwood Park'],
-        preferences: const <String, List<String>>{
-          'Coffee': <String>['third wave'],
-        },
-        baselineLists: const <String>['Neighborhood spots'],
-        openResponses: const <String, String>{
-          'about_me': 'I like live music and neighborhood coffee shops.',
-        },
-        respectedFriends: const <String>['friend-1'],
-        socialMediaConnected: const <String, bool>{'instagram': true},
-        completedAt: DateTime(2026, 3, 5),
-      );
-      final user = UnifiedUser(
-        id: 'user-1',
-        email: 'user@example.com',
-        displayName: 'Test User',
-        location: 'Birmingham',
-        createdAt: DateTime(2026, 3, 5),
-        updatedAt: DateTime(2026, 3, 8),
-        hasCompletedOnboarding: true,
-        tags: const <String>['live music'],
-      );
+        final initialDimensions = <String, double>{
+          for (final dimension in VibeConstants.coreDimensions) dimension: 0.2,
+        }..['exploration_eagerness'] = 0.1;
+        final evolvedDimensions = <String, double>{
+          for (final dimension in VibeConstants.coreDimensions) dimension: 0.8,
+        }..['exploration_eagerness'] = 0.95;
+        final confidence = <String, double>{
+          for (final dimension in VibeConstants.coreDimensions) dimension: 0.8,
+        };
+        final initialPersonality = PersonalityProfile(
+          agentId: 'agent-1',
+          userId: 'user-1',
+          dimensions: initialDimensions,
+          dimensionConfidence: confidence,
+          archetype: 'Explorer',
+          authenticity: 0.88,
+          createdAt: DateTime(2026, 3, 5),
+          lastUpdated: DateTime(2026, 3, 5),
+          evolutionGeneration: 1,
+          learningHistory: const <String, dynamic>{},
+          corePersonality: initialDimensions,
+        );
+        final evolvedPersonality = PersonalityProfile(
+          agentId: 'agent-1',
+          userId: 'user-1',
+          dimensions: evolvedDimensions,
+          dimensionConfidence: confidence,
+          archetype: 'Explorer',
+          authenticity: 0.9,
+          createdAt: DateTime(2026, 3, 5),
+          lastUpdated: DateTime(2026, 3, 8),
+          evolutionGeneration: 2,
+          learningHistory: const <String, dynamic>{},
+          corePersonality: evolvedDimensions,
+        );
+        final onboardingData = OnboardingData(
+          agentId: 'agent-1',
+          homebase: 'Birmingham',
+          favoritePlaces: const <String>['Crestwood Park'],
+          preferences: const <String, List<String>>{
+            'Coffee': <String>['third wave'],
+          },
+          baselineLists: const <String>['Neighborhood spots'],
+          openResponses: const <String, String>{
+            'about_me': 'I like live music and neighborhood coffee shops.',
+          },
+          respectedFriends: const <String>['friend-1'],
+          socialMediaConnected: const <String, bool>{'instagram': true},
+          completedAt: DateTime(2026, 3, 5),
+        );
+        final user = UnifiedUser(
+          id: 'user-1',
+          email: 'user@example.com',
+          displayName: 'Test User',
+          location: 'Birmingham',
+          createdAt: DateTime(2026, 3, 5),
+          updatedAt: DateTime(2026, 3, 8),
+          hasCompletedOnboarding: true,
+          tags: const <String>['live music'],
+        );
 
-      final seeded = await service.initializeUserSignatureFromOnboarding(
-        userId: user.id,
-        onboardingData: onboardingData,
-        personality: initialPersonality,
-        displayName: user.displayName,
-        email: user.email,
-      );
-      final rawLatest = userSignatureBuilder.build(
-        user: user,
-        personality: evolvedPersonality,
-        userVibe:
-            await userVibeAnalyzer.compileUserVibe(user.id, evolvedPersonality),
-      );
-      final refreshed = await service.buildUserSignature(
-        user: user,
-        personality: evolvedPersonality,
-      );
+        final seeded = await service.initializeUserSignatureFromOnboarding(
+          userId: user.id,
+          onboardingData: onboardingData,
+          personality: initialPersonality,
+          displayName: user.displayName,
+          email: user.email,
+        );
+        final rawLatest = userSignatureBuilder.build(
+          user: user,
+          personality: evolvedPersonality,
+          userVibe: await userVibeAnalyzer.compileUserVibe(
+            user.id,
+            evolvedPersonality,
+          ),
+        );
+        final refreshed = await service.buildUserSignature(
+          user: user,
+          personality: evolvedPersonality,
+        );
 
-      expect(seeded.summary, contains('Canonical user vibe projection'));
-      expect(
-        seeded.sourceTrace.map((trace) => trace.label),
-        contains('onboarding self-definition'),
-      );
-      expect(
-        refreshed.dna['exploration_eagerness']!,
-        equals(seeded.dna['exploration_eagerness']!),
-      );
-      expect(
-        refreshed.dna['exploration_eagerness']!,
-        lessThan(rawLatest.dna['exploration_eagerness']!),
-      );
-      expect(
-        service.getStoredSignature(
-          entityKind: SignatureEntityKind.user,
-          entityId: user.id,
-        ),
-        isNotNull,
-      );
-    });
+        expect(seeded.summary, contains('Canonical user vibe projection'));
+        expect(
+          seeded.sourceTrace.map((trace) => trace.label),
+          contains('onboarding self-definition'),
+        );
+        expect(
+          refreshed.dna['exploration_eagerness']!,
+          equals(seeded.dna['exploration_eagerness']!),
+        );
+        expect(
+          refreshed.dna['exploration_eagerness']!,
+          lessThan(rawLatest.dna['exploration_eagerness']!),
+        );
+        expect(
+          service.getStoredSignature(
+            entityKind: SignatureEntityKind.user,
+            entityId: user.id,
+          ),
+          isNotNull,
+        );
+      },
+    );
 
     test(
-        'behavioral signals update persisted signature pheromones after onboarding',
-        () async {
-      final defaultStorage =
-          MockGetStorage.getInstance(boxName: 'spots_default');
-      final userStorage = MockGetStorage.getInstance(boxName: 'spots_user');
-      final aiStorage = MockGetStorage.getInstance(boxName: 'spots_ai');
-      final analyticsStorage =
-          MockGetStorage.getInstance(boxName: 'spots_analytics');
-      await StorageService.instance.initForTesting(
-        defaultStorage: defaultStorage,
-        userStorage: userStorage,
-        aiStorage: aiStorage,
-        analyticsStorage: analyticsStorage,
-      );
-      final prefs = await SharedPreferencesCompat.getInstance(
-        storage: defaultStorage,
-      );
-      final userVibeAnalyzer = UserVibeAnalyzer(prefs: prefs);
-      final service = EntitySignatureService(
-        repository: SignatureRepository(),
-        storageService: StorageService.instance,
-        matchService: matchService,
-        userSignatureBuilder: userSignatureBuilder,
-        spotSignatureBuilder: spotSignatureBuilder,
-        communitySignatureBuilder: communitySignatureBuilder,
-        eventSignatureBuilder: eventSignatureBuilder,
-        performerVenueEventBundleBuilder: PerformerVenueEventBundleBuilder(
-          bundleSignatureBuilder: bundleSignatureBuilder,
-          spotSignatureBuilder: spotSignatureBuilder,
+      'behavioral signals update persisted signature pheromones after onboarding',
+      () async {
+        final defaultStorage = MockGetStorage.getInstance(
+          boxName: 'spots_default',
+        );
+        final userStorage = MockGetStorage.getInstance(boxName: 'spots_user');
+        final aiStorage = MockGetStorage.getInstance(boxName: 'spots_ai');
+        final analyticsStorage = MockGetStorage.getInstance(
+          boxName: 'spots_analytics',
+        );
+        await StorageService.instance.initForTesting(
+          defaultStorage: defaultStorage,
+          userStorage: userStorage,
+          aiStorage: aiStorage,
+          analyticsStorage: analyticsStorage,
+        );
+        final prefs = await SharedPreferencesCompat.getInstance(
+          storage: defaultStorage,
+        );
+        final userVibeAnalyzer = UserVibeAnalyzer(prefs: prefs);
+        final service = EntitySignatureService(
+          repository: SignatureRepository(),
+          storageService: StorageService.instance,
+          matchService: matchService,
           userSignatureBuilder: userSignatureBuilder,
-        ),
-        communityEventBundleBuilder: CommunityEventBundleBuilder(
-          bundleSignatureBuilder: bundleSignatureBuilder,
+          spotSignatureBuilder: spotSignatureBuilder,
           communitySignatureBuilder: communitySignatureBuilder,
           eventSignatureBuilder: eventSignatureBuilder,
-        ),
-        userVibeAnalyzer: userVibeAnalyzer,
-        personalityLearning: PersonalityLearning(),
-      );
-      final dimensions = <String, double>{
-        for (final dimension in VibeConstants.coreDimensions) dimension: 0.25,
-      };
-      final confidence = <String, double>{
-        for (final dimension in VibeConstants.coreDimensions) dimension: 0.8,
-      };
-      final personality = PersonalityProfile(
-        agentId: 'agent-2',
-        userId: 'user-2',
-        dimensions: dimensions,
-        dimensionConfidence: confidence,
-        archetype: 'Explorer',
-        authenticity: 0.84,
-        createdAt: DateTime(2026, 3, 5),
-        lastUpdated: DateTime(2026, 3, 5),
-        evolutionGeneration: 1,
-        learningHistory: const <String, dynamic>{},
-        corePersonality: dimensions,
-      );
-      final onboardingData = OnboardingData(
-        agentId: 'agent-2',
-        homebase: 'Birmingham',
-        completedAt: DateTime(2026, 3, 5),
-      );
-      final user = UnifiedUser(
-        id: 'user-2',
-        email: 'user2@example.com',
-        displayName: 'User Two',
-        location: 'Birmingham',
-        createdAt: DateTime(2026, 3, 5),
-        updatedAt: DateTime(2026, 3, 5),
-        hasCompletedOnboarding: true,
-      );
-      await service.initializeUserSignatureFromOnboarding(
-        userId: user.id,
-        onboardingData: onboardingData,
-        personality: personality,
-        displayName: user.displayName,
-        email: user.email,
-      );
-      final spot = Spot(
-        id: 'spot-learn-1',
-        name: 'Late-night jazz room',
-        description: 'Small live music venue with a strong local crowd.',
-        latitude: 33.52,
-        longitude: -86.8,
-        category: 'Music',
-        rating: 4.9,
-        createdBy: 'owner-2',
-        createdAt: DateTime(2026, 3, 6),
-        updatedAt: DateTime(2026, 3, 6),
-        cityCode: 'us-bhm',
-        localityCode: 'us-bhm-lakeview',
-      );
+          performerVenueEventBundleBuilder: PerformerVenueEventBundleBuilder(
+            bundleSignatureBuilder: bundleSignatureBuilder,
+            spotSignatureBuilder: spotSignatureBuilder,
+            userSignatureBuilder: userSignatureBuilder,
+          ),
+          communityEventBundleBuilder: CommunityEventBundleBuilder(
+            bundleSignatureBuilder: bundleSignatureBuilder,
+            communitySignatureBuilder: communitySignatureBuilder,
+            eventSignatureBuilder: eventSignatureBuilder,
+          ),
+          userVibeAnalyzer: userVibeAnalyzer,
+          personalityLearning: PersonalityLearning(),
+        );
+        final dimensions = <String, double>{
+          for (final dimension in VibeConstants.coreDimensions) dimension: 0.25,
+        };
+        final confidence = <String, double>{
+          for (final dimension in VibeConstants.coreDimensions) dimension: 0.8,
+        };
+        final personality = PersonalityProfile(
+          agentId: 'agent-2',
+          userId: 'user-2',
+          dimensions: dimensions,
+          dimensionConfidence: confidence,
+          archetype: 'Explorer',
+          authenticity: 0.84,
+          createdAt: DateTime(2026, 3, 5),
+          lastUpdated: DateTime(2026, 3, 5),
+          evolutionGeneration: 1,
+          learningHistory: const <String, dynamic>{},
+          corePersonality: dimensions,
+        );
+        final onboardingData = OnboardingData(
+          agentId: 'agent-2',
+          homebase: 'Birmingham',
+          completedAt: DateTime(2026, 3, 5),
+        );
+        final user = UnifiedUser(
+          id: 'user-2',
+          email: 'user2@example.com',
+          displayName: 'User Two',
+          location: 'Birmingham',
+          createdAt: DateTime(2026, 3, 5),
+          updatedAt: DateTime(2026, 3, 5),
+          hasCompletedOnboarding: true,
+        );
+        await service.initializeUserSignatureFromOnboarding(
+          userId: user.id,
+          onboardingData: onboardingData,
+          personality: personality,
+          displayName: user.displayName,
+          email: user.email,
+        );
+        final spot = Spot(
+          id: 'spot-learn-1',
+          name: 'Late-night jazz room',
+          description: 'Small live music venue with a strong local crowd.',
+          latitude: 33.52,
+          longitude: -86.8,
+          category: 'Music',
+          rating: 4.9,
+          createdBy: 'owner-2',
+          createdAt: DateTime(2026, 3, 6),
+          updatedAt: DateTime(2026, 3, 6),
+          cityCode: 'us-bhm',
+          localityCode: 'us-bhm-lakeview',
+        );
 
-      final learned = await service.recordSpotViewSignal(
-        user: user,
-        spot: spot,
-        personality: personality,
-      );
-      final rebuilt = await service.buildUserSignature(
-        user: user,
-        personality: personality,
-      );
+        final learned = await service.recordSpotViewSignal(
+          user: user,
+          spot: spot,
+          personality: personality,
+        );
+        final rebuilt = await service.buildUserSignature(
+          user: user,
+          personality: personality,
+        );
 
-      expect(learned.signatureId, contains('canonical:user'));
-      expect(
-        learned.sourceTrace.any(
-          (trace) => trace.label == 'canonical_vibe_kernel',
-        ),
-        isTrue,
-      );
-      expect(
-        rebuilt.sourceTrace.any(
-          (trace) => trace.label == 'canonical_vibe_kernel',
-        ),
-        isTrue,
-      );
-    });
+        expect(learned.signatureId, contains('canonical:user'));
+        expect(
+          learned.sourceTrace.any(
+            (trace) => trace.label == 'canonical_vibe_kernel',
+          ),
+          isTrue,
+        );
+        expect(
+          rebuilt.sourceTrace.any(
+            (trace) => trace.label == 'canonical_vibe_kernel',
+          ),
+          isTrue,
+        );
+      },
+    );
 
     test(
-        'canonical authority routes user signature behavior learning through VibeKernel without legacy storage writes',
-        () async {
-      final defaultStorage =
-          MockGetStorage.getInstance(boxName: 'spots_default');
-      final userStorage = MockGetStorage.getInstance(boxName: 'spots_user');
-      final aiStorage = MockGetStorage.getInstance(boxName: 'spots_ai');
-      final analyticsStorage =
-          MockGetStorage.getInstance(boxName: 'spots_analytics');
-      await StorageService.instance.initForTesting(
-        defaultStorage: defaultStorage,
-        userStorage: userStorage,
-        aiStorage: aiStorage,
-        analyticsStorage: analyticsStorage,
-      );
-      VibeKernelRuntimeBindings.persistenceBridge = _FakePersistenceBridge();
-      addTearDown(() => VibeKernelRuntimeBindings.persistenceBridge = null);
+      'canonical authority routes user signature behavior learning through VibeKernel without legacy storage writes',
+      () async {
+        final defaultStorage = MockGetStorage.getInstance(
+          boxName: 'spots_default',
+        );
+        final userStorage = MockGetStorage.getInstance(boxName: 'spots_user');
+        final aiStorage = MockGetStorage.getInstance(boxName: 'spots_ai');
+        final analyticsStorage = MockGetStorage.getInstance(
+          boxName: 'spots_analytics',
+        );
+        await StorageService.instance.initForTesting(
+          defaultStorage: defaultStorage,
+          userStorage: userStorage,
+          aiStorage: aiStorage,
+          analyticsStorage: analyticsStorage,
+        );
+        VibeKernelRuntimeBindings.persistenceBridge = _FakePersistenceBridge();
+        addTearDown(() => VibeKernelRuntimeBindings.persistenceBridge = null);
 
-      final vibeKernel = VibeKernel();
-      final trajectoryKernel = TrajectoryKernel();
-      vibeKernel.importSnapshotEnvelope(
-        VibeSnapshotEnvelope(exportedAtUtc: DateTime.utc(2026, 3, 12)),
-      );
-      trajectoryKernel.importJournalWindow(
-        records: const <TrajectoryMutationRecord>[],
-      );
+        final vibeKernel = VibeKernel();
+        final trajectoryKernel = TrajectoryKernel();
+        vibeKernel.importSnapshotEnvelope(
+          VibeSnapshotEnvelope(exportedAtUtc: DateTime.utc(2026, 3, 12)),
+        );
+        TrajectoryKernel.resetFallbackStateForTesting();
+        trajectoryKernel.importJournalWindow(
+          records: const <TrajectoryMutationRecord>[],
+        );
 
-      final prefs = await SharedPreferencesCompat.getInstance(
-        storage: defaultStorage,
-      );
-      final service = EntitySignatureService(
-        repository: SignatureRepository(),
-        storageService: StorageService.instance,
-        matchService: matchService,
-        userSignatureBuilder: userSignatureBuilder,
-        spotSignatureBuilder: spotSignatureBuilder,
-        communitySignatureBuilder: communitySignatureBuilder,
-        eventSignatureBuilder: eventSignatureBuilder,
-        performerVenueEventBundleBuilder: PerformerVenueEventBundleBuilder(
-          bundleSignatureBuilder: bundleSignatureBuilder,
-          spotSignatureBuilder: spotSignatureBuilder,
+        final prefs = await SharedPreferencesCompat.getInstance(
+          storage: defaultStorage,
+        );
+        final service = EntitySignatureService(
+          repository: SignatureRepository(),
+          storageService: StorageService.instance,
+          matchService: matchService,
           userSignatureBuilder: userSignatureBuilder,
-        ),
-        communityEventBundleBuilder: CommunityEventBundleBuilder(
-          bundleSignatureBuilder: bundleSignatureBuilder,
+          spotSignatureBuilder: spotSignatureBuilder,
           communitySignatureBuilder: communitySignatureBuilder,
           eventSignatureBuilder: eventSignatureBuilder,
-        ),
-        userVibeAnalyzer: UserVibeAnalyzer(prefs: prefs),
-        personalityLearning: PersonalityLearning(),
-        vibeKernel: vibeKernel,
-      );
+          performerVenueEventBundleBuilder: PerformerVenueEventBundleBuilder(
+            bundleSignatureBuilder: bundleSignatureBuilder,
+            spotSignatureBuilder: spotSignatureBuilder,
+            userSignatureBuilder: userSignatureBuilder,
+          ),
+          communityEventBundleBuilder: CommunityEventBundleBuilder(
+            bundleSignatureBuilder: bundleSignatureBuilder,
+            communitySignatureBuilder: communitySignatureBuilder,
+            eventSignatureBuilder: eventSignatureBuilder,
+          ),
+          userVibeAnalyzer: UserVibeAnalyzer(prefs: prefs),
+          personalityLearning: PersonalityLearning(),
+          vibeKernel: vibeKernel,
+        );
 
-      final dimensions = <String, double>{
-        for (final dimension in VibeConstants.coreDimensions) dimension: 0.3,
-      };
-      final confidence = <String, double>{
-        for (final dimension in VibeConstants.coreDimensions) dimension: 0.8,
-      };
-      final personality = PersonalityProfile(
-        agentId: 'agent-canonical-signature',
-        userId: 'user-canonical-signature',
-        dimensions: dimensions,
-        dimensionConfidence: confidence,
-        archetype: 'Explorer',
-        authenticity: 0.83,
-        createdAt: DateTime(2026, 3, 5),
-        lastUpdated: DateTime(2026, 3, 5),
-        evolutionGeneration: 1,
-        learningHistory: const <String, dynamic>{},
-        corePersonality: dimensions,
-      );
-      vibeKernel.seedUserStateFromOnboarding(
-        subjectId: personality.agentId,
-        dimensions: personality.dimensions,
-        dimensionConfidence: confidence,
-        provenanceTags: const <String>['test:canonical_seed'],
-      );
+        final dimensions = <String, double>{
+          for (final dimension in VibeConstants.coreDimensions) dimension: 0.3,
+        };
+        final confidence = <String, double>{
+          for (final dimension in VibeConstants.coreDimensions) dimension: 0.8,
+        };
+        final personality = PersonalityProfile(
+          agentId: 'agent-canonical-signature',
+          userId: 'user-canonical-signature',
+          dimensions: dimensions,
+          dimensionConfidence: confidence,
+          archetype: 'Explorer',
+          authenticity: 0.83,
+          createdAt: DateTime(2026, 3, 5),
+          lastUpdated: DateTime(2026, 3, 5),
+          evolutionGeneration: 1,
+          learningHistory: const <String, dynamic>{},
+          corePersonality: dimensions,
+        );
+        vibeKernel.seedUserStateFromOnboarding(
+          subjectId: personality.agentId,
+          dimensions: personality.dimensions,
+          dimensionConfidence: confidence,
+          provenanceTags: const <String>['test:canonical_seed'],
+        );
 
-      final user = UnifiedUser(
-        id: 'user-canonical-signature',
-        email: 'canonical@example.com',
-        displayName: 'Canonical User',
-        location: 'Birmingham',
-        createdAt: DateTime(2026, 3, 5),
-        updatedAt: DateTime(2026, 3, 5),
-        hasCompletedOnboarding: true,
-      );
-      final spot = Spot(
-        id: 'canonical-spot',
-        name: 'Canonical Jazz Room',
-        description: 'Late-night live music.',
-        latitude: 33.52,
-        longitude: -86.8,
-        category: 'Music',
-        rating: 4.8,
-        createdBy: 'owner-canonical',
-        createdAt: DateTime(2026, 3, 6),
-        updatedAt: DateTime(2026, 3, 6),
-        cityCode: 'us-bhm',
-        localityCode: 'us-bhm-lakeview',
-      );
+        final user = UnifiedUser(
+          id: 'user-canonical-signature',
+          email: 'canonical@example.com',
+          displayName: 'Canonical User',
+          location: 'Birmingham',
+          createdAt: DateTime(2026, 3, 5),
+          updatedAt: DateTime(2026, 3, 5),
+          hasCompletedOnboarding: true,
+        );
+        final spot = Spot(
+          id: 'canonical-spot',
+          name: 'Canonical Jazz Room',
+          description: 'Late-night live music.',
+          latitude: 33.52,
+          longitude: -86.8,
+          category: 'Music',
+          rating: 4.8,
+          createdBy: 'owner-canonical',
+          createdAt: DateTime(2026, 3, 6),
+          updatedAt: DateTime(2026, 3, 6),
+          cityCode: 'us-bhm',
+          localityCode: 'us-bhm-lakeview',
+        );
 
-      final before = vibeKernel.getUserSnapshot(personality.agentId);
-      final learned = await service.recordSpotViewSignal(
-        user: user,
-        spot: spot,
-        personality: personality,
-      );
-      final after = vibeKernel.getUserSnapshot(personality.agentId);
-      final journal = trajectoryKernel.replaySubject(
-        subjectRef: VibeSubjectRef.personal(personality.agentId),
-      );
+        final before = vibeKernel.getUserSnapshot(personality.agentId);
+        final learned = await service.recordSpotViewSignal(
+          user: user,
+          spot: spot,
+          personality: personality,
+        );
+        final after = vibeKernel.getUserSnapshot(personality.agentId);
+        final journal = trajectoryKernel.replaySubject(
+          subjectRef: VibeSubjectRef.personal(personality.agentId),
+        );
 
-      expect(
-        StorageService.instance.getObject<Map<dynamic, dynamic>>(
-          'user_signature_learning_v1:${user.id}',
-        ),
-        isNull,
-      );
-      expect(
-        journal.any((entry) => entry.category == 'behavior_observation'),
-        isTrue,
-      );
-      expect(
-        after.behaviorPatterns.observationCount,
-        greaterThanOrEqualTo(before.behaviorPatterns.observationCount),
-      );
-      expect(learned.signatureId, contains('canonical:user'));
-    });
-
-    test('chat reflection signals can nudge the persisted signature baseline',
-        () async {
-      final defaultStorage =
-          MockGetStorage.getInstance(boxName: 'spots_default');
-      final userStorage = MockGetStorage.getInstance(boxName: 'spots_user');
-      final aiStorage = MockGetStorage.getInstance(boxName: 'spots_ai');
-      final analyticsStorage =
-          MockGetStorage.getInstance(boxName: 'spots_analytics');
-      await StorageService.instance.initForTesting(
-        defaultStorage: defaultStorage,
-        userStorage: userStorage,
-        aiStorage: aiStorage,
-        analyticsStorage: analyticsStorage,
-      );
-      final prefs = await SharedPreferencesCompat.getInstance(
-        storage: defaultStorage,
-      );
-      final service = EntitySignatureService(
-        repository: SignatureRepository(),
-        storageService: StorageService.instance,
-        matchService: matchService,
-        userSignatureBuilder: userSignatureBuilder,
-        spotSignatureBuilder: spotSignatureBuilder,
-        communitySignatureBuilder: communitySignatureBuilder,
-        eventSignatureBuilder: eventSignatureBuilder,
-        performerVenueEventBundleBuilder: PerformerVenueEventBundleBuilder(
-          bundleSignatureBuilder: bundleSignatureBuilder,
-          spotSignatureBuilder: spotSignatureBuilder,
-          userSignatureBuilder: userSignatureBuilder,
-        ),
-        communityEventBundleBuilder: CommunityEventBundleBuilder(
-          bundleSignatureBuilder: bundleSignatureBuilder,
-          communitySignatureBuilder: communitySignatureBuilder,
-          eventSignatureBuilder: eventSignatureBuilder,
-        ),
-        userVibeAnalyzer: UserVibeAnalyzer(prefs: prefs),
-        personalityLearning: PersonalityLearning(),
-      );
-      final dimensions = <String, double>{
-        for (final dimension in VibeConstants.coreDimensions) dimension: 0.3,
-      };
-      final confidence = <String, double>{
-        for (final dimension in VibeConstants.coreDimensions) dimension: 0.8,
-      };
-      final personality = PersonalityProfile(
-        agentId: 'agent-chat',
-        userId: 'user-chat',
-        dimensions: dimensions,
-        dimensionConfidence: confidence,
-        archetype: 'Explorer',
-        authenticity: 0.82,
-        createdAt: DateTime(2026, 3, 5),
-        lastUpdated: DateTime(2026, 3, 5),
-        evolutionGeneration: 1,
-        learningHistory: const <String, dynamic>{},
-        corePersonality: dimensions,
-      );
-      final onboardingData = OnboardingData(
-        agentId: 'agent-chat',
-        homebase: 'Birmingham',
-        completedAt: DateTime(2026, 3, 5),
-      );
-
-      final seeded = await service.initializeUserSignatureFromOnboarding(
-        userId: 'user-chat',
-        onboardingData: onboardingData,
-        personality: personality,
-      );
-      final reflected = await service.recordChatReflectionSignal(
-        userId: 'user-chat',
-        messageText: 'I want more live music and community events this week.',
-        personality: personality,
-      );
-
-      expect(
-        reflected.pheromones['community_orientation']!,
-        greaterThanOrEqualTo(seeded.pheromones['community_orientation']!),
-      );
-      expect(
-        reflected.sourceTrace
-            .any((trace) => trace.sourceId == 'chat_reflection'),
-        isTrue,
-      );
-    });
-
-    test('browse selection and strong intent negative signals persist learning',
-        () async {
-      final defaultStorage =
-          MockGetStorage.getInstance(boxName: 'spots_default');
-      final userStorage = MockGetStorage.getInstance(boxName: 'spots_user');
-      final aiStorage = MockGetStorage.getInstance(boxName: 'spots_ai');
-      final analyticsStorage =
-          MockGetStorage.getInstance(boxName: 'spots_analytics');
-      await StorageService.instance.initForTesting(
-        defaultStorage: defaultStorage,
-        userStorage: userStorage,
-        aiStorage: aiStorage,
-        analyticsStorage: analyticsStorage,
-      );
-      final prefs = await SharedPreferencesCompat.getInstance(
-        storage: defaultStorage,
-      );
-      final service = EntitySignatureService(
-        repository: SignatureRepository(),
-        storageService: StorageService.instance,
-        matchService: matchService,
-        userSignatureBuilder: userSignatureBuilder,
-        spotSignatureBuilder: spotSignatureBuilder,
-        communitySignatureBuilder: communitySignatureBuilder,
-        eventSignatureBuilder: eventSignatureBuilder,
-        performerVenueEventBundleBuilder: PerformerVenueEventBundleBuilder(
-          bundleSignatureBuilder: bundleSignatureBuilder,
-          spotSignatureBuilder: spotSignatureBuilder,
-          userSignatureBuilder: userSignatureBuilder,
-        ),
-        communityEventBundleBuilder: CommunityEventBundleBuilder(
-          bundleSignatureBuilder: bundleSignatureBuilder,
-          communitySignatureBuilder: communitySignatureBuilder,
-          eventSignatureBuilder: eventSignatureBuilder,
-        ),
-        userVibeAnalyzer: UserVibeAnalyzer(prefs: prefs),
-        personalityLearning: PersonalityLearning(),
-      );
-      final dimensions = <String, double>{
-        for (final dimension in VibeConstants.coreDimensions) dimension: 0.28,
-      };
-      final confidence = <String, double>{
-        for (final dimension in VibeConstants.coreDimensions) dimension: 0.82,
-      };
-      final personality = PersonalityProfile(
-        agentId: 'agent-browse',
-        userId: 'user-browse',
-        dimensions: dimensions,
-        dimensionConfidence: confidence,
-        archetype: 'Explorer',
-        authenticity: 0.83,
-        createdAt: DateTime(2026, 3, 5),
-        lastUpdated: DateTime(2026, 3, 5),
-        evolutionGeneration: 1,
-        learningHistory: const <String, dynamic>{},
-        corePersonality: dimensions,
-      );
-      final onboardingData = OnboardingData(
-        agentId: 'agent-browse',
-        homebase: 'Birmingham',
-        completedAt: DateTime(2026, 3, 5),
-      );
-
-      final seeded = await service.initializeUserSignatureFromOnboarding(
-        userId: 'user-browse',
-        onboardingData: onboardingData,
-        personality: personality,
-      );
-      final community = Community(
-        id: 'community-browse',
-        name: 'Neighborhood Garden Club',
-        description: 'Weekend volunteering and social gardening.',
-        category: 'Volunteer',
-        originatingEventId: 'community-source-event',
-        originatingEventType: OriginatingEventType.communityEvent,
-        memberIds: const <String>[],
-        founderId: 'founder-1',
-        originalLocality: 'Birmingham',
-        createdAt: DateTime(2026, 3, 5),
-        updatedAt: DateTime(2026, 3, 5),
-      );
-      final host = UnifiedUser(
-        id: 'host-browse',
-        email: 'host@example.com',
-        displayName: 'Host',
-        createdAt: DateTime(2026, 3, 5),
-        updatedAt: DateTime(2026, 3, 5),
-      );
-      final event = ExpertiseEvent(
-        id: 'event-browse',
-        title: 'Live Jazz Rooftop',
-        description: 'Late-night rooftop set with local artists.',
-        category: 'Music',
-        eventType: ExpertiseEventType.meetup,
-        host: host,
-        startTime: DateTime(2026, 3, 7, 20),
-        endTime: DateTime(2026, 3, 7, 23),
-        maxAttendees: 50,
-        attendeeCount: 12,
-        isPaid: true,
-        price: 18,
-        createdAt: DateTime(2026, 3, 5),
-        updatedAt: DateTime(2026, 3, 5),
-        location: 'Birmingham',
-      );
-
-      final afterCommunity = await service.recordCommunityBrowseSelectionSignal(
-        userId: 'user-browse',
-        community: community,
-        personality: personality,
-      );
-      final afterEvent = await service.recordEventBrowseSelectionSignal(
-        userId: 'user-browse',
-        event: event,
-        personality: personality,
-      );
-      final afterSoftIgnore = await service.recordNegativePreferenceSignal(
-        userId: 'user-browse',
-        title: 'Sports Bar Crawl',
-        subtitle: 'Late-night sports bar rotation',
-        category: 'Nightlife',
-        tags: const <String>['sports', 'bar'],
-        personality: personality,
-        intent: NegativePreferenceIntent.softIgnore,
-      );
-      final afterNegative = await service.recordNegativePreferenceSignal(
-        userId: 'user-browse',
-        title: 'Sports Bar Crawl',
-        subtitle: 'Late-night sports bar rotation',
-        category: 'Nightlife',
-        tags: const <String>['sports', 'bar'],
-        personality: personality,
-        intent: NegativePreferenceIntent.hardNotInterested,
-      );
-
-      final softDelta = afterSoftIgnore.pheromones.entries.fold<double>(
-        0,
-        (sum, entry) =>
-            sum + (entry.value - (seeded.pheromones[entry.key] ?? 0)).abs(),
-      );
-      final hardDelta = afterNegative.pheromones.entries.fold<double>(
-        0,
-        (sum, entry) =>
-            sum + (entry.value - (seeded.pheromones[entry.key] ?? 0)).abs(),
-      );
-
-      expect(afterCommunity.signatureId, contains('canonical:user'));
-      expect(
-        afterEvent.sourceTrace.any(
-          (trace) => trace.sourceId == 'event_browse_select',
-        ),
-        isTrue,
-      );
-      expect(
-        afterSoftIgnore.sourceTrace
-            .any((trace) => trace.sourceId == 'soft_ignore'),
-        isTrue,
-      );
-      expect(
-        afterNegative.sourceTrace.any(
-          (trace) => trace.sourceId == 'hard_not_interested',
-        ),
-        isTrue,
-      );
-      expect(hardDelta, greaterThanOrEqualTo(softDelta));
-    });
+        expect(
+          StorageService.instance.getObject<Map<dynamic, dynamic>>(
+            'user_signature_learning_v1:${user.id}',
+          ),
+          isNull,
+        );
+        expect(
+          journal.any((entry) => entry.category == 'behavior_observation'),
+          isTrue,
+        );
+        expect(
+          after.behaviorPatterns.observationCount,
+          greaterThanOrEqualTo(before.behaviorPatterns.observationCount),
+        );
+        expect(learned.signatureId, contains('canonical:user'));
+      },
+    );
 
     test(
-        'entity signature service builds event bundle signatures with venue data',
-        () async {
-      final defaultStorage =
-          MockGetStorage.getInstance(boxName: 'spots_default');
-      final userStorage = MockGetStorage.getInstance(boxName: 'spots_user');
-      final aiStorage = MockGetStorage.getInstance(boxName: 'spots_ai');
-      final analyticsStorage =
-          MockGetStorage.getInstance(boxName: 'spots_analytics');
-      await StorageService.instance.initForTesting(
-        defaultStorage: defaultStorage,
-        userStorage: userStorage,
-        aiStorage: aiStorage,
-        analyticsStorage: analyticsStorage,
-      );
-      final prefs = await SharedPreferencesCompat.getInstance(
-        storage: defaultStorage,
-      );
-      final service = EntitySignatureService(
-        repository: SignatureRepository(),
-        storageService: StorageService.instance,
-        matchService: matchService,
-        userSignatureBuilder: userSignatureBuilder,
-        spotSignatureBuilder: spotSignatureBuilder,
-        communitySignatureBuilder: communitySignatureBuilder,
-        eventSignatureBuilder: eventSignatureBuilder,
-        performerVenueEventBundleBuilder: PerformerVenueEventBundleBuilder(
-          bundleSignatureBuilder: bundleSignatureBuilder,
-          spotSignatureBuilder: spotSignatureBuilder,
+      'chat reflection signals can nudge the persisted signature baseline',
+      () async {
+        final defaultStorage = MockGetStorage.getInstance(
+          boxName: 'spots_default',
+        );
+        final userStorage = MockGetStorage.getInstance(boxName: 'spots_user');
+        final aiStorage = MockGetStorage.getInstance(boxName: 'spots_ai');
+        final analyticsStorage = MockGetStorage.getInstance(
+          boxName: 'spots_analytics',
+        );
+        await StorageService.instance.initForTesting(
+          defaultStorage: defaultStorage,
+          userStorage: userStorage,
+          aiStorage: aiStorage,
+          analyticsStorage: analyticsStorage,
+        );
+        final prefs = await SharedPreferencesCompat.getInstance(
+          storage: defaultStorage,
+        );
+        final service = EntitySignatureService(
+          repository: SignatureRepository(),
+          storageService: StorageService.instance,
+          matchService: matchService,
           userSignatureBuilder: userSignatureBuilder,
-        ),
-        communityEventBundleBuilder: CommunityEventBundleBuilder(
-          bundleSignatureBuilder: bundleSignatureBuilder,
+          spotSignatureBuilder: spotSignatureBuilder,
           communitySignatureBuilder: communitySignatureBuilder,
           eventSignatureBuilder: eventSignatureBuilder,
-        ),
-        userVibeAnalyzer: UserVibeAnalyzer(prefs: prefs),
-        personalityLearning: PersonalityLearning(),
-      );
+          performerVenueEventBundleBuilder: PerformerVenueEventBundleBuilder(
+            bundleSignatureBuilder: bundleSignatureBuilder,
+            spotSignatureBuilder: spotSignatureBuilder,
+            userSignatureBuilder: userSignatureBuilder,
+          ),
+          communityEventBundleBuilder: CommunityEventBundleBuilder(
+            bundleSignatureBuilder: bundleSignatureBuilder,
+            communitySignatureBuilder: communitySignatureBuilder,
+            eventSignatureBuilder: eventSignatureBuilder,
+          ),
+          userVibeAnalyzer: UserVibeAnalyzer(prefs: prefs),
+          personalityLearning: PersonalityLearning(),
+        );
+        final dimensions = <String, double>{
+          for (final dimension in VibeConstants.coreDimensions) dimension: 0.3,
+        };
+        final confidence = <String, double>{
+          for (final dimension in VibeConstants.coreDimensions) dimension: 0.8,
+        };
+        final personality = PersonalityProfile(
+          agentId: 'agent-chat',
+          userId: 'user-chat',
+          dimensions: dimensions,
+          dimensionConfidence: confidence,
+          archetype: 'Explorer',
+          authenticity: 0.82,
+          createdAt: DateTime(2026, 3, 5),
+          lastUpdated: DateTime(2026, 3, 5),
+          evolutionGeneration: 1,
+          learningHistory: const <String, dynamic>{},
+          corePersonality: dimensions,
+        );
+        final onboardingData = OnboardingData(
+          agentId: 'agent-chat',
+          homebase: 'Birmingham',
+          completedAt: DateTime(2026, 3, 5),
+        );
 
-      final host = UnifiedUser(
-        id: 'host-1',
-        email: 'host@example.com',
-        displayName: 'Host',
-        createdAt: DateTime(2026, 3, 5),
-        updatedAt: DateTime(2026, 3, 5),
-      );
-      final venue = Spot(
-        id: 'venue-1',
-        name: 'Saturn',
-        description: 'Live music room',
-        latitude: 33.512,
-        longitude: -86.799,
-        category: 'Music',
-        rating: 4.7,
-        createdBy: 'owner-1',
-        createdAt: DateTime(2026, 3, 5),
-        updatedAt: DateTime(2026, 3, 5),
-      );
-      final event = ExpertiseEvent(
-        id: 'event-1',
-        title: 'Indie night',
-        description: 'Performer showcase at Saturn',
-        category: 'Music',
-        eventType: ExpertiseEventType.meetup,
-        host: host,
-        startTime: DateTime(2026, 3, 6, 20),
-        endTime: DateTime(2026, 3, 6, 23),
-        spots: <Spot>[venue],
-        createdAt: DateTime(2026, 3, 5),
-        updatedAt: DateTime(2026, 3, 5),
-      );
+        final seeded = await service.initializeUserSignatureFromOnboarding(
+          userId: 'user-chat',
+          onboardingData: onboardingData,
+          personality: personality,
+        );
+        final reflected = await service.recordChatReflectionSignal(
+          userId: 'user-chat',
+          messageText: 'I want more live music and community events this week.',
+          personality: personality,
+        );
 
-      final signature = await service.buildEventSignature(event: event);
+        expect(
+          reflected.pheromones['community_orientation']!,
+          greaterThanOrEqualTo(seeded.pheromones['community_orientation']!),
+        );
+        expect(
+          reflected.sourceTrace.any(
+            (trace) => trace.sourceId == 'chat_reflection',
+          ),
+          isTrue,
+        );
+      },
+    );
 
-      expect(signature.bundleEntityIds,
-          containsAll(<String>['host-1', 'venue-1']));
-      expect(
-        service.getStoredSignature(
-          entityKind: SignatureEntityKind.event,
-          entityId: 'event-1',
-        ),
-        isNotNull,
-      );
+    test(
+      'browse selection and strong intent negative signals persist learning',
+      () async {
+        final defaultStorage = MockGetStorage.getInstance(
+          boxName: 'spots_default',
+        );
+        final userStorage = MockGetStorage.getInstance(boxName: 'spots_user');
+        final aiStorage = MockGetStorage.getInstance(boxName: 'spots_ai');
+        final analyticsStorage = MockGetStorage.getInstance(
+          boxName: 'spots_analytics',
+        );
+        await StorageService.instance.initForTesting(
+          defaultStorage: defaultStorage,
+          userStorage: userStorage,
+          aiStorage: aiStorage,
+          analyticsStorage: analyticsStorage,
+        );
+        final prefs = await SharedPreferencesCompat.getInstance(
+          storage: defaultStorage,
+        );
+        final service = EntitySignatureService(
+          repository: SignatureRepository(),
+          storageService: StorageService.instance,
+          matchService: matchService,
+          userSignatureBuilder: userSignatureBuilder,
+          spotSignatureBuilder: spotSignatureBuilder,
+          communitySignatureBuilder: communitySignatureBuilder,
+          eventSignatureBuilder: eventSignatureBuilder,
+          performerVenueEventBundleBuilder: PerformerVenueEventBundleBuilder(
+            bundleSignatureBuilder: bundleSignatureBuilder,
+            spotSignatureBuilder: spotSignatureBuilder,
+            userSignatureBuilder: userSignatureBuilder,
+          ),
+          communityEventBundleBuilder: CommunityEventBundleBuilder(
+            bundleSignatureBuilder: bundleSignatureBuilder,
+            communitySignatureBuilder: communitySignatureBuilder,
+            eventSignatureBuilder: eventSignatureBuilder,
+          ),
+          userVibeAnalyzer: UserVibeAnalyzer(prefs: prefs),
+          personalityLearning: PersonalityLearning(),
+        );
+        final dimensions = <String, double>{
+          for (final dimension in VibeConstants.coreDimensions) dimension: 0.28,
+        };
+        final confidence = <String, double>{
+          for (final dimension in VibeConstants.coreDimensions) dimension: 0.82,
+        };
+        final personality = PersonalityProfile(
+          agentId: 'agent-browse',
+          userId: 'user-browse',
+          dimensions: dimensions,
+          dimensionConfidence: confidence,
+          archetype: 'Explorer',
+          authenticity: 0.83,
+          createdAt: DateTime(2026, 3, 5),
+          lastUpdated: DateTime(2026, 3, 5),
+          evolutionGeneration: 1,
+          learningHistory: const <String, dynamic>{},
+          corePersonality: dimensions,
+        );
+        final onboardingData = OnboardingData(
+          agentId: 'agent-browse',
+          homebase: 'Birmingham',
+          completedAt: DateTime(2026, 3, 5),
+        );
 
-      MockGetStorage.reset();
-    });
+        final seeded = await service.initializeUserSignatureFromOnboarding(
+          userId: 'user-browse',
+          onboardingData: onboardingData,
+          personality: personality,
+        );
+        final community = Community(
+          id: 'community-browse',
+          name: 'Neighborhood Garden Club',
+          description: 'Weekend volunteering and social gardening.',
+          category: 'Volunteer',
+          originatingEventId: 'community-source-event',
+          originatingEventType: OriginatingEventType.communityEvent,
+          memberIds: const <String>[],
+          founderId: 'founder-1',
+          originalLocality: 'Birmingham',
+          createdAt: DateTime(2026, 3, 5),
+          updatedAt: DateTime(2026, 3, 5),
+        );
+        final host = UnifiedUser(
+          id: 'host-browse',
+          email: 'host@example.com',
+          displayName: 'Host',
+          createdAt: DateTime(2026, 3, 5),
+          updatedAt: DateTime(2026, 3, 5),
+        );
+        final event = ExpertiseEvent(
+          id: 'event-browse',
+          title: 'Live Jazz Rooftop',
+          description: 'Late-night rooftop set with local artists.',
+          category: 'Music',
+          eventType: ExpertiseEventType.meetup,
+          host: host,
+          startTime: DateTime(2026, 3, 7, 20),
+          endTime: DateTime(2026, 3, 7, 23),
+          maxAttendees: 50,
+          attendeeCount: 12,
+          isPaid: true,
+          price: 18,
+          createdAt: DateTime(2026, 3, 5),
+          updatedAt: DateTime(2026, 3, 5),
+          location: 'Birmingham',
+        );
+
+        final afterCommunity = await service
+            .recordCommunityBrowseSelectionSignal(
+              userId: 'user-browse',
+              community: community,
+              personality: personality,
+            );
+        final afterEvent = await service.recordEventBrowseSelectionSignal(
+          userId: 'user-browse',
+          event: event,
+          personality: personality,
+        );
+        final afterSoftIgnore = await service.recordNegativePreferenceSignal(
+          userId: 'user-browse',
+          title: 'Sports Bar Crawl',
+          subtitle: 'Late-night sports bar rotation',
+          category: 'Nightlife',
+          tags: const <String>['sports', 'bar'],
+          personality: personality,
+          intent: NegativePreferenceIntent.softIgnore,
+        );
+        final afterNegative = await service.recordNegativePreferenceSignal(
+          userId: 'user-browse',
+          title: 'Sports Bar Crawl',
+          subtitle: 'Late-night sports bar rotation',
+          category: 'Nightlife',
+          tags: const <String>['sports', 'bar'],
+          personality: personality,
+          intent: NegativePreferenceIntent.hardNotInterested,
+        );
+
+        final softDelta = afterSoftIgnore.pheromones.entries.fold<double>(
+          0,
+          (sum, entry) =>
+              sum + (entry.value - (seeded.pheromones[entry.key] ?? 0)).abs(),
+        );
+        final hardDelta = afterNegative.pheromones.entries.fold<double>(
+          0,
+          (sum, entry) =>
+              sum + (entry.value - (seeded.pheromones[entry.key] ?? 0)).abs(),
+        );
+
+        expect(afterCommunity.signatureId, contains('canonical:user'));
+        expect(
+          afterEvent.sourceTrace.any(
+            (trace) => trace.sourceId == 'event_browse_select',
+          ),
+          isTrue,
+        );
+        expect(
+          afterSoftIgnore.sourceTrace.any(
+            (trace) => trace.sourceId == 'soft_ignore',
+          ),
+          isTrue,
+        );
+        expect(
+          afterNegative.sourceTrace.any(
+            (trace) => trace.sourceId == 'hard_not_interested',
+          ),
+          isTrue,
+        );
+        expect(hardDelta, greaterThanOrEqualTo(softDelta));
+      },
+    );
+
+    test(
+      'entity signature service builds event bundle signatures with venue data',
+      () async {
+        final defaultStorage = MockGetStorage.getInstance(
+          boxName: 'spots_default',
+        );
+        final userStorage = MockGetStorage.getInstance(boxName: 'spots_user');
+        final aiStorage = MockGetStorage.getInstance(boxName: 'spots_ai');
+        final analyticsStorage = MockGetStorage.getInstance(
+          boxName: 'spots_analytics',
+        );
+        await StorageService.instance.initForTesting(
+          defaultStorage: defaultStorage,
+          userStorage: userStorage,
+          aiStorage: aiStorage,
+          analyticsStorage: analyticsStorage,
+        );
+        final prefs = await SharedPreferencesCompat.getInstance(
+          storage: defaultStorage,
+        );
+        final service = EntitySignatureService(
+          repository: SignatureRepository(),
+          storageService: StorageService.instance,
+          matchService: matchService,
+          userSignatureBuilder: userSignatureBuilder,
+          spotSignatureBuilder: spotSignatureBuilder,
+          communitySignatureBuilder: communitySignatureBuilder,
+          eventSignatureBuilder: eventSignatureBuilder,
+          performerVenueEventBundleBuilder: PerformerVenueEventBundleBuilder(
+            bundleSignatureBuilder: bundleSignatureBuilder,
+            spotSignatureBuilder: spotSignatureBuilder,
+            userSignatureBuilder: userSignatureBuilder,
+          ),
+          communityEventBundleBuilder: CommunityEventBundleBuilder(
+            bundleSignatureBuilder: bundleSignatureBuilder,
+            communitySignatureBuilder: communitySignatureBuilder,
+            eventSignatureBuilder: eventSignatureBuilder,
+          ),
+          userVibeAnalyzer: UserVibeAnalyzer(prefs: prefs),
+          personalityLearning: PersonalityLearning(),
+        );
+
+        final host = UnifiedUser(
+          id: 'host-1',
+          email: 'host@example.com',
+          displayName: 'Host',
+          createdAt: DateTime(2026, 3, 5),
+          updatedAt: DateTime(2026, 3, 5),
+        );
+        final venue = Spot(
+          id: 'venue-1',
+          name: 'Saturn',
+          description: 'Live music room',
+          latitude: 33.512,
+          longitude: -86.799,
+          category: 'Music',
+          rating: 4.7,
+          createdBy: 'owner-1',
+          createdAt: DateTime(2026, 3, 5),
+          updatedAt: DateTime(2026, 3, 5),
+        );
+        final event = ExpertiseEvent(
+          id: 'event-1',
+          title: 'Indie night',
+          description: 'Performer showcase at Saturn',
+          category: 'Music',
+          eventType: ExpertiseEventType.meetup,
+          host: host,
+          startTime: DateTime(2026, 3, 6, 20),
+          endTime: DateTime(2026, 3, 6, 23),
+          spots: <Spot>[venue],
+          createdAt: DateTime(2026, 3, 5),
+          updatedAt: DateTime(2026, 3, 5),
+        );
+
+        final signature = await service.buildEventSignature(event: event);
+
+        expect(
+          signature.bundleEntityIds,
+          containsAll(<String>['host-1', 'venue-1']),
+        );
+        expect(
+          service.getStoredSignature(
+            entityKind: SignatureEntityKind.event,
+            entityId: 'event-1',
+          ),
+          isNotNull,
+        );
+
+        MockGetStorage.reset();
+      },
+    );
   });
 }

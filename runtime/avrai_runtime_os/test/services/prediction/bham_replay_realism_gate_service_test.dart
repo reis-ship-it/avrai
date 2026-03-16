@@ -732,7 +732,7 @@ void main() {
       behaviorPass: buildBehaviorPass(),
       dailyBehaviorBatch: buildDailyBehaviorBatch(),
       calibrationReport: const ReplayCalibrationReport(
-        environmentId: 'env-1',
+        reportId: 'calibration:1',
         replayYear: 2023,
         passed: true,
         records: <ReplayCalibrationRecord>[

@@ -41,6 +41,11 @@ Use these documents together, with this file as the ordered execution authority:
 - `Bham simulation/README.md` for BHAM simulation planning, source intake, and replay order
 - `Bham simulation/05_BHAM_REPLAY_FORECAST_AND_AGENT_FLOW.md` for BHAM-only replay authority, forecast-kernel placement, and runtime/engine/app/agent flow
 - `Bham simulation/70_BHAM_SIMULATION_IMPROVEMENT_ROADMAP_2026.md` for the phased roadmap of simulation improvements for beta, post-beta, and v1 launch
+- `Bham simulation/71_BHAM_REPLAY_SCENARIO_PACKETS_2023.json` for the phase-1 structured scenario packets that seed replay branch comparisons
+- `Bham simulation/72_BHAM_EVENT_SCENARIO_PACK_2023.md` for the fixed Birmingham event scenario pack used for internal operator review
+- `Bham simulation/73_BHAM_REPLAY_COMPARISON_REPORT_2023.md` for baseline-vs-branch outcome diffs and operator-readable replay comparisons
+- `Bham simulation/74_BHAM_REPLAY_CONTRADICTION_REPORT_2023.md` for contradiction surfaces by locality and replay branch
+- `Bham simulation/75_BHAM_REPLAY_CALIBRATION_REPORT_2023.md` for the richer phase-1 replay calibration metrics
 - `Bham simulation/12_BHAM_PROVIDED_SOURCE_INPUTS_2023.md` for the exact user-provided links, files, and access grants logged during Wave 8 intake
 - `work/docs/agents/status/status_tracker.md` for canonical status and progress
 - `work/docs/plans/architecture/MASTER_PLAN_3_PRONG_TARGET_END_STATE.md` for prong boundaries

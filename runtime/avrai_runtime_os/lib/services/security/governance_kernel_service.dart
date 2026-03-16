@@ -16,11 +16,11 @@ class KnowledgeVector {
   final DateTime timestamp;
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-        'sender_agent_id': senderAgentId,
-        'insight_weights': insightWeights,
-        'context_category': contextCategory,
-        'timestamp_utc': timestamp.toUtc().toIso8601String(),
-      };
+    'sender_agent_id': senderAgentId,
+    'insight_weights': insightWeights,
+    'context_category': contextCategory,
+    'timestamp_utc': timestamp.toUtc().toIso8601String(),
+  };
 
   factory KnowledgeVector.fromJson(Map<String, dynamic> json) {
     return KnowledgeVector(
@@ -32,7 +32,7 @@ class KnowledgeVector {
           json['context_category'] as String? ?? 'unknown_category',
       timestamp:
           DateTime.tryParse(json['timestamp_utc'] as String? ?? '')?.toUtc() ??
-              DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
+          DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
     );
   }
 }
@@ -100,8 +100,8 @@ class GovernanceKernelService {
     KernelGovernanceNativeInvocationBridge? nativeBridge,
     KernelGovernanceNativeExecutionPolicy policy =
         const KernelGovernanceNativeExecutionPolicy(),
-  })  : _nativeBridge = nativeBridge ?? KernelGovernanceNativeBridgeBindings(),
-        _policy = policy;
+  }) : _nativeBridge = nativeBridge ?? KernelGovernanceNativeBridgeBindings(),
+       _policy = policy;
 
   final KernelGovernanceNativeInvocationBridge _nativeBridge;
   final KernelGovernanceNativeExecutionPolicy _policy;
@@ -197,7 +197,8 @@ class GovernanceKernelService {
               Map<String, dynamic>.from(payload['scope_channels'] as Map),
             )
           : normalizedScopeChannels,
-      reasonCodes: (payload['reason_codes'] as List?)
+      reasonCodes:
+          (payload['reason_codes'] as List?)
               ?.map((entry) => entry.toString())
               .toList(growable: false) ??
           const <String>['governance_rejected'],
@@ -205,7 +206,8 @@ class GovernanceKernelService {
         metadata: Map<String, dynamic>.from(
           payload['metadata'] as Map? ?? metadata,
         ),
-        reasonCodes: (payload['reason_codes'] as List?)
+        reasonCodes:
+            (payload['reason_codes'] as List?)
                 ?.map((entry) => entry.toString())
                 .toList(growable: false) ??
             const <String>['governance_rejected'],
@@ -289,11 +291,13 @@ class GovernanceKernelService {
               Map<String, dynamic>.from(payload['target_scope'] as Map),
             )
           : normalizedBundle.targetScope,
-      reasonCodes: (payload['reason_codes'] as List?)
+      reasonCodes:
+          (payload['reason_codes'] as List?)
               ?.map((entry) => entry.toString())
               .toList(growable: false) ??
           const <String>['governance_rejected'],
-      requiredApprovals: (payload['required_approvals'] as List?)
+      requiredApprovals:
+          (payload['required_approvals'] as List?)
               ?.map((entry) => entry.toString())
               .toList(growable: false) ??
           normalizedBundle.requiredApprovals,
@@ -315,8 +319,12 @@ class GovernanceKernelService {
         syscall: syscall,
         reason: KernelGovernanceNativeFallbackReason.unavailable,
       );
+      if (!_policy.requireNative) {
+        return _fallbackPayload(syscall: syscall, payload: payload);
+      }
       throw StateError(
-          'Native governance kernel is unavailable for "$syscall".');
+        'Native governance kernel is unavailable for "$syscall".',
+      );
     }
     final response = _nativeBridge.invoke(syscall: syscall, payload: payload);
     if (response['handled'] != true) {
@@ -324,6 +332,9 @@ class GovernanceKernelService {
         syscall: syscall,
         reason: KernelGovernanceNativeFallbackReason.deferred,
       );
+      if (!_policy.requireNative) {
+        return _fallbackPayload(syscall: syscall, payload: payload);
+      }
       throw StateError('Native governance kernel did not handle "$syscall".');
     }
     final nativePayload = response['payload'];
@@ -336,6 +347,77 @@ class GovernanceKernelService {
     throw StateError(
       'Native governance kernel returned an invalid payload for "$syscall".',
     );
+  }
+
+  Map<String, dynamic> _fallbackPayload({
+    required String syscall,
+    required Map<String, dynamic> payload,
+  }) {
+    switch (syscall) {
+      case 'intercept_outgoing_vector':
+      case 'intercept_incoming_vector':
+        return <String, dynamic>{
+          'approved': true,
+          'sanitized_vector': payload['vector'],
+          'reason': 'governance_native_fallback',
+        };
+      case 'authorize_vibe_mutation':
+        return <String, dynamic>{
+          'state_write_allowed': true,
+          'dna_write_allowed': true,
+          'pheromone_write_allowed': true,
+          'behavior_write_allowed': true,
+          'affective_write_allowed': true,
+          'style_write_allowed': true,
+          'reason_codes': const <String>['governance_native_fallback'],
+          'governance_scope':
+              payload['governance_scope']?.toString() ?? 'personal',
+          'air_gap_envelope_required': false,
+          'schema_version': 1,
+        };
+      case 'inspect_governance':
+        return <String, dynamic>{
+          'scope': payload['scope'],
+          'subject_id': payload['subject_id'],
+          'metadata': <String, dynamic>{
+            ...(payload['metadata'] as Map? ?? const <String, dynamic>{}),
+            'governance_native_fallback': true,
+          },
+        };
+      case 'authorize_security_intervention':
+        return <String, dynamic>{
+          'approved': false,
+          'scope_channels': payload['scope_channels'],
+          'reason_codes': const <String>[
+            'governance_native_fallback_requires_native_review',
+          ],
+          'metadata': <String, dynamic>{
+            ...(payload['metadata'] as Map? ?? const <String, dynamic>{}),
+            'governance_native_fallback': true,
+            'sandbox_only': true,
+          },
+        };
+      case 'review_countermeasure_bundle':
+        final bundle = Map<String, dynamic>.from(
+          payload['bundle'] as Map? ?? const <String, dynamic>{},
+        );
+        return <String, dynamic>{
+          'approved': false,
+          'bundle_id': bundle['bundle_id'],
+          'target_scope': bundle['target_scope'],
+          'reason_codes': const <String>[
+            'governance_native_fallback_requires_native_review',
+          ],
+          'required_approvals':
+              bundle['required_approvals'] ?? const <dynamic>[],
+          'propagation_authorized': false,
+          'metadata': <String, dynamic>{
+            ...(payload['metadata'] as Map? ?? const <String, dynamic>{}),
+            'governance_native_fallback': true,
+          },
+        };
+    }
+    throw StateError('No governance fallback payload defined for "$syscall".');
   }
 
   SecurityClearance _toSecurityClearance(Map<String, dynamic> payload) {

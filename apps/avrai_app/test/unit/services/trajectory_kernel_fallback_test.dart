@@ -26,50 +26,91 @@ void main() {
     late TrajectoryKernel kernel;
 
     setUp(() {
+      TrajectoryKernel.resetFallbackStateForTesting();
       kernel = TrajectoryKernel(
         nativeBridge: _UnavailableTrajectoryBridge(),
         allowFallback: true,
       );
-      kernel.importJournalWindow(
-        records: const <TrajectoryMutationRecord>[],
-      );
+      kernel.importJournalWindow(records: const <TrajectoryMutationRecord>[]);
     });
 
-    test('keeps a process-local journal and checkpoints when native is absent',
-        () {
-      final subjectRef = VibeSubjectRef.personal('agent_fallback_test');
+    test(
+      'keeps a process-local journal and checkpoints when native is absent',
+      () {
+        final subjectRef = VibeSubjectRef.personal('agent_fallback_test');
+        final record = TrajectoryMutationRecord(
+          recordId: 'record-1',
+          subjectRef: subjectRef,
+          category: 'behavior_observation',
+          occurredAtUtc: DateTime.utc(2026, 3, 14, 12),
+          snapshotUpdatedAtUtc: DateTime.utc(2026, 3, 14, 12),
+        );
+        final snapshot = VibeStateSnapshot.fromJson(<String, dynamic>{
+          'subject_id': subjectRef.subjectId,
+          'subject_kind': subjectRef.kind.toWireValue(),
+          'updated_at_utc': DateTime.utc(2026, 3, 14, 12).toIso8601String(),
+        });
+
+        kernel.appendMutation(record: record, checkpointSnapshot: snapshot);
+
+        final secondKernel = TrajectoryKernel(
+          nativeBridge: _UnavailableTrajectoryBridge(),
+          allowFallback: true,
+        );
+        final replayed = secondKernel.replaySubject(subjectRef: subjectRef);
+        final exported = secondKernel.exportJournalWindow(limit: 64);
+        final checkpoint = secondKernel.hydrateVibeSnapshot(
+          subjectRef: subjectRef,
+        );
+        final diagnostics = secondKernel.diagnostics();
+
+        expect(replayed, hasLength(1));
+        expect(replayed.single.recordId, record.recordId);
+        expect(exported, hasLength(1));
+        expect(checkpoint, isNotNull);
+        expect(checkpoint!.sourceRecordIds, contains(record.recordId));
+        expect(diagnostics['fallback_enabled'], isTrue);
+        expect(diagnostics['mutation_count'], 1);
+      },
+    );
+
+    test('reset clears fallback journal and checkpoints across instances', () {
+      final subjectRef = VibeSubjectRef.personal('agent_fallback_reset');
       final record = TrajectoryMutationRecord(
-        recordId: 'record-1',
+        recordId: 'record-reset',
         subjectRef: subjectRef,
         category: 'behavior_observation',
-        occurredAtUtc: DateTime.utc(2026, 3, 14, 12),
-        snapshotUpdatedAtUtc: DateTime.utc(2026, 3, 14, 12),
+        occurredAtUtc: DateTime.utc(2026, 3, 14, 13),
+        snapshotUpdatedAtUtc: DateTime.utc(2026, 3, 14, 13),
       );
       final snapshot = VibeStateSnapshot.fromJson(<String, dynamic>{
         'subject_id': subjectRef.subjectId,
         'subject_kind': subjectRef.kind.toWireValue(),
-        'updated_at_utc': DateTime.utc(2026, 3, 14, 12).toIso8601String(),
+        'updated_at_utc': DateTime.utc(2026, 3, 14, 13).toIso8601String(),
       });
 
       kernel.appendMutation(record: record, checkpointSnapshot: snapshot);
 
-      final secondKernel = TrajectoryKernel(
+      final seededKernel = TrajectoryKernel(
         nativeBridge: _UnavailableTrajectoryBridge(),
         allowFallback: true,
       );
-      final replayed = secondKernel.replaySubject(subjectRef: subjectRef);
-      final exported = secondKernel.exportJournalWindow(limit: 64);
-      final checkpoint =
-          secondKernel.hydrateVibeSnapshot(subjectRef: subjectRef);
-      final diagnostics = secondKernel.diagnostics();
+      expect(seededKernel.replaySubject(subjectRef: subjectRef), hasLength(1));
+      expect(
+        seededKernel.hydrateVibeSnapshot(subjectRef: subjectRef),
+        isNotNull,
+      );
 
-      expect(replayed, hasLength(1));
-      expect(replayed.single.recordId, record.recordId);
-      expect(exported, hasLength(1));
-      expect(checkpoint, isNotNull);
-      expect(checkpoint!.sourceRecordIds, contains(record.recordId));
-      expect(diagnostics['fallback_enabled'], isTrue);
-      expect(diagnostics['mutation_count'], 1);
+      TrajectoryKernel.resetFallbackStateForTesting();
+
+      final clearedKernel = TrajectoryKernel(
+        nativeBridge: _UnavailableTrajectoryBridge(),
+        allowFallback: true,
+      );
+      expect(clearedKernel.replaySubject(subjectRef: subjectRef), isEmpty);
+      expect(clearedKernel.hydrateVibeSnapshot(subjectRef: subjectRef), isNull);
+      expect(clearedKernel.diagnostics()['mutation_count'], 0);
+      expect(clearedKernel.diagnostics()['checkpoint_count'], 0);
     });
   });
 }

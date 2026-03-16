@@ -198,7 +198,7 @@ void main() {
         records: const <ReplayRealismGateRecord>[],
       ),
       calibrationReport: const ReplayCalibrationReport(
-        environmentId: 'env-1',
+        reportId: 'calibration:ready',
         replayYear: 2023,
         passed: true,
         records: <ReplayCalibrationRecord>[],
@@ -263,15 +263,16 @@ void main() {
   }
 
   test('accepts replay as Monte Carlo base year only when all gates pass', () {
-    final manifest = const BhamReplayTrainingExportManifestService().buildManifest(
-      summary: buildSummary(realismReady: true, isolationPassed: true),
-      calibrationReport: const ReplayCalibrationReport(
-        environmentId: 'env-1',
-        replayYear: 2023,
-        passed: true,
-        records: <ReplayCalibrationRecord>[],
-      ),
-    );
+    final manifest = const BhamReplayTrainingExportManifestService()
+        .buildManifest(
+          summary: buildSummary(realismReady: true, isolationPassed: true),
+          calibrationReport: const ReplayCalibrationReport(
+            reportId: 'calibration:ready',
+            replayYear: 2023,
+            passed: true,
+            records: <ReplayCalibrationRecord>[],
+          ),
+        );
 
     expect(manifest.status, 'accepted_as_monte_carlo_base_year');
     expect(manifest.metrics['weightedActorCount'], 25000);
@@ -292,29 +293,29 @@ void main() {
       contains('69_BHAM_REPLAY_HOLDOUT_EVALUATION_2023.json'),
     );
     expect(manifest.metadata['replayStorageSchema'], 'replay_simulation');
-    expect(
-      manifest.trainingTables,
-      contains('replay_action_training_records'),
-    );
+    expect(manifest.trainingTables, contains('replay_action_training_records'));
     expect(manifest.metrics['actionTrainingRecordCount'], 1200);
     expect(manifest.metrics['holdoutEvaluationPassed'], isTrue);
   });
 
   test('marks replay as not ready when realism or isolation fails', () {
-    final manifest = const BhamReplayTrainingExportManifestService().buildManifest(
-      summary: buildSummary(realismReady: false, isolationPassed: true),
-      calibrationReport: const ReplayCalibrationReport(
-        environmentId: 'env-1',
-        replayYear: 2023,
-        passed: true,
-        records: <ReplayCalibrationRecord>[],
-      ),
-    );
+    final manifest = const BhamReplayTrainingExportManifestService()
+        .buildManifest(
+          summary: buildSummary(realismReady: false, isolationPassed: true),
+          calibrationReport: const ReplayCalibrationReport(
+            reportId: 'calibration:summary',
+            replayYear: 2023,
+            passed: true,
+            records: <ReplayCalibrationRecord>[],
+          ),
+        );
 
     expect(manifest.status, 'not_ready');
     expect(
       manifest.notes.first,
-      contains('still has realism, calibration, storage-boundary, or isolation gaps'),
+      contains(
+        'still has realism, calibration, storage-boundary, or isolation gaps',
+      ),
     );
   });
 }

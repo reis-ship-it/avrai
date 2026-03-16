@@ -66,8 +66,9 @@ class _FakeWhatRuntimeIngestionService implements WhatRuntimeIngestionService {
         firstObservedAtUtc: observedAtUtc,
         lastObservedAtUtc: observedAtUtc,
         sourceMix: const WhatSourceMix(structured: 1.0),
-        lineageRefs:
-            lineageRef == null ? const <String>[] : <String>[lineageRef],
+        lineageRefs: lineageRef == null
+            ? const <String>[]
+            : <String>[lineageRef],
       ),
     );
   }
@@ -165,6 +166,7 @@ void main() {
     VibeKernel().importSnapshotEnvelope(
       VibeSnapshotEnvelope(exportedAtUtc: DateTime.utc(2026, 3, 12)),
     );
+    TrajectoryKernel.resetFallbackStateForTesting();
     TrajectoryKernel().importJournalWindow(
       records: const <TrajectoryMutationRecord>[],
     );
@@ -212,136 +214,153 @@ void main() {
       expect(after, before);
     });
 
-    test('completed governed peer interaction creates local mutation receipts',
-        () async {
-      final vibeKernel = VibeKernel();
-      vibeKernel.seedUserStateFromOnboarding(
-        subjectId: 'agent-local',
-        dimensions: const <String, double>{
-          'exploration_eagerness': 0.72,
-          'community_orientation': 0.67,
-          'authenticity_preference': 0.65,
-          'temporal_flexibility': 0.62,
-          'energy_preference': 0.61,
-          'novelty_seeking': 0.7,
-        },
-        provenanceTags: const <String>['test:peer_learning'],
-      );
-      final trajectoryKernel = TrajectoryKernel();
-      final before = trajectoryKernel.exportJournalWindow(limit: 64).length;
-      final service = PeerInteractionOutcomeLearningService(
-        interpretationKernelService: TestInterpretationKernelService(),
-        boundaryKernelService: TestBoundaryKernelService(),
-        governanceKernelService: buildTestGovernanceKernelService(),
-        vibeKernel: vibeKernel,
-      );
-      final connection = ConnectionMetrics.initial(
-        localAISignature: 'local-signature',
-        remoteAISignature: 'remote-signature',
-        compatibility: 0.82,
-        learningOutcomesSeed: const <String, dynamic>{
-          'canonical_reason_codes': <String>[
-            'shared_geography',
-            'personal_surface_alignment',
-          ],
-          'shared_geographic_levels': <String>['locality', 'city'],
-          'shared_scoped_context_ids': <String>[
-            'scene:locality-agent:bham-downtown:indie-music',
-          ],
-        },
-      ).updateDuringInteraction(
-        newCompatibility: 0.84,
-        learningEffectiveness: 0.72,
-        aiPleasureScore: 0.78,
-        newInteraction: InteractionEvent.success(
-          type: InteractionType.vibeExchange,
-          data: const <String, dynamic>{'canonical_peer_payload': true},
-        ),
-      ).complete(
-        finalStatus: ConnectionStatus.completed,
-        completionReason: 'natural_completion',
-      );
+    test(
+      'completed governed peer interaction creates local mutation receipts',
+      () async {
+        final vibeKernel = VibeKernel();
+        vibeKernel.seedUserStateFromOnboarding(
+          subjectId: 'agent-local',
+          dimensions: const <String, double>{
+            'exploration_eagerness': 0.72,
+            'community_orientation': 0.67,
+            'authenticity_preference': 0.65,
+            'temporal_flexibility': 0.62,
+            'energy_preference': 0.61,
+            'novelty_seeking': 0.7,
+          },
+          provenanceTags: const <String>['test:peer_learning'],
+        );
+        final trajectoryKernel = TrajectoryKernel();
+        final before = trajectoryKernel.exportJournalWindow(limit: 64).length;
+        final service = PeerInteractionOutcomeLearningService(
+          interpretationKernelService: TestInterpretationKernelService(),
+          boundaryKernelService: TestBoundaryKernelService(),
+          governanceKernelService: buildTestGovernanceKernelService(),
+          vibeKernel: vibeKernel,
+        );
+        final connection =
+            ConnectionMetrics.initial(
+                  localAISignature: 'local-signature',
+                  remoteAISignature: 'remote-signature',
+                  compatibility: 0.82,
+                  learningOutcomesSeed: const <String, dynamic>{
+                    'canonical_reason_codes': <String>[
+                      'shared_geography',
+                      'personal_surface_alignment',
+                    ],
+                    'shared_geographic_levels': <String>['locality', 'city'],
+                    'shared_scoped_context_ids': <String>[
+                      'scene:locality-agent:bham-downtown:indie-music',
+                    ],
+                  },
+                )
+                .updateDuringInteraction(
+                  newCompatibility: 0.84,
+                  learningEffectiveness: 0.72,
+                  aiPleasureScore: 0.78,
+                  newInteraction: InteractionEvent.success(
+                    type: InteractionType.vibeExchange,
+                    data: const <String, dynamic>{
+                      'canonical_peer_payload': true,
+                    },
+                  ),
+                )
+                .complete(
+                  finalStatus: ConnectionStatus.completed,
+                  completionReason: 'natural_completion',
+                );
 
-      final result = await service.recordCompletedInteraction(
-        localUserId: 'user-local',
-        localAgentId: 'agent-local',
-        remoteNode: _resolvedRemoteNode(),
-        connection: connection,
-        completionReason: 'natural_completion',
-      );
+        final result = await service.recordCompletedInteraction(
+          localUserId: 'user-local',
+          localAgentId: 'agent-local',
+          remoteNode: _resolvedRemoteNode(),
+          connection: connection,
+          completionReason: 'natural_completion',
+        );
 
-      final after = trajectoryKernel.exportJournalWindow(limit: 64).length;
-      expect(result.applied, isTrue);
-      expect(result.receipts, isNotEmpty);
-      expect(after, greaterThan(before));
-    });
+        final after = trajectoryKernel.exportJournalWindow(limit: 64).length;
+        expect(result.applied, isTrue);
+        expect(result.receipts, isNotEmpty);
+        expect(after, greaterThan(before));
+      },
+    );
 
-    test('completed trusted interaction promotes ambient-social evidence through what ingress',
-        () async {
-      final vibeKernel = VibeKernel();
-      vibeKernel.seedUserStateFromOnboarding(
-        subjectId: 'agent-local',
-        dimensions: const <String, double>{
-          'community_orientation': 0.66,
-          'energy_preference': 0.61,
-        },
-        provenanceTags: const <String>['test:ambient_peer_learning'],
-      );
-      final whatIngestion = _FakeWhatRuntimeIngestionService();
-      final ambientService = AmbientSocialRealityLearningService(
-        whatIngestion: whatIngestion,
-        governanceKernelService: buildTestGovernanceKernelService(),
-        vibeKernel: vibeKernel,
-        nowUtc: () => DateTime.utc(2026, 3, 14, 2),
-      );
-      final service = PeerInteractionOutcomeLearningService(
-        interpretationKernelService: TestInterpretationKernelService(),
-        boundaryKernelService: TestBoundaryKernelService(),
-        governanceKernelService: buildTestGovernanceKernelService(),
-        ambientSocialRealityLearningService: ambientService,
-        vibeKernel: vibeKernel,
-      );
-      final connection = ConnectionMetrics.initial(
-        localAISignature: 'local-signature',
-        remoteAISignature: 'remote-signature',
-        compatibility: 0.83,
-        learningOutcomesSeed: const <String, dynamic>{
-          'shared_geographic_levels': <String>['locality'],
-        },
-      ).updateDuringInteraction(
-        newCompatibility: 0.85,
-        learningEffectiveness: 0.74,
-        aiPleasureScore: 0.8,
-        newInteraction: InteractionEvent.success(
-          type: InteractionType.vibeExchange,
-          data: const <String, dynamic>{'canonical_peer_payload': true},
-        ),
-      ).complete(
-        finalStatus: ConnectionStatus.completed,
-        completionReason: 'natural_completion',
-      );
+    test(
+      'completed trusted interaction promotes ambient-social evidence through what ingress',
+      () async {
+        final vibeKernel = VibeKernel();
+        vibeKernel.seedUserStateFromOnboarding(
+          subjectId: 'agent-local',
+          dimensions: const <String, double>{
+            'community_orientation': 0.66,
+            'energy_preference': 0.61,
+          },
+          provenanceTags: const <String>['test:ambient_peer_learning'],
+        );
+        final whatIngestion = _FakeWhatRuntimeIngestionService();
+        final ambientService = AmbientSocialRealityLearningService(
+          whatIngestion: whatIngestion,
+          governanceKernelService: buildTestGovernanceKernelService(),
+          vibeKernel: vibeKernel,
+          nowUtc: () => DateTime.utc(2026, 3, 14, 2),
+        );
+        final service = PeerInteractionOutcomeLearningService(
+          interpretationKernelService: TestInterpretationKernelService(),
+          boundaryKernelService: TestBoundaryKernelService(),
+          governanceKernelService: buildTestGovernanceKernelService(),
+          ambientSocialRealityLearningService: ambientService,
+          vibeKernel: vibeKernel,
+        );
+        final connection =
+            ConnectionMetrics.initial(
+                  localAISignature: 'local-signature',
+                  remoteAISignature: 'remote-signature',
+                  compatibility: 0.83,
+                  learningOutcomesSeed: const <String, dynamic>{
+                    'shared_geographic_levels': <String>['locality'],
+                  },
+                )
+                .updateDuringInteraction(
+                  newCompatibility: 0.85,
+                  learningEffectiveness: 0.74,
+                  aiPleasureScore: 0.8,
+                  newInteraction: InteractionEvent.success(
+                    type: InteractionType.vibeExchange,
+                    data: const <String, dynamic>{
+                      'canonical_peer_payload': true,
+                    },
+                  ),
+                )
+                .complete(
+                  finalStatus: ConnectionStatus.completed,
+                  completionReason: 'natural_completion',
+                );
 
-      final result = await service.recordCompletedInteraction(
-        localUserId: 'user-local',
-        localAgentId: 'agent-local',
-        remoteNode: _resolvedRemoteNode(),
-        connection: connection,
-        completionReason: 'natural_completion',
-      );
+        final result = await service.recordCompletedInteraction(
+          localUserId: 'user-local',
+          localAgentId: 'agent-local',
+          remoteNode: _resolvedRemoteNode(),
+          connection: connection,
+          completionReason: 'natural_completion',
+        );
 
-      final snapshot = ambientService.snapshot(
-        capturedAtUtc: DateTime.utc(2026, 3, 14, 2),
-      );
-      expect(result.applied, isTrue);
-      expect(whatIngestion.ambientIngestionCount, 1);
-      expect(whatIngestion.lastEntityRef, startsWith('ambient_social_scene:'));
-      expect(whatIngestion.lastSocialContext, 'dyad');
-      expect(snapshot.normalizedObservationCount, 1);
-      expect(snapshot.confirmedInteractionPromotionCount, 1);
-      expect(snapshot.whatIngestionCount, 1);
-      expect(snapshot.latestConfirmedInteractivePeerCount, 1);
-      expect(snapshot.latestPlaceVibeLabel, 'intimate_social');
-    });
+        final snapshot = ambientService.snapshot(
+          capturedAtUtc: DateTime.utc(2026, 3, 14, 2),
+        );
+        expect(result.applied, isTrue);
+        expect(whatIngestion.ambientIngestionCount, 1);
+        expect(
+          whatIngestion.lastEntityRef,
+          startsWith('ambient_social_scene:'),
+        );
+        expect(whatIngestion.lastSocialContext, 'dyad');
+        expect(snapshot.normalizedObservationCount, 1);
+        expect(snapshot.confirmedInteractionPromotionCount, 1);
+        expect(snapshot.whatIngestionCount, 1);
+        expect(snapshot.latestConfirmedInteractivePeerCount, 1);
+        expect(snapshot.latestPlaceVibeLabel, 'intimate_social');
+      },
+    );
   });
 }
 

@@ -100,6 +100,11 @@ This package describes the **beta app/runtime operating model**, not the full po
 - [BHAM Replay Training Signals](./Bham%20simulation/68_BHAM_REPLAY_TRAINING_SIGNALS_2023.md)
 - [BHAM Replay Holdout Evaluation](./Bham%20simulation/69_BHAM_REPLAY_HOLDOUT_EVALUATION_2023.md)
 - [BHAM Simulation Improvement Roadmap](./Bham%20simulation/70_BHAM_SIMULATION_IMPROVEMENT_ROADMAP_2026.md)
+- [BHAM Replay Scenario Packets](./Bham%20simulation/71_BHAM_REPLAY_SCENARIO_PACKETS_2023.json)
+- [BHAM Event Scenario Pack](./Bham%20simulation/72_BHAM_EVENT_SCENARIO_PACK_2023.md)
+- [BHAM Replay Comparison Report](./Bham%20simulation/73_BHAM_REPLAY_COMPARISON_REPORT_2023.md)
+- [BHAM Replay Contradiction Report](./Bham%20simulation/74_BHAM_REPLAY_CONTRADICTION_REPORT_2023.md)
+- [BHAM Replay Calibration Report](./Bham%20simulation/75_BHAM_REPLAY_CALIBRATION_REPORT_2023.md)
 - [Execution Plan](./PLAN.md)
 
 ## Core Product Promise

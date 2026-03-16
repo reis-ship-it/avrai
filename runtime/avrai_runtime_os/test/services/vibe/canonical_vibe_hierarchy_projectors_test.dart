@@ -20,6 +20,11 @@ void main() {
 
   setUp(() {
     VibeKernelRuntimeBindings.persistenceBridge = _FakePersistenceBridge();
+    VibeKernel.resetFallbackStateForTesting();
+    TrajectoryKernel.resetFallbackStateForTesting();
+    TrajectoryKernel().importJournalWindow(
+      records: const <TrajectoryMutationRecord>[],
+    );
     vibeKernel = VibeKernel();
   });
 
@@ -41,10 +46,7 @@ void main() {
 
     expect(profile, isNotNull);
     expect(profile!.agentId, equals(agentId));
-    expect(
-      profile.dimensions['exploration_eagerness'],
-      closeTo(0.82, 0.0001),
-    );
+    expect(profile.dimensions['exploration_eagerness'], closeTo(0.82, 0.0001));
     expect(
       profile.dimensionConfidence['exploration_eagerness'],
       closeTo(0.74, 0.0001),
@@ -52,140 +54,147 @@ void main() {
     expect(profile.authenticity, inInclusiveRange(0.0, 1.0));
   });
 
-  test('hierarchical projector writes geographic rollups only for live levels',
-      () {
-    final stableKey = 'loc-${DateTime.now().microsecondsSinceEpoch}';
-    final projector = HierarchicalLocalityVibeProjector(
-      vibeKernel: vibeKernel,
-      governanceKernel: buildTestGovernanceKernelService(),
-    );
+  test(
+    'hierarchical projector writes geographic rollups only for live levels',
+    () {
+      final stableKey = 'loc-${DateTime.now().microsecondsSinceEpoch}';
+      final projector = HierarchicalLocalityVibeProjector(
+        vibeKernel: vibeKernel,
+        governanceKernel: buildTestGovernanceKernelService(),
+      );
 
-    final receipts = projector.projectObservation(
-      binding: GeographicVibeBinding(
-        localityRef: VibeSubjectRef.locality(stableKey),
-        stableKey: stableKey,
+      final receipts = projector.projectObservation(
+        binding: GeographicVibeBinding(
+          localityRef: VibeSubjectRef.locality(stableKey),
+          stableKey: stableKey,
+          cityCode: 'bham',
+          regionCode: 'al',
+          globalCode: 'earth',
+        ),
+        source: 'test:geo',
+        dimensions: _dimensions(0.77),
+        provenanceTags: const <String>['test:geo'],
+      );
+
+      expect(
+        receipts.map((entry) => entry.subjectId),
+        containsAll(<String>[
+          'locality-agent:$stableKey',
+          'city-agent:bham',
+          'region-agent:al',
+          'global-agent:earth',
+        ]),
+      );
+      expect(
+        receipts.map((entry) => entry.subjectId),
+        isNot(contains('district-agent:southside')),
+      );
+      expect(
+        receipts.map((entry) => entry.subjectId),
+        isNot(contains('country-agent:us')),
+      );
+
+      final localitySnapshot = vibeKernel.getSnapshot(
+        VibeSubjectRef.locality(stableKey),
+      );
+      final globalSnapshot = vibeKernel.getSnapshot(
+        VibeSubjectRef.global('earth'),
+      );
+      expect(localitySnapshot.coreDna.dimensions, isNotEmpty);
+      expect(globalSnapshot.coreDna.dimensions, isNotEmpty);
+    },
+  );
+
+  test(
+    'hierarchical projector includes district and country only when present',
+    () {
+      final stableKey = 'loc-${DateTime.now().microsecondsSinceEpoch}';
+      final projector = HierarchicalLocalityVibeProjector(
+        vibeKernel: vibeKernel,
+        governanceKernel: buildTestGovernanceKernelService(),
+      );
+
+      final receipts = projector.projectObservation(
+        binding: GeographicVibeBinding(
+          localityRef: VibeSubjectRef.locality(stableKey),
+          stableKey: stableKey,
+          districtCode: 'southside',
+          cityCode: 'bham',
+          regionCode: 'al',
+          countryCode: 'us',
+          globalCode: 'earth',
+        ),
+        source: 'test:geo',
+        dimensions: _dimensions(0.73),
+        provenanceTags: const <String>['test:geo'],
+      );
+
+      expect(
+        receipts.map((entry) => entry.subjectId),
+        containsAll(<String>['district-agent:southside', 'country-agent:us']),
+      );
+    },
+  );
+
+  test(
+    'scoped projector requires repeated multi-family evidence for scenes',
+    () {
+      final projector = ScopedContextVibeProjector(
+        vibeKernel: vibeKernel,
+        governanceKernel: buildTestGovernanceKernelService(),
+      );
+      final geographicBinding = GeographicVibeBinding(
+        localityRef: VibeSubjectRef.locality('loc-scope'),
+        stableKey: 'loc-scope',
         cityCode: 'bham',
-        regionCode: 'al',
         globalCode: 'earth',
-      ),
-      source: 'test:geo',
-      dimensions: _dimensions(0.77),
-      provenanceTags: const <String>['test:geo'],
-    );
+      );
 
-    expect(
-      receipts.map((entry) => entry.subjectId),
-      containsAll(<String>[
-        'locality-agent:$stableKey',
-        'city-agent:bham',
-        'region-agent:al',
-        'global-agent:earth',
-      ]),
-    );
-    expect(
-      receipts.map((entry) => entry.subjectId),
-      isNot(contains('district-agent:southside')),
-    );
-    expect(
-      receipts.map((entry) => entry.subjectId),
-      isNot(contains('country-agent:us')),
-    );
+      final singleFamily = projector.buildBindings(
+        geographicBinding: geographicBinding,
+        metadata: const <String, dynamic>{
+          'scene_label': 'Indie Music',
+          'scene_language_score': 1.0,
+        },
+      );
+      expect(
+        singleFamily.where(
+          (entry) => entry.scopedKind == ScopedAgentKind.scene,
+        ),
+        isEmpty,
+      );
 
-    final localitySnapshot =
-        vibeKernel.getSnapshot(VibeSubjectRef.locality(stableKey));
-    final globalSnapshot =
-        vibeKernel.getSnapshot(VibeSubjectRef.global('earth'));
-    expect(localitySnapshot.coreDna.dimensions, isNotEmpty);
-    expect(globalSnapshot.coreDna.dimensions, isNotEmpty);
-  });
+      final repeatedEvidence = projector.buildBindings(
+        geographicBinding: geographicBinding,
+        metadata: const <String, dynamic>{
+          'university_id': 'uab',
+          'university_name': 'University of Alabama at Birmingham',
+          'campus_id': 'uab-main',
+          'organization_id': 'org-founders',
+          'organization_name': 'Founders Circle',
+          'scene_label': 'Indie Music',
+          'categories': <String>['music'],
+          'venue_ids': <String>['saturn'],
+        },
+      );
 
-  test('hierarchical projector includes district and country only when present',
-      () {
-    final stableKey = 'loc-${DateTime.now().microsecondsSinceEpoch}';
-    final projector = HierarchicalLocalityVibeProjector(
-      vibeKernel: vibeKernel,
-      governanceKernel: buildTestGovernanceKernelService(),
-    );
-
-    final receipts = projector.projectObservation(
-      binding: GeographicVibeBinding(
-        localityRef: VibeSubjectRef.locality(stableKey),
-        stableKey: stableKey,
-        districtCode: 'southside',
-        cityCode: 'bham',
-        regionCode: 'al',
-        countryCode: 'us',
-        globalCode: 'earth',
-      ),
-      source: 'test:geo',
-      dimensions: _dimensions(0.73),
-      provenanceTags: const <String>['test:geo'],
-    );
-
-    expect(
-      receipts.map((entry) => entry.subjectId),
-      containsAll(<String>[
-        'district-agent:southside',
-        'country-agent:us',
-      ]),
-    );
-  });
-
-  test('scoped projector requires repeated multi-family evidence for scenes',
-      () {
-    final projector = ScopedContextVibeProjector(
-      vibeKernel: vibeKernel,
-      governanceKernel: buildTestGovernanceKernelService(),
-    );
-    final geographicBinding = GeographicVibeBinding(
-      localityRef: VibeSubjectRef.locality('loc-scope'),
-      stableKey: 'loc-scope',
-      cityCode: 'bham',
-      globalCode: 'earth',
-    );
-
-    final singleFamily = projector.buildBindings(
-      geographicBinding: geographicBinding,
-      metadata: const <String, dynamic>{
-        'scene_label': 'Indie Music',
-        'scene_language_score': 1.0,
-      },
-    );
-    expect(
-      singleFamily.where((entry) => entry.scopedKind == ScopedAgentKind.scene),
-      isEmpty,
-    );
-
-    final repeatedEvidence = projector.buildBindings(
-      geographicBinding: geographicBinding,
-      metadata: const <String, dynamic>{
-        'university_id': 'uab',
-        'university_name': 'University of Alabama at Birmingham',
-        'campus_id': 'uab-main',
-        'organization_id': 'org-founders',
-        'organization_name': 'Founders Circle',
-        'scene_label': 'Indie Music',
-        'categories': <String>['music'],
-        'venue_ids': <String>['saturn'],
-      },
-    );
-
-    expect(
-      repeatedEvidence.map((entry) => entry.scopedKind),
-      containsAll(<ScopedAgentKind>[
-        ScopedAgentKind.university,
-        ScopedAgentKind.campus,
-        ScopedAgentKind.organization,
-        ScopedAgentKind.scene,
-      ]),
-    );
-  });
+      expect(
+        repeatedEvidence.map((entry) => entry.scopedKind),
+        containsAll(<ScopedAgentKind>[
+          ScopedAgentKind.university,
+          ScopedAgentKind.campus,
+          ScopedAgentKind.organization,
+          ScopedAgentKind.scene,
+        ]),
+      );
+    },
+  );
 }
 
 Map<String, double> _dimensions(double value) => <String, double>{
-      for (final dimension in VibeConstants.coreDimensions) dimension: value,
-    };
+  for (final dimension in VibeConstants.coreDimensions) dimension: value,
+};
 
 Map<String, double> _confidence(double value) => <String, double>{
-      for (final dimension in VibeConstants.coreDimensions) dimension: value,
-    };
+  for (final dimension in VibeConstants.coreDimensions) dimension: value,
+};
