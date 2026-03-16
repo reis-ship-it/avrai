@@ -1,6 +1,6 @@
 # Follow-Up Device QA Master Checklist
 
-**Date:** March 14, 2026  
+**Date:** March 15, 2026  
 **Status:** Ready  
 **Use:** Single operational checklist for real-phone QA once approved devices are available
 
@@ -11,6 +11,7 @@ Use [13_FOLLOW_UP_DEVICE_QA_OUTLINE.md](./13_FOLLOW_UP_DEVICE_QA_OUTLINE.md) for
 
 - Mark each item `pass`, `fail`, `N/A`, or `note`.
 - If a debug/admin surface is not intentionally exposed in the current beta build, mark it `N/A`, not `fail`.
+- If the current QA cycle is consumer-only and does not exercise admin/autoresearch, mark the private control-plane items `N/A`, not `fail`.
 - If a surface is exposed but gives ambiguous, false, or privacy-unsafe results, mark it `fail`.
 - If simulation/replay behavior appears to leak into live truth, treat it as a blocker.
 
@@ -125,6 +126,29 @@ The Birmingham beta hierarchy is:
 - [ ] Privacy boundary remains pseudonymous by default
 - [ ] No governance boundary appears bypassed during testing
 
+### Private Admin Control Plane Readiness
+
+Only required when this QA cycle includes admin oversight, governed autoresearch, brokered open-web research, or control-plane operations.
+For consumer-only device QA, mark these items `N/A`.
+
+- [ ] N/A if this is a consumer-only phone QA pass with no admin/autoresearch exercise
+- [ ] Supabase migration history is aligned with the repo before admin/autoresearch testing
+- [ ] Private admin gateway is deployed on a controlled private host or VM
+- [ ] Admin gateway is reachable only over private mesh and has no public ingress
+- [ ] Admin app uses gateway-issued sessions rather than direct privileged client writes
+- [ ] Desktop-only admin access, managed-device checks, OIDC sign-in, and MFA are enforced
+- [ ] Device-bound session checks are enforced through mTLS or equivalent certificate/fingerprint binding
+- [ ] Policy-engine decision logging is active for privileged admin actions
+- [ ] `pause`, `resume`, `stop`, `redirect`, `approve`, and `explain` are enforced server-side
+- [ ] Break-glass kill switch path is available and audited
+- [ ] Brokered open-web research is blocked by default
+- [ ] Any brokered open-web approval requires explicit TTL, step-up auth, and second-operator approval
+- [ ] Sandbox workers cannot call consumer endpoints, admin endpoints, or production mutation APIs directly
+- [ ] Server-side redaction strips `user_id`, direct location history, email, phone, raw external payloads, and consumer identifiers
+- [ ] Raw external payloads remain quarantined and never render directly in admin UI
+- [ ] Client-side export remains disabled, or any evidence pack is server-generated, signed, redacted, and audited
+- [ ] Audit logs record operator alias, run ID, checkpoint ID, device ID, session ID, policy version, and step-up result for every privileged action
+
 ## Platform Checklist
 
 ### iPhone
@@ -199,6 +223,8 @@ The Birmingham beta hierarchy is:
 - [ ] No false or frozen locality / spot truth movement
 - [ ] No hierarchy-pathflow failure that breaks locality / city oversight
 - [ ] No higher-agent direct-to-human speech
+- [ ] If admin/autoresearch is in scope, no public-network path can reach the private control plane
+- [ ] If brokered open-web is in scope, no unapproved fetch occurs and no raw external payload is exposed
 
 ## Final Call
 
@@ -211,5 +237,6 @@ The Birmingham beta hierarchy is:
 - [13_FOLLOW_UP_DEVICE_QA_OUTLINE.md](./13_FOLLOW_UP_DEVICE_QA_OUTLINE.md)
 - [04_OFFLINE_AI2AI_AND_DATA_CONTRACT.md](./04_OFFLINE_AI2AI_AND_DATA_CONTRACT.md)
 - [05_ADMIN_GOVERNANCE_TRUTH_AND_SAFETY.md](./05_ADMIN_GOVERNANCE_TRUTH_AND_SAFETY.md)
+- [11_PRIVATE_AGENT_INFRASTRUCTURE_AND_CERTAINTY_PLAN.md](./11_PRIVATE_AGENT_INFRASTRUCTURE_AND_CERTAINTY_PLAN.md)
 - [10_REALITY_MODEL_BUILD_CONTRACT.md](./10_REALITY_MODEL_BUILD_CONTRACT.md)
 - [12_REALITY_MODEL_AND_OS_BUILD_AUDIT.md](./12_REALITY_MODEL_AND_OS_BUILD_AUDIT.md)

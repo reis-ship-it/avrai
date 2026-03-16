@@ -1,7 +1,6 @@
 // TODO(Phase 0.5.0): Remove this suppression after AI2AIProtocol callers migrate to DNAEncoderService.
 // ignore_for_file: deprecated_member_use
 
-import 'dart:io' show Platform;
 import 'package:avrai_runtime_os/services/integrations/spotify_airgap_service.dart';
 import 'package:avrai_runtime_os/kernel/what/what_kernel_contract.dart';
 import 'package:avrai_runtime_os/kernel/what/what_runtime_ingestion_service.dart';
@@ -232,7 +231,23 @@ import 'package:avrai_core/contracts/air_gap_contract.dart';
 import 'package:avrai_runtime_os/services/device/device_motion_service.dart';
 
 final bool _shouldAutoScheduleAdaptiveDigestion =
-    !Platform.environment.containsKey('FLUTTER_TEST');
+    !bool.fromEnvironment('FLUTTER_TEST') &&
+        String.fromEnvironment('SIMULATED_SMOKE_PLATFORM') == '';
+
+bool _canScheduleAdaptiveDigestionJob(GetIt sl) {
+  return sl.isRegistered<SmartPassiveCollectionService>() &&
+      sl.isRegistered<DwellEventIntakeAdapter>() &&
+      sl.isRegistered<AppDatabase>() &&
+      sl.isRegistered<PheromoneMeshRoutingService>() &&
+      sl.isRegistered<ArchetypeLearningRuntime>() &&
+      sl.isRegistered<LanguageRuntimeService>() &&
+      sl.isRegistered<SharedPreferences>();
+}
+
+bool _canScheduleLocalityFederatedExchangeJob(GetIt sl) {
+  return sl.isRegistered<LocalityFederatedExchangeService>() &&
+      sl.isRegistered<AppDatabase>();
+}
 
 /// AI/Network Services Registration Module
 ///
@@ -1804,7 +1819,8 @@ Future<void> registerAIServices(GetIt sl) async {
     );
 
     // Avoid test-time side effects when DI is being bootstrapped for integration suites.
-    if (_shouldAutoScheduleAdaptiveDigestion) {
+    if (_shouldAutoScheduleAdaptiveDigestion &&
+        _canScheduleAdaptiveDigestionJob(sl)) {
       Future.microtask(() {
         sl<BatteryAdaptiveBatchScheduler>()
             .scheduleJob(sl<AdaptiveDigestionJob>());
@@ -1827,7 +1843,8 @@ Future<void> registerAIServices(GetIt sl) async {
     );
 
     // Avoid test-time side effects when DI is being bootstrapped for integration suites.
-    if (_shouldAutoScheduleAdaptiveDigestion) {
+    if (_shouldAutoScheduleAdaptiveDigestion &&
+        _canScheduleLocalityFederatedExchangeJob(sl)) {
       Future.microtask(() {
         sl<BatteryAdaptiveBatchScheduler>()
             .scheduleJob(sl<LocalityFederatedExchangeJob>());

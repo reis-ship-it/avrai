@@ -11,6 +11,11 @@ typedef _InvokeJson = Pointer<Utf8> Function(Pointer<Utf8>);
 typedef _NativeFreeJsonString = Void Function(Pointer<Utf8>);
 typedef _FreeJsonString = void Function(Pointer<Utf8>);
 
+const bool _isTrajectoryKernelFlutterTest =
+    bool.fromEnvironment('FLUTTER_TEST');
+const bool _isTrajectoryKernelSimulatedSmoke =
+    String.fromEnvironment('SIMULATED_SMOKE_PLATFORM') != '';
+
 abstract class TrajectoryKernelLibraryManager {
   DynamicLibrary getKernelLibrary();
 }
@@ -167,14 +172,30 @@ class TrajectoryKernelJsonNativeBridge {
 class TrajectoryKernel {
   TrajectoryKernel({
     TrajectoryKernelJsonNativeBridge? nativeBridge,
-  }) : _nativeBridge = nativeBridge ?? TrajectoryKernelJsonNativeBridge();
+    bool? allowFallback,
+  })  : _nativeBridge = nativeBridge ?? TrajectoryKernelJsonNativeBridge(),
+        _allowFallback = allowFallback ??
+            (_isTrajectoryKernelFlutterTest ||
+                _isTrajectoryKernelSimulatedSmoke);
 
   final TrajectoryKernelJsonNativeBridge _nativeBridge;
+  final bool _allowFallback;
+  static final Map<String, List<TrajectoryMutationRecord>> _fallbackJournals =
+      <String, List<TrajectoryMutationRecord>>{};
+  static final Map<String, TrajectoryHydrationCheckpoint> _fallbackCheckpoints =
+      <String, TrajectoryHydrationCheckpoint>{};
 
   void appendMutation({
     required TrajectoryMutationRecord record,
     VibeStateSnapshot? checkpointSnapshot,
   }) {
+    if (_shouldUseFallback()) {
+      _appendFallbackMutation(
+        record: record,
+        checkpointSnapshot: checkpointSnapshot,
+      );
+      return;
+    }
     _invokeRequired(
       syscall: 'append_mutation',
       payload: <String, dynamic>{
@@ -189,6 +210,13 @@ class TrajectoryKernel {
     required VibeSubjectRef subjectRef,
     int limit = 256,
   }) {
+    if (_shouldUseFallback()) {
+      final records = List<TrajectoryMutationRecord>.from(
+        _fallbackJournals[_subjectKey(subjectRef)] ??
+            const <TrajectoryMutationRecord>[],
+      );
+      return _takeTail(records, limit);
+    }
     return _invokeList(
       syscall: 'replay_subject',
       payload: <String, dynamic>{
@@ -201,6 +229,9 @@ class TrajectoryKernel {
   TrajectoryHydrationCheckpoint? hydrateVibeSnapshot({
     required VibeSubjectRef subjectRef,
   }) {
+    if (_shouldUseFallback()) {
+      return _fallbackCheckpoints[_subjectKey(subjectRef)];
+    }
     final payload = _invokeOptionalMap(
       syscall: 'hydrate_vibe_snapshot',
       payload: <String, dynamic>{'subject_ref': subjectRef.toJson()},
@@ -215,6 +246,17 @@ class TrajectoryKernel {
     VibeSubjectRef? subjectRef,
     int limit = 512,
   }) {
+    if (_shouldUseFallback()) {
+      if (subjectRef != null) {
+        return replaySubject(subjectRef: subjectRef, limit: limit);
+      }
+      final records = _fallbackJournals.values
+          .expand((entries) => entries)
+          .toList(growable: false)
+        ..sort(
+            (left, right) => left.occurredAtUtc.compareTo(right.occurredAtUtc));
+      return _takeTail(records, limit);
+    }
     return _invokeList(
       syscall: 'export_journal_window',
       payload: <String, dynamic>{
@@ -228,6 +270,21 @@ class TrajectoryKernel {
     required List<TrajectoryMutationRecord> records,
     bool resetExisting = true,
   }) {
+    if (_shouldUseFallback()) {
+      if (resetExisting) {
+        _fallbackJournals.clear();
+        _fallbackCheckpoints.clear();
+      }
+      for (final record in records) {
+        _fallbackJournals
+            .putIfAbsent(
+              _subjectKey(record.subjectRef),
+              () => <TrajectoryMutationRecord>[],
+            )
+            .add(record);
+      }
+      return;
+    }
     _invokeRequired(
       syscall: 'import_journal_window',
       payload: <String, dynamic>{
@@ -238,10 +295,67 @@ class TrajectoryKernel {
   }
 
   Map<String, dynamic> diagnostics() {
+    if (_shouldUseFallback()) {
+      return <String, dynamic>{
+        'status': 'ok',
+        'kernel': 'trajectory',
+        'native_required': false,
+        'native_available': false,
+        'fallback_enabled': true,
+        'journal_subject_count': _fallbackJournals.length,
+        'mutation_count': _fallbackJournals.values
+            .fold<int>(0, (sum, entries) => sum + entries.length),
+        'checkpoint_count': _fallbackCheckpoints.length,
+      };
+    }
     return _invokeRequired(
       syscall: 'diagnostics',
       payload: const <String, dynamic>{},
     );
+  }
+
+  bool _shouldUseFallback() {
+    _nativeBridge.initialize();
+    return _allowFallback && !_nativeBridge.isAvailable;
+  }
+
+  void _appendFallbackMutation({
+    required TrajectoryMutationRecord record,
+    VibeStateSnapshot? checkpointSnapshot,
+  }) {
+    final subjectKey = _subjectKey(record.subjectRef);
+    final journal = _fallbackJournals.putIfAbsent(
+      subjectKey,
+      () => <TrajectoryMutationRecord>[],
+    );
+    journal.removeWhere((entry) => entry.recordId == record.recordId);
+    journal.add(record);
+    journal.sort(
+        (left, right) => left.occurredAtUtc.compareTo(right.occurredAtUtc));
+    if (checkpointSnapshot != null) {
+      _fallbackCheckpoints[subjectKey] = TrajectoryHydrationCheckpoint(
+        checkpointId: 'checkpoint:${record.recordId}',
+        subjectRef: record.subjectRef,
+        snapshot: checkpointSnapshot,
+        recordedAtUtc: record.occurredAtUtc,
+        sourceRecordIds: <String>[record.recordId],
+        metadata: const <String, dynamic>{'fallback_enabled': true},
+      );
+    }
+  }
+
+  String _subjectKey(VibeSubjectRef subjectRef) {
+    return '${subjectRef.kind.toWireValue()}::${subjectRef.subjectId}';
+  }
+
+  List<TrajectoryMutationRecord> _takeTail(
+    List<TrajectoryMutationRecord> records,
+    int limit,
+  ) {
+    if (records.length <= limit) {
+      return records;
+    }
+    return records.sublist(records.length - limit);
   }
 
   Map<String, dynamic> _invokeRequired({

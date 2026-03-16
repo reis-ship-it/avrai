@@ -463,6 +463,30 @@
         "report_md": "docs/plans/methodology/MASTER_PLAN_URK_RUNTIME_ACTIVATION_RECEIPT_DISPATCH_REPORT.md",
         "baseline": "docs/plans/methodology/M10_P11_2_URK_RUNTIME_ACTIVATION_RECEIPT_DISPATCH_BASELINE.md"
       }
+    },
+    {
+      "kernel_id": "k_what_semantic_runtime",
+      "title": "What Semantic Runtime",
+      "purpose": "Canonical semantic object classification, affordance state, vibe signature, and user-object relation management.",
+      "runtime_scope": ["runtime_os", "native"],
+      "prong_scope": "runtime",
+      "privacy_modes": ["air_gap_only", "private_mesh_safe"],
+      "impact_tier": "high",
+      "locality_scope": ["device", "mesh"],
+      "activation_triggers": ["air_gap_semantic_tuple", "visit_observation", "event_attendance", "list_interaction", "passive_dwell", "plugin_semantic_event"],
+      "authority_mode": "enforced",
+      "dependencies": ["air_gap", "kernel_governance_gate"],
+      "lifecycle_state": "active",
+      "owner": "AP;OS",
+      "approver": "GOV",
+      "milestone_id": "WHAT-V1",
+      "status": "active",
+      "artifacts": {
+        "contract": "lib/runtime/avrai_runtime_os/kernel/what/what_kernel_contract.dart",
+        "bootstrap": "lib/runtime/avrai_runtime_os/kernel/what/what_kernel_bootstrap.dart",
+        "native": "runtime/avrai_network/native/what_kernel/src/lib.rs",
+        "test": "runtime/avrai_runtime_os/test/kernel/what/dart_what_fallback_kernel_test.dart"
+      }
     }
   ]
 }

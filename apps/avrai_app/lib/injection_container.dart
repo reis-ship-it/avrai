@@ -369,6 +369,9 @@ final sl = GetIt.instance;
 @InjectableInit()
 Future<void> init() async {
   const logger = AppLogger(defaultTag: 'DI', minimumLevel: LogLevel.debug);
+  const bool isFlutterTest = bool.fromEnvironment('FLUTTER_TEST');
+  const bool isSimulatedSmoke =
+      String.fromEnvironment('SIMULATED_SMOKE_PLATFORM') != '';
   logger.info('🔧 [DI] Starting dependency injection initialization...');
 
   // Register core services first (foundational services that other modules depend on)
@@ -552,8 +555,9 @@ Future<void> init() async {
               telemetryService: sl<KernelGovernanceTelemetryService>(),
               defaultMode: KernelGovernanceMode.enforce,
               nativeBridge: KernelGovernanceNativeBridgeBindings(),
-              nativePolicy: const KernelGovernanceNativeExecutionPolicy(
-                  requireNative: true),
+              nativePolicy: KernelGovernanceNativeExecutionPolicy(
+                requireNative: !(isFlutterTest || isSimulatedSmoke),
+              ),
               whenKernel: sl<WhenKernelContract>(),
             ));
         logger.debug('✅ [DI] KernelGovernanceGate registered');

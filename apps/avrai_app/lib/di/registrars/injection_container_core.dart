@@ -45,12 +45,18 @@ import 'package:avrai_runtime_os/ai/vibe_analysis_engine.dart';
 Future<void> registerCoreServices(GetIt sl) async {
   const logger = AppLogger(defaultTag: 'DI-Core', minimumLevel: LogLevel.debug);
   const bool isFlutterTest = bool.fromEnvironment('FLUTTER_TEST');
+  const bool isSimulatedSmoke =
+      String.fromEnvironment('SIMULATED_SMOKE_PLATFORM') != '';
   logger.debug('📦 [DI-Core] Registering core services...');
 
   // External dependencies
   sl.registerLazySingleton(() => Connectivity());
   sl.registerLazySingleton(() => PermissionsPersistenceService());
-  sl.registerLazySingleton<DeviceMotionService>(() => DeviceMotionService());
+  sl.registerLazySingleton<DeviceMotionService>(
+    () => DeviceMotionService(
+      skipInitForTesting: isFlutterTest || isSimulatedSmoke,
+    ),
+  );
 
   // Note: AppDatabase (Drift) is registered in injection_container_device_sync.dart
   // Sembast was fully removed in Phase 26 migration.
@@ -130,7 +136,9 @@ Future<void> registerCoreServices(GetIt sl) async {
   }
   if (!sl.isRegistered<WhenNativeExecutionPolicy>()) {
     sl.registerLazySingleton<WhenNativeExecutionPolicy>(
-      () => WhenNativeExecutionPolicy(requireNative: !isFlutterTest),
+      () => WhenNativeExecutionPolicy(
+        requireNative: !(isFlutterTest || isSimulatedSmoke),
+      ),
     );
   }
   if (!sl.isRegistered<WhenNativeFallbackAudit>()) {
