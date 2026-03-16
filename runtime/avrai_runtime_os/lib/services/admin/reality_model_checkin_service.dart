@@ -4,6 +4,7 @@ import 'dart:developer' as developer;
 import 'package:avrai_core/models/atomic_timestamp.dart';
 import 'package:avrai_core/models/boundary/boundary_models.dart';
 import 'package:avrai_core/models/misc/governance_inspection.dart';
+import 'package:avrai_runtime_os/reality_model_api.dart';
 import 'package:avrai_runtime_os/kernel/interpretation/interpretation_kernel_service.dart';
 import 'package:avrai_runtime_os/kernel/language/language_kernel_orchestrator_service.dart';
 import 'package:avrai_runtime_os/kernel/service_contracts/urk_governed_runtime_registry_service.dart';
@@ -41,6 +42,7 @@ class RealityModelCheckInService {
   final LanguageKernelOrchestratorService _languageKernelOrchestratorService;
   final LanguagePatternLearningService? _languageLearningService;
   final InterpretationKernelService _interpretationKernelService;
+  final RealityModelPort? _realityModelPort;
 
   RealityModelCheckInService({
     UrkGovernedRuntimeRegistryService? governedRuntimeRegistryService,
@@ -48,6 +50,7 @@ class RealityModelCheckInService {
     LanguageKernelOrchestratorService? languageKernelOrchestratorService,
     LanguagePatternLearningService? languageLearningService,
     InterpretationKernelService? interpretationKernelService,
+    RealityModelPort? realityModelPort,
   })  : _governedRuntimeRegistryService = governedRuntimeRegistryService ??
             (GetIt.instance.isRegistered<UrkGovernedRuntimeRegistryService>()
                 ? GetIt.instance<UrkGovernedRuntimeRegistryService>()
@@ -67,7 +70,11 @@ class RealityModelCheckInService {
                 ? GetIt.instance<LanguagePatternLearningService>()
                 : null),
         _interpretationKernelService =
-            interpretationKernelService ?? InterpretationKernelService();
+            interpretationKernelService ?? InterpretationKernelService(),
+        _realityModelPort = realityModelPort ??
+            (GetIt.instance.isRegistered<RealityModelPort>()
+                ? GetIt.instance<RealityModelPort>()
+                : null);
 
   Future<String> checkIn({
     required String layer,
@@ -82,6 +89,7 @@ class RealityModelCheckInService {
       prompt: prompt,
       context: context,
     );
+    final activeContract = await _loadActiveContract();
     final languageRuntimeService = _resolveLanguageRuntimeService();
     if (languageRuntimeService == null) {
       return _fallbackResponse(
@@ -90,6 +98,7 @@ class RealityModelCheckInService {
         context: context,
         approvedGroupings: approvedGroupings,
         temporalContext: temporalContext,
+        activeContract: activeContract,
       );
     }
 
@@ -111,6 +120,7 @@ class RealityModelCheckInService {
             temporalContext: temporalContext,
             inboundTurn: inboundTurn,
             rawPrompt: prompt,
+            activeContract: activeContract,
           ),
         ),
       ),
@@ -138,6 +148,7 @@ class RealityModelCheckInService {
           context: context,
           approvedGroupings: approvedGroupings,
           temporalContext: temporalContext,
+          activeContract: activeContract,
         );
       }
       return trimmed;
@@ -154,6 +165,7 @@ class RealityModelCheckInService {
         context: context,
         approvedGroupings: approvedGroupings,
         temporalContext: temporalContext,
+        activeContract: activeContract,
       );
     }
   }
@@ -314,25 +326,29 @@ class RealityModelCheckInService {
     required Map<String, dynamic> context,
     required List<String> approvedGroupings,
     required RuntimeTemporalContext temporalContext,
+    required RealityModelContract? activeContract,
   }) {
     final groupingHint = approvedGroupings.isEmpty
         ? 'No approved grouping taxonomy yet.'
         : 'Approved grouping taxonomy count: ${approvedGroupings.length}.';
     final temporalHint = temporalContext.summary;
+    final contractHint = activeContract == null
+        ? 'Reality-model contract unavailable.'
+        : 'Active contract ${activeContract.contractId} (${activeContract.version}) allows ${activeContract.maxEvidenceRefs} evidence refs.';
 
     if (layer == 'reality') {
       return 'Reality runtime is in guarded fallback mode. $groupingHint '
-          '$temporalHint Focus remains on coherence, policy alignment, and updating grouping logic after human approvals. '
+          '$contractHint $temporalHint Focus remains on coherence, policy alignment, and updating grouping logic after human approvals. '
           'Prompt received: "$promptEcho".';
     }
 
     if (layer == 'universe') {
       return 'Universe runtime is in guarded fallback mode. $groupingHint '
-          '$temporalHint Current prep emphasizes cluster health across clubs/communities/events with agent-level identity visibility only.';
+          '$contractHint $temporalHint Current prep emphasizes cluster health across clubs/communities/events with agent-level identity visibility only.';
     }
 
     return 'World runtime is in guarded fallback mode. $groupingHint '
-        '$temporalHint Current prep emphasizes continuity across users, businesses, and service surfaces with privacy-safe agent identity only.';
+        '$contractHint $temporalHint Current prep emphasizes continuity across users, businesses, and service surfaces with privacy-safe agent identity only.';
   }
 
   Future<RuntimeTemporalContext> _buildTemporalContext() async {
@@ -489,6 +505,7 @@ class RealityModelCheckInService {
     required RuntimeTemporalContext temporalContext,
     required HumanLanguageKernelTurn? inboundTurn,
     required String rawPrompt,
+    required RealityModelContract? activeContract,
   }) {
     final sanitizedArtifact = inboundTurn?.boundary.sanitizedArtifact;
     return <String, dynamic>{
@@ -511,6 +528,7 @@ class RealityModelCheckInService {
       'approvedGroupings': approvedGroupings,
       'context': context,
       'temporalContext': temporalContext.toJson(),
+      'realityModelContract': activeContract?.toJson(),
       'outputRules': const <String>[
         'Under 140 words',
         'Actionable operational summary',
@@ -518,6 +536,24 @@ class RealityModelCheckInService {
         'No PII, no personal identity details',
       ],
     };
+  }
+
+  Future<RealityModelContract?> _loadActiveContract() async {
+    final port = _realityModelPort;
+    if (port == null) {
+      return null;
+    }
+    try {
+      return await port.getActiveContract();
+    } catch (e, st) {
+      developer.log(
+        'Reality-model contract load failed: $e',
+        name: _logName,
+        error: e,
+        stackTrace: st,
+      );
+      return null;
+    }
   }
 
   String _safePromptEcho(

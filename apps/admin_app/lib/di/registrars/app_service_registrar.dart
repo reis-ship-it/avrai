@@ -469,6 +469,11 @@ Future<void> _registerAppServiceLayer(AppLogger logger) async {
       () => sl<FunctionalKernelProngPorts>(),
     );
   }
+  if (!sl.isRegistered<RealityModelPort>()) {
+    sl.registerLazySingleton<RealityModelPort>(
+      () => DefaultRealityModelPort(),
+    );
+  }
   if (!sl.isRegistered<RuntimeExecutionPort>()) {
     sl.registerLazySingleton<RuntimeExecutionPort>(
       () => sl<FunctionalKernelProngPorts>(),

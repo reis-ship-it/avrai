@@ -163,12 +163,12 @@ import 'package:avrai_runtime_os/services/places/organic_spot_discovery_service.
 // Patent #31: Topological Knot Theory for Personality Representation
 // Note: Most knot services are registered in registerKnotServices() (injection_container_knot.dart)
 // Import only services needed in main container (for CommunityService dependencies)
-import 'package:avrai_runtime_os/runtime_api.dart';
 // Quantum Enhancement Implementation Plan - Phase 2.1: Decoherence Tracking
 // Quantum Enhancement Implementation Plan - Phase 3.1: Quantum Prediction Features
 // Quantum Enhancement Implementation Plan - Phase 4.1: Quantum Satisfaction Enhancement
 // Feature Flag System
 // Supabase Backend Integration
+import 'package:avrai_runtime_os/reality_model_api.dart';
 import 'package:avrai_runtime_os/services/infrastructure/supabase_service.dart';
 import 'package:avrai_runtime_os/ai/vibe_analysis_engine.dart';
 import 'package:avrai_runtime_os/ai/personality_learning.dart';
@@ -334,6 +334,7 @@ import 'package:avrai_runtime_os/services/user/agent_id_migration_service.dart';
 import 'package:avrai_runtime_os/services/security/mapping_key_rotation_service.dart';
 import 'package:avrai_runtime_os/services/locality_agents/locality_geofence_planner.dart';
 import 'package:avrai_runtime_os/services/locality_agents/os_geofence_registrar.dart';
+import 'package:avrai_runtime_os/runtime_api.dart';
 
 part 'di/registrars/runtime_service_registrar.dart';
 part 'di/registrars/engine_service_registrar.dart';
