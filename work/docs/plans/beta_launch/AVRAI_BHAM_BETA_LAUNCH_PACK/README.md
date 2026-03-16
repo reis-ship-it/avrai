@@ -135,6 +135,14 @@ Required GitHub check names for `bham-beta`:
 - `iOS Simulated Headless Smoke`
 - `Android Simulated Headless Smoke`
 
+Local readiness summary command:
+
+- `dart run work/tools/build_bham_beta_readiness_summary.dart reports/proof_runs`
+
+Optional local outputs:
+
+- `dart run work/tools/build_bham_beta_readiness_summary.dart reports/proof_runs --json-output=reports/proof_runs/bham_beta_readiness_summary.json --markdown-output=reports/proof_runs/bham_beta_readiness_summary.md`
+
 Operational follow-up:
 
 - GitHub branch protection for `bham-beta` should require both checks before merge.

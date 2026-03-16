@@ -115,6 +115,20 @@ To validate the repo-level manual proof-run bundle index:
 dart run work/tools/validate_proof_run_bundle_artifact_index.dart reports/proof_runs
 ```
 
+To build a BHAM beta phone-QA readiness summary from the current proof artifacts:
+
+```bash
+dart run work/tools/build_bham_beta_readiness_summary.dart reports/proof_runs
+```
+
+Optional outputs:
+
+```bash
+dart run work/tools/build_bham_beta_readiness_summary.dart reports/proof_runs \
+  --json-output=reports/proof_runs/bham_beta_readiness_summary.json \
+  --markdown-output=reports/proof_runs/bham_beta_readiness_summary.md
+```
+
 It checks:
 
 - required bundle files exist
@@ -126,6 +140,8 @@ It checks:
 - profile-specific expectations for the supported failure-mode matrix
 - repo-level index entries match the on-disk smoke artifact directories
 - manual proof-run bundle index entries match the on-disk bundle artifact directories
+- BHAM beta readiness for phone QA based on green baseline smoke artifacts on
+  both simulator platforms
 
 ## Manual debug page
 
