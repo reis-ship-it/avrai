@@ -34,15 +34,11 @@ create policy "Owners can write external source health" on public.external_sourc
   for all using (auth.uid() = owner_user_id)
   with check (auth.uid() is not null and auth.uid() = owner_user_id);
 
+-- Admin access flows through the private control plane service role in beta.
 drop policy if exists "Admins can read external source health" on public.external_source_health_v1;
-create policy "Admins can read external source health" on public.external_source_health_v1
-  for select using (
-    exists (
-      select 1
-      from public.users
-      where users.id = auth.uid() and users.role = 'admin'
-    )
-  );
+drop policy if exists "Service role can read external source health" on public.external_source_health_v1;
+create policy "Service role can read external source health" on public.external_source_health_v1
+  for select using ((select auth.role()) = 'service_role');
 
 create index if not exists idx_external_source_health_v1_updated
   on public.external_source_health_v1 (updated_at desc);

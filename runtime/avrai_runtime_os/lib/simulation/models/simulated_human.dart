@@ -114,8 +114,7 @@ class SimulatedHuman {
     }
 
     // 2. Combine frictions and apply trust modifier
-    double totalFriction =
-        friction +
+    double totalFriction = friction +
         financialFriction +
         (weatherImpact * weatherSensitivity * 0.5) +
         (routeReliabilityPenalty * transportDependence * 0.4) +

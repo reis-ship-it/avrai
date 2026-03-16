@@ -172,94 +172,150 @@ create policy "Service role can manage admin_control_plane_policy_decisions"
   using ((select auth.role()) = 'service_role')
   with check ((select auth.role()) = 'service_role');
 
-drop policy if exists "Service role can manage admin_research_projects"
-  on public.admin_research_projects;
-create policy "Service role can read admin_research_projects compatibility"
-  on public.admin_research_projects
-  for select
-  using ((select auth.role()) = 'service_role');
+do $$
+begin
+  if exists (
+    select 1
+    from information_schema.tables
+    where table_schema = 'public'
+      and table_name = 'admin_research_projects'
+  ) then
+    execute $policy$
+      drop policy if exists "Service role can manage admin_research_projects"
+        on public.admin_research_projects
+    $policy$;
+    execute $policy$
+      create policy "Service role can read admin_research_projects compatibility"
+        on public.admin_research_projects
+        for select
+        using ((select auth.role()) = 'service_role')
+    $policy$;
+  end if;
+end;
+$$;
 
-drop policy if exists "Service role can manage admin_research_project_logs"
-  on public.admin_research_project_logs;
-create policy "Service role can read admin_research_project_logs compatibility"
-  on public.admin_research_project_logs
-  for select
-  using ((select auth.role()) = 'service_role');
+do $$
+begin
+  if exists (
+    select 1
+    from information_schema.tables
+    where table_schema = 'public'
+      and table_name = 'admin_research_project_logs'
+  ) then
+    execute $policy$
+      drop policy if exists "Service role can manage admin_research_project_logs"
+        on public.admin_research_project_logs
+    $policy$;
+    execute $policy$
+      create policy "Service role can read admin_research_project_logs compatibility"
+        on public.admin_research_project_logs
+        for select
+        using ((select auth.role()) = 'service_role')
+    $policy$;
+  end if;
+end;
+$$;
 
-drop policy if exists "Service role can manage admin_research_project_impacts"
-  on public.admin_research_project_impacts;
-create policy "Service role can read admin_research_project_impacts compatibility"
-  on public.admin_research_project_impacts
-  for select
-  using ((select auth.role()) = 'service_role');
+do $$
+begin
+  if exists (
+    select 1
+    from information_schema.tables
+    where table_schema = 'public'
+      and table_name = 'admin_research_project_impacts'
+  ) then
+    execute $policy$
+      drop policy if exists "Service role can manage admin_research_project_impacts"
+        on public.admin_research_project_impacts
+    $policy$;
+    execute $policy$
+      create policy "Service role can read admin_research_project_impacts compatibility"
+        on public.admin_research_project_impacts
+        for select
+        using ((select auth.role()) = 'service_role')
+    $policy$;
+  end if;
+end;
+$$;
 
-insert into public.admin_research_runs (
-  id,
-  title,
-  hypothesis,
-  layer,
-  owner_agent_alias,
-  lifecycle_state,
-  human_access,
-  visibility_scope,
-  lane,
-  charter,
-  egress_mode,
-  requires_admin_approval,
-  sandbox_only,
-  model_version,
-  policy_version,
-  metrics,
-  tags,
-  created_at,
-  updated_at
-)
-select
-  'legacy_' || p.id as id,
-  p.title,
-  p.hypothesis,
-  p.layer,
-  p.owner_agent_id as owner_agent_alias,
-  case p.status
-    when 'proposed' then 'draft'
-    when 'running' then 'running'
-    when 'humanReview' then 'review'
-    when 'completed' then 'completed'
-    when 'paused' then 'paused'
-    else 'draft'
-  end as lifecycle_state,
-  'adminOnly' as human_access,
-  'runtimeInternalProjection' as visibility_scope,
-  'sandboxReplay' as lane,
-  jsonb_build_object(
-    'id', 'legacy_charter_' || p.id,
-    'title', p.title,
-    'objective', coalesce(p.hypothesis, ''),
-    'hypothesis', coalesce(p.hypothesis, ''),
-    'allowedExperimentSurfaces', '[]'::jsonb,
-    'successMetrics', '[]'::jsonb,
-    'stopConditions', '[]'::jsonb,
-    'hardBans', '["production_mutation","consumer_surface_access"]'::jsonb,
-    'createdAt', p.created_at,
-    'updatedAt', p.updated_at,
-    'approvedBy', p.approved_by,
-    'approvedAt', p.approved_at
-  ) as charter,
-  'internalOnly' as egress_mode,
-  coalesce(p.requires_human_approval, true) as requires_admin_approval,
-  true as sandbox_only,
-  'legacy-backfill' as model_version,
-  'opa-gar-beta-v1' as policy_version,
-  coalesce(p.metrics, '{}'::jsonb) as metrics,
-  coalesce(p.tags, '[]'::jsonb) as tags,
-  p.created_at,
-  p.updated_at
-from public.admin_research_projects p
-where not exists (
-  select 1
-  from public.admin_research_runs r
-  where r.id = 'legacy_' || p.id
-);
+do $$
+begin
+  if exists (
+    select 1
+    from information_schema.tables
+    where table_schema = 'public'
+      and table_name = 'admin_research_projects'
+  ) then
+    insert into public.admin_research_runs (
+      id,
+      title,
+      hypothesis,
+      layer,
+      owner_agent_alias,
+      lifecycle_state,
+      human_access,
+      visibility_scope,
+      lane,
+      charter,
+      egress_mode,
+      requires_admin_approval,
+      sandbox_only,
+      model_version,
+      policy_version,
+      metrics,
+      tags,
+      created_at,
+      updated_at
+    )
+    select
+      'legacy_' || p.id as id,
+      p.title,
+      p.hypothesis,
+      p.layer,
+      p.owner_agent_id as owner_agent_alias,
+      case p.status
+        when 'proposed' then 'draft'
+        when 'running' then 'running'
+        when 'humanReview' then 'review'
+        when 'completed' then 'completed'
+        when 'paused' then 'paused'
+        else 'draft'
+      end as lifecycle_state,
+      'adminOnly' as human_access,
+      'runtimeInternalProjection' as visibility_scope,
+      'sandboxReplay' as lane,
+      jsonb_build_object(
+        'id', 'legacy_charter_' || p.id,
+        'title', p.title,
+        'objective', coalesce(p.hypothesis, ''),
+        'hypothesis', coalesce(p.hypothesis, ''),
+        'allowedExperimentSurfaces', '[]'::jsonb,
+        'successMetrics', '[]'::jsonb,
+        'stopConditions', '[]'::jsonb,
+        'hardBans', '["production_mutation","consumer_surface_access"]'::jsonb,
+        'createdAt', p.created_at,
+        'updatedAt', p.updated_at,
+        'approvedBy', p.approved_by,
+        'approvedAt', p.approved_at
+      ) as charter,
+      'internalOnly' as egress_mode,
+      coalesce(p.requires_human_approval, true) as requires_admin_approval,
+      true as sandbox_only,
+      'legacy-backfill' as model_version,
+      'opa-gar-beta-v1' as policy_version,
+      coalesce(p.metrics, '{}'::jsonb) as metrics,
+      coalesce(p.tags, '[]'::jsonb) as tags,
+      p.created_at,
+      p.updated_at
+    from public.admin_research_projects p
+    where not exists (
+      select 1
+      from public.admin_research_runs r
+      where r.id = 'legacy_' || p.id
+    );
+  end if;
+end;
+$$;
 
 comment on table public.admin_control_plane_sessions is
   'Gateway-issued private admin control-plane sessions bound to device and mesh identity.';

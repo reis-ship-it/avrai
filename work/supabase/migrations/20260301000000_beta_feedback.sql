@@ -19,21 +19,14 @@ CREATE POLICY "Users can insert their own feedback" ON public.beta_feedback
 CREATE POLICY "Users can read their own feedback" ON public.beta_feedback
     FOR SELECT USING (auth.uid() = user_id);
 
--- Admins can read all feedback (assuming users table has a role column, or we just rely on a function)
--- We will add a simple policy for admins based on user role if available, or just a placeholder for now
-CREATE POLICY "Admins can read all feedback" ON public.beta_feedback
-    FOR SELECT USING (
-        EXISTS (
-            SELECT 1 FROM public.users 
-            WHERE users.id = auth.uid() AND users.role = 'admin'
-        )
-    );
+-- Admin access flows through the private control plane service role in beta.
+DROP POLICY IF EXISTS "Admins can read all feedback" ON public.beta_feedback;
+DROP POLICY IF EXISTS "Service role can read all feedback" ON public.beta_feedback;
+CREATE POLICY "Service role can read all feedback" ON public.beta_feedback
+    FOR SELECT USING ((SELECT auth.role()) = 'service_role');
 
 -- Admins can update feedback status
-CREATE POLICY "Admins can update feedback status" ON public.beta_feedback
-    FOR UPDATE USING (
-        EXISTS (
-            SELECT 1 FROM public.users 
-            WHERE users.id = auth.uid() AND users.role = 'admin'
-        )
-    );
+DROP POLICY IF EXISTS "Admins can update feedback status" ON public.beta_feedback;
+DROP POLICY IF EXISTS "Service role can update feedback status" ON public.beta_feedback;
+CREATE POLICY "Service role can update feedback status" ON public.beta_feedback
+    FOR UPDATE USING ((SELECT auth.role()) = 'service_role');

@@ -93,8 +93,7 @@ class SwarmPopulationGenerator {
       finances: finances,
       transportDependence: _transportDependenceFor(city),
       weatherSensitivity: _normalDistribution(0.52, 0.18).clamp(0.1, 1.0),
-      accessibilitySensitivity:
-          _normalDistribution(0.25, 0.16).clamp(0.0, 1.0),
+      accessibilitySensitivity: _normalDistribution(0.25, 0.16).clamp(0.0, 1.0),
       socialFollowThrough: _normalDistribution(0.58, 0.18).clamp(0.1, 1.0),
       nightlifeAffinity: _normalDistribution(0.42, 0.24).clamp(0.0, 1.0),
       childcareFriction: _normalDistribution(0.20, 0.18).clamp(0.0, 1.0),
