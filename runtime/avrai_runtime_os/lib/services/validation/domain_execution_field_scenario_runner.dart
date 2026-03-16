@@ -196,7 +196,8 @@ class DomainExecutionFieldScenarioRunner {
         _announceAttestationFactory = announceAttestationFactory,
         _meshCredentialRefreshService = meshCredentialRefreshService,
         _meshRevocationStore = meshRevocationStore,
-        _ambientSocialRealityLearningService = ambientSocialRealityLearningService,
+        _ambientSocialRealityLearningService =
+            ambientSocialRealityLearningService,
         _ai2aiExchangeSubmissionLane = ai2aiExchangeSubmissionLane,
         _ai2aiRendezvousScheduler = ai2aiRendezvousScheduler,
         _proofStore = proofStore,
@@ -219,7 +220,8 @@ class DomainExecutionFieldScenarioRunner {
   final MeshAnnounceAttestationFactory? _announceAttestationFactory;
   final MeshSegmentCredentialRefreshService? _meshCredentialRefreshService;
   final MeshSegmentRevocationStore? _meshRevocationStore;
-  final AmbientSocialRealityLearningService? _ambientSocialRealityLearningService;
+  final AmbientSocialRealityLearningService?
+      _ambientSocialRealityLearningService;
   final Ai2AiExchangeSubmissionLane? _ai2aiExchangeSubmissionLane;
   final Ai2AiRendezvousScheduler? _ai2aiRendezvousScheduler;
   final DomainExecutionFieldScenarioProofStore? _proofStore;
@@ -281,8 +283,7 @@ class DomainExecutionFieldScenarioRunner {
       case DomainExecutionFieldScenario.ambientDuplicateEvidenceMerged:
         proof = await _runAmbientDuplicateEvidenceMerged();
         break;
-      case DomainExecutionFieldScenario
-            .ambientUntrustedInteractionNotPromoted:
+      case DomainExecutionFieldScenario.ambientUntrustedInteractionNotPromoted:
         proof = await _runAmbientUntrustedInteractionNotPromoted();
         break;
     }
@@ -311,7 +312,7 @@ class DomainExecutionFieldScenarioRunner {
       channel: 'mesh_ble_forward',
       payloadKind: 'user_chat',
       attemptedRoutes: receipt.plannedRoutes,
-      winningRoute: receipt.winningRoute ?? receipt.plannedRoutes.first,
+      winningRoute: _winningRouteForReceipt(receipt),
       occurredAtUtc: now,
       geographicScope: 'local',
     );
@@ -482,8 +483,7 @@ class DomainExecutionFieldScenarioRunner {
       channel: 'mesh_ble_forward',
       payloadKind: 'learning_update',
       attemptedRoutes: releasedReceipt.plannedRoutes,
-      winningRoute:
-          releasedReceipt.winningRoute ?? releasedReceipt.plannedRoutes.first,
+      winningRoute: _winningRouteForReceipt(releasedReceipt),
       occurredAtUtc: now.add(const Duration(seconds: 5)),
       geographicScope: 'local',
     );
@@ -661,7 +661,7 @@ class DomainExecutionFieldScenarioRunner {
       channel: 'mesh_ble_forward',
       payloadKind: 'user_chat',
       attemptedRoutes: receipt.plannedRoutes,
-      winningRoute: receipt.winningRoute ?? receipt.plannedRoutes.first,
+      winningRoute: _winningRouteForReceipt(receipt),
       occurredAtUtc: now,
       geographicScope: 'local',
     );
@@ -765,7 +765,21 @@ class DomainExecutionFieldScenarioRunner {
       observedAtUtc: now.add(const Duration(seconds: 5)),
       attachTrustMaterial: true,
     );
-    final acceptedUpdate = updates.where((update) => update.accepted).first;
+    final acceptedUpdate = _firstAcceptedUpdateOrNull(updates);
+    if (acceptedUpdate == null) {
+      return _proof(
+        scenario: DomainExecutionFieldScenario.trustedDirectAnnounceRecovery,
+        privacyMode: MeshTransportPrivacyMode.privateMesh,
+        routeReceipts: <TransportRouteReceipt>[queuedReceipt],
+        passed: false,
+        summary:
+            'Trusted direct announce recovery did not produce an accepted announce update.',
+        diagnostics: <String, dynamic>{
+          'updates_count': updates.length,
+          'trusted_enforcement_enabled': true,
+        },
+      );
+    }
     final replayTrigger = acceptedUpdate.triggerReason ?? 'announce_arrival';
     await _announceLedger.recordReplayTrigger(
       replayTrigger,
@@ -789,8 +803,7 @@ class DomainExecutionFieldScenarioRunner {
       channel: 'mesh_ble_forward',
       payloadKind: 'learning_update',
       attemptedRoutes: releasedReceipt.plannedRoutes,
-      winningRoute:
-          releasedReceipt.winningRoute ?? releasedReceipt.plannedRoutes.first,
+      winningRoute: _winningRouteForReceipt(releasedReceipt),
       occurredAtUtc: now.add(const Duration(seconds: 5)),
       geographicScope: 'local',
     );
@@ -845,7 +858,20 @@ class DomainExecutionFieldScenarioRunner {
       observedAtUtc: now,
       attachTrustMaterial: true,
     );
-    final acceptedUpdate = updates.where((update) => update.accepted).first;
+    final acceptedUpdate = _firstAcceptedUpdateOrNull(updates);
+    if (acceptedUpdate == null) {
+      return _proof(
+        scenario: DomainExecutionFieldScenario.trustedCloudAnnounceAccepted,
+        privacyMode: MeshTransportPrivacyMode.federatedCloud,
+        routeReceipts: const <TransportRouteReceipt>[],
+        passed: false,
+        summary:
+            'Trusted cloud announce did not produce an accepted update during simulated validation.',
+        diagnostics: <String, dynamic>{
+          'updates_count': updates.length,
+        },
+      );
+    }
     final receipt = _routeReceipt(
       receiptId: 'field-trusted-cloud-accept',
       privacyMode: MeshTransportPrivacyMode.federatedCloud,
@@ -894,7 +920,20 @@ class DomainExecutionFieldScenarioRunner {
       observedAtUtc: now,
       attachTrustMaterial: false,
     );
-    final rejectedUpdate = updates.where((update) => !update.accepted).first;
+    final rejectedUpdate = _firstRejectedUpdateOrNull(updates);
+    if (rejectedUpdate == null) {
+      return _proof(
+        scenario: DomainExecutionFieldScenario.untrustedAnnounceRejected,
+        privacyMode: MeshTransportPrivacyMode.privateMesh,
+        routeReceipts: const <TransportRouteReceipt>[],
+        passed: false,
+        summary:
+            'Untrusted announce scenario did not produce a rejected update during simulated validation.',
+        diagnostics: <String, dynamic>{
+          'updates_count': updates.length,
+        },
+      );
+    }
     final receipt = _routeReceipt(
       receiptId: 'field-untrusted-announce-rejected',
       privacyMode: MeshTransportPrivacyMode.privateMesh,
@@ -1279,7 +1318,10 @@ class DomainExecutionFieldScenarioRunner {
       endTime: now.subtract(const Duration(minutes: 5)),
       latitude: 33.5207,
       longitude: -86.8025,
-      encounteredAgentIds: const <String>['peer-candidate-a', 'peer-candidate-b'],
+      encounteredAgentIds: const <String>[
+        'peer-candidate-a',
+        'peer-candidate-b'
+      ],
     );
     final projection = PassiveDwellLearningProjection.fromEvent(dwellEvent);
     await ambientService.applyObservation(
@@ -1792,6 +1834,46 @@ class DomainExecutionFieldScenarioRunner {
     );
   }
 
+  MeshAnnounceUpdateResult? _firstAcceptedUpdateOrNull(
+    List<MeshAnnounceUpdateResult> updates,
+  ) {
+    for (final update in updates) {
+      if (update.accepted) {
+        return update;
+      }
+    }
+    return null;
+  }
+
+  MeshAnnounceUpdateResult? _firstRejectedUpdateOrNull(
+    List<MeshAnnounceUpdateResult> updates,
+  ) {
+    for (final update in updates) {
+      if (!update.accepted) {
+        return update;
+      }
+    }
+    return null;
+  }
+
+  TransportRouteCandidate _winningRouteForReceipt(
+    TransportRouteReceipt receipt,
+  ) {
+    if (receipt.winningRoute case final winningRoute?) {
+      return winningRoute;
+    }
+    if (receipt.plannedRoutes.isNotEmpty) {
+      return receipt.plannedRoutes.first;
+    }
+    return TransportRouteCandidate(
+      routeId: '${receipt.channel}:field_validation_fallback',
+      mode: TransportMode.ble,
+      confidence: 0.0,
+      estimatedLatencyMs: 0,
+      rationale: 'field_validation_fallback',
+    );
+  }
+
   Future<DomainExecutionFieldScenarioProof> _proof({
     required DomainExecutionFieldScenario scenario,
     required String privacyMode,
@@ -1817,7 +1899,8 @@ class DomainExecutionFieldScenarioRunner {
       _networkActivityMonitor,
     );
     final rendezvousScheduler = _ai2aiRendezvousScheduler;
-    final ambientSocialSnapshot = _ambientSocialRealityLearningService?.snapshot(
+    final ambientSocialSnapshot =
+        _ambientSocialRealityLearningService?.snapshot(
       capturedAtUtc: _nowUtc(),
     );
     final mergedDiagnostics = <String, dynamic>{
@@ -1901,7 +1984,8 @@ class DomainExecutionFieldScenarioRunner {
     return rendezvousScheduler;
   }
 
-  AmbientSocialRealityLearningService _requireAmbientSocialRealityLearningService() {
+  AmbientSocialRealityLearningService
+      _requireAmbientSocialRealityLearningService() {
     final ambientService = _ambientSocialRealityLearningService;
     if (ambientService == null) {
       throw StateError(

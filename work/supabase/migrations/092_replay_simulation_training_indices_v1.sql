@@ -66,6 +66,7 @@ create table if not exists replay_simulation.replay_actor_connectivity_transitio
   run_id text not null references replay_simulation.replay_runs(run_id) on delete cascade,
   transition_id text not null,
   actor_id text not null,
+  month_key text not null,
   schedule_surface text not null,
   window_label text not null,
   locality_anchor text not null,
@@ -76,6 +77,16 @@ create table if not exists replay_simulation.replay_actor_connectivity_transitio
   created_at timestamptz not null default now(),
   primary key (run_id, transition_id)
 );
+
+alter table if exists replay_simulation.replay_actor_connectivity_transitions
+  add column if not exists month_key text;
+
+update replay_simulation.replay_actor_connectivity_transitions
+set month_key = coalesce(metadata->>'month_key', 'unknown')
+where month_key is null;
+
+alter table replay_simulation.replay_actor_connectivity_transitions
+  alter column month_key set not null;
 
 create table if not exists replay_simulation.replay_actor_tracked_locations (
   run_id text not null references replay_simulation.replay_runs(run_id) on delete cascade,
