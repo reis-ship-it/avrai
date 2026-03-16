@@ -31,6 +31,30 @@ enum CheckInFeedbackOutcome {
       };
 }
 
+class RealityModelCheckInResult {
+  const RealityModelCheckInResult({
+    required this.response,
+    required this.createdAtUtc,
+    this.contract,
+    this.evaluation,
+    this.trace,
+    this.explanation,
+  });
+
+  final String response;
+  final DateTime createdAtUtc;
+  final RealityModelContract? contract;
+  final RealityModelEvaluation? evaluation;
+  final RealityDecisionTrace? trace;
+  final RealityModelExplanation? explanation;
+
+  bool get hasRealityModelArtifacts =>
+      contract != null &&
+      evaluation != null &&
+      trace != null &&
+      explanation != null;
+}
+
 /// Runtime-backed check-in service for admin reality-system oversight pages.
 ///
 /// Uses the app's language runtime boundary when available and falls back to
@@ -82,6 +106,21 @@ class RealityModelCheckInService {
     required Map<String, dynamic> context,
     required List<String> approvedGroupings,
   }) async {
+    final result = await runCheckIn(
+      layer: layer,
+      prompt: prompt,
+      context: context,
+      approvedGroupings: approvedGroupings,
+    );
+    return result.response;
+  }
+
+  Future<RealityModelCheckInResult> runCheckIn({
+    required String layer,
+    required String prompt,
+    required Map<String, dynamic> context,
+    required List<String> approvedGroupings,
+  }) async {
     await _registerTopLayerRuntime(layer);
     final temporalContext = await _buildTemporalContext();
     final inboundTurn = await _processGovernancePrompt(
@@ -90,15 +129,31 @@ class RealityModelCheckInService {
       context: context,
     );
     final activeContract = await _loadActiveContract();
+    final realityArtifacts = await _buildRealityModelArtifacts(
+      layer: layer,
+      prompt: prompt,
+      context: context,
+      approvedGroupings: approvedGroupings,
+      inboundTurn: inboundTurn,
+      activeContract: activeContract,
+    );
     final languageRuntimeService = _resolveLanguageRuntimeService();
     if (languageRuntimeService == null) {
-      return _fallbackResponse(
-        layer: layer,
-        promptEcho: _safePromptEcho(inboundTurn, prompt),
-        context: context,
-        approvedGroupings: approvedGroupings,
-        temporalContext: temporalContext,
-        activeContract: activeContract,
+      return RealityModelCheckInResult(
+        response: _fallbackResponse(
+          layer: layer,
+          promptEcho: _safePromptEcho(inboundTurn, prompt),
+          context: context,
+          approvedGroupings: approvedGroupings,
+          temporalContext: temporalContext,
+          activeContract: activeContract,
+          explanation: realityArtifacts?.explanation,
+        ),
+        createdAtUtc: DateTime.now().toUtc(),
+        contract: activeContract,
+        evaluation: realityArtifacts?.evaluation,
+        trace: realityArtifacts?.trace,
+        explanation: realityArtifacts?.explanation,
       );
     }
 
@@ -121,6 +176,9 @@ class RealityModelCheckInService {
             inboundTurn: inboundTurn,
             rawPrompt: prompt,
             activeContract: activeContract,
+            evaluation: realityArtifacts?.evaluation,
+            trace: realityArtifacts?.trace,
+            explanation: realityArtifacts?.explanation,
           ),
         ),
       ),
@@ -142,16 +200,31 @@ class RealityModelCheckInService {
 
       final trimmed = response.trim();
       if (trimmed.isEmpty) {
-        return _fallbackResponse(
-          layer: layer,
-          promptEcho: _safePromptEcho(inboundTurn, prompt),
-          context: context,
-          approvedGroupings: approvedGroupings,
-          temporalContext: temporalContext,
-          activeContract: activeContract,
+        return RealityModelCheckInResult(
+          response: _fallbackResponse(
+            layer: layer,
+            promptEcho: _safePromptEcho(inboundTurn, prompt),
+            context: context,
+            approvedGroupings: approvedGroupings,
+            temporalContext: temporalContext,
+            activeContract: activeContract,
+            explanation: realityArtifacts?.explanation,
+          ),
+          createdAtUtc: DateTime.now().toUtc(),
+          contract: activeContract,
+          evaluation: realityArtifacts?.evaluation,
+          trace: realityArtifacts?.trace,
+          explanation: realityArtifacts?.explanation,
         );
       }
-      return trimmed;
+      return RealityModelCheckInResult(
+        response: trimmed,
+        createdAtUtc: DateTime.now().toUtc(),
+        contract: activeContract,
+        evaluation: realityArtifacts?.evaluation,
+        trace: realityArtifacts?.trace,
+        explanation: realityArtifacts?.explanation,
+      );
     } catch (e, st) {
       developer.log(
         'Runtime check-in failed: $e',
@@ -159,13 +232,21 @@ class RealityModelCheckInService {
         error: e,
         stackTrace: st,
       );
-      return _fallbackResponse(
-        layer: layer,
-        promptEcho: _safePromptEcho(inboundTurn, prompt),
-        context: context,
-        approvedGroupings: approvedGroupings,
-        temporalContext: temporalContext,
-        activeContract: activeContract,
+      return RealityModelCheckInResult(
+        response: _fallbackResponse(
+          layer: layer,
+          promptEcho: _safePromptEcho(inboundTurn, prompt),
+          context: context,
+          approvedGroupings: approvedGroupings,
+          temporalContext: temporalContext,
+          activeContract: activeContract,
+          explanation: realityArtifacts?.explanation,
+        ),
+        createdAtUtc: DateTime.now().toUtc(),
+        contract: activeContract,
+        evaluation: realityArtifacts?.evaluation,
+        trace: realityArtifacts?.trace,
+        explanation: realityArtifacts?.explanation,
       );
     }
   }
@@ -327,6 +408,7 @@ class RealityModelCheckInService {
     required List<String> approvedGroupings,
     required RuntimeTemporalContext temporalContext,
     required RealityModelContract? activeContract,
+    required RealityModelExplanation? explanation,
   }) {
     final groupingHint = approvedGroupings.isEmpty
         ? 'No approved grouping taxonomy yet.'
@@ -335,20 +417,23 @@ class RealityModelCheckInService {
     final contractHint = activeContract == null
         ? 'Reality-model contract unavailable.'
         : 'Active contract ${activeContract.contractId} (${activeContract.version}) allows ${activeContract.maxEvidenceRefs} evidence refs.';
+    final explanationHint = explanation == null
+        ? ''
+        : ' Reality model summary: ${explanation.summary}';
 
     if (layer == 'reality') {
       return 'Reality runtime is in guarded fallback mode. $groupingHint '
-          '$contractHint $temporalHint Focus remains on coherence, policy alignment, and updating grouping logic after human approvals. '
+          '$contractHint$explanationHint $temporalHint Focus remains on coherence, policy alignment, and updating grouping logic after human approvals. '
           'Prompt received: "$promptEcho".';
     }
 
     if (layer == 'universe') {
       return 'Universe runtime is in guarded fallback mode. $groupingHint '
-          '$contractHint $temporalHint Current prep emphasizes cluster health across clubs/communities/events with agent-level identity visibility only.';
+          '$contractHint$explanationHint $temporalHint Current prep emphasizes cluster health across clubs/communities/events with agent-level identity visibility only.';
     }
 
     return 'World runtime is in guarded fallback mode. $groupingHint '
-        '$contractHint $temporalHint Current prep emphasizes continuity across users, businesses, and service surfaces with privacy-safe agent identity only.';
+        '$contractHint$explanationHint $temporalHint Current prep emphasizes continuity across users, businesses, and service surfaces with privacy-safe agent identity only.';
   }
 
   Future<RuntimeTemporalContext> _buildTemporalContext() async {
@@ -506,6 +591,9 @@ class RealityModelCheckInService {
     required HumanLanguageKernelTurn? inboundTurn,
     required String rawPrompt,
     required RealityModelContract? activeContract,
+    required RealityModelEvaluation? evaluation,
+    required RealityDecisionTrace? trace,
+    required RealityModelExplanation? explanation,
   }) {
     final sanitizedArtifact = inboundTurn?.boundary.sanitizedArtifact;
     return <String, dynamic>{
@@ -529,6 +617,9 @@ class RealityModelCheckInService {
       'context': context,
       'temporalContext': temporalContext.toJson(),
       'realityModelContract': activeContract?.toJson(),
+      'realityModelEvaluation': evaluation?.toJson(),
+      'realityDecisionTrace': trace?.toJson(),
+      'realityModelExplanation': explanation?.toJson(),
       'outputRules': const <String>[
         'Under 140 words',
         'Actionable operational summary',
@@ -548,6 +639,84 @@ class RealityModelCheckInService {
     } catch (e, st) {
       developer.log(
         'Reality-model contract load failed: $e',
+        name: _logName,
+        error: e,
+        stackTrace: st,
+      );
+      return null;
+    }
+  }
+
+  Future<_RealityModelArtifacts?> _buildRealityModelArtifacts({
+    required String layer,
+    required String prompt,
+    required Map<String, dynamic> context,
+    required List<String> approvedGroupings,
+    required HumanLanguageKernelTurn? inboundTurn,
+    required RealityModelContract? activeContract,
+  }) async {
+    final port = _realityModelPort;
+    if (port == null || activeContract == null) {
+      return null;
+    }
+    try {
+      final profileTarget = _resolveGovernanceProfileTarget(
+        layer: layer,
+        context: context,
+      );
+      final request = RealityModelEvaluationRequest(
+        requestId:
+            'admin_check_in_${layer}_${DateTime.now().toUtc().millisecondsSinceEpoch}',
+        subjectId: profileTarget.profileRef,
+        domain: _resolveRealityModelDomain(layer),
+        candidateRef: 'admin_surface:$layer',
+        localityCode: _resolveLocalityCode(layer, context),
+        cityCode: _resolveCityCode(context),
+        signalTags: _buildRealityModelSignalTags(
+          layer: layer,
+          context: context,
+          approvedGroupings: approvedGroupings,
+          inboundTurn: inboundTurn,
+        ),
+        evidenceRefs: _buildRealityModelEvidenceRefs(
+          context: context,
+          approvedGroupings: approvedGroupings,
+          inboundTurn: inboundTurn,
+        ),
+        requestedAtUtc: DateTime.now().toUtc(),
+        metadata: <String, dynamic>{
+          'surface': 'admin_reality_system_check_in',
+          'layer': layer,
+          if (prompt.trim().isNotEmpty) 'promptPresent': true,
+        },
+      );
+      final evaluation = await port.evaluate(request);
+      final trace = await port.traceDecision(
+        request: request,
+        evaluation: evaluation,
+        disposition: RealityDecisionDisposition.observe,
+        evidenceRefs: evaluation.supportingEvidenceRefs,
+        localityCode: evaluation.localityCode,
+        metadata: <String, dynamic>{
+          'surface': 'admin_reality_system_check_in',
+          'layer': layer,
+        },
+      );
+      final explanation = await port.buildExplanation(
+        trace: trace,
+        evaluation: evaluation,
+        rendererKind: activeContract.rendererKinds.isEmpty
+            ? RealityExplanationRendererKind.template
+            : activeContract.rendererKinds.first,
+      );
+      return _RealityModelArtifacts(
+        evaluation: evaluation,
+        trace: trace,
+        explanation: explanation,
+      );
+    } catch (e, st) {
+      developer.log(
+        'Reality-model artifact build failed: $e',
         name: _logName,
         error: e,
         stackTrace: st,
@@ -639,6 +808,121 @@ class RealityModelCheckInService {
         );
     return normalized.replaceAll(RegExp(r'^_+|_+$'), '');
   }
+
+  RealityModelDomain _resolveRealityModelDomain(String layer) {
+    switch (layer.trim().toLowerCase()) {
+      case 'reality':
+        return RealityModelDomain.locality;
+      case 'universe':
+        return RealityModelDomain.community;
+      case 'world':
+        return RealityModelDomain.business;
+      default:
+        return RealityModelDomain.locality;
+    }
+  }
+
+  String _resolveCityCode(Map<String, dynamic> context) {
+    return _firstStringValue(context, const <String>[
+          'cityCode',
+          'city',
+          'city_code',
+        ]) ??
+        'bham';
+  }
+
+  String _resolveLocalityCode(String layer, Map<String, dynamic> context) {
+    return _firstStringValue(context, const <String>[
+          'localityCode',
+          'locality',
+          'locality_code',
+        ]) ??
+        'bham_$layer';
+  }
+
+  List<String> _buildRealityModelSignalTags({
+    required String layer,
+    required Map<String, dynamic> context,
+    required List<String> approvedGroupings,
+    required HumanLanguageKernelTurn? inboundTurn,
+  }) {
+    final tags = <String>{
+      'layer:${_normalizeSignalToken(layer)}',
+    };
+
+    for (final grouping in approvedGroupings.take(3)) {
+      final token = _normalizeSignalToken(grouping);
+      if (token.isNotEmpty) {
+        tags.add('group:$token');
+      }
+    }
+
+    final boundary = inboundTurn?.boundary;
+    if (boundary != null) {
+      for (final code in boundary.reasonCodes.take(2)) {
+        final token = _normalizeSignalToken(code);
+        if (token.isNotEmpty) {
+          tags.add('boundary:$token');
+        }
+      }
+      final artifact = boundary.sanitizedArtifact;
+      for (final signal in artifact.safePreferenceSignals.take(2)) {
+        final token = _normalizeSignalToken(signal.kind);
+        if (token.isNotEmpty) {
+          tags.add('pref:$token');
+        }
+      }
+    }
+
+    for (final key in _boundedContextKeys(context).take(3)) {
+      tags.add('ctx:$key');
+    }
+
+    return tags.toList(growable: false);
+  }
+
+  List<String> _buildRealityModelEvidenceRefs({
+    required Map<String, dynamic> context,
+    required List<String> approvedGroupings,
+    required HumanLanguageKernelTurn? inboundTurn,
+  }) {
+    final refs = <String>[];
+    for (final grouping in approvedGroupings.take(2)) {
+      final token = _normalizeSignalToken(grouping);
+      if (token.isNotEmpty) {
+        refs.add('group:$token');
+      }
+    }
+    for (final key in _boundedContextKeys(context).take(2)) {
+      refs.add('ctx:$key');
+    }
+    final boundary = inboundTurn?.boundary;
+    if (boundary != null) {
+      for (final code in boundary.reasonCodes.take(2)) {
+        final token = _normalizeSignalToken(code);
+        if (token.isNotEmpty) {
+          refs.add('boundary:$token');
+        }
+      }
+    }
+    return refs;
+  }
+
+  List<String> _boundedContextKeys(Map<String, dynamic> context) {
+    return context.keys
+        .map(_normalizeSignalToken)
+        .where((entry) => entry.isNotEmpty)
+        .take(6)
+        .toList(growable: false);
+  }
+
+  String _normalizeSignalToken(String value) {
+    return value
+        .trim()
+        .toLowerCase()
+        .replaceAll(RegExp(r'[^a-z0-9]+'), '_')
+        .replaceAll(RegExp(r'^_+|_+$'), '');
+  }
 }
 
 class _GovernanceProfileTarget {
@@ -651,4 +935,16 @@ class _GovernanceProfileTarget {
   final String actorAgentId;
   final String profileRef;
   final String displayRef;
+}
+
+class _RealityModelArtifacts {
+  const _RealityModelArtifacts({
+    required this.evaluation,
+    required this.trace,
+    required this.explanation,
+  });
+
+  final RealityModelEvaluation evaluation;
+  final RealityDecisionTrace trace;
+  final RealityModelExplanation explanation;
 }

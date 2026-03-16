@@ -3,21 +3,25 @@ import 'package:avrai_runtime_os/services/admin/reality_model_checkin_service.da
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('fallback response includes active reality-model contract context',
-      () async {
+  test('fallback response includes active reality-model artifacts', () async {
     final service = RealityModelCheckInService(
       realityModelPort: _FakeRealityModelPort(),
     );
 
-    final response = await service.checkIn(
+    final result = await service.runCheckIn(
       layer: 'reality',
       prompt: '',
       context: const <String, dynamic>{},
       approvedGroupings: const <String>['music_cluster'],
     );
 
-    expect(response, contains('reality_model_test_contract'));
-    expect(response, contains('allows 4 evidence refs'));
+    expect(result.response, contains('reality_model_test_contract'));
+    expect(result.response, contains('allows 4 evidence refs'));
+    expect(result.response, contains('Locality oversight remains bounded'));
+    expect(result.contract?.contractId, 'reality_model_test_contract');
+    expect(result.evaluation?.domain, RealityModelDomain.locality);
+    expect(result.explanation?.summary,
+        contains('Locality oversight remains bounded'));
   });
 }
 
@@ -41,8 +45,20 @@ class _FakeRealityModelPort implements RealityModelPort {
   @override
   Future<RealityModelEvaluation> evaluate(
     RealityModelEvaluationRequest request,
-  ) {
-    throw UnimplementedError();
+  ) async {
+    return RealityModelEvaluation(
+      evaluationId: 'evaluation-1',
+      requestId: request.requestId,
+      contractId: 'reality_model_test_contract',
+      domain: request.domain,
+      candidateRef: request.candidateRef,
+      score: 0.78,
+      confidence: 0.66,
+      uncertaintySummary: 'Bounded by deterministic test coverage.',
+      supportingEvidenceRefs: request.evidenceRefs.take(4).toList(),
+      generatedAtUtc: request.requestedAtUtc,
+      localityCode: request.localityCode,
+    );
   }
 
   @override
@@ -53,8 +69,19 @@ class _FakeRealityModelPort implements RealityModelPort {
     required List<String> evidenceRefs,
     String? localityCode,
     Map<String, dynamic> metadata = const <String, dynamic>{},
-  }) {
-    throw UnimplementedError();
+  }) async {
+    return RealityDecisionTrace(
+      traceId: 'trace-1',
+      contractId: 'reality_model_test_contract',
+      requestId: request.requestId,
+      selectedEvaluationId: evaluation.evaluationId,
+      selectedCandidateRef: evaluation.candidateRef,
+      disposition: disposition,
+      evidenceRefs: evidenceRefs,
+      createdAtUtc: evaluation.generatedAtUtc,
+      localityCode: localityCode,
+      metadata: metadata,
+    );
   }
 
   @override
@@ -62,7 +89,18 @@ class _FakeRealityModelPort implements RealityModelPort {
     required RealityDecisionTrace trace,
     required RealityModelEvaluation evaluation,
     required RealityExplanationRendererKind rendererKind,
-  }) {
-    throw UnimplementedError();
+  }) async {
+    return RealityModelExplanation(
+      explanationId: 'explanation-1',
+      traceId: trace.traceId,
+      evaluationId: evaluation.evaluationId,
+      rendererKind: rendererKind,
+      summary: 'Locality oversight remains bounded by replay-safe evidence.',
+      highlights: const <String>[
+        'Approved groupings were used as bounded evidence.',
+      ],
+      uncertaintySummary: evaluation.uncertaintySummary,
+      createdAtUtc: evaluation.generatedAtUtc,
+    );
   }
 }

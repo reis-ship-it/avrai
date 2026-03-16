@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:avrai_admin_app/navigation/admin_route_paths.dart';
 import 'package:avrai_core/models/community/collaborative_activity_metrics.dart';
 import 'package:avrai_core/models/user/language_profile_diagnostics.dart';
+import 'package:avrai_runtime_os/reality_model_api.dart';
 import 'package:avrai_runtime_os/services/admin/admin_auth_service.dart';
 import 'package:avrai_runtime_os/services/admin/admin_runtime_governance_service.dart';
 import 'package:avrai_runtime_os/services/admin/reality_grouping_audit_service.dart';
@@ -820,6 +821,58 @@ class _RealitySystemOversightPageState
                         Text('Admin: ${entry.prompt}'),
                         const SizedBox(height: 4),
                         Text('Model: ${entry.response}'),
+                        if (entry.contract != null ||
+                            entry.evaluation != null ||
+                            entry.explanation != null) ...[
+                          const SizedBox(height: 8),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              if (entry.contract != null)
+                                _metricChip(
+                                  'Contract',
+                                  entry.contract!.version,
+                                ),
+                              if (entry.evaluation != null)
+                                _metricChip(
+                                  'Score',
+                                  '${(entry.evaluation!.score * 100).round()}%',
+                                ),
+                              if (entry.evaluation != null)
+                                _metricChip(
+                                  'Confidence',
+                                  '${(entry.evaluation!.confidence * 100).round()}%',
+                                ),
+                              if (entry.evaluation != null)
+                                _metricChip(
+                                  'Domain',
+                                  _realityModelDomainLabel(
+                                    entry.evaluation!.domain,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ],
+                        if (entry.explanation != null) ...[
+                          const SizedBox(height: 6),
+                          Text(
+                            'Reality model: ${entry.explanation!.summary}',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                          if (entry.explanation!.highlights.isNotEmpty) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              'Highlights: ${entry.explanation!.highlights.join(' | ')}',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelSmall
+                                  ?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
+                            ),
+                          ],
+                        ],
                         if (entry.approvedResponse != null &&
                             entry.approvedResponse != entry.response) ...[
                           const SizedBox(height: 4),
@@ -1161,7 +1214,7 @@ class _RealitySystemOversightPageState
     final context = _buildCheckInContext();
     final globalGroupings = await _allApprovedGroupings();
 
-    final response = await _checkInService.checkIn(
+    final result = await _checkInService.runCheckIn(
       layer: _layerKey(widget.layer),
       prompt: prompt,
       context: context,
@@ -1173,8 +1226,12 @@ class _RealitySystemOversightPageState
       _checkIns.add(_CheckInEntry(
         id: DateTime.now().microsecondsSinceEpoch.toString(),
         prompt: prompt,
-        response: response,
-        createdAt: DateTime.now(),
+        response: result.response,
+        createdAt: result.createdAtUtc.toLocal(),
+        contract: result.contract,
+        evaluation: result.evaluation,
+        trace: result.trace,
+        explanation: result.explanation,
       ));
       _checkInController.clear();
       _isCheckInBusy = false;
@@ -1517,6 +1574,23 @@ class _RealitySystemOversightPageState
         return 'Rewrite saved for learning';
     }
   }
+
+  String _realityModelDomainLabel(RealityModelDomain domain) {
+    switch (domain) {
+      case RealityModelDomain.place:
+        return 'Place';
+      case RealityModelDomain.event:
+        return 'Event';
+      case RealityModelDomain.community:
+        return 'Community';
+      case RealityModelDomain.list:
+        return 'List';
+      case RealityModelDomain.business:
+        return 'Business';
+      case RealityModelDomain.locality:
+        return 'Locality';
+    }
+  }
 }
 
 enum _CheckInFeedbackState {
@@ -1531,6 +1605,10 @@ class _CheckInEntry {
     required this.prompt,
     required this.response,
     required this.createdAt,
+    this.contract,
+    this.evaluation,
+    this.trace,
+    this.explanation,
     this.approvedResponse,
     this.feedbackState = _CheckInFeedbackState.pending,
   });
@@ -1539,6 +1617,10 @@ class _CheckInEntry {
   final String prompt;
   final String response;
   final DateTime createdAt;
+  final RealityModelContract? contract;
+  final RealityModelEvaluation? evaluation;
+  final RealityDecisionTrace? trace;
+  final RealityModelExplanation? explanation;
   final String? approvedResponse;
   final _CheckInFeedbackState feedbackState;
 
@@ -1551,6 +1633,10 @@ class _CheckInEntry {
       prompt: prompt,
       response: response,
       createdAt: createdAt,
+      contract: contract,
+      evaluation: evaluation,
+      trace: trace,
+      explanation: explanation,
       approvedResponse: approvedResponse ?? this.approvedResponse,
       feedbackState: feedbackState ?? this.feedbackState,
     );
