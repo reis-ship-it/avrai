@@ -193,7 +193,7 @@ jobs:
       run: flutter pub get
       
     - name: Run ${{ matrix.test-type }} tests with retry
-      uses: nick-fields/retry@v3
+      uses: nick-fields/retry@v4
       with:
         timeout_minutes: 10
         max_attempts: 3
@@ -379,7 +379,7 @@ jobs:
       run: cargo install cargo-audit --version 0.18.0
       
     - name: Run security analysis with retry
-      uses: nick-fields/retry@v3
+      uses: nick-fields/retry@v4
       with:
         timeout_minutes: 10
         max_attempts: 3
