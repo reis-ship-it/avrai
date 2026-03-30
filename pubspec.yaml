@@ -58,7 +58,7 @@ dependencies:
   # OAuth & Social Media Integration - Phase 8.2
   google_sign_in: ^7.2.0  # For Google OAuth
   flutter_appauth: ^11.0.0  # For Instagram, Facebook OAuth (OAuth 2.0 client)
-  app_links: ^6.4.1  # Deep linking for OAuth callbacks
+  app_links: ^7.0.0  # Deep linking for OAuth callbacks
   
   # AI2AI Personality Learning - Phase VIBE_CODING
   crypto: ^3.0.3  # For SHA-256 hashing and privacy protection
