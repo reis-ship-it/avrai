@@ -3,7 +3,7 @@
 **Source config:** `configs/runtime/master_plan_completion_audit_package.json`  
 **Sign-off registry:** `configs/runtime/master_plan_signoff_registry.json`  
 **Generated at:** 2026-02-27T15:00:00Z  
-**Package hash:** `9270b49a5553dcfd7e386ae0e7f6975e01752222c853dc6116bcc89bfd132e90`  
+**Package hash:** `c735ea4e36defb9f2a7d73d9b310b76b7455f3bf885328ec97dd2d2a83c7dcf4`  
 **Gates ready:** True  
 **Documents ready:** True  
 **Sign-off ready:** True  
