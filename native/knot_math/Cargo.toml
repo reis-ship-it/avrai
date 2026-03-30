@@ -30,7 +30,7 @@ anyhow = "1.0"
 thiserror = "1.0"
 
 # === FFI for Flutter ===
-flutter_rust_bridge = "=2.11.1"
+flutter_rust_bridge = "=2.12.0"
 
 [target.'cfg(not(target_os = "ios"))'.dependencies]
 rug = { version = "1.22", features = ["serde"] }  # Arbitrary precision arithmetic (for polynomials)
