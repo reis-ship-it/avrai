@@ -35,11 +35,10 @@ dart run scripts/ci/check_architecture.dart --update-baseline
 
 ## 2) Repo hygiene rule (don’t track generated artifacts)
 
-**Rule:** these directories must never contain **tracked** files:
-- `build/`
-- `Pods/`, `ios/Pods/`
-- `android/.gradle/`, `android/app/build/`, `android/build/`
-- `tmp/`, `temp/`, `logs/`
+**Rule:** these generated lanes must never contain **tracked** files:
+- any `build/`, `Pods/`, `.gradle/`, `.dart_tool/`, `tmp/`, `temp/`, or `logs/` directory at any depth
+- native build directories like `target/` and `tmp_ios_build/`
+- stray machine metadata like `.DS_Store`
 
 **Why:** tracked build outputs cause massive diffs, merge conflicts, and “generated repo smell”. They also break reproducible builds.
 

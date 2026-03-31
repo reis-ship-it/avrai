@@ -2,7 +2,9 @@
 
 **Status:** Active rule  
 **Effective Date:** February 15, 2026  
-**Scope:** All tracked non-doc files under `lib/`, `packages/`, `native/`, `scripts/`, `supabase/`, `test/`, `tool/`, `assets/`, and platform directories.
+**Scope:** All tracked files in the build-enforced placement scope under `apps/`, `runtime/`, `engine/`, `shared/`, `work/scripts/`, `work/tools/`, and `work/supabase/`.
+
+Human-facing command aliases such as `scripts/`, `docs/`, and `configs/` remain valid because they are repository symlinks into `work/`, but the underlying tracked roots remain the `work/*` paths listed above for tooling.
 
 ## Rule
 
@@ -17,7 +19,7 @@ Default target placement direction for all new code:
 5. Import direction must converge to `apps -> runtime -> engine -> shared`.
 
 - A file is valid only if it maps to:
-  1. a row in `docs/plans/architecture/generated/codebase_master_plan_mapping_2026-02-15.csv`, and
+  1. a deterministic mapping row produced on demand by `scripts/generate_master_plan_file_mapping.py` / `scripts/validate_architecture_placement.py`, and
   2. a registered spot in `docs/plans/architecture/ARCHITECTURE_SPOTS_REGISTRY.csv`.
 - Every mapping row must include a strict per-file dependency payload in `dependency_graph`:
   - valid JSON with `graph_version=v1`
@@ -26,13 +28,15 @@ Default target placement direction for all new code:
   - explicit `injections` block (`mode`, `roots`, `provides`, `consumes`, `required_validation`) so DI impacts are tracked per file
 - If a file does not fit an existing spot, **create a new spot** in `ARCHITECTURE_SPOTS_REGISTRY.csv` before merge.
 - No unresolved dispositions are allowed in build validation (`review_required`, `delete_candidate`).
+- `keep_review` remains valid for tracked tooling or legacy package surfaces that are intentionally retained but still need explicit human review over time.
 
 Runtime transport canonicalization note:
 - AI2AI transport implementation files must be placed under:
-  - `lib/runtime/avrai_runtime_os/services/transport/ble/`
-  - `lib/runtime/avrai_runtime_os/services/transport/mesh/`
+  - `runtime/avrai_runtime_os/lib/services/transport/ble/`
+  - `runtime/avrai_runtime_os/lib/services/transport/mesh/`
+  - `runtime/avrai_runtime_os/lib/services/transport/compatibility/`
 - New transport logic must not be added under `lib/core/ai2ai/resilience/` or `lib/core/ai2ai/routing/`.
-- `lib/core/ai2ai/resilience/` and `lib/core/ai2ai/routing/` are strict blocked legacy roots: only deletion is allowed during migration.
+- `lib/core/ai2ai/resilience/` and `lib/core/ai2ai/routing/` are strict blocked legacy roots: they may remain referenced by historical docs/board aliases, but they are not active placement targets for new code.
 
 ## Required Update Flow for New Files
 

@@ -1,13 +1,14 @@
 # Master Plan - Intelligence-First Architecture
 
 **Created:** February 8, 2026  
-**Status:** Active Execution Plan  
-**Purpose:** Single source of truth for implementation order -- intelligence-first, business-ready  
-**Source of Truth:** `docs/agents/reports/ML_SYSTEM_DEEP_ANALYSIS_AND_IMPROVEMENT_ROADMAP.md`  
+**Status:** Active execution spec; live phase/milestone status is maintained outside this file  
+**Purpose:** Canonical scope, sequencing, ownership intent, and acceptance framing for the intelligence-first program  
+**Roadmap seed:** `docs/agents/reports/ML_SYSTEM_DEEP_ANALYSIS_AND_IMPROVEMENT_ROADMAP.md`  
 **Legacy Plan:** `docs/MASTER_PLAN_LEGACY.md` (Phases 1-31, defunct, historical reference only)  
 **Canonical phase/milestone status:** `docs/EXECUTION_BOARD.csv` (with weekly deltas in `docs/STATUS_WEEKLY.md`)  
 **Program-level companion tracker:** `docs/agents/status/status_tracker.md`  
 **3-prong target end-state companion spec:** `docs/plans/architecture/MASTER_PLAN_3_PRONG_TARGET_END_STATE.md`  
+**Target codebase placement authority:** `docs/plans/architecture/TARGET_CODEBASE_STRUCTURE_ENFORCEMENT_2026-02-27.md`  
 **Admin command-center ideal architecture companion spec:** `docs/plans/architecture/ADMIN_COMMAND_CENTER_IDEAL_ARCHITECTURE_2026-02-28.md`  
 **Admin command-center ideal architecture alignment audit:** `docs/plans/architecture/ADMIN_COMMAND_CENTER_IDEAL_ARCHITECTURE_ALIGNMENT_AUDIT_2026-02-28.md`  
 **Admin private-server security implementation checklist:** `docs/plans/architecture/ADMIN_PRIVATE_SERVER_SECURITY_IMPLEMENTATION_CHECKLIST_2026-02-28.md`  
@@ -21,6 +22,16 @@
 **Cross-phase connections:** `docs/plans/rationale/CROSS_PHASE_CONNECTIONS.md`
 
 ---
+
+## How To Read This Plan Now
+
+This document is the execution spec for scope, ownership intent, sequencing, and acceptance shape. It is not the real-time dashboard for what is currently complete, in progress, or blocked.
+
+- **Status authority:** use `docs/EXECUTION_BOARD.csv` for canonical phase/milestone status and `docs/agents/status/status_tracker.md` for live program state and gating context.
+- **Architecture authority:** use `docs/plans/architecture/MASTER_PLAN_3_PRONG_TARGET_END_STATE.md` plus `docs/plans/architecture/TARGET_CODEBASE_STRUCTURE_ENFORCEMENT_2026-02-27.md` when plan wording and code placement differ.
+- **Interpretation rule:** if older prose references monolith-era paths, flat `lib/core/...` placement, or single-file composition patterns, treat that as a capability requirement rather than a literal file-placement instruction. New and migrated work should be read through the target `apps -> runtime -> engine -> shared` structure.
+- **Migration rule:** some sections describe work that is now partially or materially seeded in code. In those cases, the remaining work is migration completion, boundary cleanup, rollout governance, and acceptance closure, not invention from zero.
+- **Stable ID rule:** phase and subsection numbering remains the durable reference surface for trackers, evidence, and cross-links. Rewrite interpretation before renumbering anything.
 
 ## Why This Plan Exists
 
@@ -123,9 +134,9 @@ Required behavior for any break, regardless of domain:
 
 ### LeCun World Model Framework Mapping
 
-Every component in this plan maps to a specific role in LeCun's autonomous machine intelligence architecture. This mapping is the design authority -- if a proposed change doesn't fit this framework, it doesn't belong.
+Every capability in this plan maps to a specific role in LeCun's autonomous machine intelligence architecture. This mapping remains design authority, but it is authority at the capability level rather than as a literal file-placement map. In the current codebase, implementations may be split across `apps`, `runtime`, `engine`, and `shared`, and some items are now seeded in code while still mid-migration.
 
-| LeCun Component | Role | Our Implementation | Phase |
+| LeCun Component | Role | Current AVRAI Interpretation | Phase |
 |----------------|------|-------------------|-------|
 | **Perception Module** | Observes the world, produces state representation | `WorldModelFeatureExtractor` (145-155D from 19+ services) + `FeatureFreshnessTracker` | Phase 3.1 |
 | **World Model** | Predicts next state given current state and action | `TransitionPredictor` (ONNX MLP, replaces ODE/extrapolation/possibility engine) | Phase 5.1 |
@@ -201,6 +212,8 @@ Every component in this plan maps to a specific role in LeCun's autonomous machi
 
 ## Parallel Execution (Tier-Aware)
 
+This section defines default dependency order and concurrency posture. It does not replace the execution board or live status tracker.
+
 - **Tier 0**: Blocks everything else. Must complete first.
 - **Tier 1**: Core intelligence. Can run in parallel with each other once Tier 0 is done.
 - **Tier 2**: Advanced intelligence + integration. Depends on Tier 1.
@@ -210,6 +223,8 @@ Every component in this plan maps to a specific role in LeCun's autonomous machi
 ---
 
 ## Execution Index
+
+Read the index below as the canonical phase ordering for scope and dependency interpretation. For actual current-state execution, always reconcile this table with `docs/EXECUTION_BOARD.csv` and `docs/agents/status/status_tracker.md`.
 
 | Phase | Name | Tier | Key Dependencies | Est. Duration |
 |------:|------|------|------------------|---------------|
@@ -2509,22 +2524,33 @@ The matrix below is the canonical plan record for failure/contradiction classes 
 
 ### 10.10 3-Prong Architecture Separation (Reality Engine, Runtime OS, AVRAI App)
 
-Goal: enforce clean boundaries where the Reality Engine stays product-agnostic, AVRAI Runtime OS owns host OS integration/capability adaptation, and AVRAI App remains a host product layer.
+**Primary owners:** `apps`, `runtime`, `engine`, `shared`  
+**Current interpretation:** active migration and convergence lane, not speculative future architecture
 
-| Item | Scope | Notes |
-|------|-------|-------|
-| 10.10.1 | Extract engine policy modules from large facades (`continuous_learning_system.dart`) | Initial pass complete (2026-02-27): `learning_dimension_policy.dart`, `interaction_dimension_mapper.dart`, `ai2ai_learning_safeguard.dart`; continue decomposition into ingestion/outcomes/runtime-adapters |
-| 10.10.2 | Extract runtime routing/resilience/telemetry helpers from AI2AI orchestrator | Initial pass complete (2026-02-27): discovery/resilience/telemetry/routing helper modules extracted; continue manager-level decomposition |
-| 10.10.3 | Split bootstrap by layer and keep one composition entrypoint | Complete (2026-02-27): `runtime_bootstrap.dart`, `engine_bootstrap.dart`, `app_bootstrap.dart` wired through `injection_container.dart` |
-| 10.10.4 | Add 3-prong boundary guard | Complete (2026-02-27): `scripts/ci/check_three_prong_boundaries.py` + baseline + CI wiring |
-| 10.10.5 | Add cross-OS runtime capability contracts | Complete (2026-02-27): manifests under `configs/runtime/capabilities/*.json` + validator in CI |
-| 10.10.6 | Expand reservation/social large-file splits into policy/orchestrator/router/repository modules | Initial pass complete (2026-02-27): reservation and social-media services split with functional delegation |
-| 10.10.7 | Maintain architecture mapping and execution-board traceability for 3-prong conversions | Required for every PR touching boundary modules |
-| 10.10.8 | Continue LOC-priority split queue for remaining oversized files | Use a rolling split queue with explicit target module boundaries and non-regression gates |
-| 10.10.9 | Execute folder-by-folder migration toward target `apps -> runtime -> engine -> shared` layout | Active (2026-02-27): authority checklist published in `docs/plans/architecture/CODEBASE_MIGRATION_CHECKLIST_3_PRONG_2026-02-27.md`; enforce phase order (guardrails -> shared contracts -> engine extraction -> runtime extraction -> app cleanup -> endpoint validation -> cutover) |
-| 10.10.10 | Maintain canonical external/internal architecture visualization maps | Active (2026-02-27): authority diagrams and maintenance rules published in `docs/plans/architecture/THREE_PRONG_ARCHITECTURE_VISUALIZATION_GUIDE_2026-02-27.md`; update with every boundary-impacting PR |
-| 10.10.11 | Enforce default placement for all new code toward target 3-prong structure | Active (2026-02-27): placement authority published in `docs/plans/architecture/TARGET_CODEBASE_STRUCTURE_ENFORCEMENT_2026-02-27.md`; all new features route to target layer first, with legacy paths limited to migration shims |
-| 10.10.12 | Enforce concurrent 3-prong execution under one umbrella plan + three isolated prong plans | Active (2026-02-28): governance set published in `docs/plans/architecture/MASTER_PLAN_3_PRONG_TARGET_END_STATE.md` + per-prong execution plans (Apps, Runtime OS, Reality Model) with anti-collision ownership, boundary, and contract rules |
+This section governs the migration from monolith-era composition into the target `apps -> runtime -> engine -> shared` structure. The 3-prong architecture is already real in docs, package boundaries, bootstrap wiring, CI boundary guards, and current code layout. What remains is migration completion, shim reduction, placement normalization, and target-state cutover.
+
+Use this section to distinguish:
+
+1. landed baseline architecture controls,
+2. active migration work,
+3. continuous governance required to keep new work in the right prong.
+
+Formal milestone status still lives in `docs/EXECUTION_BOARD.csv`. This section defines the architecture intent and the remaining migration surface.
+
+| Item | Primary owner | Current interpretation | Notes |
+|------|---------------|------------------------|-------|
+| 10.10.1 | `engine` | Initial migration complete | Initial pass complete (2026-02-27): `learning_dimension_policy.dart`, `interaction_dimension_mapper.dart`, `ai2ai_learning_safeguard.dart`; continue decomposition into ingestion/outcomes/runtime-adapters |
+| 10.10.2 | `runtime` | Initial migration complete | Initial pass complete (2026-02-27): discovery/resilience/telemetry/routing helper modules extracted; continue manager-level decomposition |
+| 10.10.3 | `apps` + `runtime` + `engine` | Landed baseline; target-state cleanup remains | Complete (2026-02-27): `runtime_bootstrap.dart`, `engine_bootstrap.dart`, `app_bootstrap.dart` wired through the current composition layer; continue reducing migration-shim coupling |
+| 10.10.4 | `shared` + CI/governance | Landed baseline | Complete (2026-02-27): `scripts/ci/check_three_prong_boundaries.py` + baseline + CI wiring |
+| 10.10.5 | `runtime` + `shared` | Landed baseline | Complete (2026-02-27): manifests under `configs/runtime/capabilities/*.json` + validator in CI |
+| 10.10.6 | `apps` + `runtime` | Initial migration complete | Reservation and social-media large-file splits exist; continue decomposition into policy/orchestrator/router/repository ownership boundaries |
+| 10.10.7 | `shared` + docs/governance | Continuous governance | Required for every PR touching boundary modules |
+| 10.10.8 | Owning prong + `shared` contracts | Active migration | Use a rolling split queue with explicit target module boundaries and non-regression gates |
+| 10.10.9 | All prongs | Active migration | Authority checklist published in `docs/plans/architecture/CODEBASE_MIGRATION_CHECKLIST_3_PRONG_2026-02-27.md`; enforce phase order (guardrails -> shared contracts -> engine extraction -> runtime extraction -> app cleanup -> endpoint validation -> cutover) |
+| 10.10.10 | `shared` + docs/governance | Active governance | Authority diagrams and maintenance rules published in `docs/plans/architecture/THREE_PRONG_ARCHITECTURE_VISUALIZATION_GUIDE_2026-02-27.md`; update with every boundary-impacting PR |
+| 10.10.11 | All prongs | Active governance | Placement authority published in `docs/plans/architecture/TARGET_CODEBASE_STRUCTURE_ENFORCEMENT_2026-02-27.md`; all new features route to target layer first, with legacy paths limited to migration shims |
+| 10.10.12 | All prongs + governance | Active governance | Governance set published in `docs/plans/architecture/MASTER_PLAN_3_PRONG_TARGET_END_STATE.md` + per-prong execution plans (Apps, Runtime OS, Reality Model) with anti-collision ownership, boundary, and contract rules |
 
 ## Phase 11: Industry Integrations & Platform Expansion
 
@@ -2667,11 +2693,21 @@ These legacy phases are explicitly not carried forward:
 **Tier:** Post-Production (after beta validates product-market fit)  
 **Duration:** 24-40 weeks total (7 sections, sequentially gated)  
 **Dependencies:** Phases 1-8 complete; beta has validated core loop (on-device personality + AI2AI + real-world discovery); Phase 9 monetization model established; Phase 12.4 (reality model baseline) requires swarm simulation from v0.3 Sprint  
-**Why this phase:** Beta proves users want the product. Phase 12 makes AVRAI infrastructure that other software depends on — the mandatory mediation layer for AI cognition on any device. This is the transition from "a sophisticated Flutter app" to "a cognitive OS that AI companies integrate with."  
-**North Star:** AVRAI's Cognitive Kernel runs headless on any device (phone, home server, Raspberry Pi, cloud container). Every AI company and third-party developer that wants longitudinal behavioral context, local ground truth, or real-world action grounding calls AVRAI's stable cognitive syscall API. The Flutter app is one shell among many. The OS is the product.  
+**Primary owners:** `runtime` + `engine` + `shared`; `apps` act as shell consumers and operator/admin surfaces  
+**Current interpretation:** stratified program with seeded code, active implementation lanes, and north-star targets  
+**Why this phase:** Beta proves users want the product. Phase 12 makes AVRAI infrastructure that other software depends on — the mediation layer for AI cognition on any device. This is the transition from "a sophisticated Flutter app" to "a cognitive OS that multiple shells and integrations can consume."  
+**North Star:** AVRAI's Cognitive Kernel runs headless on any device (phone, home server, Raspberry Pi, cloud container). Every AI company and third-party developer that wants longitudinal behavioral context, local ground truth, or real-world action grounding calls AVRAI's stable cognitive syscall API. The Flutter app is one shell among many; today it remains the primary shipped shell.  
 **Rationale doc:** `docs/plans/rationale/PHASE_12_OS_RATIONALE.md`
 **Doctrine + spec:** `docs/plans/architecture/AVRAI_COGNITIVE_OS_DOCTRINE_2026-03-06.md`, `docs/plans/architecture/AVRAI_RECURSIVE_GOVERNANCE_ARCHITECTURE_SPEC_2026-03-06.md`
 **Security immune-system companion:** `docs/plans/architecture/AUTONOMOUS_SECURITY_IMMUNE_SYSTEM_2026-03-13.md`
+
+Phase 12 should not be read as one uniform future backlog. It now contains three classes of work:
+
+1. **Seeded in code:** early headless-host surfaces, compressed training infrastructure, and adjacent governance/control-plane groundwork already exist in the repo.
+2. **Active implementation lanes:** typed memory, Air Gap compression, kernel boundary normalization, multi-device/headless runtime hardening, and governed rollout sequencing.
+3. **North-star targets:** mature external API productization, third-party SDK/distribution, and broad multi-shell/package ecosystem support.
+
+When a subsection below describes work that is already materially seeded in code, read the remaining work as migration completion, rollout governance, acceptance closure, and target-state boundary hardening.
 
 ---
 
@@ -2782,7 +2818,8 @@ recover(incident: RecoveryRequest) → HealingState
 
 **Duration:** 2-4 weeks  
 **Goal:** Energy function and transition predictor have a non-empty baseline before the external API is opened. API returns meaningful output for zero-user installations.  
-**Dependency:** v0.3 Synthetic Swarm Sprint (NYC/Denver/Atlanta simulation) must be complete.
+**Dependency:** v0.3 Synthetic Swarm Sprint (NYC/Denver/Atlanta simulation) must be complete.  
+**Current interpretation:** dependency-bound baseline lane. Some later Phase 12 support infrastructure is already seeded in code, but the Phase `12.4` gate is still the point where the OS gets a deliberately packaged, externally consumable reality-model baseline.
 
 | Task | Description |
 |------|-------------|
@@ -2799,6 +2836,53 @@ recover(incident: RecoveryRequest) → HealingState
 
 ---
 
+### 12.4A Air Gap Compression Kernel & Safe Representation Pipeline
+
+**Duration:** 2-4 weeks  
+**Goal:** Add a compression subsystem to the Air Gap that operates only on post-extraction safe artifacts and bounded higher-layer representations.
+
+| Task | Description |
+|------|-------------|
+| 12.4A.1 | Define `AirGapCompressionContract`: the only valid inputs are already-scrubbed semantic tuples, safe embeddings, evidence envelopes, and policy-approved higher-layer artifacts |
+| 12.4A.2 | Implement `AirGapCompressionKernel`: compress safe artifacts for storage, retrieval, and hierarchy exchange while retaining provenance refs and privacy ladder tags |
+| 12.4A.3 | Implement `SafeArtifactEnvelope` + `CompressionBudgetProfile`: every artifact crossing the boundary declares artifact type, compression mode, distortion budget, provenance refs, and gas/liquid/solid detail budget |
+| 12.4A.4 | Implement `CompressedKnowledgePacketCodec`: personal/locality/world/universe layers exchange compressed abstractions by default rather than verbose raw-detail bundles |
+| 12.4A.5 | Extend Air Gap permeability to include resolution budgets: users control not only what domains can contribute, but how much routine detail higher layers may receive |
+| 12.4A.6 | Add distortion and non-reconstructability audits: compressed safe artifacts must preserve decision-critical truth while proving that compressed raw reality cannot be reconstructed because it never exists as a legal kernel artifact |
+| 12.4A.7 | Constitutional invariant test: compressed raw payloads are forbidden artifacts. Compression may not occur before extraction + destruction + policy filtering |
+
+---
+
+### 12.4B Compressed Reality Model Training & Hierarchical Learning Infrastructure
+
+**Duration:** 2-4 weeks  
+**Goal:** Use compression to expand replay, retrieval, memory-bank, and cross-stratum learning capacity for the reality model without degrading truth quality.  
+**Current interpretation:** seeded and materially implemented in code; remaining work is rollout governance, acceptance normalization, and target-state boundary hardening.  
+**Status (2026-03-30):** Implemented in code across shared contracts, engine services, runtime orchestration, hierarchy packet construction, kernel promotion gating, and admin visibility. Rollout remains governed and shadow-first until Symphony/operator sequencing explicitly promotes default activation.
+
+Implemented baseline includes:
+
+- compressed replay storage
+- training retrieval indexing
+- compressed federated/hierarchy update encoding
+- hierarchical learning packet construction
+- compression-aware planner-memory and transition support
+- promotion gates for compression-induced regression
+
+The items below are retained as durable acceptance anchors. They should no longer be read as "invent these components from zero." The remaining work is to keep the implemented baseline green, verify ownership/boundary placement against the 3-prong target state, and carry the lane through governed rollout.
+
+| Task | Description |
+|------|-------------|
+| 12.4B.1 | Implement `CompressedReplayStore` for replay/training artifacts: state embeddings, action embeddings, planner memory vectors, and support bundles |
+| 12.4B.2 | Implement `TrainingRetrievalIndex`: compressed nearest-neighbor lookup for hard-example mining, corroborating replay retrieval, and memory-augmented transition support |
+| 12.4B.3 | Implement `CompressedFederatedUpdateCodec`: DP-safe update packets and advisory deltas are compressed before network or hierarchy exchange |
+| 12.4B.4 | Implement `HierarchicalLearningPacketBuilder`: personal→locality→world→universal learning packets carry compressed abstractions, never raw lived detail |
+| 12.4B.5 | Extend planner-memory and transition-predictor support paths so compressed retrieval can bias energy scoring and uncertainty fallback without expanding on-device storage budgets beyond policy |
+| 12.4B.6 | Add training promotion gates for compression-induced regression: ranking drift, calibration drift, contradiction-detection degradation, and uncertainty-honesty regression block rollout |
+
+**Gate to 12.5:** Air Gap compression kernel passes invariants. The implemented compressed replay/training baseline remains green with no material regression on ranking, calibration, contradiction handling, or uncertainty honesty, and rollout governance explicitly accepts the serving posture.
+
+---
 ### 12.5 External API Surface
 
 **Duration:** 6-8 weeks  

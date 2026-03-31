@@ -8,25 +8,21 @@
 - `docs/MASTER_PLAN.md` is the execution authority.
 - `docs/agents/status/status_tracker.md` is the canonical progress tracker.
 - Architecture docs are design references and must map to active phases or be marked as contextual/legacy.
-- File-level execution decisions use the generated mapping artifacts:
+- File-level execution decisions use the generated mapping summary plus on-demand validation/export:
   - `docs/plans/architecture/CODEBASE_MASTER_PLAN_MAPPING_2026-02-15.md`
-  - `docs/plans/architecture/generated/codebase_master_plan_mapping_2026-02-15.csv`
+  - `scripts/validate_architecture_placement.py`
 
 ## Coverage Summary
 
-- Runtime/source/tooling files mapped: **2,844**
-- Mapping disposition summary:
-  - `keep_update`: 2,496
-  - `keep_review`: 322
-  - `refactor_planned`: 26
-  - `delete_candidate`: 0
+- Runtime/source/tooling files mapped: see the current mapping summary for the live count.
+- Mapping disposition summary: generated from the current tree by `scripts/generate_master_plan_file_mapping.py`.
 
 ## Architecture Document Status Matrix
 
 | Document | Status | Applies To Current Codebase | Master Plan Linkage | Notes |
 |---|---|---|---|---|
 | `ARCHITECTURE_INDEX.md` | Current | Yes | Global | Updated to reference canonical authorities + mapping artifacts |
-| `CODEBASE_MASTER_PLAN_MAPPING_2026-02-15.md` | Current | Yes | Phases 1-11 | File-disposition summary over generated CSV |
+| `CODEBASE_MASTER_PLAN_MAPPING_2026-02-15.md` | Current | Yes | Phases 1-11 | File-disposition summary over the on-demand mapping generator |
 | `ARCHITECTURE_SPOTS_REGISTRY.csv` | Current | Yes | Global | Registered architecture spots for build-time placement enforcement |
 | `FILE_PLACEMENT_POLICY.md` | Current | Yes | Global | Build-enforced rule: every file must map to a registered spot |
 | `.github/workflows/architecture-placement-guard.yml` | Current | Yes | Global | CI guard that fails on unmapped/unregistered file placement |
@@ -52,7 +48,7 @@ For any architecture-driven code change:
 
 1. Confirm phase ownership in `docs/MASTER_PLAN.md`.
 2. Confirm rollout/status constraints in `docs/agents/status/status_tracker.md`.
-3. Confirm file disposition in `generated/codebase_master_plan_mapping_2026-02-15.csv`.
+3. Confirm file disposition in `CODEBASE_MASTER_PLAN_MAPPING_2026-02-15.md`, and generate a local CSV export only when full inventory detail is needed.
 4. If a file is `delete_candidate` or `refactor_planned`, run dependency checks before modification/deletion.
 
 ## Open Follow-Ups

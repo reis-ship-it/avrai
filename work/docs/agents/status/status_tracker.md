@@ -3,7 +3,7 @@
 **Date:** November 30, 2025, 9:54 PM CST  
 **Purpose:** Real-time status tracking for agent dependencies and communication  
 **Status:** 🟢 Active - Phase 6 Complete, Phase 7 Section 47-48 Complete, Section 51-52 IN PROGRESS (Section 49-50 Deferred)
-**Last Updated:** January 2, 2026 (Master Plan status made canonical here; removed duplicated status snapshots elsewhere)
+**Last Updated:** March 31, 2026 (`MASTER_PLAN.md` now explicitly reads as the execution spec for scope/ownership/acceptance rather than as the real-time dashboard; the plan/tracker authority split and 3-prong interpretation guidance are now synchronized here while the March 30 live BHAM and autonomy execution state remains unchanged. Previous: `G2A10` enriched teacher-world refresh remains accepted from the `G2A8` realistic BHAM baseline; `G2A12A`, `G2A13A`, `G2A14`, `G2A15`, and `G2A11` are now all accepted, `G2A14` is shared-family-served, `G2A15` holds accepted forecast proof for six promoted tasks including the first business-intelligence family, `G2A11` remains `runtime_release_ready_with_governed_warnings` but the warning floor is now lower with `openSimulationGapCount = 0` and `ai2aiRuntimeCoverageComplete = true`, and operator approval remains the next move before `G2B`)
 
 ---
 
@@ -30,11 +30,343 @@ To avoid drift and contradictory “status snapshots” across docs:
 - **Execution plan/spec:** `docs/MASTER_PLAN.md`
 - **Plan registry:** `docs/MASTER_PLAN_TRACKER.md`
 - **Canonical status/progress:** **this file** (`docs/agents/status/status_tracker.md`)
+- **3-prong architecture authority:** `docs/plans/architecture/MASTER_PLAN_3_PRONG_TARGET_END_STATE.md`
+- **Target placement authority:** `docs/plans/architecture/TARGET_CODEBASE_STRUCTURE_ENFORCEMENT_2026-02-27.md`
 
-**Rule:** If you need to know “what’s in progress / complete / blocked,” check here. Do not duplicate status tables in the Master Plan doc.
+**Rule:** If you need to know “what’s in progress / complete / blocked,” check here. Do not duplicate status tables in the Master Plan doc. If plan prose and code placement differ, read the Master Plan as the scope/acceptance spec and use the 3-prong authority docs for architecture interpretation.
 
 ## 📊 **Current Status**
 
+**Current Update:** March 31, 2026  
+**Updated By:** Codex  
+**What Changed:**
+- Added the first bounded supervisor-learning slice for reality-model autonomy:
+  - the control-plane now persists a versioned supervisor learning profile with action stats and recent autonomous outcomes
+  - the supervisor daemon now records executed preview/governed outcomes into that profile and uses repeated failures/successes to adjust cooldown/backoff behavior without bypassing policy or human gates
+- Hardened the human judgment loop for reality-model simulation/training:
+  - runtime control-plane approval, rejection, and rollback actions now fail closed when validation, wrapper-exit approval, or structural/manifest lineage evidence is incomplete
+  - admin Training & Promotion now disables `Approve`, `Reject`, and `Rollback` off the same evidence gate so UI behavior matches backend enforcement
+- Landed the governed autonomy loop for reality-model simulation/training operations:
+  - backend-authoritative control-plane tables now exist in [20260330013000_reality_model_control_plane_authority_store_v1.sql](/Users/reisgordon/AVRAI/work/supabase/migrations/20260330013000_reality_model_control_plane_authority_store_v1.sql)
+  - the supervisor daemon now obeys stored control-plane policy rather than constructor defaults
+  - admin now exposes control-plane policy lineage, bounded autonomy controls, and a waiting-human inbox
+  - end-to-end runtime coverage now proves policy pause, supervisor execution, waiting-human materialization, human approval, rollback lineage, remote-authority degradation, and restart rehydration
+- Published the canonical next-step autonomy direction for simulation/training operations:
+  - [REALITY_MODEL_AUTONOMOUS_CONTROL_PLANE_AND_SUPERVISOR_DAEMON_2026-03-30.md](/Users/reisgordon/AVRAI/work/docs/plans/architecture/REALITY_MODEL_AUTONOMOUS_CONTROL_PLANE_AND_SUPERVISOR_DAEMON_2026-03-30.md)
+- Completed the first concrete execution milestone for that autonomy lane:
+  - `M31-P10-5` backend-authoritative control-plane state + lineage authority
+  - [M31_P10_5_REALITY_MODEL_AUTONOMOUS_CONTROL_PLANE_BACKEND_STATE_LINEAGE_AUTHORITY_BASELINE.md](/Users/reisgordon/AVRAI/work/docs/plans/methodology/M31_P10_5_REALITY_MODEL_AUTONOMOUS_CONTROL_PLANE_BACKEND_STATE_LINEAGE_AUTHORITY_BASELINE.md)
+  - [MASTER_PLAN_REALITY_MODEL_AUTONOMOUS_CONTROL_PLANE_BACKEND_STATE_LINEAGE_AUTHORITY_REPORT.md](/Users/reisgordon/AVRAI/work/docs/plans/methodology/MASTER_PLAN_REALITY_MODEL_AUTONOMOUS_CONTROL_PLANE_BACKEND_STATE_LINEAGE_AUTHORITY_REPORT.md)
+- Locked the follow-on order for real autonomous simulation/training operations:
+  - multi-environment execution parity
+- Implemented `12.4B` compressed reality-model training end to end across shared contracts, engine compression/retrieval services, runtime orchestration, hierarchy packet construction, kernel promotion gates, and admin visibility surfaces
+- Restored repo-green verification after the `12.4B` lane and adjacent test fallout:
+  - `melos exec --dir-exists=test -c 4 -- flutter test` ✅
+  - `dart format --set-exit-if-changed .` ✅
+  - `melos check:architecture` ✅
+  - `melos check:repo_hygiene` ✅
+- Added closeout/split guidance for the mixed green worktree:
+  - [2026-03-30_12_4b_repo_closeout_and_split_manifest.md](/Users/reisgordon/AVRAI/work/docs/agents/status/2026-03-30_12_4b_repo_closeout_and_split_manifest.md)
+  - [2026-03-30_12_4b_slice_a_staging_manifest.md](/Users/reisgordon/AVRAI/work/docs/agents/status/2026-03-30_12_4b_slice_a_staging_manifest.md)
+  - [2026-03-30_12_4b_slice_b_staging_manifest.md](/Users/reisgordon/AVRAI/work/docs/agents/status/2026-03-30_12_4b_slice_b_staging_manifest.md)
+  - [2026-03-30_12_4b_slice_c_formatting_manifest.md](/Users/reisgordon/AVRAI/work/docs/agents/status/2026-03-30_12_4b_slice_c_formatting_manifest.md)
+  - [2026-03-30_12_4b_slice_d_artifact_manifest.md](/Users/reisgordon/AVRAI/work/docs/agents/status/2026-03-30_12_4b_slice_d_artifact_manifest.md)
+- Executed and accepted the BHAM combined sidecar teacher-world rerun:
+  - [BHAM_G2A14_COMBINED_SIDECAR_TEACHER_WORLD_RERUN_2026-03-29.md](/Users/reisgordon/AVRAI/work/docs/plans/architecture/BHAM_G2A14_COMBINED_SIDECAR_TEACHER_WORLD_RERUN_2026-03-29.md)
+- Emitted the governed `G2A14` artifacts:
+  - [bham_g2a14_combined_sidecar_rerun_audit.json](/Users/reisgordon/AVRAI/runtime_exports/local/cities/bham/2023/simulation_strengthening/g2a14_combined_sidecar_rerun/bham_g2a14_combined_sidecar_rerun_audit.json)
+  - [bham_g2a14_headless_engine_readiness_audit.json](/Users/reisgordon/AVRAI/runtime_exports/local/cities/bham/2023/simulation_strengthening/g2a14_combined_sidecar_rerun/bham_g2a14_headless_engine_readiness_audit.json)
+  - [bham_g2a14_training_export_manifest.json](/Users/reisgordon/AVRAI/runtime_exports/local/cities/bham/2023/simulation_strengthening/g2a14_combined_sidecar_rerun/bham_g2a14_training_export_manifest.json)
+- Accepted combined-rerun summary now includes:
+  - `overallState = g2a14_combined_sidecar_rerun_and_headless_engine_ready`
+  - `nativeTeacherWorldEpisodeCount = 455848`
+  - `recordDerivedEpisodeCount = 1109`
+  - `syntheticHumanSidecarAttached = true`
+  - `physicalWorldSidecarAttached = true`
+  - `combinedSidecarAuthorityReady = true`
+- Accepted headless summary now includes:
+  - `overallState = headless_engine_ready_from_g2a14`
+  - `routerBootstrapMode = artifact_backed_runtime`
+  - `configuredHeadAgentCount = 6`
+  - `configuredPromotedDomainCount = 6`
+  - `configuredSharedFamilyProfileCount = 1`
+  - `probeCount = 2`
+  - `passedProbeCount = 2`
+- Shared-family serving is now reconciled on March 30, 2026:
+  - current `activeRealityModelServedSource = shared_family`
+  - current `sharedFamilyServingEligible = true`
+  - `G2A14` therefore proves the combined authority is real, headlessly usable, and actively shared-family-served
+- Executed the first `G2A15` shaping slice:
+  - [BHAM_G2A15_FORECAST_CAPABILITY_SHAPING_AND_ENGINE_BUILDOUT_2026-03-30.md](/Users/reisgordon/AVRAI/work/docs/plans/architecture/BHAM_G2A15_FORECAST_CAPABILITY_SHAPING_AND_ENGINE_BUILDOUT_2026-03-30.md)
+  - [BHAM_G2A15_FORECAST_CAPABILITY_SHAPING_AND_ENGINE_BUILDOUT_RESULT_2026-03-30.md](/Users/reisgordon/AVRAI/work/docs/plans/architecture/BHAM_G2A15_FORECAST_CAPABILITY_SHAPING_AND_ENGINE_BUILDOUT_RESULT_2026-03-30.md)
+  - [bham_g2a15_forecast_contract.json](/Users/reisgordon/AVRAI/runtime_exports/local/cities/bham/2023/simulation_strengthening/g2a15_forecast_capability/bham_g2a15_forecast_contract.json)
+  - [bham_g2a15_forecast_task_registry.json](/Users/reisgordon/AVRAI/runtime_exports/local/cities/bham/2023/simulation_strengthening/g2a15_forecast_capability/bham_g2a15_forecast_task_registry.json)
+  - [bham_g2a15_forecast_benchmark_audit.json](/Users/reisgordon/AVRAI/runtime_exports/local/cities/bham/2023/simulation_strengthening/g2a15_forecast_capability/bham_g2a15_forecast_benchmark_audit.json)
+- Executed the generic `G2A15` headless forecast slice:
+  - [bham_g2a15_forecast_headless_readiness_audit.json](/Users/reisgordon/AVRAI/runtime_exports/local/cities/bham/2023/simulation_strengthening/g2a15_forecast_capability/bham_g2a15_forecast_headless_readiness_audit.json)
+  - [bham_g2a15_forecast_headless_readiness_audit.md](/Users/reisgordon/AVRAI/runtime_exports/local/cities/bham/2023/simulation_strengthening/g2a15_forecast_capability/bham_g2a15_forecast_headless_readiness_audit.md)
+- Executed the `G2A15` forecast shadow/promotion proof slice:
+  - [bham_g2a15_forecast_shadow.json](/Users/reisgordon/AVRAI/runtime_exports/local/cities/bham/2023/simulation_strengthening/g2a15_forecast_capability/bham_g2a15_forecast_shadow.json)
+  - [bham_g2a15_forecast_shadow.md](/Users/reisgordon/AVRAI/runtime_exports/local/cities/bham/2023/simulation_strengthening/g2a15_forecast_capability/bham_g2a15_forecast_shadow.md)
+  - [bham_g2a15_forecast_promotion.json](/Users/reisgordon/AVRAI/runtime_exports/local/cities/bham/2023/simulation_strengthening/g2a15_forecast_capability/bham_g2a15_forecast_promotion.json)
+  - [bham_g2a15_forecast_promotion.md](/Users/reisgordon/AVRAI/runtime_exports/local/cities/bham/2023/simulation_strengthening/g2a15_forecast_capability/bham_g2a15_forecast_promotion.md)
+- Accepted `G2A15` summary now includes:
+  - `overallState = g2a15d_forecast_promotion_ready`
+  - `readyTaskCount = 6`
+  - `partialTaskCount = 4`
+  - `blockedTaskCount = 2`
+  - `engineForecastContractDefined = true`
+  - `forecastHeadlessReady = true`
+  - `forecastShadowProofEmitted = true`
+  - `promotionReadyTaskCount = 6`
+  - `shadowOnlyTaskCount = 0`
+  - `benchmarkCaseCount = 18`
+  - `businessSeedCaseCount = 10`
+  - `candidateWins = 10`
+  - `baselineWins = 0`
+  - `tieCount = 8`
+  - `labelAccuracyRate = 1.0`
+  - `uncertaintyHonestyRate = 1.0`
+  - `sharedFamilyServingEligible = true`
+  - `activeRealityModelServedSource = shared_family`
+  - forecasting now functions headlessly, benchmarkably, and six ready tasks are promotion-ready from accepted BHAM authority
+  - the hard blocker for true rollout forecasting remains the empty reused episode artifact
+  - the promoted business-intelligence forecast tasks are:
+    - `bham_business_demand_shift`
+    - `bham_business_pressure_propagation`
+    - `bham_business_viability_risk`
+- Locked the post-`G2A14` order:
+  - `G2A12A` is accepted
+  - `G2A13A` is accepted
+  - `G2A14` is accepted
+  - the first `G2A15` shaping slice is accepted
+  - the generic `G2A15` headless forecast slice is accepted
+  - the `G2A15` forecast shadow/promotion proof slice is now accepted in promotion-ready form for six ready tasks including three business-intelligence tasks
+  - `G2A11` runtime/release readiness is now accepted as `runtime_release_ready_with_governed_warnings`
+  - March 30 runtime/reality hardening reduced the accepted `G2A11` warning floor:
+    - `bham_beta_simulation_capability_parity_audit` now reports `release_and_simulation_parity_ready`
+    - `openSimulationGapCount = 0`
+    - `ai2aiRuntimeCoverageComplete = true`
+    - remaining governed warnings are now limited to:
+      - simulator-only smoke evidence
+      - `ai2ai.field_pilot_ready`
+      - `mesh.runtime_ready`
+      - `mesh.field_pilot_ready`
+  - operator approval remains required
+  - `G2B` stays operationalized but parked behind operator approval and the first real BHAM beta receipts
+
+### **BHAM Reality-Model Offline Simulation + Training Loop**
+**Status:** 🟡 **Active - breadth pass frozen green; override-filtered next tranche in progress**  
+**Last Updated:** March 22, 2026  
+**Checkpoint note:** `work/docs/agents/status/2026-03-21_bham_reality_model_simulation_checkpoint.md`
+**Context memo:** `work/docs/agents/status/2026-03-22_bham_reality_model_context_and_beta_readiness.md`
+**Coverage matrix:** `work/docs/agents/status/2026-03-22_bham_simulation_coverage_matrix_and_gap_backlog.md`
+
+- Active layer is the **offline simulation/training track**, not Supabase seeding or runtime `spot.id`.
+- Corpus rebuild checkpoint on March 22, 2026:
+  - [build_bham_offline_canonical_simulation_corpus.dart](/Users/reisgordon/AVRAI/runtime/avrai_runtime_os/tool/build_bham_offline_canonical_simulation_corpus.dart) replaced the old flattened corpus path with layered truth reconstruction from `35/36/40/51`
+  - rebuilt corpus now emits `794` venue entities and `118` canonical locality entities, plus explicit kernel-aligned derived views
+  - active training localities are now fixed at `99`
+  - active localities currently meeting the `8`-real-place minimum: `5 / 99`
+  - rebuilt corpus artifacts:
+    - `/tmp/bham_offline_canonical_simulation_corpus_v2.json`
+    - `/tmp/bham_place_coverage_audit_v2.json`
+    - `/tmp/bham_replay_simulation_campaign_v2.json`
+  - compatibility smoke still passes through the established workflow:
+    - `/tmp/cell_124_v2_final_training_loop_summary.json`
+- Current aggregate campaign result:
+  - `overallPassRate = 0.7613`
+  - `shortHorizonPassRate = 0.7130`
+  - `longHorizonPassRate = 0.8765`
+  - `statisticallySatisfied = false`
+- Breadth-pass campaign expansion:
+  - campaign cells: `222`
+  - waves: `8`
+  - factor families: `14`
+  - regenerated scaffold-failure queue: `53`
+  - accepted real-training overrides: `41`
+  - filtered real remaining queue: `12`
+  - place coverage audit:
+    - minimum target: `8` places per locality
+    - only `4 / 10` localities currently meet the minimum
+    - `6` localities are under-covered
+    - `bham_metro_regional` still holds `321 / 386` venues
+  - new breadth waves:
+    - `commuter_routine_breadth`
+    - `civic_anchor_continuity`
+    - `undercovered_neighborhood_breadth`
+- Current accepted green priority cells:
+  - `cell_124` (`locality_fragmentation + sparse_user_resilience + tomorrow`)
+  - `cell_115` (`source_dropout_high + sparse_user_resilience + tomorrow`)
+  - `cell_127` (`locality_fragmentation + network_partition + tomorrow`)
+  - `cell_118` (`source_dropout_high + network_partition + tomorrow`)
+  - `cell_130` (`locality_fragmentation + memory_and_truth_drift + tomorrow`)
+  - `cell_121` (`source_dropout_high + memory_and_truth_drift + tomorrow`)
+  - `cell_112` (`alias_noise_low + memory_and_truth_drift + tomorrow`)
+  - `cell_106` (`alias_noise_low + sparse_user_resilience + tomorrow`)
+  - `cell_049` (`event_density_low + campus_football_operations + next_week`)
+  - `cell_050` (`event_density_low + campus_football_operations + next_month`)
+  - `cell_046` (`event_density_low + sports_concert_district_overload + next_week`)
+  - `cell_052` (`event_density_low + trust_safety_admin_load + next_week`)
+  - `cell_125` (`locality_fragmentation + sparse_user_resilience + next_year`)
+  - `cell_116` (`source_dropout_high + sparse_user_resilience + next_year`)
+  - `cell_047` (`event_density_low + sports_concert_district_overload + next_month`)
+  - `cell_053` (`event_density_low + trust_safety_admin_load + next_month`)
+  - `cell_126` (`locality_fragmentation + network_partition + next_decade`)
+  - `cell_082` (`source_dropout_high + network_partition + next_quarter`)
+  - `cell_055` (`event_density_high + sports_concert_district_overload + next_week`)
+  - `cell_117` (`source_dropout_high + sparse_user_resilience + next_decade`)
+  - `cell_107` (`alias_noise_low + sparse_user_resilience + next_year`)
+  - `cell_022` (`alias_noise_low + trust_safety_admin_load + tomorrow`)
+  - `cell_074` (`locality_fragmentation + migration_pressure + next_quarter`)
+  - `cell_056` (`event_density_high + sports_concert_district_overload + next_month`)
+  - `cell_013` (`alias_noise_low + baseline_drift + tomorrow`)
+  - `cell_051` (`event_density_low + campus_football_operations + next_quarter`)
+  - `cell_075` (`locality_fragmentation + migration_pressure + next_year`)
+  - `cell_072` (`locality_fragmentation + economic_cycle + next_quarter`)
+  - `cell_070` (`locality_fragmentation + network_partition + next_quarter`)
+  - `cell_086` (`source_dropout_high + migration_pressure + next_quarter`)
+  - `cell_083` (`source_dropout_high + network_partition + next_year`)
+- All six domains now promote on those thirty-one cells.
+- New breadth-pass results:
+  - fully green new breadth cells:
+    - `cell_181` (`civic_anchor_continuity + locality_fragmentation + trust_safety_admin_load + tomorrow`)
+    - `cell_178` (`civic_anchor_continuity + locality_fragmentation + faith_civic_anchor_continuity + tomorrow`)
+    - `cell_184` (`civic_anchor_continuity + locality_fragmentation + sparse_user_resilience + tomorrow`)
+      - `community: 1 / 1 / +0.0400`
+      - `locality: 6 / 0 / +0.0989`
+    - `cell_185` (`civic_anchor_continuity + locality_fragmentation + sparse_user_resilience + next_month`)
+      - `community: 1 / 1 / +0.0176`
+      - `locality: 6 / 0 / +0.0975`
+    - `cell_196` (`undercovered_neighborhood_breadth + locality_fragmentation + migration_pressure + next_quarter`)
+      - `business: 3 / 1 / +0.0395`
+      - `locality: 3 / 1 / +0.0213`
+- Override-aware policy state:
+  - offline simulation decision policy now honors accepted real-training wins
+  - accepted override artifact: `/tmp/bham_reality_model_accepted_cells.json`
+  - top filtered next tranche:
+    - `cell_176` (`civic_anchor_continuity + source_dropout_low + sparse_user_resilience + next_month`)
+    - `cell_167` (`civic_anchor_continuity + baseline_truth_year + sparse_user_resilience + next_month`)
+    - `cell_186` (`civic_anchor_continuity + locality_fragmentation + sparse_user_resilience + next_year`)
+    - `cell_151` (`commuter_routine_breadth + venue_density_low + weather_commute_delivery + tomorrow`)
+    - `cell_157` (`commuter_routine_breadth + venue_density_low + commuter_corridor_stress + tomorrow`)
+  - newly accepted on the override-aware breadth bridge:
+    - `cell_175` (`civic_anchor_continuity + source_dropout_low + sparse_user_resilience + tomorrow`)
+      - `community: 1 / 1 / +0.0031`
+      - `locality: 4 / 1 / +0.0186`
+    - `cell_166` (`civic_anchor_continuity + baseline_truth_year + sparse_user_resilience + tomorrow`)
+    - `cell_179` (`civic_anchor_continuity + locality_fragmentation + faith_civic_anchor_continuity + next_month`)
+    - `cell_182` (`civic_anchor_continuity + locality_fragmentation + trust_safety_admin_load + next_month`)
+      - `community: 1 / 0 / +0.1344`
+    - `cell_154` (`commuter_routine_breadth + venue_density_low + everyday_business_necessity + tomorrow`)
+      - `place: 1 / 0 / +0.0282`
+      - `locality: 1 / 0 / +0.0306`
+  - place robustness is not yet sufficient for beta-wide confidence because
+    locality-specific venue depth is still too thin outside a few core slices
+- Accepted fix:
+  - locality-derived evidence uses `max(provenance.sourceRecordCount, sourceRefs.length)`
+  - synthetic `list` and `business` records inherit locality source/link structure
+
+### **Reality-Model Autonomous Control Plane**
+**Status:** 🟡 **Active - M31-P10-5 complete; multi-environment executor parity remains as the next lane**  
+**Last Updated:** March 31, 2026  
+**Architecture authority:** `work/docs/plans/architecture/REALITY_MODEL_AUTONOMOUS_CONTROL_PLANE_AND_SUPERVISOR_DAEMON_2026-03-30.md`
+**Execution anchor:** `M31-P10-5`
+
+- Landed baseline:
+  - shared control-plane contracts for jobs, evidence packages, promotion decisions, and actor capability bounds
+  - runtime control-plane facade and backend-authoritative authority-store seam
+  - backend authority migration for jobs, evidence packages, promotion decisions, and policy profiles
+  - supervisor daemon plus governed runtime bootstrap startup
+  - execution-lane hardening: retries, heartbeat, recovery, and cooperative cancelation
+  - policy-backed actor capability enforcement with versioned autonomy-scope lineage
+  - environment-aware replay simulation admin snapshot contract
+  - admin training, command-center, and oversight surfaces now consume the control-plane facade
+  - admin policy lineage, bounded autonomy controls, and waiting-human inbox surfaces
+  - runtime now fail-closes approve/reject/rollback actions on incomplete simulation evidence
+  - admin Training & Promotion now disables approve/reject/rollback actions off the same evidence gate
+  - the supervisor now persists bounded learning state from autonomous outcomes and uses it to increase backoff after repeated failures while shortening cooldown after repeated successes
+  - end-to-end runtime autonomy test coverage for policy pause/resume, supervisor execution, waiting-human materialization, approval lineage, rollback lineage, remote-authority degradation, and restart rehydration
+- Milestone closeout:
+  - `M31-P10-5` is complete for backend-authoritative state, lineage, policy-governed supervisor autonomy, admin oversight surfaces, and runtime integration coverage
+- Current boundary:
+  - admin is the command center and human-oversight surface
+  - runtime/backend now owns authoritative jobs, evidence, promotion lineage, policy profile, and supervisor execution decisions
+  - the underlying replay/training executors are still BHAM-first beneath the generic control-plane contract
+- Locked next order:
+  - complete multi-environment execution parity beneath the now-generic contract layer
+  - `M31-P7-1` is the queued runtime follow-on for endpoint/fail-closed executor parity
+  - `M31-P3-1` is the queued paired reality-model follow-on for deterministic interface + promotion/rollback hardening beneath that same contract
+  - keep admin/operator docs aligned with every autonomy-scope and supervisor-policy change
+- Non-negotiable rule:
+  - the supervisor daemon is the autonomous operator behind the admin assistant, but it is not the same thing as the assistant UI
+  - community semantics now distinguish real community entities from weak club shells
+  - community support signals now downweight weak club shells while preserving host-backed clubs
+  - business synthetic rows now use a business-specific `higher_agent_rate`
+  - business synthetic rows now prune constant or misleading features that trained as penalties
+  - business synthetic labels now apply a dense-corridor fragility adjustment only for `network_partition + source_dropout_high`
+  - place rows now apply a dense identity fragility adjustment for `memory_and_truth_drift + locality_fragmentation`
+  - business synthetic labels now apply a matching dense truth fragility adjustment for `memory_and_truth_drift + locality_fragmentation`
+  - place rows now apply a source-truth fragility adjustment for `memory_and_truth_drift + source_dropout_high`
+  - business synthetic labels now apply the same source-truth fragility pattern for `memory_and_truth_drift + source_dropout_high`
+  - place rows now apply an identity-truth fragility adjustment for `memory_and_truth_drift + alias_noise_low`
+  - business synthetic labels now apply a matching alias-truth fragility adjustment for `memory_and_truth_drift + alias_noise_low`
+  - place rows now apply a campus-pressure dampener for `campus_football_operations + event_density_low`
+  - business synthetic labels now apply a matching campus-pressure dampener for `campus_football_operations + event_density_low`
+  - locality rows now use a lower positive-outcome threshold plus graph-intensity feature pruning for `campus_football_operations + event_density_low`
+  - business and locality rows now prune district-saturation penalty features for `sports_concert_district_overload + event_density_low`
+  - business and locality rows now prune trust/load saturation features for `trust_safety_admin_load + event_density_low`
+  - place rows now use a lower positive-outcome threshold plus trust/load feature pruning for `trust_safety_admin_load + event_density_low`
+  - for `trust_safety_admin_load + alias_noise_low + tomorrow`, place rows use a `0.46` positive threshold, list rows use a `0.44` threshold, business synthetic rows drop `locality_alias_integrity_score`, and low-support alias-noise rows are excluded from training (`place` with `evidence_coverage < 0.5`; `list`/`business` with `evidence_coverage < 0.5` and `locality_graph_support_score < 0.5`)
+  - for `migration_pressure + locality_fragmentation + next_quarter`, low-support continuity rows are excluded from training (`place` with `evidence_coverage < 0.5` and `memory_ref_count < 0.5`; `business` with `evidence_coverage < 0.55` and `locality_graph_support_score < 0.8`)
+  - for `sports_concert_district_overload + event_density_high + next_month`, community rows suppress club-shell noise more aggressively, business rows prune overload-saturation features, receive an overload-month corridor resilience lift, and use a `0.60` threshold
+  - in `ReplayTrainedRealityModelDomainAgent`, if a replay profile has only non-positive learned feature weights and its raw score collapses below `0.12`, a bounded prior floor is applied from locality prior, candidate affinity, evidence coverage, and signal coverage; this is the first accepted trainer-side fix and it cleared `cell_013`
+  - `cell_051` required no additional code change; it is green on the accepted bridge plus the trainer-side prior floor
+  - community rows now apply stronger club-shell penalties for `sports_concert_district_overload + event_density_low + next_month`
+  - list rows now use a lower positive-outcome threshold plus overload-month feature pruning for `sports_concert_district_overload + event_density_low + next_month`
+  - business rows now prune fragmentation-saturation features for `locality_fragmentation + sparse_user_resilience + next_decade`
+  - list synthetic rows now use a list-specific `higher_agent_rate`
+  - list synthetic rows now prune the same constant or misleading synthetic features
+  - locality rows now use graph-support `higher_agent_rate` and prune the constant fields that were collapsing locality scores
+  - place and event rows now normalize raw count features so source-dropout and network-partition cells stop collapsing to zero
+  - for `network_partition + source_dropout_high + next_quarter`, locality rows now prune partition-saturation features and use a resilience lift, while community-domain training excludes `club` rows and treats primary communities as resilient anchors
+  - for `sports_concert_district_overload + event_density_high + next_week`, community rows now suppress club noise more aggressively, business rows prune overload-saturation features, use a corridor-resilience uplift, and apply a higher business threshold to avoid training every district as positive
+  - `cell_075` required no additional code change; it is green on the accepted bridge plus the trainer-side prior floor
+  - `cell_072` required no additional code change; it is green on the accepted bridge plus the trainer-side prior floor
+  - for `locality_fragmentation + network_partition + next_quarter`, community rows preserve primary communities through a bounded continuity floor and more aggressive weak-club suppression, and locality rows use a lower positive threshold without the over-aggressive resilience lift that regressed holdouts
+  - `cell_086` required no additional code change; it is green on the accepted bridge plus the trainer-side prior floor
+  - for `source_dropout_high + network_partition + next_year`, community training excludes `club` rows and preserves primary communities through a bounded long-horizon continuity floor, while locality rows use a lower positive threshold
+  - the first breadth pass is documented in `2026-03-22_bham_simulation_coverage_matrix_and_gap_backlog.md`
+  - the campaign now includes commuter, civic-anchor, and under-covered-neighborhood waves
+  - branch metadata now carries `waveId` through campaign execution and cell materialization so wave-scoped bridge logic can activate
+  - commuter localities now preserve a higher venue floor under `venue_density_low`
+  - commuter `place` rows now prune generic abundance features
+  - commuter `place` and `locality` thresholds are rebalanced so commuter-place training is not degenerate
+  - civic-anchor sparse-user community rows now use a bounded continuity floor
+  - civic-anchor locality rows now use wave-scoped continuity support and lower thresholds
+  - under-covered-neighborhood migration rows no longer filter out all business synthetics before training
+  - under-covered-neighborhood locality rows now pass on `cell_196`
+  - civic-anchor sparse-user community rows now use a stronger bounded continuity floor
+  - civic-anchor locality rows now remove more density-style features and use a stronger continuity lift
+  - under-covered-neighborhood migration business rows now use a stronger neighborhood continuity lift and lower threshold
+- Rejected and reverted:
+  - sparse-user actor-count feature injection
+  - locality-aggregate semantic feature patch
+  - business continuity floor that forced all business labels positive
+  - globally centered trainer feature weights
+  - a `sports_concert_district_overload + event_density_low` label patch that regressed `cell_046`
+- Next target:
+  - freeze `cell_124`, `cell_115`, `cell_127`, `cell_118`, `cell_130`, `cell_121`, `cell_112`, `cell_106`, `cell_049`, `cell_050`, `cell_046`, `cell_052`, `cell_125`, `cell_116`, `cell_047`, `cell_053`, `cell_126`, `cell_082`, `cell_055`, `cell_117`, `cell_107`, `cell_022`, `cell_074`, `cell_056`, `cell_013`, `cell_051`, `cell_075`, `cell_072`, `cell_070`, `cell_086`, and `cell_083` on the accepted bridge
+  - keep the original 31-cell queue frozen on the accepted bridge
+  - keep the first breadth-pass cells green:
+    - `cell_181`
+    - `cell_178`
+    - `cell_184`
+    - `cell_185`
+    - `cell_196`
+  - keep using the override-filtered policy rather than the stale scaffold-only queue
+  - start the next tranche with `cell_176`
+  - treat locality-specific place coverage as an explicit simulation blocker, not just a downstream trainer symptom
 ### **BHAM Beta Integration Branch + Smoke Gate**
 **Status:** ✅ **Active branch and pre-phone gate established**  
 **Last Updated:** March 15, 2026  

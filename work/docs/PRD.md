@@ -79,7 +79,7 @@ A change is PRD-compliant only if:
 |---|---|---|
 | PRD-010 | Planning authority | `docs/MASTER_PLAN.md` |
 | PRD-011 | Execution status authority | `docs/EXECUTION_BOARD.csv`, `docs/STATUS_WEEKLY.md`, `docs/agents/status/status_tracker.md` |
-| PRD-012 | File-level architecture mapping | `docs/plans/architecture/generated/codebase_master_plan_mapping_2026-02-15.csv` |
+| PRD-012 | File-level architecture mapping | `docs/plans/architecture/CODEBASE_MASTER_PLAN_MAPPING_2026-02-15.md` |
 | PRD-013 | Spot registry | `docs/plans/architecture/ARCHITECTURE_SPOTS_REGISTRY.csv` |
 | PRD-014 | Placement policy | `docs/plans/architecture/FILE_PLACEMENT_POLICY.md` |
 | PRD-020 | Safety/compliance constraints | `docs/MASTER_PLAN.md` (Phases 2, 6.2, 7.7A) |

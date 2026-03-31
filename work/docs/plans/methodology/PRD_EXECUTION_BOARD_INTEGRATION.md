@@ -13,6 +13,8 @@ Cross-doc synchronization authority:
 - `prd_ids`: one or more `PRD-###`
 - `master_plan_refs`: one or more `X.Y.Z`
 - `architecture_spot`: from `docs/plans/architecture/ARCHITECTURE_SPOTS_REGISTRY.csv`
+  - active phases and new milestones should prefer current 3-prong spots such as `apps/avrai_app`, `runtime/avrai_runtime_os`, `engine/reality_engine`, `shared/avrai_core`, or `docs/plans/architecture`
+  - completed historical milestones may intentionally retain legacy aliases such as `lib/core/...` when those aliases are preserved in the registry for backward-compatible execution-board history
 - `change_type`: `baseline` or `reopen`
 - `reopens_milestone`: `none` for baseline; required `M#-P#-#` for reopen
 - `urk_runtime_type`: `user_runtime|event_ops_runtime|business_ops_runtime|expert_services_runtime|shared`

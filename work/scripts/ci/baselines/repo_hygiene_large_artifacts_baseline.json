@@ -1,0 +1,30 @@
+{
+  "generatedAtUtc": "2026-03-31T19:33:02.173327Z",
+  "maxTrackedFileBytes": 26214400,
+  "grandfatheredTrackedLargeArtifacts": [
+    "data/training/combined/mdl-community-energy-v1/combined_snapshot_mdl-community-energy-v1_2023/avrai_native_dataset.jsonl",
+    "data/training/combined/mdl-event-energy-v1/combined_snapshot_mdl-event-energy-v1_2023/avrai_native_dataset.jsonl",
+    "data/training/combined/mdl-spot-energy-v1/combined_snapshot_mdl-spot-energy-v1_2023/avrai_native_dataset.jsonl",
+    "data/training/mdl-community-energy-v1/snapshot_mdl-community-energy-v1_2023_wave1/avrai_native_dataset.jsonl",
+    "data/training/mdl-event-energy-v1/snapshot_mdl-event-energy-v1_2023_wave1/avrai_native_dataset.jsonl",
+    "data/training/mdl-spot-energy-v1/snapshot_mdl-spot-energy-v1_2023_wave1/avrai_native_dataset.jsonl",
+    "runtime/avrai_runtime_os/data/training/combined/mdl-community-energy-v1/combined_snapshot_mdl-community-energy-v1_2023/avrai_native_dataset.jsonl",
+    "runtime/avrai_runtime_os/data/training/combined/mdl-event-energy-v1/combined_snapshot_mdl-event-energy-v1_2023/avrai_native_dataset.jsonl",
+    "runtime/avrai_runtime_os/data/training/combined/mdl-spot-energy-v1/combined_snapshot_mdl-spot-energy-v1_2023/avrai_native_dataset.jsonl",
+    "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/45_BHAM_SINGLE_YEAR_REPLAY_PASS_2023.json",
+    "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/50_BHAM_REPLAY_POPULATION_PROFILE_2023.json",
+    "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/56_BHAM_REPLAY_DAILY_BEHAVIOR_2023.json",
+    "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/59_BHAM_REPLAY_ACTOR_KERNEL_COVERAGE_2023.json",
+    "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/60_BHAM_REPLAY_CONNECTIVITY_PROFILES_2023.json",
+    "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/62_BHAM_REPLAY_EXCHANGE_EVENT_LOG_2023.json",
+    "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/67_BHAM_REPLAY_PHYSICAL_MOVEMENT_2023.json",
+    "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/68_BHAM_REPLAY_TRAINING_SIGNALS_2023.json",
+    "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/76_BHAM_REPLAY_KERNEL_ERA_INFLUENCE_2023.json",
+    "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/78_BHAM_REPLAY_MEMORY_DISPERSION_2023.json",
+    "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/81_BHAM_REPLAY_REALITY_MODEL_DATASETS_2023.json",
+    "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/82_BHAM_REPLAY_REALITY_MODEL_SHADOW_2023.json",
+    "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/84_BHAM_REPLAY_KERNEL_TRAINING_TARGETS_2023.json",
+    "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/85_BHAM_REPLAY_LIVE_TRAINING_2023.json",
+    "work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham simulation/87_BHAM_OFFLINE_CANONICAL_SIMULATION_CORPUS_2023.json"
+  ]
+}

@@ -1,6 +1,6 @@
 # Architecture Documentation Index
 
-**Last Updated:** February 28, 2026  
+**Last Updated:** March 30, 2026  
 **Status:** Active Reference (Current Architecture)  
 **Purpose:** Canonical navigation for architecture documents aligned to the current codebase and `docs/MASTER_PLAN.md`.
 
@@ -20,8 +20,8 @@
 ## Codebase-to-Plan Mapping (Current)
 
 - **File-level mapping summary:** [`CODEBASE_MASTER_PLAN_MAPPING_2026-02-15.md`](./CODEBASE_MASTER_PLAN_MAPPING_2026-02-15.md)
-- **Generated full mapping CSV (2,844 files):** [`generated/codebase_master_plan_mapping_2026-02-15.csv`](./generated/codebase_master_plan_mapping_2026-02-15.csv)
-- **Strict per-file dependency graph:** `dependency_graph` column in generated mapping CSV (authoritative move/refactor order + dependency edges)
+- **Optional full mapping CSV export:** generate locally with `python3 scripts/generate_master_plan_file_mapping.py --emit-csv /tmp/codebase_master_plan_mapping_2026-02-15.csv`
+- **Strict per-file dependency graph:** generated on demand for every mapped file by the mapping script and placement validator
 - **Architecture spots registry (build-enforced):** [`ARCHITECTURE_SPOTS_REGISTRY.csv`](./ARCHITECTURE_SPOTS_REGISTRY.csv)
 - **File placement policy (build-enforced):** [`FILE_PLACEMENT_POLICY.md`](./FILE_PLACEMENT_POLICY.md)
 - **Generator script:** [`scripts/generate_master_plan_file_mapping.py`](../../../scripts/generate_master_plan_file_mapping.py)
@@ -45,6 +45,11 @@ Use this set when deciding file disposition (`keep_update`, `refactor_planned`, 
 - **Experiment registry generator:** [`scripts/generate_experiment_registry.py`](../../../scripts/generate_experiment_registry.py)
 - **Experiment registry validator:** [`scripts/validate_experiment_registry.py`](../../../scripts/validate_experiment_registry.py)
 - **ML training governance authority:** [`docs/plans/methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md`](../methodology/ML_TRAINING_AUTOMATION_GOVERNANCE.md)
+- **Simulation/training doctrine authority:** [`SIMULATION_TRAINING_GOVERNANCE_DOCTRINE_2026-03-20.md`](./SIMULATION_TRAINING_GOVERNANCE_DOCTRINE_2026-03-20.md)
+- **Reality-model training governance authority:** [`AVRAI_REALITY_MODEL_TRAINING_GOVERNANCE_2026-03-23.md`](./AVRAI_REALITY_MODEL_TRAINING_GOVERNANCE_2026-03-23.md)
+- **Reality-model autonomous control-plane + supervisor-daemon authority:** [`REALITY_MODEL_AUTONOMOUS_CONTROL_PLANE_AND_SUPERVISOR_DAEMON_2026-03-30.md`](./REALITY_MODEL_AUTONOMOUS_CONTROL_PLANE_AND_SUPERVISOR_DAEMON_2026-03-30.md)
+- **Generic city replay framework architecture authority:** [`GENERIC_CITY_REPLAY_FRAMEWORK_ARCHITECTURE_2026-03-23.md`](./GENERIC_CITY_REPLAY_FRAMEWORK_ARCHITECTURE_2026-03-23.md)
+- **Generic city replay framework + BHAM bootstrap alignment plan:** [`BHAM_WORLD_REMEDIATION_AND_SIMULATION_ALIGNMENT_PLAN_2026-03-23.md`](./BHAM_WORLD_REMEDIATION_AND_SIMULATION_ALIGNMENT_PLAN_2026-03-23.md)
 - **Execution/PR traceability integration:** [`docs/plans/methodology/PRD_EXECUTION_BOARD_INTEGRATION.md`](../methodology/PRD_EXECUTION_BOARD_INTEGRATION.md)
 - **Build enforcement setup:** [`docs/GITHUB_ENFORCEMENT_SETUP.md`](../../GITHUB_ENFORCEMENT_SETUP.md)
 - **Red-team hijack/security matrix (governance authority):** [`docs/security/RED_TEAM_TEST_MATRIX.md`](../../security/RED_TEAM_TEST_MATRIX.md)
@@ -85,6 +90,9 @@ Use these when changing world-model training/planning behavior or model lifecycl
 - **AVRAI cognitive OS doctrine (governing principles):** [`AVRAI_COGNITIVE_OS_DOCTRINE_2026-03-06.md`](./AVRAI_COGNITIVE_OS_DOCTRINE_2026-03-06.md)
 - **AVRAI recursive governance architecture spec:** [`AVRAI_RECURSIVE_GOVERNANCE_ARCHITECTURE_SPEC_2026-03-06.md`](./AVRAI_RECURSIVE_GOVERNANCE_ARCHITECTURE_SPEC_2026-03-06.md)
 - **AVRAI bidirectional reality/governance flow note (inward + outward flow):** [`AVRAI_BIDIRECTIONAL_REALITY_GOVERNANCE_FLOW_NOTE_2026-03-07.md`](./AVRAI_BIDIRECTIONAL_REALITY_GOVERNANCE_FLOW_NOTE_2026-03-07.md)
+- **Phase 12 typed memory / Air Gap compression / governed agent evolution implementation memo:** [`AVRAI_OS_TYPED_MEMORY_GOVERNED_AGENT_EVOLUTION_AND_AIR_GAP_COMPRESSION_2026-03-29.md`](./AVRAI_OS_TYPED_MEMORY_GOVERNED_AGENT_EVOLUTION_AND_AIR_GAP_COMPRESSION_2026-03-29.md)
+- **Package-owned execution backlog for the Phase 12 extension lanes:** [`AVRAI_OS_TYPED_MEMORY_AGENT_EVOLUTION_COMPRESSION_PACKAGE_BACKLOG_2026-03-29.md`](./AVRAI_OS_TYPED_MEMORY_AGENT_EVOLUTION_COMPRESSION_PACKAGE_BACKLOG_2026-03-29.md)
+- **Readiness checklist for starting this work after Symphony settles:** [`AVRAI_OS_TYPED_MEMORY_AGENT_EVOLUTION_COMPRESSION_READINESS_CHECKLIST_2026-03-29.md`](./AVRAI_OS_TYPED_MEMORY_AGENT_EVOLUTION_COMPRESSION_READINESS_CHECKLIST_2026-03-29.md)
 - **AVRAI `when` kernel architecture + migration plan:** [`AVRAI_WHEN_KERNEL_ARCHITECTURE_AND_MIGRATION_PLAN_2026-03-06.md`](./AVRAI_WHEN_KERNEL_ARCHITECTURE_AND_MIGRATION_PLAN_2026-03-06.md)
 - **Apps prong concurrent execution plan:** [`PRONG_APPS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md`](./PRONG_APPS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md)
 - **Runtime OS prong concurrent execution plan:** [`PRONG_RUNTIME_OS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md`](./PRONG_RUNTIME_OS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md)

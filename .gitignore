@@ -31,6 +31,12 @@ venv*/
 # Native compiled binaries & build artifacts
 native/signal_ffi/android/**/*.so
 native/signal_ffi/wrapper_rust/target/
+runtime/avrai_network/native/signal_ffi/android/**/*.so
+runtime/avrai_network/native/**/target/
+runtime/avrai_network/native/signal_ffi/tmp_ios_build/
+runtime/avrai_network/native/signal_ffi/wrapper/build/
+runtime/avrai_network/native/signal_ffi/wrapper_platform/build/
+work/docs/plans/architecture/generated/codebase_master_plan_mapping_*.csv
 native/knot_math/ios/*.a
 *.so
 *.a
@@ -118,6 +124,10 @@ examples/supabase/supabase_config.dart
 .env.development
 .env.production
 .env.staging
+
+# Symphony local sandbox
+.symphony-workspaces/
+.symphony-logs/
 
 # Secrets
 secrets.dart
