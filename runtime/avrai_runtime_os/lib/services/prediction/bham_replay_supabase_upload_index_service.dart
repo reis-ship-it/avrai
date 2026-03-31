@@ -15,8 +15,7 @@ class BhamReplaySupabaseUploadIndexService {
     ReplaySupabaseStorageGateway Function({
       required SupabaseClient client,
       required String schema,
-    })?
-    gatewayFactory,
+    })? gatewayFactory,
   }) : _gatewayFactory = gatewayFactory;
 
   final ReplaySupabaseStorageGateway Function({
@@ -29,6 +28,10 @@ class BhamReplaySupabaseUploadIndexService {
     required ReplayStoragePartitionManifest partitionManifest,
     bool dryRun = true,
   }) {
+    _validateBuildUploadManifestContract(
+      exportManifest: exportManifest,
+      partitionManifest: partitionManifest,
+    );
     final boundaryReport = const BhamReplayStorageBoundaryService().buildReport(
       environmentId: exportManifest.environmentId,
       replayYear: exportManifest.replayYear,
@@ -41,7 +44,9 @@ class BhamReplaySupabaseUploadIndexService {
 
     final partitionGroups = <String, List<ReplayStoragePartitionEntry>>{};
     for (final entry in partitionManifest.entries) {
-      partitionGroups.putIfAbsent(entry.artifactRef, () => <ReplayStoragePartitionEntry>[]).add(entry);
+      partitionGroups
+          .putIfAbsent(entry.artifactRef, () => <ReplayStoragePartitionEntry>[])
+          .add(entry);
     }
 
     final uploadEntries = <ReplayStorageUploadEntry>[];
@@ -54,8 +59,7 @@ class BhamReplaySupabaseUploadIndexService {
             ReplayStorageUploadEntry(
               artifactRef: exportEntry.artifactRef,
               bucket: exportEntry.bucket,
-              objectPath:
-                  '$baseDir/partitions/${partitionEntry.objectPath}',
+              objectPath: '$baseDir/partitions/${partitionEntry.objectPath}',
               localPath:
                   '${partitionManifest.partitionRoot}/${partitionEntry.objectPath}',
               representation: 'partitioned_ndjson',
@@ -90,7 +94,8 @@ class BhamReplaySupabaseUploadIndexService {
         (value) => value + 1,
         ifAbsent: () => 1,
       );
-      bucketCounts.update(entry.bucket, (value) => value + 1, ifAbsent: () => 1);
+      bucketCounts.update(entry.bucket, (value) => value + 1,
+          ifAbsent: () => 1);
     }
 
     return ReplayStorageUploadManifest(
@@ -129,6 +134,11 @@ class BhamReplaySupabaseUploadIndexService {
     String? replayServiceRoleKey,
     bool? dryRun,
   }) async {
+    _validateUploadAndIndexContract(
+      uploadManifest: uploadManifest,
+      exportManifest: exportManifest,
+      partitionManifest: partitionManifest,
+    );
     final plannedIndexedTables = _buildPlannedIndexedTableCounts(
       runId: _buildRunId(
         environmentId: uploadManifest.environmentId,
@@ -136,8 +146,7 @@ class BhamReplaySupabaseUploadIndexService {
       ),
       exportManifest: exportManifest,
     );
-    final effectiveDryRun =
-        dryRun ??
+    final effectiveDryRun = dryRun ??
         replayUrl == null ||
             replayUrl.isEmpty ||
             replayServiceRoleKey == null ||
@@ -182,10 +191,11 @@ class BhamReplaySupabaseUploadIndexService {
     final client = SupabaseClient(
       replayUrlValue,
       replayServiceRoleKeyValue,
-      postgrestOptions: PostgrestClientOptions(schema: ReplayStorageConfig.schema),
+      postgrestOptions:
+          PostgrestClientOptions(schema: ReplayStorageConfig.schema),
     );
-    final gateway =
-        _gatewayFactory?.call(client: client, schema: ReplayStorageConfig.schema) ??
+    final gateway = _gatewayFactory?.call(
+            client: client, schema: ReplayStorageConfig.schema) ??
         ReplaySupabaseStorageGatewayImpl(
           client: client,
           schema: ReplayStorageConfig.schema,
@@ -266,9 +276,8 @@ class BhamReplaySupabaseUploadIndexService {
           'replay_year': uploadManifest.replayYear,
           'lineage_role': 'single_year_base',
           'source_artifact_ref': '45_BHAM_SINGLE_YEAR_REPLAY_PASS_2023.json',
-          'upstream_artifact_refs': exportManifest.entries
-              .map((entry) => entry.artifactRef)
-              .toList(),
+          'upstream_artifact_refs':
+              exportManifest.entries.map((entry) => entry.artifactRef).toList(),
           'metadata': <String, dynamic>{
             'status': uploadManifest.status,
             'partitionedArtifactCount':
@@ -526,6 +535,273 @@ class BhamReplaySupabaseUploadIndexService {
     return '${environmentId}_$replayYear';
   }
 
+  void _validateBuildUploadManifestContract({
+    required ReplayStorageExportManifest exportManifest,
+    required ReplayStoragePartitionManifest partitionManifest,
+  }) {
+    final violations = <String>[
+      ..._collectSharedManifestViolations(
+        exportEnvironmentId: exportManifest.environmentId,
+        exportReplayYear: exportManifest.replayYear,
+        partitionEnvironmentId: partitionManifest.environmentId,
+        partitionReplayYear: partitionManifest.replayYear,
+      ),
+      ..._collectExportEntryViolations(exportManifest.entries),
+    ];
+
+    final exportArtifactRefs = exportManifest.entries
+        .map((entry) => entry.artifactRef.trim())
+        .where((entry) => entry.isNotEmpty)
+        .toSet();
+    final orphanPartitionArtifactRefs = partitionManifest.entries
+        .map((entry) => entry.artifactRef.trim())
+        .where(
+          (artifactRef) =>
+              artifactRef.isNotEmpty &&
+              !exportArtifactRefs.contains(artifactRef),
+        )
+        .toSet()
+        .toList()
+      ..sort();
+    if (orphanPartitionArtifactRefs.isNotEmpty) {
+      violations.add(
+        'Replay partition manifest references unknown export artifacts: '
+        '${orphanPartitionArtifactRefs.join(', ')}.',
+      );
+    }
+
+    _throwIfContractViolations(
+      stage: 'Replay upload manifest contract failed',
+      violations: violations,
+    );
+  }
+
+  void _validateUploadAndIndexContract({
+    required ReplayStorageUploadManifest uploadManifest,
+    required ReplayStorageExportManifest exportManifest,
+    required ReplayStoragePartitionManifest partitionManifest,
+  }) {
+    final violations = <String>[
+      ..._collectSharedManifestViolations(
+        exportEnvironmentId: exportManifest.environmentId,
+        exportReplayYear: exportManifest.replayYear,
+        partitionEnvironmentId: partitionManifest.environmentId,
+        partitionReplayYear: partitionManifest.replayYear,
+      ),
+      ..._collectExportEntryViolations(exportManifest.entries),
+    ];
+
+    final uploadEnvironmentId = uploadManifest.environmentId.trim();
+    if (uploadEnvironmentId.isEmpty) {
+      violations.add('Replay upload manifest environment id may not be empty.');
+    }
+    final exportEnvironmentId = exportManifest.environmentId.trim();
+    final partitionEnvironmentId = partitionManifest.environmentId.trim();
+    if (uploadEnvironmentId.isNotEmpty &&
+        uploadEnvironmentId != exportEnvironmentId) {
+      violations.add(
+        'Replay upload manifest environment id must match export manifest '
+        'environment id.',
+      );
+    }
+    if (uploadEnvironmentId.isNotEmpty &&
+        uploadEnvironmentId != partitionEnvironmentId) {
+      violations.add(
+        'Replay upload manifest environment id must match partition manifest '
+        'environment id.',
+      );
+    }
+    if (uploadManifest.replayYear <= 0) {
+      violations.add('Replay upload manifest replay year must be positive.');
+    }
+    if (uploadManifest.replayYear > 0 &&
+        uploadManifest.replayYear != exportManifest.replayYear) {
+      violations.add(
+        'Replay upload manifest replay year must match export manifest '
+        'replay year.',
+      );
+    }
+    if (uploadManifest.replayYear > 0 &&
+        uploadManifest.replayYear != partitionManifest.replayYear) {
+      violations.add(
+        'Replay upload manifest replay year must match partition manifest '
+        'replay year.',
+      );
+    }
+    if (uploadManifest.replaySchema.trim().isEmpty) {
+      violations.add('Replay upload manifest replay schema may not be empty.');
+    }
+    violations.addAll(_collectUploadEntryViolations(uploadManifest.entries));
+
+    _throwIfContractViolations(
+      stage: 'Replay upload/index contract failed',
+      violations: violations,
+    );
+  }
+
+  List<String> _collectSharedManifestViolations({
+    required String exportEnvironmentId,
+    required int exportReplayYear,
+    required String partitionEnvironmentId,
+    required int partitionReplayYear,
+  }) {
+    final violations = <String>[];
+    final normalizedExportEnvironmentId = exportEnvironmentId.trim();
+    final normalizedPartitionEnvironmentId = partitionEnvironmentId.trim();
+    if (normalizedExportEnvironmentId.isEmpty) {
+      violations.add('Replay export manifest environment id may not be empty.');
+    }
+    if (normalizedPartitionEnvironmentId.isEmpty) {
+      violations.add(
+        'Replay partition manifest environment id may not be empty.',
+      );
+    }
+    if (normalizedExportEnvironmentId.isNotEmpty &&
+        normalizedPartitionEnvironmentId.isNotEmpty &&
+        normalizedExportEnvironmentId != normalizedPartitionEnvironmentId) {
+      violations.add(
+        'Replay export and partition manifests must target the same '
+        'environment id.',
+      );
+    }
+    if (exportReplayYear <= 0) {
+      violations.add('Replay export manifest replay year must be positive.');
+    }
+    if (partitionReplayYear <= 0) {
+      violations.add('Replay partition manifest replay year must be positive.');
+    }
+    if (exportReplayYear > 0 &&
+        partitionReplayYear > 0 &&
+        exportReplayYear != partitionReplayYear) {
+      violations.add(
+        'Replay export and partition manifests must target the same replay '
+        'year.',
+      );
+    }
+    return violations;
+  }
+
+  List<String> _collectExportEntryViolations(
+    List<ReplayStorageExportEntry> entries,
+  ) {
+    final violations = <String>[];
+    final duplicateArtifactRefs = _findDuplicateKeys(
+      entries.map((entry) => entry.artifactRef),
+    );
+    if (duplicateArtifactRefs.isNotEmpty) {
+      violations.add(
+        'Replay export manifest contains duplicate artifact refs: '
+        '${duplicateArtifactRefs.join(', ')}.',
+      );
+    }
+
+    for (final entry in entries) {
+      final artifactRef = entry.artifactRef.trim();
+      final label = artifactRef.isEmpty ? '<empty-artifact-ref>' : artifactRef;
+      if (artifactRef.isEmpty) {
+        violations
+            .add('Replay export entries may not use empty artifact refs.');
+      }
+      if (entry.bucket.trim().isEmpty) {
+        violations.add('Replay export artifact $label must declare a bucket.');
+      } else if (!entry.bucket.startsWith('replay-')) {
+        violations.add(
+          'Replay export artifact $label must target a replay-prefixed '
+          'bucket.',
+        );
+      }
+      if (entry.objectPath.trim().isEmpty) {
+        violations.add(
+          'Replay export artifact $label must declare an object path.',
+        );
+      }
+      if (entry.sourcePath.trim().isEmpty) {
+        violations.add(
+          'Replay export artifact $label must declare a source path.',
+        );
+      }
+      if (entry.byteSize < 0) {
+        violations.add(
+          'Replay export artifact $label may not use a negative byte size.',
+        );
+      }
+    }
+    return violations;
+  }
+
+  List<String> _collectUploadEntryViolations(
+    List<ReplayStorageUploadEntry> entries,
+  ) {
+    final violations = <String>[];
+    final duplicateObjectTargets = _findDuplicateKeys(
+      entries
+          .map((entry) => '${entry.bucket.trim()}:${entry.objectPath.trim()}'),
+    );
+    if (duplicateObjectTargets.isNotEmpty) {
+      violations.add(
+        'Replay upload manifest contains duplicate bucket/object targets: '
+        '${duplicateObjectTargets.join(', ')}.',
+      );
+    }
+
+    for (final entry in entries) {
+      final artifactRef = entry.artifactRef.trim();
+      final label = artifactRef.isEmpty ? '<empty-artifact-ref>' : artifactRef;
+      if (artifactRef.isEmpty) {
+        violations
+            .add('Replay upload entries may not use empty artifact refs.');
+      }
+      if (entry.bucket.trim().isEmpty) {
+        violations.add('Replay upload artifact $label must declare a bucket.');
+      } else if (!entry.bucket.startsWith('replay-')) {
+        violations.add(
+          'Replay upload artifact $label must target a replay-prefixed bucket.',
+        );
+      }
+      if (entry.objectPath.trim().isEmpty) {
+        violations.add(
+          'Replay upload artifact $label must declare an object path.',
+        );
+      }
+      if (entry.localPath.trim().isEmpty) {
+        violations.add(
+          'Replay upload artifact $label must declare a local path.',
+        );
+      }
+      if (entry.byteSize < 0) {
+        violations.add(
+          'Replay upload artifact $label may not use a negative byte size.',
+        );
+      }
+    }
+    return violations;
+  }
+
+  List<String> _findDuplicateKeys(Iterable<String> values) {
+    final seen = <String>{};
+    final duplicates = <String>{};
+    for (final rawValue in values) {
+      final normalizedValue = rawValue.trim();
+      if (normalizedValue.isEmpty) {
+        continue;
+      }
+      if (!seen.add(normalizedValue)) {
+        duplicates.add(normalizedValue);
+      }
+    }
+    return duplicates.toList()..sort();
+  }
+
+  void _throwIfContractViolations({
+    required String stage,
+    required List<String> violations,
+  }) {
+    if (violations.isEmpty) {
+      return;
+    }
+    throw StateError('$stage: ${violations.join(' | ')}');
+  }
+
   Map<String, dynamic> _buildRunRow({
     required String runId,
     required ReplayStorageUploadManifest uploadManifest,
@@ -557,15 +833,17 @@ class BhamReplaySupabaseUploadIndexService {
   }) {
     final grouped = <String, List<ReplayStorageUploadEntry>>{};
     for (final entry in uploadManifest.entries) {
-      grouped.putIfAbsent(entry.artifactRef, () => <ReplayStorageUploadEntry>[]).add(entry);
+      grouped
+          .putIfAbsent(entry.artifactRef, () => <ReplayStorageUploadEntry>[])
+          .add(entry);
     }
 
     return grouped.entries.map((group) {
       final first = group.value.first;
       final partitionCount = group.value.length;
       final representation = group.value.any(
-            (entry) => entry.representation == 'partitioned_ndjson',
-          )
+        (entry) => entry.representation == 'partitioned_ndjson',
+      )
           ? 'partitioned_ndjson'
           : 'single_object';
       final primaryObjectPath = representation == 'single_object'
@@ -578,8 +856,10 @@ class BhamReplaySupabaseUploadIndexService {
         'bucket_id': first.bucket,
         'object_path': primaryObjectPath,
         'representation': representation,
-        'byte_size': group.value.fold<int>(0, (sum, entry) => sum + entry.byteSize),
-        'partition_count': representation == 'partitioned_ndjson' ? partitionCount : 0,
+        'byte_size':
+            group.value.fold<int>(0, (sum, entry) => sum + entry.byteSize),
+        'partition_count':
+            representation == 'partitioned_ndjson' ? partitionCount : 0,
         'metadata': <String, dynamic>{
           'sections': group.value
               .map((entry) => entry.section)
@@ -591,7 +871,8 @@ class BhamReplaySupabaseUploadIndexService {
       };
     }).toList()
       ..sort(
-        (a, b) => (a['artifact_ref'] as String).compareTo(b['artifact_ref'] as String),
+        (a, b) => (a['artifact_ref'] as String)
+            .compareTo(b['artifact_ref'] as String),
       );
   }
 
@@ -645,7 +926,8 @@ class BhamReplaySupabaseUploadIndexService {
     if (entry == null) {
       return const <Map<String, dynamic>>[];
     }
-    final file = File('${exportManifest.exportRoot}/${entry.bucket}/${entry.objectPath}');
+    final file = File(
+        '${exportManifest.exportRoot}/${entry.bucket}/${entry.objectPath}');
     if (!file.existsSync()) {
       return const <Map<String, dynamic>>[];
     }
@@ -838,7 +1120,8 @@ class BhamReplaySupabaseUploadIndexService {
     if (entry == null) {
       return null;
     }
-    final file = File('${exportManifest.exportRoot}/${entry.bucket}/${entry.objectPath}');
+    final file = File(
+        '${exportManifest.exportRoot}/${entry.bucket}/${entry.objectPath}');
     if (!file.existsSync()) {
       return null;
     }
@@ -872,7 +1155,8 @@ class BhamReplaySupabaseUploadIndexService {
             'work_student_status': actor.workStudentStatus,
             'has_personal_agent': actor.hasPersonalAgent,
             'preferred_entity_types': actor.preferredEntityTypes,
-            'kernel_bundle_json': actor.kernelBundle?.toJson() ?? const <String, dynamic>{},
+            'kernel_bundle_json':
+                actor.kernelBundle?.toJson() ?? const <String, dynamic>{},
             'metadata': actor.metadata,
           },
         )
@@ -997,12 +1281,14 @@ class BhamReplaySupabaseUploadIndexService {
   List<ReplayConnectivityProfile> _readConnectivityProfiles(Object artifact) {
     final rawEntries = artifact is List
         ? artifact
-        : (artifact is Map ? artifact['profiles'] as List? ?? const <dynamic>[] : const <dynamic>[]);
+        : (artifact is Map
+            ? artifact['profiles'] as List? ?? const <dynamic>[]
+            : const <dynamic>[]);
     return rawEntries
         .whereType<Map>()
         .map(
-          (entry) =>
-              ReplayConnectivityProfile.fromJson(Map<String, dynamic>.from(entry)),
+          (entry) => ReplayConnectivityProfile.fromJson(
+              Map<String, dynamic>.from(entry)),
         )
         .toList(growable: false);
   }
@@ -1144,7 +1430,8 @@ class BhamReplaySupabaseUploadIndexService {
     return (artifact['threads'] as List? ?? const <dynamic>[])
         .whereType<Map>()
         .map(
-          (entry) => ReplayExchangeThread.fromJson(Map<String, dynamic>.from(entry)),
+          (entry) =>
+              ReplayExchangeThread.fromJson(Map<String, dynamic>.from(entry)),
         )
         .map(
           (thread) => <String, dynamic>{
@@ -1206,7 +1493,8 @@ class BhamReplaySupabaseUploadIndexService {
     return (artifact['events'] as List? ?? const <dynamic>[])
         .whereType<Map>()
         .map(
-          (entry) => ReplayExchangeEvent.fromJson(Map<String, dynamic>.from(entry)),
+          (entry) =>
+              ReplayExchangeEvent.fromJson(Map<String, dynamic>.from(entry)),
         )
         .map(
           (event) => <String, dynamic>{
@@ -1453,8 +1741,7 @@ class BhamReplaySupabaseUploadIndexService {
         'attendance_variation_count': profile.attendanceVariationCount,
         'connectivity_variation_count': profile.connectivityVariationCount,
         'route_variation_count': profile.routeVariationCount,
-        'exchange_timing_variation_count':
-            profile.exchangeTimingVariationCount,
+        'exchange_timing_variation_count': profile.exchangeTimingVariationCount,
         'month_variation_counts': profile.monthVariationCounts,
         'notes': profile.notes,
         'metadata': profile.metadata,

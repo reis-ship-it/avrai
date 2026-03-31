@@ -45,6 +45,8 @@ class KernelBackedRealityModelPort implements RealityModelPort {
 
   static const RealityModelBoundaryValidator _validator =
       RealityModelBoundaryValidator();
+  static const RealityModelPortContractGuard _contractGuard =
+      RealityModelPortContractGuard();
 
   final ModelTruthPort _modelTruthPort;
   final RealityModelPort _fallback;
@@ -68,6 +70,11 @@ class KernelBackedRealityModelPort implements RealityModelPort {
 
     try {
       final contract = await getActiveContract();
+      _contractGuard.ensureRequestSupported(
+        portName: 'KernelBackedRealityModelPort',
+        contract: contract,
+        request: normalizedRequest,
+      );
       final fusion = await _buildFusionInput(normalizedRequest);
       final selectedProjections = _selectProjections(
         domain: normalizedRequest.domain,
@@ -148,6 +155,12 @@ class KernelBackedRealityModelPort implements RealityModelPort {
           'KernelBackedRealityModelPort produced an invalid evaluation: ${validation.issues}',
         );
       }
+      _contractGuard.ensureEvaluationMatchesRequest(
+        portName: 'KernelBackedRealityModelPort',
+        contract: contract,
+        request: normalizedRequest,
+        evaluation: evaluation,
+      );
       return evaluation;
     } catch (error, stackTrace) {
       developer.log(
@@ -215,6 +228,13 @@ class KernelBackedRealityModelPort implements RealityModelPort {
           'KernelBackedRealityModelPort produced an invalid trace: ${validation.issues}',
         );
       }
+      _contractGuard.ensureTraceMatchesEvaluation(
+        portName: 'KernelBackedRealityModelPort',
+        contract: contract,
+        request: normalizedRequest,
+        evaluation: evaluation,
+        trace: trace,
+      );
       return trace;
     } catch (error, stackTrace) {
       developer.log(
@@ -282,6 +302,14 @@ class KernelBackedRealityModelPort implements RealityModelPort {
           'KernelBackedRealityModelPort produced an invalid explanation: ${validation.issues}',
         );
       }
+      _contractGuard.ensureExplanationMatchesTrace(
+        portName: 'KernelBackedRealityModelPort',
+        contract: contract,
+        trace: trace,
+        evaluation: evaluation,
+        explanation: explanation,
+        rendererKind: rendererKind,
+      );
       return explanation;
     } catch (error, stackTrace) {
       developer.log(

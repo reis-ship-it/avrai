@@ -35,6 +35,8 @@ class DefaultRealityModelPort implements RealityModelPort {
 
   static const RealityModelBoundaryValidator _validator =
       RealityModelBoundaryValidator();
+  static const RealityModelPortContractGuard _contractGuard =
+      RealityModelPortContractGuard();
 
   @override
   Future<RealityModelContract> getActiveContract() async {
@@ -47,6 +49,11 @@ class DefaultRealityModelPort implements RealityModelPort {
   ) async {
     final contract = await getActiveContract();
     final normalizedRequest = request.normalized();
+    _contractGuard.ensureRequestSupported(
+      portName: 'DefaultRealityModelPort',
+      contract: contract,
+      request: normalizedRequest,
+    );
     final evidenceRefs = normalizedRequest.evidenceRefs
         .take(contract.maxEvidenceRefs)
         .toList(growable: false);
@@ -97,6 +104,12 @@ class DefaultRealityModelPort implements RealityModelPort {
         'DefaultRealityModelPort produced an invalid evaluation: ${validation.issues}',
       );
     }
+    _contractGuard.ensureEvaluationMatchesRequest(
+      portName: 'DefaultRealityModelPort',
+      contract: contract,
+      request: normalizedRequest,
+      evaluation: evaluation,
+    );
     return evaluation;
   }
 
@@ -140,6 +153,13 @@ class DefaultRealityModelPort implements RealityModelPort {
         'DefaultRealityModelPort produced an invalid trace: ${validation.issues}',
       );
     }
+    _contractGuard.ensureTraceMatchesEvaluation(
+      portName: 'DefaultRealityModelPort',
+      contract: contract,
+      request: request.normalized(),
+      evaluation: evaluation,
+      trace: trace,
+    );
     return trace;
   }
 
@@ -182,6 +202,14 @@ class DefaultRealityModelPort implements RealityModelPort {
         'DefaultRealityModelPort produced an invalid explanation: ${validation.issues}',
       );
     }
+    _contractGuard.ensureExplanationMatchesTrace(
+      portName: 'DefaultRealityModelPort',
+      contract: contract,
+      trace: trace,
+      evaluation: evaluation,
+      explanation: explanation,
+      rendererKind: rendererKind,
+    );
     return explanation;
   }
 

@@ -61,5 +61,90 @@ void main() {
       expect(validator.validateTrace(trace).isValid, isTrue);
       expect(validator.validateExplanation(explanation).isValid, isTrue);
     });
+
+    test('fails closed when trace input drifts from the evaluation contract',
+        () async {
+      final request = RealityModelEvaluationRequest(
+        requestId: 'request-2',
+        subjectId: 'admin-operator',
+        domain: RealityModelDomain.place,
+        candidateRef: 'place:downtown',
+        localityCode: 'bham_downtown',
+        cityCode: 'bham',
+        signalTags: const <String>['music', 'nightlife'],
+        evidenceRefs: const <String>['tuple:1', 'tuple:2'],
+        requestedAtUtc: DateTime.utc(2026, 3, 15, 3),
+      );
+      final evaluation = await port.evaluate(request);
+      final driftedEvaluation = RealityModelEvaluation(
+        evaluationId: evaluation.evaluationId,
+        requestId: evaluation.requestId,
+        contractId: evaluation.contractId,
+        domain: evaluation.domain,
+        candidateRef: 'place:other-district',
+        score: evaluation.score,
+        confidence: evaluation.confidence,
+        uncertaintySummary: evaluation.uncertaintySummary,
+        supportingEvidenceRefs: evaluation.supportingEvidenceRefs,
+        generatedAtUtc: evaluation.generatedAtUtc,
+        localityCode: evaluation.localityCode,
+        truthScope: evaluation.truthScope,
+        metadata: evaluation.metadata,
+      );
+
+      expect(
+        () => port.traceDecision(
+          request: request,
+          evaluation: driftedEvaluation,
+          disposition: RealityDecisionDisposition.recommend,
+          evidenceRefs: driftedEvaluation.supportingEvidenceRefs,
+          localityCode: request.localityCode,
+        ),
+        throwsA(
+          isA<StateError>().having(
+            (error) => error.message,
+            'message',
+            contains('evaluation candidateRef must match the source request'),
+          ),
+        ),
+      );
+    });
+
+    test('fails closed on unsupported explanation renderers', () async {
+      final request = RealityModelEvaluationRequest(
+        requestId: 'request-3',
+        subjectId: 'admin-operator',
+        domain: RealityModelDomain.event,
+        candidateRef: 'event:spring-in-bham',
+        localityCode: 'bham_downtown',
+        cityCode: 'bham',
+        signalTags: const <String>['music'],
+        evidenceRefs: const <String>['tuple:1', 'tuple:2'],
+        requestedAtUtc: DateTime.utc(2026, 3, 15, 6),
+      );
+      final evaluation = await port.evaluate(request);
+      final trace = await port.traceDecision(
+        request: request,
+        evaluation: evaluation,
+        disposition: RealityDecisionDisposition.recommend,
+        evidenceRefs: evaluation.supportingEvidenceRefs,
+        localityCode: request.localityCode,
+      );
+
+      expect(
+        () => port.buildExplanation(
+          trace: trace,
+          evaluation: evaluation,
+          rendererKind: RealityExplanationRendererKind.onlineAi,
+        ),
+        throwsA(
+          isA<StateError>().having(
+            (error) => error.message,
+            'message',
+            contains('renderer online_ai is not enabled'),
+          ),
+        ),
+      );
+    });
   });
 }

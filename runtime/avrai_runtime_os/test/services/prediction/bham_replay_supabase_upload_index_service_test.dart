@@ -7,7 +7,8 @@ import 'package:avrai_runtime_os/services/prediction/bham_replay_supabase_upload
 import 'package:avrai_runtime_os/services/prediction/replay_supabase_storage_gateway.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-class _FakeReplaySupabaseStorageGateway implements ReplaySupabaseStorageGateway {
+class _FakeReplaySupabaseStorageGateway
+    implements ReplaySupabaseStorageGateway {
   final List<Map<String, dynamic>> uploads = <Map<String, dynamic>>[];
   final Map<String, List<Map<String, dynamic>>> upserts =
       <String, List<Map<String, dynamic>>>{};
@@ -39,8 +40,88 @@ class _FakeReplaySupabaseStorageGateway implements ReplaySupabaseStorageGateway 
   }
 }
 
+ReplayStorageExportManifest _buildExportManifest({
+  String environmentId = 'bham-replay-world-2023',
+  int replayYear = 2023,
+  List<ReplayStorageExportEntry> entries = const <ReplayStorageExportEntry>[
+    ReplayStorageExportEntry(
+      artifactRef: '45_BHAM_SINGLE_YEAR_REPLAY_PASS_2023.json',
+      sourcePath: '/tmp/source/45.json',
+      bucket: 'replay-world-snapshots',
+      objectPath: '2023/world/45_BHAM_SINGLE_YEAR_REPLAY_PASS_2023.json',
+      byteSize: 1024,
+    ),
+  ],
+}) {
+  return ReplayStorageExportManifest(
+    environmentId: environmentId,
+    replayYear: replayYear,
+    status: 'accepted_as_monte_carlo_base_year',
+    exportRoot: '/tmp/replay_export',
+    projectIsolationMode: 'shared_project_isolated_namespace',
+    replaySchema: 'replay_simulation',
+    entries: entries,
+  );
+}
+
+ReplayStoragePartitionManifest _buildPartitionManifest({
+  String environmentId = 'bham-replay-world-2023',
+  int replayYear = 2023,
+  List<ReplayStoragePartitionEntry> entries =
+      const <ReplayStoragePartitionEntry>[
+    ReplayStoragePartitionEntry(
+      artifactRef: '45_BHAM_SINGLE_YEAR_REPLAY_PASS_2023.json',
+      section: 'items',
+      chunkIndex: 0,
+      recordCount: 1000,
+      objectPath:
+          '45_BHAM_SINGLE_YEAR_REPLAY_PASS_2023.json/items/chunk-0000.ndjson',
+      byteSize: 128,
+    ),
+  ],
+}) {
+  return ReplayStoragePartitionManifest(
+    environmentId: environmentId,
+    replayYear: replayYear,
+    partitionRoot: '/tmp/replay_partitions',
+    maxRecordsPerChunk: 1000,
+    entries: entries,
+  );
+}
+
+ReplayStorageUploadManifest _buildUploadManifest({
+  String environmentId = 'bham-replay-world-2023',
+  int replayYear = 2023,
+  List<ReplayStorageUploadEntry> entries = const <ReplayStorageUploadEntry>[
+    ReplayStorageUploadEntry(
+      artifactRef: '45_BHAM_SINGLE_YEAR_REPLAY_PASS_2023.json',
+      bucket: 'replay-world-snapshots',
+      objectPath:
+          '2023/world/45_BHAM_SINGLE_YEAR_REPLAY_PASS_2023.json/items/chunk-0000.ndjson',
+      localPath:
+          '/tmp/replay_partitions/45_BHAM_SINGLE_YEAR_REPLAY_PASS_2023.json/items/chunk-0000.ndjson',
+      representation: 'partitioned_ndjson',
+      byteSize: 128,
+      section: 'items',
+      chunkIndex: 0,
+      recordCount: 1000,
+    ),
+  ],
+}) {
+  return ReplayStorageUploadManifest(
+    environmentId: environmentId,
+    replayYear: replayYear,
+    status: 'accepted_as_monte_carlo_base_year',
+    dryRun: true,
+    projectIsolationMode: 'shared_project_isolated_namespace',
+    replaySchema: 'replay_simulation',
+    entries: entries,
+  );
+}
+
 void main() {
-  test('buildUploadManifest uses partitions for large replay artifacts', () async {
+  test('buildUploadManifest uses partitions for large replay artifacts',
+      () async {
     const service = BhamReplaySupabaseUploadIndexService();
 
     final exportManifest = ReplayStorageExportManifest(
@@ -95,22 +176,116 @@ void main() {
     expect(manifest.entries, hasLength(2));
     expect(
       manifest.entries
-          .where((entry) => entry.artifactRef == '45_BHAM_SINGLE_YEAR_REPLAY_PASS_2023.json')
+          .where((entry) =>
+              entry.artifactRef == '45_BHAM_SINGLE_YEAR_REPLAY_PASS_2023.json')
           .single
           .representation,
       'partitioned_ndjson',
     );
     expect(
       manifest.entries
-          .where((entry) => entry.artifactRef == '57_BHAM_REPLAY_CALIBRATION_REPORT_2023.json')
+          .where((entry) =>
+              entry.artifactRef ==
+              '57_BHAM_REPLAY_CALIBRATION_REPORT_2023.json')
           .single
           .representation,
       'single_object',
     );
     expect(
-      (manifest.metadata['plannedIndexedTables'] as Map?) ?? const <String, dynamic>{},
+      (manifest.metadata['plannedIndexedTables'] as Map?) ??
+          const <String, dynamic>{},
       isEmpty,
-      reason: 'planned table counts are computed during upload/index dry-run, not buildUploadManifest',
+      reason:
+          'planned table counts are computed during upload/index dry-run, not buildUploadManifest',
+    );
+  });
+
+  test('buildUploadManifest fails closed on manifest environment drift', () {
+    const service = BhamReplaySupabaseUploadIndexService();
+    final exportManifest = _buildExportManifest(environmentId: 'env-a');
+    final partitionManifest = _buildPartitionManifest(environmentId: 'env-b');
+
+    expect(
+      () => service.buildUploadManifest(
+        exportManifest: exportManifest,
+        partitionManifest: partitionManifest,
+      ),
+      throwsA(
+        isA<StateError>().having(
+          (error) => error.message,
+          'message',
+          contains('must target the same environment id'),
+        ),
+      ),
+    );
+  });
+
+  test('buildUploadManifest rejects orphan partitions and non-replay buckets',
+      () {
+    const service = BhamReplaySupabaseUploadIndexService();
+    final exportManifest = _buildExportManifest(
+      entries: const <ReplayStorageExportEntry>[
+        ReplayStorageExportEntry(
+          artifactRef: '45_BHAM_SINGLE_YEAR_REPLAY_PASS_2023.json',
+          sourcePath: '/tmp/source/45.json',
+          bucket: 'world-snapshots',
+          objectPath: '2023/world/45_BHAM_SINGLE_YEAR_REPLAY_PASS_2023.json',
+          byteSize: 1024,
+        ),
+      ],
+    );
+    final partitionManifest = _buildPartitionManifest(
+      entries: const <ReplayStoragePartitionEntry>[
+        ReplayStoragePartitionEntry(
+          artifactRef: 'missing-artifact.json',
+          section: 'items',
+          chunkIndex: 0,
+          recordCount: 1000,
+          objectPath: 'missing-artifact.json/items/chunk-0000.ndjson',
+          byteSize: 128,
+        ),
+      ],
+    );
+
+    expect(
+      () => service.buildUploadManifest(
+        exportManifest: exportManifest,
+        partitionManifest: partitionManifest,
+      ),
+      throwsA(
+        isA<StateError>().having(
+          (error) => error.message,
+          'message',
+          allOf(
+            contains('replay-prefixed bucket'),
+            contains('unknown export artifacts'),
+          ),
+        ),
+      ),
+    );
+  });
+
+  test('uploadAndIndex fails closed on upload manifest contract drift',
+      () async {
+    const service = BhamReplaySupabaseUploadIndexService();
+    final exportManifest = _buildExportManifest();
+    final partitionManifest = _buildPartitionManifest();
+    final uploadManifest = _buildUploadManifest(environmentId: 'env-other');
+
+    expect(
+      () => service.uploadAndIndex(
+        uploadManifest: uploadManifest,
+        exportManifest: exportManifest,
+        partitionManifest: partitionManifest,
+        dryRun: true,
+      ),
+      throwsA(
+        isA<StateError>().having(
+          (error) => error.message,
+          'message',
+          contains('upload manifest environment id must match export manifest'),
+        ),
+      ),
     );
   });
 
@@ -129,7 +304,8 @@ void main() {
     final calibrationFile = File(
       '${exportRoot.path}/replay-world-snapshots/2023/world/57_BHAM_REPLAY_CALIBRATION_REPORT_2023.json',
     )..parent.createSync(recursive: true);
-    calibrationFile.writeAsStringSync(jsonEncode(<String, dynamic>{'passed': true}));
+    calibrationFile
+        .writeAsStringSync(jsonEncode(<String, dynamic>{'passed': true}));
 
     final realismFile = File(
       '${exportRoot.path}/replay-world-snapshots/2023/world/54_BHAM_REPLAY_REALISM_GATE_REPORT_2023.json',
@@ -139,7 +315,8 @@ void main() {
     final trainingFile = File(
       '${exportRoot.path}/replay-training-exports/2023/training/58_BHAM_REPLAY_TRAINING_EXPORT_MANIFEST_2023.json',
     )..parent.createSync(recursive: true);
-    trainingFile.writeAsStringSync(jsonEncode(<String, dynamic>{'status': 'ready'}));
+    trainingFile
+        .writeAsStringSync(jsonEncode(<String, dynamic>{'status': 'ready'}));
 
     final populationFile = File(
       '${exportRoot.path}/replay-world-snapshots/2023/world/50_BHAM_REPLAY_POPULATION_PROFILE_2023.json',
@@ -415,7 +592,8 @@ void main() {
           artifactRef: '58_BHAM_REPLAY_TRAINING_EXPORT_MANIFEST_2023.json',
           sourcePath: '/tmp/source/58.json',
           bucket: 'replay-training-exports',
-          objectPath: '2023/training/58_BHAM_REPLAY_TRAINING_EXPORT_MANIFEST_2023.json',
+          objectPath:
+              '2023/training/58_BHAM_REPLAY_TRAINING_EXPORT_MANIFEST_2023.json',
           byteSize: 256,
         ),
         ReplayStorageExportEntry(
@@ -429,21 +607,24 @@ void main() {
           artifactRef: '59_BHAM_REPLAY_ACTOR_KERNEL_COVERAGE_2023.json',
           sourcePath: '/tmp/source/59.json',
           bucket: 'replay-world-snapshots',
-          objectPath: '2023/world/59_BHAM_REPLAY_ACTOR_KERNEL_COVERAGE_2023.json',
+          objectPath:
+              '2023/world/59_BHAM_REPLAY_ACTOR_KERNEL_COVERAGE_2023.json',
           byteSize: 256,
         ),
         ReplayStorageExportEntry(
           artifactRef: '60_BHAM_REPLAY_CONNECTIVITY_PROFILES_2023.json',
           sourcePath: '/tmp/source/60.json',
           bucket: 'replay-world-snapshots',
-          objectPath: '2023/world/60_BHAM_REPLAY_CONNECTIVITY_PROFILES_2023.json',
+          objectPath:
+              '2023/world/60_BHAM_REPLAY_CONNECTIVITY_PROFILES_2023.json',
           byteSize: 256,
         ),
         ReplayStorageExportEntry(
           artifactRef: '62_BHAM_REPLAY_EXCHANGE_EVENT_LOG_2023.json',
           sourcePath: '/tmp/source/62.json',
           bucket: 'replay-exchange-logs',
-          objectPath: '2023/exchange/62_BHAM_REPLAY_EXCHANGE_EVENT_LOG_2023.json',
+          objectPath:
+              '2023/exchange/62_BHAM_REPLAY_EXCHANGE_EVENT_LOG_2023.json',
           byteSize: 256,
         ),
         ReplayStorageExportEntry(
@@ -494,38 +675,42 @@ void main() {
 
     expect(result.dryRun, isFalse);
     expect(fakeGateway.uploads, hasLength(uploadManifest.entries.length));
-    expect(fakeGateway.upserts.keys, containsAll(<String>[
-      'replay_runs',
-      'replay_artifacts',
-      'replay_artifact_partitions',
-      'replay_lineage',
-      'replay_calibration_reports',
-      'replay_realism_gate_reports',
-      'replay_training_exports',
-      'replay_actor_profiles',
-      'replay_actor_kernel_bundles',
-      'replay_kernel_activation_traces',
-      'replay_actor_connectivity_profiles',
-      'replay_actor_connectivity_transitions',
-      'replay_actor_tracked_locations',
-      'replay_actor_untracked_windows',
-      'replay_actor_movements',
-      'replay_actor_flights',
-      'replay_exchange_threads',
-      'replay_exchange_participations',
-      'replay_exchange_events',
-      'replay_ai2ai_exchange_records',
-    ]));
+    expect(
+        fakeGateway.upserts.keys,
+        containsAll(<String>[
+          'replay_runs',
+          'replay_artifacts',
+          'replay_artifact_partitions',
+          'replay_lineage',
+          'replay_calibration_reports',
+          'replay_realism_gate_reports',
+          'replay_training_exports',
+          'replay_actor_profiles',
+          'replay_actor_kernel_bundles',
+          'replay_kernel_activation_traces',
+          'replay_actor_connectivity_profiles',
+          'replay_actor_connectivity_transitions',
+          'replay_actor_tracked_locations',
+          'replay_actor_untracked_windows',
+          'replay_actor_movements',
+          'replay_actor_flights',
+          'replay_exchange_threads',
+          'replay_exchange_participations',
+          'replay_exchange_events',
+          'replay_ai2ai_exchange_records',
+        ]));
     expect(
       (result.metadata['indexedTables'] as Map<String, dynamic>)['replay_runs'],
       1,
     );
     expect(
-      (result.metadata['indexedTables'] as Map<String, dynamic>)['replay_actor_profiles'],
+      (result.metadata['indexedTables']
+          as Map<String, dynamic>)['replay_actor_profiles'],
       1,
     );
     expect(
-      (result.metadata['indexedTables'] as Map<String, dynamic>)['replay_exchange_events'],
+      (result.metadata['indexedTables']
+          as Map<String, dynamic>)['replay_exchange_events'],
       1,
     );
   });

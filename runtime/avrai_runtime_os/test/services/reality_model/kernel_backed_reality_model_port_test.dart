@@ -103,6 +103,46 @@ void main() {
       expect(validator.validateTrace(trace).isValid, isTrue);
       expect(validator.validateExplanation(explanation).isValid, isTrue);
     });
+
+    test('fails closed on unsupported explanation renderers', () async {
+      final port = KernelBackedRealityModelPort(
+        modelTruthPort: _FakeModelTruthPort(),
+      );
+      final request = RealityModelEvaluationRequest(
+        requestId: 'request-3',
+        subjectId: 'admin-operator',
+        domain: RealityModelDomain.locality,
+        candidateRef: 'admin_surface:reality',
+        localityCode: 'bham_downtown',
+        cityCode: 'bham',
+        signalTags: const <String>['spring', 'music'],
+        evidenceRefs: const <String>['tuple:1', 'tuple:2'],
+        requestedAtUtc: DateTime.utc(2026, 3, 15, 6),
+      );
+      final evaluation = await port.evaluate(request);
+      final trace = await port.traceDecision(
+        request: request,
+        evaluation: evaluation,
+        disposition: RealityDecisionDisposition.recommend,
+        evidenceRefs: evaluation.supportingEvidenceRefs,
+        localityCode: request.localityCode,
+      );
+
+      expect(
+        () => port.buildExplanation(
+          trace: trace,
+          evaluation: evaluation,
+          rendererKind: RealityExplanationRendererKind.onlineAi,
+        ),
+        throwsA(
+          isA<StateError>().having(
+            (error) => error.message,
+            'message',
+            contains('renderer online_ai is not enabled'),
+          ),
+        ),
+      );
+    });
   });
 }
 
