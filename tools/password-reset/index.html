@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AVRAI – Reset Password</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a2e;
+      color: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card {
+      background: #16213e;
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 420px;
+      width: 90%;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    h1 {
+      font-size: 28px;
+      text-align: center;
+      margin-bottom: 8px;
+      color: #7c83ff;
+    }
+    .subtitle {
+      text-align: center;
+      color: #888;
+      margin-bottom: 32px;
+      font-size: 14px;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      color: #aaa;
+      margin-bottom: 6px;
+    }
+    input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #2a2a4a;
+      border-radius: 8px;
+      background: #0f0f23;
+      color: #e0e0e0;
+      font-size: 16px;
+      margin-bottom: 16px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus { border-color: #7c83ff; }
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      background: #7c83ff;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover { background: #6b72e8; }
+    button:disabled { background: #3a3a5c; cursor: not-allowed; }
+    .msg {
+      text-align: center;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 16px;
+      font-size: 14px;
+      display: none;
+    }
+    .msg.error { display: block; background: #3d1515; color: #ff6b6b; }
+    .msg.success { display: block; background: #153d1f; color: #6bffb8; }
+    .msg.info { display: block; background: #152a3d; color: #6bb8ff; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>avrai</h1>
+
+    <div id="loading">
+      <p class="subtitle">Verifying your reset link...</p>
+    </div>
+
+    <div id="form-section" style="display:none;">
+      <p class="subtitle">Enter your new password</p>
+      <form id="reset-form">
+        <label for="password">New password</label>
+        <input type="password" id="password" placeholder="At least 6 characters" minlength="6" required>
+        <label for="confirm">Confirm password</label>
+        <input type="password" id="confirm" placeholder="Re-enter password" minlength="6" required>
+        <button type="submit" id="submit-btn">Update Password</button>
+      </form>
+      <div id="msg" class="msg"></div>
+    </div>
+
+    <div id="error-section" style="display:none;">
+      <p class="subtitle">This reset link is invalid or has expired.</p>
+      <div class="msg info" style="display:block;">
+        Open the AVRAI app and tap "Forgot password?" to request a new link.
+      </div>
+    </div>
+
+    <div id="success-section" style="display:none;">
+      <p class="subtitle">Your password has been updated.</p>
+      <div class="msg success" style="display:block;">
+        You can now sign in with your new password in the AVRAI app.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://nfzlwgbvezwwrutqpedy.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5memx3Z2J2ZXp3d3J1dHFwZWR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM1MDU5MDUsImV4cCI6MjA3OTA4MTkwNX0.TimlFKPLvhF7NU1JmaiMVbkq0KxSJoiMlyhA8YIUef0';
+
+    async function init() {
+      const hash = window.location.hash.substring(1);
+      const params = new URLSearchParams(hash);
+      const accessToken = params.get('access_token');
+      const refreshToken = params.get('refresh_token');
+      const type = params.get('type');
+
+      if (type !== 'recovery' || !accessToken) {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('error-section').style.display = 'block';
+        return;
+      }
+
+      try {
+        const { createClient } = supabase;
+        window._supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+          auth: { persistSession: false, autoRefreshToken: false }
+        });
+
+        const { error } = await window._supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken || '',
+        });
+
+        if (error) throw error;
+
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('form-section').style.display = 'block';
+      } catch (e) {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('error-section').style.display = 'block';
+      }
+    }
+
+    document.getElementById('reset-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const pw = document.getElementById('password').value;
+      const confirm = document.getElementById('confirm').value;
+      const msg = document.getElementById('msg');
+      const btn = document.getElementById('submit-btn');
+
+      msg.className = 'msg';
+
+      if (pw.length < 6) {
+        msg.className = 'msg error';
+        msg.textContent = 'Password must be at least 6 characters.';
+        return;
+      }
+      if (pw !== confirm) {
+        msg.className = 'msg error';
+        msg.textContent = 'Passwords do not match.';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Updating...';
+
+      try {
+        const { error } = await window._supabase.auth.updateUser({ password: pw });
+        if (error) throw error;
+
+        document.getElementById('form-section').style.display = 'none';
+        document.getElementById('success-section').style.display = 'block';
+      } catch (err) {
+        msg.className = 'msg error';
+        msg.textContent = err.message || 'Failed to update password. Try requesting a new link.';
+        btn.disabled = false;
+        btn.textContent = 'Update Password';
+      }
+    });
+
+    init();
+  </script>
+</body>
+</html>

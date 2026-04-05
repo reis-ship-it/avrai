@@ -1,0 +1,135 @@
+{
+  "environmentId": "bham-replay-world-2023",
+  "requiredKernelCount": 9,
+  "activeKernelCount": 9,
+  "records": [
+    {
+      "kernelId": "when",
+      "authoritySurface": "timing_and_chronology",
+      "status": "active",
+      "evidenceCount": 1295,
+      "evidenceRefs": [
+        "37_BHAM_REPLAY_EXECUTION_PLAN_2023.json",
+        "45_BHAM_SINGLE_YEAR_REPLAY_PASS_2023.json"
+      ],
+      "notes": [
+        "Execution plan carries authoritative replay chronology."
+      ],
+      "metadata": {}
+    },
+    {
+      "kernelId": "where",
+      "authoritySurface": "locality_and_spatial_grounding",
+      "status": "active",
+      "evidenceCount": 1180,
+      "evidenceRefs": [
+        "40_BHAM_REPLAY_VIRTUAL_WORLD_ENVIRONMENT_2023.json",
+        "51_BHAM_REPLAY_PLACE_GRAPH_2023.json"
+      ],
+      "notes": [
+        "Locality anchors and place graph nodes are present across the replay world."
+      ],
+      "metadata": {}
+    },
+    {
+      "kernelId": "what",
+      "authoritySurface": "entity_state_and_identity",
+      "status": "active",
+      "evidenceCount": 1180,
+      "evidenceRefs": [
+        "36_BHAM_CONSOLIDATED_REPLAY_NORMALIZED_OBSERVATIONS_2023.json",
+        "51_BHAM_REPLAY_PLACE_GRAPH_2023.json"
+      ],
+      "notes": [
+        "Canonical entity identities and type counts are present in replay observations and place graph."
+      ],
+      "metadata": {}
+    },
+    {
+      "kernelId": "who",
+      "authoritySurface": "actor_continuity_and_agent_identity",
+      "status": "active",
+      "evidenceCount": 178418,
+      "evidenceRefs": [
+        "50_BHAM_REPLAY_POPULATION_PROFILE_2023.json"
+      ],
+      "notes": [
+        "Representative actors, eligibility records, and lifecycle transitions drive agent identity in replay."
+      ],
+      "metadata": {}
+    },
+    {
+      "kernelId": "why",
+      "authoritySurface": "reasoning_and_conviction",
+      "status": "active",
+      "evidenceCount": 13091,
+      "evidenceRefs": [
+        "39_BHAM_REPLAY_GOVERNED_FORECAST_BATCH_2023.json",
+        "44_BHAM_REPLAY_HIGHER_AGENT_BEHAVIOR_PASS_2023.json"
+      ],
+      "notes": [
+        "Governed forecast reasons and higher-agent explanations provide bounded reasoning."
+      ],
+      "metadata": {}
+    },
+    {
+      "kernelId": "how",
+      "authoritySurface": "action_path_and_execution_choice",
+      "status": "active",
+      "evidenceCount": 13010,
+      "evidenceRefs": [
+        "44_BHAM_REPLAY_HIGHER_AGENT_BEHAVIOR_PASS_2023.json"
+      ],
+      "notes": [
+        "Replay actions and movement-flow truth provide operational pathway evidence."
+      ],
+      "metadata": {}
+    },
+    {
+      "kernelId": "forecast",
+      "authoritySurface": "counterfactual_prediction",
+      "status": "active",
+      "evidenceCount": 12485,
+      "evidenceRefs": [
+        "39_BHAM_REPLAY_GOVERNED_FORECAST_BATCH_2023.json"
+      ],
+      "notes": [
+        "Native forecast kernel selected and evaluated replay-safe observations."
+      ],
+      "metadata": {}
+    },
+    {
+      "kernelId": "governance",
+      "authoritySurface": "admissibility_override_and_isolation",
+      "status": "active",
+      "evidenceCount": 12399,
+      "evidenceRefs": [
+        "39_BHAM_REPLAY_GOVERNED_FORECAST_BATCH_2023.json",
+        "52_BHAM_REPLAY_ISOLATION_REPORT_2023.json"
+      ],
+      "notes": [
+        "Governance dispositions and replay isolation gate are active."
+      ],
+      "metadata": {}
+    },
+    {
+      "kernelId": "higher_agent_truth",
+      "authoritySurface": "upward_and_downward_truth_flow",
+      "status": "active",
+      "evidenceCount": 129305,
+      "evidenceRefs": [
+        "41_BHAM_REPLAY_HIGHER_AGENT_ROLLUPS_2023.json",
+        "44_BHAM_REPLAY_HIGHER_AGENT_BEHAVIOR_PASS_2023.json"
+      ],
+      "notes": [
+        "Locality, city, top-level, and personal replay agents are active."
+      ],
+      "metadata": {}
+    }
+  ],
+  "metadata": {
+    "allRequiredActive": true,
+    "actorTraceCount": 128418,
+    "exchangeEventCount": 12398
+  }
+}

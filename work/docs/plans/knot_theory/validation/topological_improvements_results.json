@@ -1,0 +1,60 @@
+{
+  "baseline_quantum_only": 0.9555555555555556,
+  "approaches": {
+    "baseline": {
+      "approach": "Baseline (weighted average, simplified topological)",
+      "accuracy": 0.952929292929293,
+      "threshold": 0.2599999999999999,
+      "quantum_only_accuracy": 0.9555555555555556,
+      "quantum_only_threshold": 0.21999999999999995,
+      "improvement": -0.27484143763213703,
+      "meets_threshold": false
+    },
+    "polynomial": {
+      "approach": "Improved Polynomial Distances",
+      "accuracy": 0.9545454545454546,
+      "threshold": 0.40999999999999986,
+      "quantum_only_accuracy": 0.9555555555555556,
+      "quantum_only_threshold": 0.21999999999999995,
+      "improvement": -0.10570824524312963,
+      "meets_threshold": false
+    },
+    "conditional": {
+      "approach": "Conditional Integration",
+      "accuracy": 0.9547474747474748,
+      "threshold": 0.39999999999999986,
+      "quantum_only_accuracy": 0.9555555555555556,
+      "quantum_only_threshold": 0.21999999999999995,
+      "improvement": -0.08456659619450371,
+      "meets_threshold": false
+    },
+    "multiplicative": {
+      "approach": "Multiplicative Integration",
+      "accuracy": 0.9567676767676768,
+      "threshold": 0.21999999999999995,
+      "quantum_only_accuracy": 0.9555555555555556,
+      "quantum_only_threshold": 0.21999999999999995,
+      "improvement": 0.12684989429175558,
+      "meets_threshold": false
+    },
+    "two_stage": {
+      "approach": "Two-Stage Matching",
+      "accuracy": 0.9567676767676768,
+      "threshold": 0.34999999999999987,
+      "quantum_only_accuracy": 0.9555555555555556,
+      "quantum_only_threshold": 0.21999999999999995,
+      "improvement": 0.12684989429175558,
+      "meets_threshold": false
+    }
+  },
+  "best_approach": "multiplicative",
+  "best_result": {
+    "approach": "Multiplicative Integration",
+    "accuracy": 0.9567676767676768,
+    "threshold": 0.21999999999999995,
+    "quantum_only_accuracy": 0.9555555555555556,
+    "quantum_only_threshold": 0.21999999999999995,
+    "improvement": 0.12684989429175558,
+    "meets_threshold": false
+  }
+}

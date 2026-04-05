@@ -1,0 +1,1681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>AVRAI 3D Visualization</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000000;
+    }
+    #container {
+      width: 100%;
+      height: 100%;
+    }
+    canvas {
+      display: block;
+    }
+    #webgl-fallback {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000000;
+      color: #00FF66;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      text-align: center;
+      padding: 20px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    #webgl-fallback.active {
+      display: flex;
+    }
+    #webgl-fallback .icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+    #webgl-fallback .title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    #webgl-fallback .reason {
+      font-size: 14px;
+      opacity: 0.7;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+  <div id="webgl-fallback">
+    <div class="icon">⚠️</div>
+    <div class="title">3D visualization not available</div>
+    <div class="reason" id="webgl-reason"></div>
+  </div>
+  
+  <!-- WebGL Detection (runs before ES modules) -->
+  <script>
+    (function() {
+      function checkWebGLSupport() {
+        try {
+          const canvas = document.createElement('canvas');
+          const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+          if (!gl) {
+            return { supported: false, reason: 'WebGL not available on this device' };
+          }
+          return { supported: true, degraded: false };
+        } catch (e) {
+          return { supported: false, reason: e.message || 'WebGL check failed' };
+        }
+      }
+      
+      window.webglStatus = checkWebGLSupport();
+      
+      if (!window.webglStatus.supported) {
+        // Show fallback UI
+        document.getElementById('webgl-fallback').classList.add('active');
+        document.getElementById('webgl-reason').textContent = window.webglStatus.reason;
+        document.getElementById('container').style.display = 'none';
+        
+        // Notify Flutter
+        if (window.flutter_inappwebview) {
+          window.flutter_inappwebview.callHandler('onWebGLNotSupported', window.webglStatus.reason);
+        }
+      }
+    })();
+  </script>
+  
+  <!-- Three.js ES Module Import Map (local bundle for offline support) -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./lib/three.module.js",
+      "three/addons/": "./lib/"
+    }
+  }
+  </script>
+  
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+    import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+    import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+    
+    // Make Three.js available globally
+    window.THREE = THREE;
+    window.OrbitControls = OrbitControls;
+    window.EffectComposer = EffectComposer;
+    window.RenderPass = RenderPass;
+    window.UnrealBloomPass = UnrealBloomPass;
+    
+    // ─────────────────────────────────────────────────────────────
+    // ERROR REPORTER
+    // ─────────────────────────────────────────────────────────────
+    
+    class ErrorReporter {
+      static report(context, error, data = null) {
+        const errorInfo = {
+          context,
+          message: error.message || String(error),
+          stack: error.stack || null,
+          data: data ? JSON.stringify(data).substring(0, 500) : null,
+          timestamp: Date.now()
+        };
+        
+        console.error(`[${context}]`, error);
+        
+        // Report to Flutter
+        if (window.flutter_inappwebview) {
+          window.flutter_inappwebview.callHandler('onError', errorInfo);
+        }
+      }
+    }
+    
+    // Global error handler
+    window.onerror = (message, source, lineno, colno, error) => {
+      ErrorReporter.report('global', error || new Error(message));
+      return true;
+    };
+    
+    window.addEventListener('unhandledrejection', event => {
+      ErrorReporter.report('promise', event.reason);
+    });
+    
+    window.ErrorReporter = ErrorReporter;
+    
+    // ─────────────────────────────────────────────────────────────
+    // SHADER LOADER
+    // ─────────────────────────────────────────────────────────────
+    
+    class ShaderLoader {
+      static cache = new Map();
+      
+      static async load(shaderPath) {
+        if (this.cache.has(shaderPath)) {
+          return this.cache.get(shaderPath);
+        }
+        
+        try {
+          const response = await fetch(`shaders/${shaderPath}`);
+          if (!response.ok) {
+            throw new Error(`Failed to fetch shader: ${response.status}`);
+          }
+          const shaderCode = await response.text();
+          
+          // Parse combined GLSL file into vertex/fragment
+          const vertexMatch = shaderCode.match(/#ifdef VERTEX_SHADER([\s\S]*?)#endif/);
+          const fragmentMatch = shaderCode.match(/#ifdef FRAGMENT_SHADER([\s\S]*?)#endif/);
+          
+          const result = {
+            vertex: vertexMatch ? vertexMatch[1].trim() : '',
+            fragment: fragmentMatch ? fragmentMatch[1].trim() : ''
+          };
+          
+          this.cache.set(shaderPath, result);
+          console.log(`Shader loaded: ${shaderPath}`);
+          return result;
+        } catch (e) {
+          console.warn(`Failed to load shader ${shaderPath}:`, e);
+          return null;
+        }
+      }
+      
+      static async preloadAll() {
+        const shaders = [
+          'knot_material.glsl',
+          'breathing_material.glsl',
+          'particle_material.glsl',
+          'formation_material.glsl'
+        ];
+        
+        await Promise.all(shaders.map(s => this.load(s)));
+        console.log('All shaders preloaded');
+      }
+    }
+    
+    window.ShaderLoader = ShaderLoader;
+    
+    // Preload shaders in background
+    ShaderLoader.preloadAll().catch(e => console.warn('Shader preload failed:', e));
+    
+    // ─────────────────────────────────────────────────────────────
+    // PERFORMANCE MONITOR
+    // ─────────────────────────────────────────────────────────────
+    
+    class PerformanceMonitor {
+      constructor() {
+        this.frameCount = 0;
+        this.fps = 0;
+        this.lastFpsUpdate = performance.now();
+        this.frameTimes = [];
+        this.maxFrameTimeHistory = 60;
+        this.frameStart = 0;
+        this.enabled = true;
+      }
+      
+      startFrame() {
+        this.frameStart = performance.now();
+      }
+      
+      endFrame(renderer) {
+        if (!this.enabled) return;
+        
+        const frameTime = performance.now() - this.frameStart;
+        this.frameTimes.push(frameTime);
+        
+        if (this.frameTimes.length > this.maxFrameTimeHistory) {
+          this.frameTimes.shift();
+        }
+        
+        this.frameCount++;
+        
+        // Calculate FPS every second
+        const now = performance.now();
+        if (now - this.lastFpsUpdate >= 1000) {
+          this.fps = this.frameCount;
+          this.frameCount = 0;
+          this.lastFpsUpdate = now;
+          
+          // Report metrics to Flutter
+          this.report(renderer);
+        }
+      }
+      
+      report(renderer) {
+        if (!this.enabled) return;
+        
+        const avgFrameTime = this.frameTimes.length > 0
+          ? this.frameTimes.reduce((a, b) => a + b, 0) / this.frameTimes.length
+          : 0;
+        const maxFrameTime = this.frameTimes.length > 0
+          ? Math.max(...this.frameTimes)
+          : 0;
+        
+        const info = renderer?.info || {};
+        const memory = info.memory || {};
+        
+        const metrics = {
+          fps: this.fps,
+          avgFrameTime: avgFrameTime.toFixed(2),
+          maxFrameTime: maxFrameTime.toFixed(2),
+          geometryCount: memory.geometries || 0,
+          textureCount: memory.textures || 0,
+          drawCalls: info.render?.calls || 0,
+          triangles: info.render?.triangles || 0,
+          timestamp: Date.now()
+        };
+        
+        if (window.flutter_inappwebview) {
+          window.flutter_inappwebview.callHandler('onPerformanceMetrics', metrics);
+        }
+      }
+      
+      setEnabled(enabled) {
+        this.enabled = enabled;
+      }
+    }
+    
+    window.PerformanceMonitor = PerformanceMonitor;
+    const perfMonitor = new PerformanceMonitor();
+    window.perfMonitor = perfMonitor;
+    
+    // ─────────────────────────────────────────────────────────────
+    // SCENE MANAGER
+    // ─────────────────────────────────────────────────────────────
+    
+    class SceneManager {
+      constructor(container) {
+        this.container = container;
+        this.scene = new THREE.Scene();
+        this.scene.background = new THREE.Color(0x000000);
+        
+        // Camera
+        this.camera = new THREE.PerspectiveCamera(
+          75,
+          container.clientWidth / container.clientHeight,
+          0.1,
+          1000
+        );
+        this.camera.position.z = 5;
+        
+        // Renderer
+        this.renderer = new THREE.WebGLRenderer({ 
+          antialias: true, 
+          alpha: true,
+          powerPreference: 'high-performance'
+        });
+        this.renderer.setSize(container.clientWidth, container.clientHeight);
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+        container.appendChild(this.renderer.domElement);
+        
+        // Controls
+        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+        this.controls.enableDamping = true;
+        this.controls.dampingFactor = 0.05;
+        this.controls.autoRotate = false;
+        this.controls.autoRotateSpeed = 1.0;
+        
+        // Post-processing
+        this.composer = new EffectComposer(this.renderer);
+        this.renderPass = new RenderPass(this.scene, this.camera);
+        this.composer.addPass(this.renderPass);
+        
+        this.bloomPass = new UnrealBloomPass(
+          new THREE.Vector2(container.clientWidth, container.clientHeight),
+          0.5,  // strength
+          0.4,  // radius
+          0.85  // threshold
+        );
+        this.composer.addPass(this.bloomPass);
+        
+        // Lighting
+        this.setupLighting();
+        
+        // Current mesh references
+        this.currentMeshes = [];
+        
+        // Animation
+        this.animationId = null;
+        this.isAnimating = false;
+        
+        // Resize handler
+        window.addEventListener('resize', () => this.onResize());
+        
+        // Start animation loop
+        this.animate();
+      }
+      
+      setupLighting() {
+        // Ambient light
+        const ambient = new THREE.AmbientLight(0x404040, 0.5);
+        this.scene.add(ambient);
+        
+        // Key light
+        const keyLight = new THREE.DirectionalLight(0xffffff, 1);
+        keyLight.position.set(5, 5, 5);
+        this.scene.add(keyLight);
+        
+        // Fill light
+        const fillLight = new THREE.DirectionalLight(0x8888ff, 0.3);
+        fillLight.position.set(-5, 3, -5);
+        this.scene.add(fillLight);
+        
+        // Rim light
+        const rimLight = new THREE.DirectionalLight(0xffffff, 0.2);
+        rimLight.position.set(0, -5, -5);
+        this.scene.add(rimLight);
+      }
+      
+      onResize() {
+        const width = this.container.clientWidth;
+        const height = this.container.clientHeight;
+        
+        this.camera.aspect = width / height;
+        this.camera.updateProjectionMatrix();
+        
+        this.renderer.setSize(width, height);
+        this.composer.setSize(width, height);
+      }
+      
+      clearScene() {
+        this.currentMeshes.forEach(mesh => {
+          this.scene.remove(mesh);
+          if (mesh.geometry) mesh.geometry.dispose();
+          if (mesh.material) {
+            if (Array.isArray(mesh.material)) {
+              mesh.material.forEach(m => m.dispose());
+            } else {
+              mesh.material.dispose();
+            }
+          }
+        });
+        this.currentMeshes = [];
+      }
+      
+      addMesh(mesh) {
+        this.scene.add(mesh);
+        this.currentMeshes.push(mesh);
+      }
+      
+      setBloomStrength(strength) {
+        this.bloomPass.strength = strength;
+      }
+      
+      setAutoRotate(enabled, speed = 1.0) {
+        this.controls.autoRotate = enabled;
+        this.controls.autoRotateSpeed = speed;
+      }
+      
+      setCameraPosition(x, y, z) {
+        this.camera.position.set(x, y, z);
+        this.controls.update();
+      }
+      
+      animate() {
+        if (window.perfMonitor) window.perfMonitor.startFrame();
+        
+        this.animationId = requestAnimationFrame(() => this.animate());
+        this.controls.update();
+        this.composer.render();
+        
+        if (window.perfMonitor) window.perfMonitor.endFrame(this.renderer);
+      }
+      
+      dispose() {
+        cancelAnimationFrame(this.animationId);
+        this.clearScene();
+        this.renderer.dispose();
+        this.composer.dispose();
+      }
+    }
+    
+    // ─────────────────────────────────────────────────────────────
+    // KNOT RENDERER
+    // ─────────────────────────────────────────────────────────────
+    
+    class KnotRenderer {
+      constructor(sceneManager) {
+        this.sceneManager = sceneManager;
+        this.currentKnot = null;
+      }
+      
+      render(data) {
+        try {
+          // Validate input
+          if (!data?.coordinates || !Array.isArray(data.coordinates)) {
+            throw new Error('Invalid knot data: coordinates required');
+          }
+          if (data.coordinates.length < 3) {
+            throw new Error('Invalid knot data: need at least 3 points');
+          }
+          
+          this.sceneManager.clearScene();
+          
+          // Create curve from coordinates
+          const points = data.coordinates.map(c => 
+            new THREE.Vector3(c[0], c[1], c[2])
+          );
+          const curve = new THREE.CatmullRomCurve3(points, true);
+          
+          // Determine LOD based on style
+          const tubularSegments = data.style?.lod === 'high' ? 200 : 
+                                  data.style?.lod === 'low' ? 50 : 100;
+          const radialSegments = data.style?.lod === 'high' ? 16 : 
+                                 data.style?.lod === 'low' ? 4 : 8;
+          
+          // Create tube geometry
+          const geometry = new THREE.TubeGeometry(
+            curve,
+            tubularSegments,
+            data.tubeRadius || 0.1,
+            radialSegments,
+            true
+          );
+          
+          // Create material based on style
+          const material = this.createMaterial(data.style, data.invariants);
+          
+          // Apply vertex colors
+          this.applyVertexColors(geometry, data.invariants, data.style);
+          
+          // Create mesh
+          const mesh = new THREE.Mesh(geometry, material);
+          this.sceneManager.addMesh(mesh);
+          this.currentKnot = mesh;
+          
+          // Add crossing indicators
+          if (data.crossings) {
+            this.addCrossingIndicators(data.crossings, data.style);
+          }
+          
+          // Configure bloom
+          const bloomStrength = data.style?.glowIntensity || 0.5;
+          this.sceneManager.setBloomStrength(bloomStrength);
+          
+          // Auto-rotate for small views
+          if (data.style?.autoRotate) {
+            this.sceneManager.setAutoRotate(true, 0.5);
+          }
+          
+          // Notify completion
+          if (window.flutter_inappwebview) {
+            window.flutter_inappwebview.callHandler('onRenderComplete', 'knot');
+          }
+        } catch (error) {
+          ErrorReporter.report('KnotRenderer.render', error, data);
+          throw error;
+        }
+      }
+      
+      // Create shader material from loaded GLSL
+      async createShaderMaterial(style, invariants) {
+        const shader = await ShaderLoader.load('knot_material.glsl');
+        if (!shader || !shader.vertex || !shader.fragment) {
+          return null; // Fallback to standard material
+        }
+        
+        const primaryColor = new THREE.Color(style?.primaryColor || 0x00FF66);
+        const secondaryColor = new THREE.Color(style?.secondaryColor || 0x4DFFB8);
+        
+        this.shaderMaterial = new THREE.ShaderMaterial({
+          uniforms: {
+            uTime: { value: 0.0 },
+            uPrimaryColor: { value: primaryColor },
+            uSecondaryColor: { value: secondaryColor },
+            uMetalness: { value: 0.8 },
+            uRoughness: { value: 0.2 },
+            uEmissiveIntensity: { value: style?.emissiveIntensity || 0.3 },
+            uWrithe: { value: invariants?.writhe || 0 },
+            uSignature: { value: invariants?.signature || 0 },
+            uCrossingNumber: { value: invariants?.crossingNumber || 0 },
+            cameraPosition: { value: this.sceneManager.camera.position },
+          },
+          vertexShader: shader.vertex,
+          fragmentShader: shader.fragment,
+        });
+        
+        return this.shaderMaterial;
+      }
+      
+      // Update shader uniforms (call in animation loop)
+      update(deltaTime) {
+        if (this.shaderMaterial?.uniforms?.uTime) {
+          this.shaderMaterial.uniforms.uTime.value += deltaTime;
+        }
+      }
+      
+      createMaterial(style, invariants) {
+        const primaryColor = new THREE.Color(style?.primaryColor || 0x6366f1);
+        
+        switch (style?.type) {
+          case 'metallic':
+            return new THREE.MeshStandardMaterial({
+              color: primaryColor,
+              metalness: 0.8,
+              roughness: 0.2,
+              vertexColors: true,
+            });
+            
+          case 'glowing':
+            return new THREE.MeshStandardMaterial({
+              color: primaryColor,
+              emissive: new THREE.Color(style?.glowColor || primaryColor),
+              emissiveIntensity: style?.emissiveIntensity || 0.3,
+              metalness: 0.3,
+              roughness: 0.4,
+              vertexColors: true,
+            });
+            
+          case 'translucent':
+            return new THREE.MeshPhysicalMaterial({
+              color: primaryColor,
+              transmission: 0.6,
+              thickness: 0.5,
+              roughness: 0.1,
+              metalness: 0,
+              vertexColors: true,
+            });
+            
+          default:
+            return new THREE.MeshStandardMaterial({
+              color: primaryColor,
+              metalness: 0.5,
+              roughness: 0.5,
+              vertexColors: true,
+            });
+        }
+      }
+      
+      applyVertexColors(geometry, invariants, style) {
+        const positions = geometry.attributes.position;
+        const colors = new Float32Array(positions.count * 3);
+        
+        const primaryColor = new THREE.Color(style?.primaryColor || 0x6366f1);
+        const secondaryColor = new THREE.Color(style?.secondaryColor || 0xec4899);
+        
+        const writheInfluence = Math.abs(invariants?.writhe || 0) / 10;
+        
+        for (let i = 0; i < positions.count; i++) {
+          const t = (i / positions.count) % 1.0;
+          const color = primaryColor.clone().lerp(secondaryColor, t * writheInfluence);
+          
+          colors[i * 3] = color.r;
+          colors[i * 3 + 1] = color.g;
+          colors[i * 3 + 2] = color.b;
+        }
+        
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+      }
+      
+      addCrossingIndicators(crossings, style) {
+        const primaryColor = new THREE.Color(style?.primaryColor || 0x6366f1);
+        
+        crossings.forEach(crossing => {
+          const position = new THREE.Vector3(
+            crossing.position[0],
+            crossing.position[1],
+            crossing.position[2]
+          );
+          
+          const geometry = new THREE.SphereGeometry(0.05, 16, 16);
+          const material = new THREE.MeshStandardMaterial({
+            color: crossing.isOver ? 0xffffff : 0x333333,
+            emissive: crossing.isOver ? 0xffffff : 0x000000,
+            emissiveIntensity: crossing.isOver ? 0.3 : 0,
+          });
+          
+          const sphere = new THREE.Mesh(geometry, material);
+          sphere.position.copy(position);
+          this.sceneManager.addMesh(sphere);
+        });
+      }
+      
+      updateUniforms(uniforms) {
+        if (this.currentKnot && this.currentKnot.material.uniforms) {
+          Object.entries(uniforms).forEach(([key, value]) => {
+            if (this.currentKnot.material.uniforms[key]) {
+              this.currentKnot.material.uniforms[key].value = value;
+            }
+          });
+        }
+      }
+    }
+    
+    // ─────────────────────────────────────────────────────────────
+    // FABRIC RENDERER
+    // ─────────────────────────────────────────────────────────────
+    
+    class FabricRenderer {
+      constructor(sceneManager) {
+        this.sceneManager = sceneManager;
+        this.strandMeshes = [];
+        this.raycaster = new THREE.Raycaster();
+        this.mouse = new THREE.Vector2();
+      }
+      
+      render(data) {
+        this.sceneManager.clearScene();
+        this.strandMeshes = [];
+        
+        // Render each strand as a tube
+        data.strands.forEach((strand, index) => {
+          const points = strand.coordinates.map(c =>
+            new THREE.Vector3(c[0], c[1], c[2])
+          );
+          
+          // Calculate weave offset
+          const offset = this.calculateWeaveOffset(index, data.strands.length);
+          points.forEach(p => {
+            p.x += offset.x;
+            p.y += offset.y;
+          });
+          
+          const curve = new THREE.CatmullRomCurve3(points, true);
+          const geometry = new THREE.TubeGeometry(curve, 100, 0.05, 8, true);
+          
+          const color = new THREE.Color(strand.color || this.getStrandColor(index));
+          const material = new THREE.MeshStandardMaterial({
+            color: color,
+            metalness: 0.1,
+            roughness: 0.8,
+          });
+          
+          const mesh = new THREE.Mesh(geometry, material);
+          mesh.userData = { userId: strand.userId, index: index };
+          
+          this.sceneManager.addMesh(mesh);
+          this.strandMeshes.push(mesh);
+        });
+        
+        // Setup interaction
+        this.setupInteraction();
+        
+        // Configure bloom
+        this.sceneManager.setBloomStrength(0.3);
+        
+        if (window.flutter_inappwebview) {
+          window.flutter_inappwebview.callHandler('onRenderComplete', 'fabric');
+        }
+      }
+      
+      calculateWeaveOffset(index, total) {
+        const angle = (index / total) * Math.PI * 2;
+        const radius = 0.1;
+        return {
+          x: Math.cos(angle) * radius,
+          y: Math.sin(angle) * radius
+        };
+      }
+      
+      getStrandColor(index) {
+        const hue = (index * 137.508) % 360; // Golden angle for good distribution
+        return `hsl(${hue}, 70%, 60%)`;
+      }
+      
+      setupInteraction() {
+        const container = this.sceneManager.container;
+        
+        container.addEventListener('click', (event) => {
+          const rect = container.getBoundingClientRect();
+          this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+          this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+          
+          this.raycaster.setFromCamera(this.mouse, this.sceneManager.camera);
+          const intersects = this.raycaster.intersectObjects(this.strandMeshes);
+          
+          if (intersects.length > 0) {
+            const userId = intersects[0].object.userData.userId;
+            if (window.flutter_inappwebview) {
+              window.flutter_inappwebview.callHandler('onObjectTapped', userId);
+            }
+          }
+        });
+      }
+      
+      highlightStrand(index) {
+        this.strandMeshes.forEach((mesh, i) => {
+          if (i === index) {
+            mesh.material.emissive = mesh.material.color;
+            mesh.material.emissiveIntensity = 0.5;
+            mesh.scale.set(1.2, 1.2, 1);
+          } else {
+            mesh.material.emissive = new THREE.Color(0x000000);
+            mesh.material.emissiveIntensity = 0;
+            mesh.scale.set(1, 1, 1);
+          }
+        });
+      }
+    }
+    
+    // ─────────────────────────────────────────────────────────────
+    // WORLDSHEET RENDERER
+    // ─────────────────────────────────────────────────────────────
+    
+    class WorldsheetRenderer {
+      constructor(sceneManager) {
+        this.sceneManager = sceneManager;
+        this.surfaceMesh = null;
+        this.currentTime = 0.5;
+        this.data = null;
+      }
+      
+      render(data) {
+        this.data = data;
+        this.sceneManager.clearScene();
+        
+        // Create parametric surface
+        const geometry = new THREE.ParametricGeometry(
+          (u, v, target) => this.worldsheetFunction(u, v, target),
+          100,
+          100
+        );
+        
+        // Semi-transparent material
+        const primaryColor = new THREE.Color(data.style?.primaryColor || 0x6366f1);
+        const material = new THREE.MeshPhysicalMaterial({
+          color: primaryColor,
+          side: THREE.DoubleSide,
+          transmission: 0.3,
+          thickness: 0.2,
+          roughness: 0.1,
+          metalness: 0.1,
+        });
+        
+        this.surfaceMesh = new THREE.Mesh(geometry, material);
+        this.sceneManager.addMesh(this.surfaceMesh);
+        
+        // Add wireframe overlay
+        const wireframe = new THREE.WireframeGeometry(geometry);
+        const lineMaterial = new THREE.LineBasicMaterial({ 
+          color: 0xffffff, 
+          transparent: true, 
+          opacity: 0.1 
+        });
+        const line = new THREE.LineSegments(wireframe, lineMaterial);
+        this.sceneManager.addMesh(line);
+        
+        // Configure bloom
+        this.sceneManager.setBloomStrength(0.4);
+        
+        if (window.flutter_inappwebview) {
+          window.flutter_inappwebview.callHandler('onRenderComplete', 'worldsheet');
+        }
+      }
+      
+      worldsheetFunction(u, v, target) {
+        const sigma = u * Math.PI * 2;
+        const tau = v * Math.PI * 2;
+        
+        // Get fabric data for current time
+        const stability = this.data?.fabricData?.[0]?.invariants?.stability || 0.8;
+        const density = this.data?.fabricData?.[0]?.invariants?.density || 0.5;
+        
+        // Base toroidal shape
+        const R = 2 + stability * 0.5;
+        const r = 0.5 + density * 0.3;
+        
+        // Deformation based on time and properties
+        const deform = Math.sin(sigma * 3 + this.currentTime * Math.PI) * 0.2;
+        
+        const x = (R + r * Math.cos(tau) + deform) * Math.cos(sigma);
+        const y = (R + r * Math.cos(tau) + deform) * Math.sin(sigma);
+        const z = r * Math.sin(tau);
+        
+        target.set(x, y, z);
+      }
+      
+      setTime(t) {
+        this.currentTime = t;
+        if (this.surfaceMesh && this.data) {
+          // Regenerate geometry with new time
+          const geometry = new THREE.ParametricGeometry(
+            (u, v, target) => this.worldsheetFunction(u, v, target),
+            100,
+            100
+          );
+          this.surfaceMesh.geometry.dispose();
+          this.surfaceMesh.geometry = geometry;
+        }
+      }
+    }
+    
+    // ─────────────────────────────────────────────────────────────
+    // NETWORK RENDERER
+    // ─────────────────────────────────────────────────────────────
+    
+    class NetworkRenderer {
+      constructor(sceneManager) {
+        this.sceneManager = sceneManager;
+        this.nodes = [];
+        this.edges = [];
+        this.flowParticles = [];
+      }
+      
+      render(data) {
+        this.sceneManager.clearScene();
+        this.nodes = [];
+        this.edges = [];
+        
+        // Render nodes
+        data.nodes.forEach((node, index) => {
+          const geometry = new THREE.SphereGeometry(
+            node.isCenter ? 0.3 : 0.15, 
+            16, 
+            16
+          );
+          
+          const color = new THREE.Color(node.color || 0x6366f1);
+          const material = new THREE.MeshStandardMaterial({
+            color: color,
+            emissive: node.isCenter ? color : new THREE.Color(0x000000),
+            emissiveIntensity: node.isCenter ? 0.5 : 0,
+            metalness: 0.5,
+            roughness: 0.5,
+          });
+          
+          const mesh = new THREE.Mesh(geometry, material);
+          mesh.position.set(node.position[0], node.position[1], node.position[2]);
+          mesh.userData = { userId: node.userId, index: index };
+          
+          this.sceneManager.addMesh(mesh);
+          this.nodes.push(mesh);
+        });
+        
+        // Render edges
+        data.edges.forEach((edge, index) => {
+          const fromNode = data.nodes[edge.from];
+          const toNode = data.nodes[edge.to];
+          
+          if (fromNode && toNode) {
+            const points = [
+              new THREE.Vector3(fromNode.position[0], fromNode.position[1], fromNode.position[2]),
+              new THREE.Vector3(toNode.position[0], toNode.position[1], toNode.position[2])
+            ];
+            
+            const geometry = new THREE.BufferGeometry().setFromPoints(points);
+            const material = new THREE.LineBasicMaterial({
+              color: 0x6366f1,
+              transparent: true,
+              opacity: 0.5,
+            });
+            
+            const line = new THREE.Line(geometry, material);
+            line.userData = { from: edge.from, to: edge.to, index: index };
+            this.sceneManager.addMesh(line);
+            this.edges.push(line);
+            
+            // Add flow particle
+            this.addFlowParticle(points[0], points[1]);
+          }
+        });
+        
+        // Configure bloom
+        this.sceneManager.setBloomStrength(0.6);
+        
+        // Start flow animation
+        this.animateFlow();
+        
+        if (window.flutter_inappwebview) {
+          window.flutter_inappwebview.callHandler('onRenderComplete', 'network');
+        }
+      }
+      
+      addFlowParticle(from, to) {
+        const geometry = new THREE.SphereGeometry(0.03, 8, 8);
+        const material = new THREE.MeshBasicMaterial({
+          color: 0xffffff,
+          transparent: true,
+          opacity: 0,
+        });
+        
+        const particle = new THREE.Mesh(geometry, material);
+        particle.userData = { from: from.clone(), to: to.clone(), progress: Math.random() };
+        particle.position.copy(from);
+        
+        this.sceneManager.addMesh(particle);
+        this.flowParticles.push(particle);
+      }
+      
+      animateFlow() {
+        const animate = () => {
+          this.flowParticles.forEach(particle => {
+            particle.userData.progress += 0.005;
+            if (particle.userData.progress > 1) {
+              particle.userData.progress = 0;
+            }
+            
+            const t = particle.userData.progress;
+            particle.position.lerpVectors(
+              particle.userData.from,
+              particle.userData.to,
+              t
+            );
+            
+            // Fade in/out at endpoints
+            const fade = Math.sin(t * Math.PI);
+            particle.material.opacity = fade * 0.8;
+          });
+          
+          requestAnimationFrame(animate);
+        };
+        animate();
+      }
+      
+      pulseEdge(edgeIndex) {
+        const edge = this.edges[edgeIndex];
+        if (!edge) return;
+        
+        const originalOpacity = edge.material.opacity;
+        const originalColor = edge.material.color.clone();
+        const pulseColor = new THREE.Color(0xffffff);
+        
+        // Animate pulse
+        const startTime = performance.now();
+        const duration = 500;
+        
+        const animatePulse = () => {
+          const elapsed = performance.now() - startTime;
+          const t = Math.min(elapsed / duration, 1);
+          const pulse = Math.sin(t * Math.PI);
+          
+          edge.material.color.lerpColors(originalColor, pulseColor, pulse);
+          edge.material.opacity = 0.5 + pulse * 0.5;
+          
+          if (t < 1) {
+            requestAnimationFrame(animatePulse);
+          } else {
+            edge.material.color.copy(originalColor);
+            edge.material.opacity = originalOpacity;
+          }
+        };
+        
+        animatePulse();
+      }
+      
+      highlightNode(userId) {
+        this.nodes.forEach(node => {
+          if (node.userData.userId === userId) {
+            node.material.emissive.setHex(0x00ff66);
+            node.material.emissiveIntensity = 0.5;
+            node.scale.setScalar(1.5);
+          }
+        });
+      }
+      
+      clearHighlights() {
+        this.nodes.forEach((node, index) => {
+          const isCenter = node.scale.x > 1.2;
+          node.material.emissive.setHex(isCenter ? node.material.color.getHex() : 0x000000);
+          node.material.emissiveIntensity = isCenter ? 0.5 : 0;
+          node.scale.setScalar(1.0);
+        });
+      }
+    }
+    
+    // ─────────────────────────────────────────────────────────────
+    // PHYSICS WORLD
+    // Motion-Reactive 3D Visualization System
+    // ─────────────────────────────────────────────────────────────
+    
+    class PhysicsWorld {
+      constructor() {
+        this.gravity = new THREE.Vector3(0, -9.8, 0);
+        this.objects = [];
+        this.damping = 0.95;
+        this.enabled = true;
+        this.lastTime = performance.now();
+      }
+      
+      /**
+       * Set gravity direction from device accelerometer
+       * @param {number} x - X component (left-right tilt)
+       * @param {number} y - Y component (forward-back tilt)
+       * @param {number} z - Z component (up-down)
+       */
+      setGravityFromDevice(x, y, z) {
+        // Scale to reasonable physics values
+        this.gravity.set(x * 9.8, y * 9.8, z * 9.8);
+      }
+      
+      /**
+       * Add an object to physics simulation
+       * @param {THREE.Object3D} object - Object to simulate
+       * @param {Object} options - Physics options
+       */
+      addObject(object, options = {}) {
+        const physicsObject = {
+          mesh: object,
+          velocity: new THREE.Vector3(0, 0, 0),
+          angularVelocity: new THREE.Vector3(0, 0, 0),
+          mass: options.mass || 1.0,
+          damping: options.damping || this.damping,
+          behavior: options.behavior || 'pendulum', // 'pendulum', 'float', 'fullPhysics'
+          restPosition: object.position.clone(),
+          constraints: options.constraints || { radius: 2.0 },
+        };
+        this.objects.push(physicsObject);
+        return physicsObject;
+      }
+      
+      /**
+       * Remove an object from physics simulation
+       */
+      removeObject(object) {
+        const index = this.objects.findIndex(o => o.mesh === object);
+        if (index !== -1) {
+          this.objects.splice(index, 1);
+        }
+      }
+      
+      /**
+       * Clear all physics objects
+       */
+      clear() {
+        this.objects = [];
+      }
+      
+      /**
+       * Step the physics simulation
+       */
+      step() {
+        if (!this.enabled) return;
+        
+        const now = performance.now();
+        const deltaTime = Math.min((now - this.lastTime) / 1000, 0.05); // Cap at 50ms
+        this.lastTime = now;
+        
+        this.objects.forEach(obj => {
+          switch (obj.behavior) {
+            case 'pendulum':
+              this.stepPendulum(obj, deltaTime);
+              break;
+            case 'float':
+              this.stepFloat(obj, deltaTime);
+              break;
+            case 'fullPhysics':
+              this.stepFullPhysics(obj, deltaTime);
+              break;
+            case 'parallax':
+              this.stepParallax(obj, deltaTime);
+              break;
+          }
+        });
+      }
+      
+      /**
+       * Pendulum behavior - swings from center point
+       */
+      stepPendulum(obj, dt) {
+        // Calculate force toward gravity direction
+        const gravityForce = this.gravity.clone().multiplyScalar(0.1);
+        
+        // Apply force to velocity
+        obj.velocity.add(gravityForce.multiplyScalar(dt));
+        
+        // Apply damping
+        obj.velocity.multiplyScalar(obj.damping);
+        
+        // Update position
+        obj.mesh.position.add(obj.velocity.clone().multiplyScalar(dt));
+        
+        // Constrain to sphere around rest position
+        const offset = obj.mesh.position.clone().sub(obj.restPosition);
+        const distance = offset.length();
+        if (distance > obj.constraints.radius) {
+          offset.normalize().multiplyScalar(obj.constraints.radius);
+          obj.mesh.position.copy(obj.restPosition.clone().add(offset));
+          
+          // Bounce back
+          obj.velocity.reflect(offset.normalize()).multiplyScalar(0.3);
+        }
+        
+        // Spring back to center
+        const toCenter = obj.restPosition.clone().sub(obj.mesh.position);
+        obj.velocity.add(toCenter.multiplyScalar(0.5 * dt));
+      }
+      
+      /**
+       * Float behavior - gentle drift with momentum
+       */
+      stepFloat(obj, dt) {
+        // Gentle gravity influence
+        const gravityInfluence = this.gravity.clone().multiplyScalar(0.02);
+        obj.velocity.add(gravityInfluence.multiplyScalar(dt));
+        
+        // Strong damping for floaty feel
+        obj.velocity.multiplyScalar(0.98);
+        
+        // Update position
+        obj.mesh.position.add(obj.velocity.clone().multiplyScalar(dt));
+        
+        // Soft constraint to bounds
+        const offset = obj.mesh.position.clone().sub(obj.restPosition);
+        const distance = offset.length();
+        if (distance > obj.constraints.radius * 0.8) {
+          const pullBack = offset.normalize().multiplyScalar(-0.1);
+          obj.velocity.add(pullBack);
+        }
+      }
+      
+      /**
+       * Full physics with gravity and collisions
+       */
+      stepFullPhysics(obj, dt) {
+        // Full gravity
+        obj.velocity.add(this.gravity.clone().multiplyScalar(dt));
+        
+        // Light damping
+        obj.velocity.multiplyScalar(obj.damping);
+        
+        // Update position
+        obj.mesh.position.add(obj.velocity.clone().multiplyScalar(dt));
+        
+        // Bounce off sphere constraint (bubble wall)
+        const offset = obj.mesh.position.clone().sub(obj.restPosition);
+        const distance = offset.length();
+        if (distance > obj.constraints.radius) {
+          // Push back inside
+          offset.normalize().multiplyScalar(obj.constraints.radius);
+          obj.mesh.position.copy(obj.restPosition.clone().add(offset));
+          
+          // Reflect velocity (bounce)
+          const normal = offset.normalize();
+          obj.velocity.reflect(normal).multiplyScalar(0.6);
+        }
+      }
+      
+      /**
+       * Parallax behavior - subtle offset based on tilt
+       */
+      stepParallax(obj, dt) {
+        // Target position based on gravity tilt
+        const tiltOffset = new THREE.Vector3(
+          this.gravity.x * 0.05,
+          this.gravity.y * 0.05,
+          0
+        );
+        const targetPos = obj.restPosition.clone().add(tiltOffset);
+        
+        // Smooth interpolation to target
+        obj.mesh.position.lerp(targetPos, 0.1);
+      }
+      
+      /**
+       * Enable/disable physics
+       */
+      setEnabled(enabled) {
+        this.enabled = enabled;
+        if (enabled) {
+          this.lastTime = performance.now();
+        }
+      }
+      
+      /**
+       * Reset all objects to rest position
+       */
+      reset() {
+        this.objects.forEach(obj => {
+          obj.mesh.position.copy(obj.restPosition);
+          obj.velocity.set(0, 0, 0);
+          obj.angularVelocity.set(0, 0, 0);
+        });
+      }
+    }
+    
+    window.PhysicsWorld = PhysicsWorld;
+    
+    // ─────────────────────────────────────────────────────────────
+    // BUBBLE CONTAINER
+    // Glass bubble effect around objects
+    // ─────────────────────────────────────────────────────────────
+    
+    class BubbleContainer {
+      constructor(sceneManager, options = {}) {
+        this.sceneManager = sceneManager;
+        this.mesh = null;
+        this.innerMesh = null;
+        this.shaderMaterial = null;
+        this.enabled = false;
+        
+        this.options = {
+          radius: options.radius || 2.5,
+          style: options.style || 'glass', // 'glass', 'frosted', 'iridescent', 'liquid'
+          tintColor: options.tintColor || 0xaaddff,
+          opacity: options.opacity || 0.15,
+          ...options
+        };
+        
+        this.uniforms = {
+          uTime: { value: 0.0 },
+          uTilt: { value: new THREE.Vector2(0, 0) },
+          uOpacity: { value: this.options.opacity },
+          uFresnelPower: { value: 3.0 },
+          uIridescence: { value: this.options.style === 'iridescent' ? 0.5 : 0.1 },
+          uRefraction: { value: 0.3 },
+          uTintColor: { value: new THREE.Color(this.options.tintColor) },
+          uRippleStrength: { value: 0.0 },
+        };
+      }
+      
+      /**
+       * Create the bubble mesh
+       */
+      async create() {
+        // Load bubble shader
+        const shader = await ShaderLoader.load('bubble_material.glsl');
+        
+        if (shader && shader.vertex && shader.fragment) {
+          this.shaderMaterial = new THREE.ShaderMaterial({
+            uniforms: this.uniforms,
+            vertexShader: shader.vertex,
+            fragmentShader: shader.fragment,
+            transparent: true,
+            side: THREE.BackSide, // Render inside of sphere
+            depthWrite: false,
+          });
+        } else {
+          // Fallback to physical material
+          this.shaderMaterial = new THREE.MeshPhysicalMaterial({
+            color: this.options.tintColor,
+            transmission: 0.9,
+            thickness: 0.5,
+            roughness: this.options.style === 'frosted' ? 0.3 : 0.05,
+            metalness: 0,
+            transparent: true,
+            opacity: this.options.opacity,
+            side: THREE.BackSide,
+            depthWrite: false,
+          });
+        }
+        
+        const geometry = new THREE.SphereGeometry(
+          this.options.radius,
+          64,
+          64
+        );
+        
+        this.mesh = new THREE.Mesh(geometry, this.shaderMaterial);
+        this.mesh.renderOrder = -1; // Render before inner objects
+        
+        return this.mesh;
+      }
+      
+      /**
+       * Add bubble to scene
+       */
+      show() {
+        if (!this.mesh) return;
+        this.sceneManager.scene.add(this.mesh);
+        this.enabled = true;
+      }
+      
+      /**
+       * Remove bubble from scene
+       */
+      hide() {
+        if (!this.mesh) return;
+        this.sceneManager.scene.remove(this.mesh);
+        this.enabled = false;
+      }
+      
+      /**
+       * Toggle bubble visibility
+       */
+      toggle() {
+        if (this.enabled) {
+          this.hide();
+        } else {
+          this.show();
+        }
+      }
+      
+      /**
+       * Update tilt from device motion
+       */
+      updateTilt(x, y) {
+        if (this.uniforms.uTilt) {
+          this.uniforms.uTilt.value.set(x, y);
+        }
+        
+        // Add ripple effect from motion
+        const motionMagnitude = Math.sqrt(x * x + y * y);
+        if (this.uniforms.uRippleStrength) {
+          this.uniforms.uRippleStrength.value = motionMagnitude * 0.5;
+        }
+      }
+      
+      /**
+       * Update animation
+       */
+      update(deltaTime) {
+        if (!this.enabled) return;
+        
+        if (this.uniforms.uTime) {
+          this.uniforms.uTime.value += deltaTime;
+        }
+        
+        // Decay ripple
+        if (this.uniforms.uRippleStrength) {
+          this.uniforms.uRippleStrength.value *= 0.95;
+        }
+      }
+      
+      /**
+       * Set bubble style
+       */
+      setStyle(style) {
+        this.options.style = style;
+        
+        switch (style) {
+          case 'iridescent':
+            this.uniforms.uIridescence.value = 0.5;
+            this.uniforms.uFresnelPower.value = 2.5;
+            break;
+          case 'frosted':
+            this.uniforms.uIridescence.value = 0.0;
+            this.uniforms.uOpacity.value = 0.3;
+            break;
+          case 'liquid':
+            this.uniforms.uRippleStrength.value = 0.3;
+            this.uniforms.uOpacity.value = 0.25;
+            break;
+          case 'glass':
+          default:
+            this.uniforms.uIridescence.value = 0.1;
+            this.uniforms.uFresnelPower.value = 3.0;
+            this.uniforms.uOpacity.value = 0.15;
+            break;
+        }
+      }
+      
+      /**
+       * Dispose resources
+       */
+      dispose() {
+        if (this.mesh) {
+          this.mesh.geometry.dispose();
+          this.shaderMaterial.dispose();
+          this.sceneManager.scene.remove(this.mesh);
+          this.mesh = null;
+        }
+      }
+    }
+    
+    window.BubbleContainer = BubbleContainer;
+    
+    // ─────────────────────────────────────────────────────────────
+    // MOTION CONTROLLER
+    // Handles device motion input and distributes to physics/bubble
+    // ─────────────────────────────────────────────────────────────
+    
+    class MotionController {
+      constructor(physicsWorld, bubbleContainer) {
+        this.physicsWorld = physicsWorld;
+        this.bubbleContainer = bubbleContainer;
+        this.enabled = true;
+        this.config = {
+          reactivity: 'moderate',
+          tiltSensitivity: 0.5,
+          physicsBehavior: 'pendulum',
+        };
+      }
+      
+      /**
+       * Set motion configuration
+       */
+      setConfig(config) {
+        this.config = { ...this.config, ...config };
+        
+        // Update physics based on reactivity
+        if (this.physicsWorld) {
+          switch (this.config.reactivity) {
+            case 'none':
+              this.physicsWorld.setEnabled(false);
+              break;
+            case 'minimal':
+              this.physicsWorld.setEnabled(true);
+              this.physicsWorld.damping = 0.99;
+              break;
+            case 'subtle':
+              this.physicsWorld.setEnabled(true);
+              this.physicsWorld.damping = 0.97;
+              break;
+            case 'moderate':
+              this.physicsWorld.setEnabled(true);
+              this.physicsWorld.damping = 0.95;
+              break;
+            case 'dynamic':
+              this.physicsWorld.setEnabled(true);
+              this.physicsWorld.damping = 0.9;
+              break;
+          }
+        }
+      }
+      
+      /**
+       * Handle device motion update from Flutter
+       */
+      onMotionUpdate(motionData) {
+        if (!this.enabled) return;
+        
+        const { tilt, gravity, shake } = motionData;
+        
+        // Update physics world gravity
+        if (this.physicsWorld) {
+          this.physicsWorld.setGravityFromDevice(
+            gravity.x * this.config.tiltSensitivity,
+            gravity.y * this.config.tiltSensitivity,
+            gravity.z * this.config.tiltSensitivity
+          );
+        }
+        
+        // Update bubble container tilt
+        if (this.bubbleContainer) {
+          this.bubbleContainer.updateTilt(
+            tilt.x * this.config.tiltSensitivity,
+            tilt.y * this.config.tiltSensitivity
+          );
+        }
+        
+        // Handle shake
+        if (shake) {
+          this.onShake();
+        }
+      }
+      
+      /**
+       * Handle shake gesture
+       */
+      onShake() {
+        console.log('Shake detected!');
+        
+        // Notify Flutter
+        if (window.flutter_inappwebview) {
+          window.flutter_inappwebview.callHandler('onShake', {});
+        }
+        
+        // Default action: reset view
+        if (this.physicsWorld) {
+          this.physicsWorld.reset();
+        }
+        
+        if (window.cameraController) {
+          window.cameraController.reset();
+        }
+      }
+      
+      /**
+       * Enable/disable motion
+       */
+      setEnabled(enabled) {
+        this.enabled = enabled;
+        if (this.physicsWorld) {
+          this.physicsWorld.setEnabled(enabled);
+        }
+      }
+    }
+    
+    window.MotionController = MotionController;
+    
+    // ─────────────────────────────────────────────────────────────
+    // GLOBAL INITIALIZATION
+    // ─────────────────────────────────────────────────────────────
+    
+    const container = document.getElementById('container');
+    const sceneManager = new SceneManager(container);
+    
+    window.sceneManager = sceneManager;
+    window.knotRenderer = new KnotRenderer(sceneManager);
+    window.fabricRenderer = new FabricRenderer(sceneManager);
+    window.worldsheetRenderer = new WorldsheetRenderer(sceneManager);
+    window.networkRenderer = new NetworkRenderer(sceneManager);
+    
+    // Physics and motion systems
+    window.physicsWorld = new PhysicsWorld();
+    window.bubbleContainer = new BubbleContainer(sceneManager);
+    window.motionController = new MotionController(
+      window.physicsWorld,
+      window.bubbleContainer
+    );
+    
+    // Initialize bubble container (async)
+    window.bubbleContainer.create().then(() => {
+      console.log('Bubble container ready');
+    }).catch(e => {
+      console.warn('Bubble container creation failed:', e);
+    });
+    
+    // Motion update handler (called from Flutter)
+    window.setDeviceMotion = function(motionData) {
+      if (window.motionController) {
+        window.motionController.onMotionUpdate(motionData);
+      }
+    };
+    
+    // Set motion reactivity config (called from Flutter)
+    window.setMotionConfig = function(config) {
+      if (window.motionController) {
+        window.motionController.setConfig(config);
+      }
+    };
+    
+    // Enable/disable bubble container (called from Flutter)
+    window.setBubbleEnabled = function(enabled, style) {
+      if (window.bubbleContainer) {
+        if (style) {
+          window.bubbleContainer.setStyle(style);
+        }
+        if (enabled) {
+          window.bubbleContainer.show();
+        } else {
+          window.bubbleContainer.hide();
+        }
+      }
+    };
+    
+    // Toggle bubble visibility
+    window.toggleBubble = function() {
+      if (window.bubbleContainer) {
+        window.bubbleContainer.toggle();
+      }
+    };
+    
+    // Add physics to current knot mesh
+    window.addPhysicsToKnot = function(behavior) {
+      if (window.knotRenderer?.currentKnot && window.physicsWorld) {
+        window.physicsWorld.addObject(window.knotRenderer.currentKnot, {
+          behavior: behavior || 'pendulum',
+          constraints: { radius: 1.5 }
+        });
+      }
+    };
+    
+    // Enhanced animation loop with physics
+    const originalAnimate = sceneManager.animate.bind(sceneManager);
+    let lastPhysicsTime = performance.now();
+    
+    sceneManager.animate = function() {
+      const now = performance.now();
+      const deltaTime = (now - lastPhysicsTime) / 1000;
+      lastPhysicsTime = now;
+      
+      // Step physics
+      if (window.physicsWorld) {
+        window.physicsWorld.step();
+      }
+      
+      // Update bubble
+      if (window.bubbleContainer) {
+        window.bubbleContainer.update(deltaTime);
+      }
+      
+      // Update knot renderer shader uniforms
+      if (window.knotRenderer) {
+        window.knotRenderer.update(deltaTime);
+      }
+      
+      // Call original animate
+      if (window.perfMonitor) window.perfMonitor.startFrame();
+      
+      this.animationId = requestAnimationFrame(() => this.animate());
+      this.controls.update();
+      this.composer.render();
+      
+      if (window.perfMonitor) window.perfMonitor.endFrame(this.renderer);
+    };
+    
+    // Animation controller
+    window.animationController = {
+      setTime: (t) => {
+        if (window.worldsheetRenderer) {
+          window.worldsheetRenderer.setTime(t);
+        }
+      },
+      setPlaying: (playing) => {
+        // Toggle auto-rotation
+        sceneManager.setAutoRotate(playing);
+      }
+    };
+    
+    // Camera controller
+    window.cameraController = {
+      setPosition: (x, y, z, tx, ty, tz) => {
+        sceneManager.setCameraPosition(x, y, z);
+        sceneManager.controls.target.set(tx || 0, ty || 0, tz || 0);
+        sceneManager.controls.update();
+      },
+      reset: () => {
+        sceneManager.setCameraPosition(0, 0, 5);
+        sceneManager.controls.target.set(0, 0, 0);
+        sceneManager.controls.update();
+      }
+    };
+    
+    // Cleanup function
+    window.cleanup = function() {
+      sceneManager.dispose();
+    };
+    
+    // Signal ready
+    if (window.flutter_inappwebview) {
+      window.flutter_inappwebview.callHandler('onReady', 'visualization');
+    }
+    
+    console.log('AVRAI 3D Visualization initialized');
+  </script>
+</body>
+</html>

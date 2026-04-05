@@ -1,0 +1,9 @@
+{
+  "pattern_detection_accuracy": 1.0,
+  "cross_level_correlation": 0.9951809358931729,
+  "propagation_accuracy": 1.0,
+  "user_area_correlation": 0.9903618717863457,
+  "area_region_correlation": 1.0,
+  "region_1_pleasure": 0.8614396176226198,
+  "universal_pleasure": 0.5020666779510811
+}

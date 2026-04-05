@@ -1,0 +1,5582 @@
+[
+  {
+    "event_id": "event_0000",
+    "host_id": "user_0464",
+    "category": "business",
+    "location": {
+      "lat": 14.442664227132845,
+      "lng": 154.87313241165214
+    },
+    "event_date": 1773261546.476423,
+    "duration_hours": 2.310507680219536,
+    "entities": [
+      {
+        "entity_id": "entity_0_0",
+        "entity_type": "User",
+        "user_id": "user_0089"
+      },
+      {
+        "entity_id": "entity_0_1",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_0_2",
+        "entity_type": "Sponsor",
+        "user_id": "user_0768"
+      },
+      {
+        "entity_id": "entity_0_3",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_0_4",
+        "entity_type": "Sponsor",
+        "user_id": "user_0090"
+      },
+      {
+        "entity_id": "entity_0_5",
+        "entity_type": "Sponsor",
+        "user_id": "user_0537"
+      },
+      {
+        "entity_id": "entity_0_6",
+        "entity_type": "User",
+        "user_id": "user_0524"
+      },
+      {
+        "entity_id": "entity_0_7",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_0_8",
+        "entity_type": "Business",
+        "user_id": "user_0054"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 3493.223027714245,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0001",
+    "host_id": "user_0542",
+    "category": "science",
+    "location": {
+      "lat": 5.264490168132337,
+      "lng": 130.17423536817122
+    },
+    "event_date": 1772423630.6996212,
+    "duration_hours": 5.581521098544213,
+    "entities": [
+      {
+        "entity_id": "entity_1_0",
+        "entity_type": "Brand",
+        "user_id": "user_0411"
+      },
+      {
+        "entity_id": "entity_1_1",
+        "entity_type": "Business",
+        "user_id": "user_0034"
+      },
+      {
+        "entity_id": "entity_1_2",
+        "entity_type": "Brand",
+        "user_id": "user_0621"
+      },
+      {
+        "entity_id": "entity_1_3",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_1_4",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_1_5",
+        "entity_type": "Brand",
+        "user_id": "user_0135"
+      },
+      {
+        "entity_id": "entity_1_6",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_1_7",
+        "entity_type": "Brand",
+        "user_id": "user_0679"
+      },
+      {
+        "entity_id": "entity_1_8",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_1_9",
+        "entity_type": "Brand",
+        "user_id": "user_0779"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 4386.310352690983,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0002",
+    "host_id": "user_0465",
+    "category": "health",
+    "location": {
+      "lat": -73.87720134046913,
+      "lng": -77.8584583299567
+    },
+    "event_date": 1772757974.7115026,
+    "duration_hours": 2.608169439640408,
+    "entities": [
+      {
+        "entity_id": "entity_2_0",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_2_1",
+        "entity_type": "Sponsor",
+        "user_id": "user_0328"
+      },
+      {
+        "entity_id": "entity_2_2",
+        "entity_type": "Business",
+        "user_id": "user_0197"
+      },
+      {
+        "entity_id": "entity_2_3",
+        "entity_type": "User",
+        "user_id": "user_0720"
+      },
+      {
+        "entity_id": "entity_2_4",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_2_5",
+        "entity_type": "Brand",
+        "user_id": "user_0742"
+      },
+      {
+        "entity_id": "entity_2_6",
+        "entity_type": "Business",
+        "user_id": "user_0632"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 6152.523228116576,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0003",
+    "host_id": "user_0500",
+    "category": "technology",
+    "location": {
+      "lat": 52.20497193798219,
+      "lng": -68.02826010078589
+    },
+    "event_date": 1768083868.874329,
+    "duration_hours": 5.600246040712665,
+    "entities": [
+      {
+        "entity_id": "entity_3_0",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_3_1",
+        "entity_type": "Business",
+        "user_id": "user_0643"
+      },
+      {
+        "entity_id": "entity_3_2",
+        "entity_type": "Brand",
+        "user_id": "user_0647"
+      },
+      {
+        "entity_id": "entity_3_3",
+        "entity_type": "Brand",
+        "user_id": "user_0949"
+      },
+      {
+        "entity_id": "entity_3_4",
+        "entity_type": "Brand",
+        "user_id": "user_0386"
+      },
+      {
+        "entity_id": "entity_3_5",
+        "entity_type": "Business",
+        "user_id": "user_0644"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 4622.867376410741,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0004",
+    "host_id": "user_0348",
+    "category": "science",
+    "location": {
+      "lat": -48.22983336428721,
+      "lng": -157.78767930299233
+    },
+    "event_date": 1770722078.9153163,
+    "duration_hours": 3.306248403666044,
+    "entities": [
+      {
+        "entity_id": "entity_4_0",
+        "entity_type": "Sponsor",
+        "user_id": "user_0890"
+      },
+      {
+        "entity_id": "entity_4_1",
+        "entity_type": "Sponsor",
+        "user_id": "user_0754"
+      },
+      {
+        "entity_id": "entity_4_2",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_4_3",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_4_4",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_4_5",
+        "entity_type": "Sponsor",
+        "user_id": "user_0357"
+      },
+      {
+        "entity_id": "entity_4_6",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_4_7",
+        "entity_type": "Sponsor",
+        "user_id": "user_0869"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 5255.34508809839,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0005",
+    "host_id": "user_0569",
+    "category": "technology",
+    "location": {
+      "lat": -88.06493802200062,
+      "lng": 162.9913074196584
+    },
+    "event_date": 1773450530.776921,
+    "duration_hours": 6.2681015453583,
+    "entities": [
+      {
+        "entity_id": "entity_5_0",
+        "entity_type": "Business",
+        "user_id": "user_0373"
+      },
+      {
+        "entity_id": "entity_5_1",
+        "entity_type": "User",
+        "user_id": "user_0089"
+      },
+      {
+        "entity_id": "entity_5_2",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_5_3",
+        "entity_type": "Sponsor",
+        "user_id": "user_0716"
+      },
+      {
+        "entity_id": "entity_5_4",
+        "entity_type": "User",
+        "user_id": "user_0787"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 7374.5460750997245,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0006",
+    "host_id": "user_0893",
+    "category": "health",
+    "location": {
+      "lat": -57.591564106513154,
+      "lng": 48.861419021422876
+    },
+    "event_date": 1766400574.4957435,
+    "duration_hours": 4.050389796142458,
+    "entities": [
+      {
+        "entity_id": "entity_6_0",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_6_1",
+        "entity_type": "Business",
+        "user_id": "user_0050"
+      },
+      {
+        "entity_id": "entity_6_2",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_6_3",
+        "entity_type": "User",
+        "user_id": "user_0595"
+      },
+      {
+        "entity_id": "entity_6_4",
+        "entity_type": "Business",
+        "user_id": "user_0829"
+      },
+      {
+        "entity_id": "entity_6_5",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_6_6",
+        "entity_type": "Sponsor",
+        "user_id": null
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 5044.6275208396155,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0007",
+    "host_id": "user_0750",
+    "category": "art",
+    "location": {
+      "lat": -33.96258331863087,
+      "lng": -100.4743747498766
+    },
+    "event_date": 1776158782.6427999,
+    "duration_hours": 4.669216033837518,
+    "entities": [
+      {
+        "entity_id": "entity_7_0",
+        "entity_type": "User",
+        "user_id": "user_0104"
+      },
+      {
+        "entity_id": "entity_7_1",
+        "entity_type": "Business",
+        "user_id": "user_0119"
+      },
+      {
+        "entity_id": "entity_7_2",
+        "entity_type": "Business",
+        "user_id": "user_0126"
+      },
+      {
+        "entity_id": "entity_7_3",
+        "entity_type": "Brand",
+        "user_id": "user_0776"
+      },
+      {
+        "entity_id": "entity_7_4",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_7_5",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_7_6",
+        "entity_type": "Sponsor",
+        "user_id": "user_0746"
+      },
+      {
+        "entity_id": "entity_7_7",
+        "entity_type": "Sponsor",
+        "user_id": "user_0827"
+      },
+      {
+        "entity_id": "entity_7_8",
+        "entity_type": "Sponsor",
+        "user_id": "user_0665"
+      },
+      {
+        "entity_id": "entity_7_9",
+        "entity_type": "Business",
+        "user_id": null
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 5102.841584169594,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0008",
+    "host_id": "user_0916",
+    "category": "art",
+    "location": {
+      "lat": -85.69851222394738,
+      "lng": 92.84444413742337
+    },
+    "event_date": 1772738632.7411509,
+    "duration_hours": 6.10995701517318,
+    "entities": [
+      {
+        "entity_id": "entity_8_0",
+        "entity_type": "Brand",
+        "user_id": "user_0235"
+      },
+      {
+        "entity_id": "entity_8_1",
+        "entity_type": "Business",
+        "user_id": "user_0196"
+      },
+      {
+        "entity_id": "entity_8_2",
+        "entity_type": "User",
+        "user_id": "user_0745"
+      },
+      {
+        "entity_id": "entity_8_3",
+        "entity_type": "Brand",
+        "user_id": "user_0281"
+      },
+      {
+        "entity_id": "entity_8_4",
+        "entity_type": "Sponsor",
+        "user_id": "user_0188"
+      },
+      {
+        "entity_id": "entity_8_5",
+        "entity_type": "Sponsor",
+        "user_id": "user_0504"
+      },
+      {
+        "entity_id": "entity_8_6",
+        "entity_type": "Sponsor",
+        "user_id": "user_0868"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 4191.410252254367,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0009",
+    "host_id": "user_0576",
+    "category": "business",
+    "location": {
+      "lat": 88.39889173095291,
+      "lng": -57.40589907230878
+    },
+    "event_date": 1779040863.0196888,
+    "duration_hours": 4.498803294577597,
+    "entities": [
+      {
+        "entity_id": "entity_9_0",
+        "entity_type": "User",
+        "user_id": "user_0381"
+      },
+      {
+        "entity_id": "entity_9_1",
+        "entity_type": "Brand",
+        "user_id": "user_0396"
+      },
+      {
+        "entity_id": "entity_9_2",
+        "entity_type": "Brand",
+        "user_id": null
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 2285.1296139307715,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0010",
+    "host_id": "user_0385",
+    "category": "art",
+    "location": {
+      "lat": 87.15200581143915,
+      "lng": -179.31922494301207
+    },
+    "event_date": 1777055374.837097,
+    "duration_hours": 4.849080522106805,
+    "entities": [
+      {
+        "entity_id": "entity_10_0",
+        "entity_type": "Business",
+        "user_id": "user_0168"
+      },
+      {
+        "entity_id": "entity_10_1",
+        "entity_type": "Brand",
+        "user_id": "user_0829"
+      },
+      {
+        "entity_id": "entity_10_2",
+        "entity_type": "Brand",
+        "user_id": "user_0281"
+      },
+      {
+        "entity_id": "entity_10_3",
+        "entity_type": "Business",
+        "user_id": "user_0411"
+      },
+      {
+        "entity_id": "entity_10_4",
+        "entity_type": "Business",
+        "user_id": "user_0254"
+      },
+      {
+        "entity_id": "entity_10_5",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_10_6",
+        "entity_type": "Business",
+        "user_id": "user_0218"
+      },
+      {
+        "entity_id": "entity_10_7",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_10_8",
+        "entity_type": "User",
+        "user_id": "user_0776"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 6294.2234390519425,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0011",
+    "host_id": "user_0422",
+    "category": "health",
+    "location": {
+      "lat": 18.200648948748924,
+      "lng": 160.1746611079239
+    },
+    "event_date": 1768933530.377829,
+    "duration_hours": 7.864304915154593,
+    "entities": [
+      {
+        "entity_id": "entity_11_0",
+        "entity_type": "Brand",
+        "user_id": "user_0245"
+      },
+      {
+        "entity_id": "entity_11_1",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_11_2",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_11_3",
+        "entity_type": "Sponsor",
+        "user_id": "user_0014"
+      },
+      {
+        "entity_id": "entity_11_4",
+        "entity_type": "Business",
+        "user_id": "user_0802"
+      },
+      {
+        "entity_id": "entity_11_5",
+        "entity_type": "User",
+        "user_id": "user_0760"
+      },
+      {
+        "entity_id": "entity_11_6",
+        "entity_type": "Business",
+        "user_id": null
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 6618.396896915914,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0012",
+    "host_id": "user_0412",
+    "category": "business",
+    "location": {
+      "lat": 23.19942224120878,
+      "lng": -134.96244204683262
+    },
+    "event_date": 1769265870.5518334,
+    "duration_hours": 5.875513184485165,
+    "entities": [
+      {
+        "entity_id": "entity_12_0",
+        "entity_type": "Business",
+        "user_id": "user_0934"
+      },
+      {
+        "entity_id": "entity_12_1",
+        "entity_type": "Business",
+        "user_id": "user_0834"
+      },
+      {
+        "entity_id": "entity_12_2",
+        "entity_type": "Brand",
+        "user_id": "user_0329"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 2165.339929163216,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0013",
+    "host_id": "user_0753",
+    "category": "science",
+    "location": {
+      "lat": 12.632321247059355,
+      "lng": 117.29799672053691
+    },
+    "event_date": 1778809226.7074778,
+    "duration_hours": 5.007165951380893,
+    "entities": [
+      {
+        "entity_id": "entity_13_0",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_13_1",
+        "entity_type": "Brand",
+        "user_id": "user_0075"
+      },
+      {
+        "entity_id": "entity_13_2",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_13_3",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_13_4",
+        "entity_type": "Brand",
+        "user_id": "user_0444"
+      },
+      {
+        "entity_id": "entity_13_5",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_13_6",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_13_7",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_13_8",
+        "entity_type": "Sponsor",
+        "user_id": "user_0226"
+      },
+      {
+        "entity_id": "entity_13_9",
+        "entity_type": "Sponsor",
+        "user_id": "user_0043"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 2945.1503708777846,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0014",
+    "host_id": "user_0625",
+    "category": "health",
+    "location": {
+      "lat": -71.09885716017878,
+      "lng": -77.21634895514408
+    },
+    "event_date": 1778277692.212451,
+    "duration_hours": 4.606985351477722,
+    "entities": [
+      {
+        "entity_id": "entity_14_0",
+        "entity_type": "Brand",
+        "user_id": "user_0188"
+      },
+      {
+        "entity_id": "entity_14_1",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_14_2",
+        "entity_type": "User",
+        "user_id": "user_0219"
+      },
+      {
+        "entity_id": "entity_14_3",
+        "entity_type": "Sponsor",
+        "user_id": "user_0591"
+      },
+      {
+        "entity_id": "entity_14_4",
+        "entity_type": "User",
+        "user_id": "user_0467"
+      },
+      {
+        "entity_id": "entity_14_5",
+        "entity_type": "Sponsor",
+        "user_id": "user_0118"
+      },
+      {
+        "entity_id": "entity_14_6",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_14_7",
+        "entity_type": "Business",
+        "user_id": "user_0447"
+      },
+      {
+        "entity_id": "entity_14_8",
+        "entity_type": "Brand",
+        "user_id": "user_0291"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 5083.570550208795,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0015",
+    "host_id": "user_0679",
+    "category": "art",
+    "location": {
+      "lat": 41.35833837188751,
+      "lng": 35.576021568750356
+    },
+    "event_date": 1773096292.7305436,
+    "duration_hours": 3.366908464275673,
+    "entities": [
+      {
+        "entity_id": "entity_15_0",
+        "entity_type": "Business",
+        "user_id": "user_0741"
+      },
+      {
+        "entity_id": "entity_15_1",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_15_2",
+        "entity_type": "User",
+        "user_id": "user_0924"
+      },
+      {
+        "entity_id": "entity_15_3",
+        "entity_type": "User",
+        "user_id": "user_0130"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 4531.525161102007,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0016",
+    "host_id": "user_0263",
+    "category": "science",
+    "location": {
+      "lat": 26.63370568606352,
+      "lng": -138.73569823987793
+    },
+    "event_date": 1774603591.5780475,
+    "duration_hours": 2.0104803347714353,
+    "entities": [
+      {
+        "entity_id": "entity_16_0",
+        "entity_type": "Business",
+        "user_id": "user_0006"
+      },
+      {
+        "entity_id": "entity_16_1",
+        "entity_type": "Sponsor",
+        "user_id": "user_0805"
+      },
+      {
+        "entity_id": "entity_16_2",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_16_3",
+        "entity_type": "Brand",
+        "user_id": "user_0391"
+      },
+      {
+        "entity_id": "entity_16_4",
+        "entity_type": "Business",
+        "user_id": "user_0022"
+      },
+      {
+        "entity_id": "entity_16_5",
+        "entity_type": "Sponsor",
+        "user_id": "user_0464"
+      },
+      {
+        "entity_id": "entity_16_6",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_16_7",
+        "entity_type": "Brand",
+        "user_id": "user_0431"
+      },
+      {
+        "entity_id": "entity_16_8",
+        "entity_type": "Business",
+        "user_id": null
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 6884.1066763838135,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0017",
+    "host_id": "user_0820",
+    "category": "science",
+    "location": {
+      "lat": 67.894998216266,
+      "lng": 174.0067293872494
+    },
+    "event_date": 1767669890.8900585,
+    "duration_hours": 7.746330256919747,
+    "entities": [
+      {
+        "entity_id": "entity_17_0",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_17_1",
+        "entity_type": "Business",
+        "user_id": "user_0920"
+      },
+      {
+        "entity_id": "entity_17_2",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_17_3",
+        "entity_type": "Brand",
+        "user_id": "user_0676"
+      },
+      {
+        "entity_id": "entity_17_4",
+        "entity_type": "Sponsor",
+        "user_id": null
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 6567.859852421221,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0018",
+    "host_id": "user_0920",
+    "category": "technology",
+    "location": {
+      "lat": 66.73439506179609,
+      "lng": 4.371166976063234
+    },
+    "event_date": 1778276255.103732,
+    "duration_hours": 2.7590011012060023,
+    "entities": [
+      {
+        "entity_id": "entity_18_0",
+        "entity_type": "User",
+        "user_id": "user_0311"
+      },
+      {
+        "entity_id": "entity_18_1",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_18_2",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_18_3",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_18_4",
+        "entity_type": "Brand",
+        "user_id": "user_0316"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 3746.798447385723,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0019",
+    "host_id": "user_0067",
+    "category": "science",
+    "location": {
+      "lat": 76.07693497264027,
+      "lng": -76.24258636998205
+    },
+    "event_date": 1767389373.5805724,
+    "duration_hours": 6.0407977121176675,
+    "entities": [
+      {
+        "entity_id": "entity_19_0",
+        "entity_type": "Brand",
+        "user_id": "user_0480"
+      },
+      {
+        "entity_id": "entity_19_1",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_19_2",
+        "entity_type": "Business",
+        "user_id": "user_0478"
+      },
+      {
+        "entity_id": "entity_19_3",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_19_4",
+        "entity_type": "User",
+        "user_id": "user_0639"
+      },
+      {
+        "entity_id": "entity_19_5",
+        "entity_type": "Sponsor",
+        "user_id": "user_0469"
+      },
+      {
+        "entity_id": "entity_19_6",
+        "entity_type": "User",
+        "user_id": "user_0898"
+      },
+      {
+        "entity_id": "entity_19_7",
+        "entity_type": "Business",
+        "user_id": "user_0673"
+      },
+      {
+        "entity_id": "entity_19_8",
+        "entity_type": "Sponsor",
+        "user_id": "user_0051"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 5551.461532445518,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0020",
+    "host_id": "user_0352",
+    "category": "art",
+    "location": {
+      "lat": 37.40896274766184,
+      "lng": -79.75519139516682
+    },
+    "event_date": 1775464812.113995,
+    "duration_hours": 7.475970143734404,
+    "entities": [
+      {
+        "entity_id": "entity_20_0",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_20_1",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_20_2",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_20_3",
+        "entity_type": "Business",
+        "user_id": "user_0913"
+      },
+      {
+        "entity_id": "entity_20_4",
+        "entity_type": "Business",
+        "user_id": "user_0041"
+      },
+      {
+        "entity_id": "entity_20_5",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_20_6",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_20_7",
+        "entity_type": "Sponsor",
+        "user_id": "user_0362"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 8861.653958996269,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0021",
+    "host_id": "user_0740",
+    "category": "technology",
+    "location": {
+      "lat": 17.542501574479065,
+      "lng": 73.60729448283296
+    },
+    "event_date": 1766462499.371979,
+    "duration_hours": 2.8350079478105776,
+    "entities": [
+      {
+        "entity_id": "entity_21_0",
+        "entity_type": "Business",
+        "user_id": "user_0175"
+      },
+      {
+        "entity_id": "entity_21_1",
+        "entity_type": "Sponsor",
+        "user_id": "user_0836"
+      },
+      {
+        "entity_id": "entity_21_2",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_21_3",
+        "entity_type": "User",
+        "user_id": "user_0523"
+      },
+      {
+        "entity_id": "entity_21_4",
+        "entity_type": "Brand",
+        "user_id": "user_0258"
+      },
+      {
+        "entity_id": "entity_21_5",
+        "entity_type": "Sponsor",
+        "user_id": "user_0292"
+      },
+      {
+        "entity_id": "entity_21_6",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_21_7",
+        "entity_type": "Business",
+        "user_id": "user_0645"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 6638.31451593515,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0022",
+    "host_id": "user_0543",
+    "category": "business",
+    "location": {
+      "lat": 14.73873854164195,
+      "lng": -90.64527940580768
+    },
+    "event_date": 1777611209.5880942,
+    "duration_hours": 6.5365747282666655,
+    "entities": [
+      {
+        "entity_id": "entity_22_0",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_22_1",
+        "entity_type": "Business",
+        "user_id": "user_0530"
+      },
+      {
+        "entity_id": "entity_22_2",
+        "entity_type": "Brand",
+        "user_id": "user_0248"
+      },
+      {
+        "entity_id": "entity_22_3",
+        "entity_type": "Brand",
+        "user_id": "user_0321"
+      },
+      {
+        "entity_id": "entity_22_4",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_22_5",
+        "entity_type": "Brand",
+        "user_id": "user_0501"
+      },
+      {
+        "entity_id": "entity_22_6",
+        "entity_type": "User",
+        "user_id": "user_0441"
+      },
+      {
+        "entity_id": "entity_22_7",
+        "entity_type": "User",
+        "user_id": "user_0407"
+      },
+      {
+        "entity_id": "entity_22_8",
+        "entity_type": "Sponsor",
+        "user_id": "user_0455"
+      },
+      {
+        "entity_id": "entity_22_9",
+        "entity_type": "Business",
+        "user_id": "user_0384"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 9349.663533400044,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0023",
+    "host_id": "user_0099",
+    "category": "business",
+    "location": {
+      "lat": -31.11018894140997,
+      "lng": 0.26784921359307656
+    },
+    "event_date": 1779455962.469758,
+    "duration_hours": 6.148590001697205,
+    "entities": [
+      {
+        "entity_id": "entity_23_0",
+        "entity_type": "User",
+        "user_id": "user_0517"
+      },
+      {
+        "entity_id": "entity_23_1",
+        "entity_type": "Business",
+        "user_id": "user_0519"
+      },
+      {
+        "entity_id": "entity_23_2",
+        "entity_type": "User",
+        "user_id": "user_0192"
+      },
+      {
+        "entity_id": "entity_23_3",
+        "entity_type": "Brand",
+        "user_id": "user_0224"
+      },
+      {
+        "entity_id": "entity_23_4",
+        "entity_type": "Brand",
+        "user_id": "user_0364"
+      },
+      {
+        "entity_id": "entity_23_5",
+        "entity_type": "Brand",
+        "user_id": "user_0768"
+      },
+      {
+        "entity_id": "entity_23_6",
+        "entity_type": "Brand",
+        "user_id": "user_0099"
+      },
+      {
+        "entity_id": "entity_23_7",
+        "entity_type": "Brand",
+        "user_id": "user_0913"
+      },
+      {
+        "entity_id": "entity_23_8",
+        "entity_type": "Brand",
+        "user_id": "user_0177"
+      },
+      {
+        "entity_id": "entity_23_9",
+        "entity_type": "Business",
+        "user_id": "user_0660"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 4898.020441261683,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0024",
+    "host_id": "user_0940",
+    "category": "science",
+    "location": {
+      "lat": -11.33092945268624,
+      "lng": -8.594857834482475
+    },
+    "event_date": 1781197040.6117883,
+    "duration_hours": 3.7195791977896535,
+    "entities": [
+      {
+        "entity_id": "entity_24_0",
+        "entity_type": "Brand",
+        "user_id": "user_0955"
+      },
+      {
+        "entity_id": "entity_24_1",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_24_2",
+        "entity_type": "Business",
+        "user_id": "user_0058"
+      },
+      {
+        "entity_id": "entity_24_3",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_24_4",
+        "entity_type": "User",
+        "user_id": "user_0982"
+      },
+      {
+        "entity_id": "entity_24_5",
+        "entity_type": "User",
+        "user_id": "user_0523"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 4575.486319865763,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0025",
+    "host_id": "user_0845",
+    "category": "health",
+    "location": {
+      "lat": -58.427612599677,
+      "lng": 178.4579557793052
+    },
+    "event_date": 1780273179.5358047,
+    "duration_hours": 5.9132895504426575,
+    "entities": [
+      {
+        "entity_id": "entity_25_0",
+        "entity_type": "Brand",
+        "user_id": "user_0484"
+      },
+      {
+        "entity_id": "entity_25_1",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_25_2",
+        "entity_type": "User",
+        "user_id": "user_0934"
+      },
+      {
+        "entity_id": "entity_25_3",
+        "entity_type": "Brand",
+        "user_id": "user_0989"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 1135.8880159938926,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0026",
+    "host_id": "user_0804",
+    "category": "health",
+    "location": {
+      "lat": -24.02945594469912,
+      "lng": -85.88886741935522
+    },
+    "event_date": 1777257878.5413752,
+    "duration_hours": 4.8220623660208695,
+    "entities": [
+      {
+        "entity_id": "entity_26_0",
+        "entity_type": "User",
+        "user_id": "user_0290"
+      },
+      {
+        "entity_id": "entity_26_1",
+        "entity_type": "User",
+        "user_id": "user_0783"
+      },
+      {
+        "entity_id": "entity_26_2",
+        "entity_type": "Brand",
+        "user_id": "user_0586"
+      },
+      {
+        "entity_id": "entity_26_3",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_26_4",
+        "entity_type": "Sponsor",
+        "user_id": "user_0459"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 9547.999625203673,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0027",
+    "host_id": "user_0716",
+    "category": "science",
+    "location": {
+      "lat": -23.159591056174545,
+      "lng": 83.10845477569764
+    },
+    "event_date": 1770346962.7518795,
+    "duration_hours": 5.331783586215639,
+    "entities": [
+      {
+        "entity_id": "entity_27_0",
+        "entity_type": "Sponsor",
+        "user_id": "user_0808"
+      },
+      {
+        "entity_id": "entity_27_1",
+        "entity_type": "Brand",
+        "user_id": "user_0629"
+      },
+      {
+        "entity_id": "entity_27_2",
+        "entity_type": "User",
+        "user_id": "user_0360"
+      },
+      {
+        "entity_id": "entity_27_3",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_27_4",
+        "entity_type": "Business",
+        "user_id": "user_0185"
+      },
+      {
+        "entity_id": "entity_27_5",
+        "entity_type": "Sponsor",
+        "user_id": "user_0804"
+      },
+      {
+        "entity_id": "entity_27_6",
+        "entity_type": "Sponsor",
+        "user_id": "user_0767"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 3447.5983236890015,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0028",
+    "host_id": "user_0423",
+    "category": "science",
+    "location": {
+      "lat": -47.97459696433684,
+      "lng": 133.5281921122092
+    },
+    "event_date": 1775008692.5162647,
+    "duration_hours": 3.0848889161037354,
+    "entities": [
+      {
+        "entity_id": "entity_28_0",
+        "entity_type": "Business",
+        "user_id": "user_0313"
+      },
+      {
+        "entity_id": "entity_28_1",
+        "entity_type": "Sponsor",
+        "user_id": "user_0366"
+      },
+      {
+        "entity_id": "entity_28_2",
+        "entity_type": "Business",
+        "user_id": "user_0213"
+      },
+      {
+        "entity_id": "entity_28_3",
+        "entity_type": "User",
+        "user_id": "user_0537"
+      },
+      {
+        "entity_id": "entity_28_4",
+        "entity_type": "Business",
+        "user_id": "user_0711"
+      },
+      {
+        "entity_id": "entity_28_5",
+        "entity_type": "Brand",
+        "user_id": "user_0497"
+      },
+      {
+        "entity_id": "entity_28_6",
+        "entity_type": "User",
+        "user_id": "user_0341"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 3383.4672676924747,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0029",
+    "host_id": "user_0231",
+    "category": "technology",
+    "location": {
+      "lat": -67.13580674355417,
+      "lng": 25.225089446324972
+    },
+    "event_date": 1776680740.2427409,
+    "duration_hours": 6.2027028944772225,
+    "entities": [
+      {
+        "entity_id": "entity_29_0",
+        "entity_type": "Brand",
+        "user_id": "user_0621"
+      },
+      {
+        "entity_id": "entity_29_1",
+        "entity_type": "User",
+        "user_id": "user_0010"
+      },
+      {
+        "entity_id": "entity_29_2",
+        "entity_type": "Business",
+        "user_id": "user_0196"
+      },
+      {
+        "entity_id": "entity_29_3",
+        "entity_type": "Sponsor",
+        "user_id": "user_0561"
+      },
+      {
+        "entity_id": "entity_29_4",
+        "entity_type": "Sponsor",
+        "user_id": "user_0298"
+      },
+      {
+        "entity_id": "entity_29_5",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_29_6",
+        "entity_type": "User",
+        "user_id": "user_0744"
+      },
+      {
+        "entity_id": "entity_29_7",
+        "entity_type": "Sponsor",
+        "user_id": "user_0908"
+      },
+      {
+        "entity_id": "entity_29_8",
+        "entity_type": "Sponsor",
+        "user_id": "user_0146"
+      },
+      {
+        "entity_id": "entity_29_9",
+        "entity_type": "Brand",
+        "user_id": "user_0067"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 2540.32687360653,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0030",
+    "host_id": "user_0077",
+    "category": "art",
+    "location": {
+      "lat": 27.58931315754464,
+      "lng": -58.98149064301116
+    },
+    "event_date": 1770446093.3646977,
+    "duration_hours": 6.993013660185161,
+    "entities": [
+      {
+        "entity_id": "entity_30_0",
+        "entity_type": "Sponsor",
+        "user_id": "user_0519"
+      },
+      {
+        "entity_id": "entity_30_1",
+        "entity_type": "Business",
+        "user_id": "user_0519"
+      },
+      {
+        "entity_id": "entity_30_2",
+        "entity_type": "Sponsor",
+        "user_id": "user_0672"
+      },
+      {
+        "entity_id": "entity_30_3",
+        "entity_type": "Sponsor",
+        "user_id": "user_0972"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 3149.836030275599,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0031",
+    "host_id": "user_0170",
+    "category": "art",
+    "location": {
+      "lat": 85.7552988896118,
+      "lng": -47.23039769031262
+    },
+    "event_date": 1767525534.8877702,
+    "duration_hours": 4.03314510171597,
+    "entities": [
+      {
+        "entity_id": "entity_31_0",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_31_1",
+        "entity_type": "Business",
+        "user_id": "user_0757"
+      },
+      {
+        "entity_id": "entity_31_2",
+        "entity_type": "Business",
+        "user_id": "user_0040"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 1274.853291814315,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0032",
+    "host_id": "user_0799",
+    "category": "science",
+    "location": {
+      "lat": 6.156584541360457,
+      "lng": -16.527098288786068
+    },
+    "event_date": 1768027884.170401,
+    "duration_hours": 7.741950490820567,
+    "entities": [
+      {
+        "entity_id": "entity_32_0",
+        "entity_type": "Sponsor",
+        "user_id": "user_0081"
+      },
+      {
+        "entity_id": "entity_32_1",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_32_2",
+        "entity_type": "Sponsor",
+        "user_id": "user_0217"
+      },
+      {
+        "entity_id": "entity_32_3",
+        "entity_type": "Business",
+        "user_id": "user_0904"
+      },
+      {
+        "entity_id": "entity_32_4",
+        "entity_type": "User",
+        "user_id": "user_0622"
+      },
+      {
+        "entity_id": "entity_32_5",
+        "entity_type": "Brand",
+        "user_id": "user_0255"
+      },
+      {
+        "entity_id": "entity_32_6",
+        "entity_type": "Sponsor",
+        "user_id": "user_0565"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 5235.525922964692,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0033",
+    "host_id": "user_0065",
+    "category": "health",
+    "location": {
+      "lat": 78.4388045099654,
+      "lng": -163.06931815849288
+    },
+    "event_date": 1768355421.9559674,
+    "duration_hours": 4.7857000244431465,
+    "entities": [
+      {
+        "entity_id": "entity_33_0",
+        "entity_type": "User",
+        "user_id": "user_0705"
+      },
+      {
+        "entity_id": "entity_33_1",
+        "entity_type": "User",
+        "user_id": "user_0689"
+      },
+      {
+        "entity_id": "entity_33_2",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_33_3",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_33_4",
+        "entity_type": "Business",
+        "user_id": "user_0901"
+      },
+      {
+        "entity_id": "entity_33_5",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_33_6",
+        "entity_type": "Sponsor",
+        "user_id": null
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 6297.209584354112,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0034",
+    "host_id": "user_0198",
+    "category": "business",
+    "location": {
+      "lat": 80.30052332176508,
+      "lng": -13.044028415571738
+    },
+    "event_date": 1773340164.2779062,
+    "duration_hours": 3.5789482364321645,
+    "entities": [
+      {
+        "entity_id": "entity_34_0",
+        "entity_type": "Brand",
+        "user_id": "user_0470"
+      },
+      {
+        "entity_id": "entity_34_1",
+        "entity_type": "User",
+        "user_id": "user_0084"
+      },
+      {
+        "entity_id": "entity_34_2",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_34_3",
+        "entity_type": "Brand",
+        "user_id": null
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 3463.1163733470576,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0035",
+    "host_id": "user_0156",
+    "category": "science",
+    "location": {
+      "lat": 18.548462645053455,
+      "lng": -178.0068574258776
+    },
+    "event_date": 1771566718.477633,
+    "duration_hours": 6.426842050584759,
+    "entities": [
+      {
+        "entity_id": "entity_35_0",
+        "entity_type": "Business",
+        "user_id": "user_0310"
+      },
+      {
+        "entity_id": "entity_35_1",
+        "entity_type": "User",
+        "user_id": "user_0712"
+      },
+      {
+        "entity_id": "entity_35_2",
+        "entity_type": "Business",
+        "user_id": "user_0099"
+      },
+      {
+        "entity_id": "entity_35_3",
+        "entity_type": "Brand",
+        "user_id": "user_0240"
+      },
+      {
+        "entity_id": "entity_35_4",
+        "entity_type": "Sponsor",
+        "user_id": "user_0377"
+      },
+      {
+        "entity_id": "entity_35_5",
+        "entity_type": "Brand",
+        "user_id": "user_0315"
+      },
+      {
+        "entity_id": "entity_35_6",
+        "entity_type": "Sponsor",
+        "user_id": "user_0846"
+      },
+      {
+        "entity_id": "entity_35_7",
+        "entity_type": "Sponsor",
+        "user_id": "user_0691"
+      },
+      {
+        "entity_id": "entity_35_8",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_35_9",
+        "entity_type": "Business",
+        "user_id": null
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 8729.954817994134,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0036",
+    "host_id": "user_0077",
+    "category": "art",
+    "location": {
+      "lat": 27.58931315754464,
+      "lng": -58.98149064301116
+    },
+    "event_date": 1774878701.407596,
+    "duration_hours": 7.609680869437294,
+    "entities": [
+      {
+        "entity_id": "entity_36_0",
+        "entity_type": "User",
+        "user_id": "user_0375"
+      },
+      {
+        "entity_id": "entity_36_1",
+        "entity_type": "Sponsor",
+        "user_id": "user_0626"
+      },
+      {
+        "entity_id": "entity_36_2",
+        "entity_type": "User",
+        "user_id": "user_0423"
+      },
+      {
+        "entity_id": "entity_36_3",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_36_4",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_36_5",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_36_6",
+        "entity_type": "Business",
+        "user_id": "user_0193"
+      },
+      {
+        "entity_id": "entity_36_7",
+        "entity_type": "User",
+        "user_id": "user_0751"
+      },
+      {
+        "entity_id": "entity_36_8",
+        "entity_type": "Business",
+        "user_id": "user_0019"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 8636.924093066747,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0037",
+    "host_id": "user_0066",
+    "category": "art",
+    "location": {
+      "lat": 1.9891931089309467,
+      "lng": -109.71251460635581
+    },
+    "event_date": 1780607801.9179006,
+    "duration_hours": 3.5736204025399014,
+    "entities": [
+      {
+        "entity_id": "entity_37_0",
+        "entity_type": "User",
+        "user_id": "user_0253"
+      },
+      {
+        "entity_id": "entity_37_1",
+        "entity_type": "User",
+        "user_id": "user_0502"
+      },
+      {
+        "entity_id": "entity_37_2",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_37_3",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_37_4",
+        "entity_type": "Sponsor",
+        "user_id": null
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 4576.065210741514,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0038",
+    "host_id": "user_0307",
+    "category": "art",
+    "location": {
+      "lat": -37.77394735247238,
+      "lng": -17.45983904978332
+    },
+    "event_date": 1781534681.8155506,
+    "duration_hours": 6.121734834511914,
+    "entities": [
+      {
+        "entity_id": "entity_38_0",
+        "entity_type": "User",
+        "user_id": "user_0905"
+      },
+      {
+        "entity_id": "entity_38_1",
+        "entity_type": "Business",
+        "user_id": "user_0207"
+      },
+      {
+        "entity_id": "entity_38_2",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_38_3",
+        "entity_type": "Business",
+        "user_id": "user_0796"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 5822.432519764016,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0039",
+    "host_id": "user_0389",
+    "category": "science",
+    "location": {
+      "lat": 83.51389693346083,
+      "lng": -139.54853175749867
+    },
+    "event_date": 1774414866.5839543,
+    "duration_hours": 5.50347429946028,
+    "entities": [
+      {
+        "entity_id": "entity_39_0",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_39_1",
+        "entity_type": "User",
+        "user_id": "user_0535"
+      },
+      {
+        "entity_id": "entity_39_2",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_39_3",
+        "entity_type": "User",
+        "user_id": "user_0116"
+      },
+      {
+        "entity_id": "entity_39_4",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_39_5",
+        "entity_type": "User",
+        "user_id": "user_0924"
+      },
+      {
+        "entity_id": "entity_39_6",
+        "entity_type": "Brand",
+        "user_id": "user_0921"
+      },
+      {
+        "entity_id": "entity_39_7",
+        "entity_type": "User",
+        "user_id": "user_0943"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 4022.8173827632686,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0040",
+    "host_id": "user_0899",
+    "category": "business",
+    "location": {
+      "lat": -68.3908099396541,
+      "lng": -53.55267098135719
+    },
+    "event_date": 1774502317.5409658,
+    "duration_hours": 5.983230231137467,
+    "entities": [
+      {
+        "entity_id": "entity_40_0",
+        "entity_type": "Brand",
+        "user_id": "user_0061"
+      },
+      {
+        "entity_id": "entity_40_1",
+        "entity_type": "Sponsor",
+        "user_id": "user_0034"
+      },
+      {
+        "entity_id": "entity_40_2",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_40_3",
+        "entity_type": "Brand",
+        "user_id": "user_0241"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 1327.3683791372534,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0041",
+    "host_id": "user_0618",
+    "category": "health",
+    "location": {
+      "lat": 34.93338272162189,
+      "lng": 16.371216292337216
+    },
+    "event_date": 1774222102.7608395,
+    "duration_hours": 2.6355690865998502,
+    "entities": [
+      {
+        "entity_id": "entity_41_0",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_41_1",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_41_2",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_41_3",
+        "entity_type": "User",
+        "user_id": "user_0073"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 4912.864830720363,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0042",
+    "host_id": "user_0894",
+    "category": "science",
+    "location": {
+      "lat": -86.70822251821413,
+      "lng": -102.44216718095102
+    },
+    "event_date": 1774364512.879759,
+    "duration_hours": 6.876250821100673,
+    "entities": [
+      {
+        "entity_id": "entity_42_0",
+        "entity_type": "Sponsor",
+        "user_id": "user_0094"
+      },
+      {
+        "entity_id": "entity_42_1",
+        "entity_type": "Sponsor",
+        "user_id": "user_0082"
+      },
+      {
+        "entity_id": "entity_42_2",
+        "entity_type": "Brand",
+        "user_id": "user_0216"
+      },
+      {
+        "entity_id": "entity_42_3",
+        "entity_type": "Brand",
+        "user_id": "user_0486"
+      },
+      {
+        "entity_id": "entity_42_4",
+        "entity_type": "Business",
+        "user_id": "user_0526"
+      },
+      {
+        "entity_id": "entity_42_5",
+        "entity_type": "Business",
+        "user_id": "user_0867"
+      },
+      {
+        "entity_id": "entity_42_6",
+        "entity_type": "User",
+        "user_id": "user_0840"
+      },
+      {
+        "entity_id": "entity_42_7",
+        "entity_type": "Business",
+        "user_id": "user_0510"
+      },
+      {
+        "entity_id": "entity_42_8",
+        "entity_type": "Sponsor",
+        "user_id": "user_0307"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 7211.9568480975395,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0043",
+    "host_id": "user_0232",
+    "category": "health",
+    "location": {
+      "lat": -43.56302759895532,
+      "lng": 166.861159387163
+    },
+    "event_date": 1774248503.9977942,
+    "duration_hours": 3.451804416306467,
+    "entities": [
+      {
+        "entity_id": "entity_43_0",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_43_1",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_43_2",
+        "entity_type": "User",
+        "user_id": "user_0263"
+      },
+      {
+        "entity_id": "entity_43_3",
+        "entity_type": "Business",
+        "user_id": null
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 9128.541033354915,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0044",
+    "host_id": "user_0177",
+    "category": "science",
+    "location": {
+      "lat": -44.98568321327258,
+      "lng": 166.2220465816569
+    },
+    "event_date": 1766389910.3550322,
+    "duration_hours": 4.932219296287417,
+    "entities": [
+      {
+        "entity_id": "entity_44_0",
+        "entity_type": "Sponsor",
+        "user_id": "user_0530"
+      },
+      {
+        "entity_id": "entity_44_1",
+        "entity_type": "Sponsor",
+        "user_id": "user_0762"
+      },
+      {
+        "entity_id": "entity_44_2",
+        "entity_type": "User",
+        "user_id": "user_0111"
+      },
+      {
+        "entity_id": "entity_44_3",
+        "entity_type": "Business",
+        "user_id": "user_0605"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 8093.109737343799,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0045",
+    "host_id": "user_0241",
+    "category": "business",
+    "location": {
+      "lat": -87.78833586341702,
+      "lng": 173.12018129393854
+    },
+    "event_date": 1767325944.1921582,
+    "duration_hours": 6.734480108554913,
+    "entities": [
+      {
+        "entity_id": "entity_45_0",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_45_1",
+        "entity_type": "Brand",
+        "user_id": "user_0358"
+      },
+      {
+        "entity_id": "entity_45_2",
+        "entity_type": "Business",
+        "user_id": "user_0309"
+      },
+      {
+        "entity_id": "entity_45_3",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_45_4",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_45_5",
+        "entity_type": "Brand",
+        "user_id": "user_0272"
+      },
+      {
+        "entity_id": "entity_45_6",
+        "entity_type": "Sponsor",
+        "user_id": "user_0085"
+      },
+      {
+        "entity_id": "entity_45_7",
+        "entity_type": "Business",
+        "user_id": "user_0053"
+      },
+      {
+        "entity_id": "entity_45_8",
+        "entity_type": "Business",
+        "user_id": "user_0027"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 9924.28328036649,
+    "revenue_split": {
+      "total_revenue": 9924.28328036649,
+      "platform_fee": 992.428328036649,
+      "splits": [
+        {
+          "party_id": "entity_45_1",
+          "amount": 1577.3096250992057,
+          "percentage": 17.65937348420297
+        },
+        {
+          "party_id": "entity_45_2",
+          "amount": 424.9456481546053,
+          "percentage": 4.757641614452772
+        },
+        {
+          "party_id": "entity_45_5",
+          "amount": 2819.663378435451,
+          "percentage": 31.568620331210735
+        },
+        {
+          "party_id": "entity_45_6",
+          "amount": 987.5653391286415,
+          "percentage": 11.05666565791061
+        },
+        {
+          "party_id": "entity_45_7",
+          "amount": 2755.842613825302,
+          "percentage": 30.85409053923845
+        },
+        {
+          "party_id": "entity_45_8",
+          "amount": 366.5283476866354,
+          "percentage": 4.10360837298447
+        }
+      ]
+    },
+    "is_locked": true,
+    "locked_at": 1766369713.163841,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0046",
+    "host_id": "user_0119",
+    "category": "technology",
+    "location": {
+      "lat": 82.42864559527118,
+      "lng": -43.29145408783373
+    },
+    "event_date": 1770577658.6860907,
+    "duration_hours": 3.864350833331999,
+    "entities": [
+      {
+        "entity_id": "entity_46_0",
+        "entity_type": "Business",
+        "user_id": "user_0878"
+      },
+      {
+        "entity_id": "entity_46_1",
+        "entity_type": "Sponsor",
+        "user_id": "user_0945"
+      },
+      {
+        "entity_id": "entity_46_2",
+        "entity_type": "Brand",
+        "user_id": "user_0968"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 7340.069429054811,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0047",
+    "host_id": "user_0988",
+    "category": "science",
+    "location": {
+      "lat": 49.8575895625344,
+      "lng": 135.88140484908646
+    },
+    "event_date": 1776649137.5715652,
+    "duration_hours": 5.188247921394222,
+    "entities": [
+      {
+        "entity_id": "entity_47_0",
+        "entity_type": "Sponsor",
+        "user_id": "user_0566"
+      },
+      {
+        "entity_id": "entity_47_1",
+        "entity_type": "Brand",
+        "user_id": "user_0674"
+      },
+      {
+        "entity_id": "entity_47_2",
+        "entity_type": "User",
+        "user_id": "user_0035"
+      },
+      {
+        "entity_id": "entity_47_3",
+        "entity_type": "Business",
+        "user_id": "user_0022"
+      },
+      {
+        "entity_id": "entity_47_4",
+        "entity_type": "User",
+        "user_id": "user_0547"
+      },
+      {
+        "entity_id": "entity_47_5",
+        "entity_type": "Sponsor",
+        "user_id": "user_0447"
+      },
+      {
+        "entity_id": "entity_47_6",
+        "entity_type": "Brand",
+        "user_id": "user_0526"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 4165.757565243524,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0048",
+    "host_id": "user_0052",
+    "category": "art",
+    "location": {
+      "lat": 73.46167572786881,
+      "lng": -71.82012791645043
+    },
+    "event_date": 1772782210.3232632,
+    "duration_hours": 7.859809874486728,
+    "entities": [
+      {
+        "entity_id": "entity_48_0",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_48_1",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_48_2",
+        "entity_type": "Business",
+        "user_id": "user_0578"
+      },
+      {
+        "entity_id": "entity_48_3",
+        "entity_type": "Business",
+        "user_id": "user_0096"
+      },
+      {
+        "entity_id": "entity_48_4",
+        "entity_type": "Sponsor",
+        "user_id": "user_0315"
+      },
+      {
+        "entity_id": "entity_48_5",
+        "entity_type": "Business",
+        "user_id": "user_0399"
+      },
+      {
+        "entity_id": "entity_48_6",
+        "entity_type": "Business",
+        "user_id": "user_0499"
+      },
+      {
+        "entity_id": "entity_48_7",
+        "entity_type": "Business",
+        "user_id": "user_0017"
+      },
+      {
+        "entity_id": "entity_48_8",
+        "entity_type": "Brand",
+        "user_id": "user_0871"
+      },
+      {
+        "entity_id": "entity_48_9",
+        "entity_type": "User",
+        "user_id": null
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 1916.6587974489971,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0049",
+    "host_id": "user_0858",
+    "category": "technology",
+    "location": {
+      "lat": 58.07030838197233,
+      "lng": 6.764978050812127
+    },
+    "event_date": 1780825952.8292513,
+    "duration_hours": 5.431897820727979,
+    "entities": [
+      {
+        "entity_id": "entity_49_0",
+        "entity_type": "Brand",
+        "user_id": "user_0382"
+      },
+      {
+        "entity_id": "entity_49_1",
+        "entity_type": "Sponsor",
+        "user_id": "user_0767"
+      },
+      {
+        "entity_id": "entity_49_2",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_49_3",
+        "entity_type": "Brand",
+        "user_id": "user_0615"
+      },
+      {
+        "entity_id": "entity_49_4",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_49_5",
+        "entity_type": "Sponsor",
+        "user_id": "user_0731"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 6388.926612206859,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0050",
+    "host_id": "user_0524",
+    "category": "health",
+    "location": {
+      "lat": 16.97977732248608,
+      "lng": -16.38386781394368
+    },
+    "event_date": 1776661573.7818894,
+    "duration_hours": 5.151710038164122,
+    "entities": [
+      {
+        "entity_id": "entity_50_0",
+        "entity_type": "Business",
+        "user_id": "user_0865"
+      },
+      {
+        "entity_id": "entity_50_1",
+        "entity_type": "Sponsor",
+        "user_id": "user_0121"
+      },
+      {
+        "entity_id": "entity_50_2",
+        "entity_type": "Business",
+        "user_id": "user_0172"
+      },
+      {
+        "entity_id": "entity_50_3",
+        "entity_type": "Sponsor",
+        "user_id": "user_0002"
+      },
+      {
+        "entity_id": "entity_50_4",
+        "entity_type": "Business",
+        "user_id": "user_0327"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 5318.486123182642,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0051",
+    "host_id": "user_0204",
+    "category": "business",
+    "location": {
+      "lat": 42.808384387144685,
+      "lng": 67.4283350437131
+    },
+    "event_date": 1772252773.0794003,
+    "duration_hours": 3.2635091620820664,
+    "entities": [
+      {
+        "entity_id": "entity_51_0",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_51_1",
+        "entity_type": "Brand",
+        "user_id": "user_0326"
+      },
+      {
+        "entity_id": "entity_51_2",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_51_3",
+        "entity_type": "User",
+        "user_id": "user_0709"
+      },
+      {
+        "entity_id": "entity_51_4",
+        "entity_type": "User",
+        "user_id": "user_0650"
+      },
+      {
+        "entity_id": "entity_51_5",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_51_6",
+        "entity_type": "Business",
+        "user_id": "user_0713"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 3593.8017721975007,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0052",
+    "host_id": "user_0727",
+    "category": "business",
+    "location": {
+      "lat": 11.5614462520895,
+      "lng": -89.17304937806222
+    },
+    "event_date": 1772033736.227564,
+    "duration_hours": 3.8312218383132928,
+    "entities": [
+      {
+        "entity_id": "entity_52_0",
+        "entity_type": "Brand",
+        "user_id": "user_0729"
+      },
+      {
+        "entity_id": "entity_52_1",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_52_2",
+        "entity_type": "Sponsor",
+        "user_id": "user_0063"
+      },
+      {
+        "entity_id": "entity_52_3",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_52_4",
+        "entity_type": "Brand",
+        "user_id": "user_0357"
+      },
+      {
+        "entity_id": "entity_52_5",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_52_6",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_52_7",
+        "entity_type": "Brand",
+        "user_id": "user_0409"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 4504.6787089698855,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0053",
+    "host_id": "user_0922",
+    "category": "business",
+    "location": {
+      "lat": 40.847543056815525,
+      "lng": 44.62953979481301
+    },
+    "event_date": 1770133658.554271,
+    "duration_hours": 6.5685052970308515,
+    "entities": [
+      {
+        "entity_id": "entity_53_0",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_53_1",
+        "entity_type": "Brand",
+        "user_id": "user_0574"
+      },
+      {
+        "entity_id": "entity_53_2",
+        "entity_type": "Business",
+        "user_id": "user_0963"
+      },
+      {
+        "entity_id": "entity_53_3",
+        "entity_type": "Business",
+        "user_id": "user_0520"
+      },
+      {
+        "entity_id": "entity_53_4",
+        "entity_type": "Brand",
+        "user_id": "user_0093"
+      },
+      {
+        "entity_id": "entity_53_5",
+        "entity_type": "Business",
+        "user_id": "user_0490"
+      },
+      {
+        "entity_id": "entity_53_6",
+        "entity_type": "Sponsor",
+        "user_id": null
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 4240.830043723927,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0054",
+    "host_id": "user_0158",
+    "category": "science",
+    "location": {
+      "lat": 63.808653400884275,
+      "lng": -118.435928935847
+    },
+    "event_date": 1773762490.8493166,
+    "duration_hours": 6.039960172902751,
+    "entities": [
+      {
+        "entity_id": "entity_54_0",
+        "entity_type": "Brand",
+        "user_id": "user_0784"
+      },
+      {
+        "entity_id": "entity_54_1",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_54_2",
+        "entity_type": "Business",
+        "user_id": null
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 9053.042764190954,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0055",
+    "host_id": "user_0126",
+    "category": "technology",
+    "location": {
+      "lat": 1.893957371871391,
+      "lng": -178.70862724700982
+    },
+    "event_date": 1780903269.0882053,
+    "duration_hours": 7.805277688656952,
+    "entities": [
+      {
+        "entity_id": "entity_55_0",
+        "entity_type": "Brand",
+        "user_id": "user_0482"
+      },
+      {
+        "entity_id": "entity_55_1",
+        "entity_type": "Business",
+        "user_id": "user_0341"
+      },
+      {
+        "entity_id": "entity_55_2",
+        "entity_type": "User",
+        "user_id": "user_0285"
+      },
+      {
+        "entity_id": "entity_55_3",
+        "entity_type": "Brand",
+        "user_id": "user_0167"
+      },
+      {
+        "entity_id": "entity_55_4",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_55_5",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_55_6",
+        "entity_type": "Sponsor",
+        "user_id": "user_0279"
+      },
+      {
+        "entity_id": "entity_55_7",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_55_8",
+        "entity_type": "Business",
+        "user_id": "user_0490"
+      },
+      {
+        "entity_id": "entity_55_9",
+        "entity_type": "Business",
+        "user_id": null
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 1788.6550082651563,
+    "revenue_split": {
+      "total_revenue": 1788.6550082651563,
+      "platform_fee": 178.86550082651564,
+      "splits": [
+        {
+          "party_id": "entity_55_0",
+          "amount": 206.99351091450364,
+          "percentage": 12.858420927581646
+        },
+        {
+          "party_id": "entity_55_1",
+          "amount": 71.15428100963624,
+          "percentage": 4.420098446464025
+        },
+        {
+          "party_id": "entity_55_2",
+          "amount": 100.0562544771531,
+          "percentage": 6.215486808356333
+        },
+        {
+          "party_id": "entity_55_3",
+          "amount": 406.08651710703555,
+          "percentage": 25.226063111391856
+        },
+        {
+          "party_id": "entity_55_6",
+          "amount": 290.5813780510828,
+          "percentage": 18.050892784947457
+        },
+        {
+          "party_id": "entity_55_8",
+          "amount": 534.9175658792293,
+          "percentage": 33.22903792125869
+        }
+      ]
+    },
+    "is_locked": true,
+    "locked_at": 1766369713.163987,
+    "partnership_id": null,
+    "exclusivity_checked": true,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0056",
+    "host_id": "user_0911",
+    "category": "business",
+    "location": {
+      "lat": -72.46830383038258,
+      "lng": 0.9457742606364405
+    },
+    "event_date": 1774001652.2986042,
+    "duration_hours": 5.665478015996697,
+    "entities": [
+      {
+        "entity_id": "entity_56_0",
+        "entity_type": "User",
+        "user_id": "user_0479"
+      },
+      {
+        "entity_id": "entity_56_1",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_56_2",
+        "entity_type": "Business",
+        "user_id": "user_0702"
+      },
+      {
+        "entity_id": "entity_56_3",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_56_4",
+        "entity_type": "Sponsor",
+        "user_id": "user_0971"
+      },
+      {
+        "entity_id": "entity_56_5",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_56_6",
+        "entity_type": "Business",
+        "user_id": "user_0254"
+      },
+      {
+        "entity_id": "entity_56_7",
+        "entity_type": "User",
+        "user_id": "user_0360"
+      },
+      {
+        "entity_id": "entity_56_8",
+        "entity_type": "User",
+        "user_id": "user_0956"
+      },
+      {
+        "entity_id": "entity_56_9",
+        "entity_type": "Business",
+        "user_id": "user_0439"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 6862.649267691701,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0057",
+    "host_id": "user_0588",
+    "category": "technology",
+    "location": {
+      "lat": 50.966420209325754,
+      "lng": -39.861748014603485
+    },
+    "event_date": 1773234185.512066,
+    "duration_hours": 2.654864548739037,
+    "entities": [
+      {
+        "entity_id": "entity_57_0",
+        "entity_type": "Brand",
+        "user_id": "user_0070"
+      },
+      {
+        "entity_id": "entity_57_1",
+        "entity_type": "Brand",
+        "user_id": "user_0389"
+      },
+      {
+        "entity_id": "entity_57_2",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_57_3",
+        "entity_type": "User",
+        "user_id": "user_0639"
+      },
+      {
+        "entity_id": "entity_57_4",
+        "entity_type": "Brand",
+        "user_id": "user_0139"
+      },
+      {
+        "entity_id": "entity_57_5",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_57_6",
+        "entity_type": "Business",
+        "user_id": "user_0048"
+      },
+      {
+        "entity_id": "entity_57_7",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_57_8",
+        "entity_type": "Business",
+        "user_id": null
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 3318.817556938699,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0058",
+    "host_id": "user_0743",
+    "category": "technology",
+    "location": {
+      "lat": 70.09338321200273,
+      "lng": -161.3720136064119
+    },
+    "event_date": 1770744977.9582005,
+    "duration_hours": 2.991764504190634,
+    "entities": [
+      {
+        "entity_id": "entity_58_0",
+        "entity_type": "Brand",
+        "user_id": "user_0210"
+      },
+      {
+        "entity_id": "entity_58_1",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_58_2",
+        "entity_type": "Sponsor",
+        "user_id": "user_0923"
+      },
+      {
+        "entity_id": "entity_58_3",
+        "entity_type": "Brand",
+        "user_id": "user_0481"
+      },
+      {
+        "entity_id": "entity_58_4",
+        "entity_type": "Business",
+        "user_id": "user_0490"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 2687.54251261542,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0059",
+    "host_id": "user_0163",
+    "category": "health",
+    "location": {
+      "lat": 81.84290530556508,
+      "lng": 41.71939408388389
+    },
+    "event_date": 1777310288.3978627,
+    "duration_hours": 5.677284073101737,
+    "entities": [
+      {
+        "entity_id": "entity_59_0",
+        "entity_type": "Business",
+        "user_id": "user_0511"
+      },
+      {
+        "entity_id": "entity_59_1",
+        "entity_type": "Sponsor",
+        "user_id": "user_0116"
+      },
+      {
+        "entity_id": "entity_59_2",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_59_3",
+        "entity_type": "User",
+        "user_id": "user_0774"
+      },
+      {
+        "entity_id": "entity_59_4",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_59_5",
+        "entity_type": "Brand",
+        "user_id": "user_0902"
+      },
+      {
+        "entity_id": "entity_59_6",
+        "entity_type": "Brand",
+        "user_id": "user_0260"
+      },
+      {
+        "entity_id": "entity_59_7",
+        "entity_type": "Brand",
+        "user_id": "user_0399"
+      },
+      {
+        "entity_id": "entity_59_8",
+        "entity_type": "Business",
+        "user_id": "user_0590"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 1254.5850856987113,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0060",
+    "host_id": "user_0481",
+    "category": "science",
+    "location": {
+      "lat": -69.78025608850518,
+      "lng": 145.98514304119223
+    },
+    "event_date": 1775452156.8828785,
+    "duration_hours": 7.870729167438261,
+    "entities": [
+      {
+        "entity_id": "entity_60_0",
+        "entity_type": "Brand",
+        "user_id": "user_0528"
+      },
+      {
+        "entity_id": "entity_60_1",
+        "entity_type": "Business",
+        "user_id": "user_0539"
+      },
+      {
+        "entity_id": "entity_60_2",
+        "entity_type": "Business",
+        "user_id": "user_0994"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 2042.8083878493433,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0061",
+    "host_id": "user_0435",
+    "category": "health",
+    "location": {
+      "lat": 78.11806322938868,
+      "lng": 69.82733610257296
+    },
+    "event_date": 1771226653.6887488,
+    "duration_hours": 7.612912276066421,
+    "entities": [
+      {
+        "entity_id": "entity_61_0",
+        "entity_type": "Brand",
+        "user_id": "user_0048"
+      },
+      {
+        "entity_id": "entity_61_1",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_61_2",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_61_3",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_61_4",
+        "entity_type": "Brand",
+        "user_id": "user_0789"
+      },
+      {
+        "entity_id": "entity_61_5",
+        "entity_type": "Brand",
+        "user_id": "user_0000"
+      },
+      {
+        "entity_id": "entity_61_6",
+        "entity_type": "User",
+        "user_id": null
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 6278.357128118427,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0062",
+    "host_id": "user_0618",
+    "category": "health",
+    "location": {
+      "lat": 34.93338272162189,
+      "lng": 16.371216292337216
+    },
+    "event_date": 1778172105.1159363,
+    "duration_hours": 7.752971248126689,
+    "entities": [
+      {
+        "entity_id": "entity_62_0",
+        "entity_type": "Sponsor",
+        "user_id": "user_0827"
+      },
+      {
+        "entity_id": "entity_62_1",
+        "entity_type": "Sponsor",
+        "user_id": "user_0365"
+      },
+      {
+        "entity_id": "entity_62_2",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_62_3",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_62_4",
+        "entity_type": "User",
+        "user_id": "user_0573"
+      },
+      {
+        "entity_id": "entity_62_5",
+        "entity_type": "Sponsor",
+        "user_id": "user_0349"
+      },
+      {
+        "entity_id": "entity_62_6",
+        "entity_type": "Brand",
+        "user_id": null
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 5695.130389329197,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0063",
+    "host_id": "user_0766",
+    "category": "technology",
+    "location": {
+      "lat": 76.84278765379334,
+      "lng": -25.590045468734118
+    },
+    "event_date": 1772481629.616918,
+    "duration_hours": 2.3336937008168572,
+    "entities": [
+      {
+        "entity_id": "entity_63_0",
+        "entity_type": "User",
+        "user_id": "user_0433"
+      },
+      {
+        "entity_id": "entity_63_1",
+        "entity_type": "Brand",
+        "user_id": "user_0169"
+      },
+      {
+        "entity_id": "entity_63_2",
+        "entity_type": "Brand",
+        "user_id": "user_0281"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 2775.6046750053138,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0064",
+    "host_id": "user_0255",
+    "category": "technology",
+    "location": {
+      "lat": 29.81067933478006,
+      "lng": -97.48535127920871
+    },
+    "event_date": 1776265680.2489374,
+    "duration_hours": 6.283134210514757,
+    "entities": [
+      {
+        "entity_id": "entity_64_0",
+        "entity_type": "User",
+        "user_id": "user_0214"
+      },
+      {
+        "entity_id": "entity_64_1",
+        "entity_type": "Sponsor",
+        "user_id": "user_0926"
+      },
+      {
+        "entity_id": "entity_64_2",
+        "entity_type": "User",
+        "user_id": "user_0731"
+      },
+      {
+        "entity_id": "entity_64_3",
+        "entity_type": "User",
+        "user_id": "user_0429"
+      },
+      {
+        "entity_id": "entity_64_4",
+        "entity_type": "User",
+        "user_id": "user_0111"
+      },
+      {
+        "entity_id": "entity_64_5",
+        "entity_type": "Sponsor",
+        "user_id": "user_0214"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 8172.145978836563,
+    "revenue_split": {
+      "total_revenue": 8172.145978836563,
+      "platform_fee": 817.2145978836563,
+      "splits": [
+        {
+          "party_id": "entity_64_0",
+          "amount": 1496.0135201055416,
+          "percentage": 20.340278414830266
+        },
+        {
+          "party_id": "entity_64_1",
+          "amount": 358.9766385359317,
+          "percentage": 4.880761219140329
+        },
+        {
+          "party_id": "entity_64_2",
+          "amount": 1578.077747279139,
+          "percentage": 21.456049900967027
+        },
+        {
+          "party_id": "entity_64_3",
+          "amount": 683.2114400687137,
+          "percentage": 9.289161307990296
+        },
+        {
+          "party_id": "entity_64_4",
+          "amount": 1142.0792395226727,
+          "percentage": 15.528074707540027
+        },
+        {
+          "party_id": "entity_64_5",
+          "amount": 2096.5727954409076,
+          "percentage": 28.505674449532055
+        }
+      ]
+    },
+    "is_locked": true,
+    "locked_at": 1766369713.1641018,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0065",
+    "host_id": "user_0133",
+    "category": "business",
+    "location": {
+      "lat": 19.857363782734026,
+      "lng": -18.199082850455255
+    },
+    "event_date": 1770133574.3099174,
+    "duration_hours": 7.1040139588954885,
+    "entities": [
+      {
+        "entity_id": "entity_65_0",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_65_1",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_65_2",
+        "entity_type": "Brand",
+        "user_id": "user_0998"
+      },
+      {
+        "entity_id": "entity_65_3",
+        "entity_type": "Sponsor",
+        "user_id": "user_0519"
+      },
+      {
+        "entity_id": "entity_65_4",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_65_5",
+        "entity_type": "Business",
+        "user_id": "user_0944"
+      },
+      {
+        "entity_id": "entity_65_6",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_65_7",
+        "entity_type": "Sponsor",
+        "user_id": "user_0038"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 4652.771666398039,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0066",
+    "host_id": "user_0571",
+    "category": "business",
+    "location": {
+      "lat": 49.56396684673207,
+      "lng": 109.25880311422878
+    },
+    "event_date": 1768531457.3964207,
+    "duration_hours": 7.957670918927965,
+    "entities": [
+      {
+        "entity_id": "entity_66_0",
+        "entity_type": "Business",
+        "user_id": "user_0481"
+      },
+      {
+        "entity_id": "entity_66_1",
+        "entity_type": "User",
+        "user_id": "user_0054"
+      },
+      {
+        "entity_id": "entity_66_2",
+        "entity_type": "Brand",
+        "user_id": "user_0838"
+      },
+      {
+        "entity_id": "entity_66_3",
+        "entity_type": "User",
+        "user_id": "user_0487"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 4089.7363171992524,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0067",
+    "host_id": "user_0192",
+    "category": "science",
+    "location": {
+      "lat": -48.24607120982472,
+      "lng": -122.93803333137406
+    },
+    "event_date": 1768103648.7635195,
+    "duration_hours": 4.979210479382965,
+    "entities": [
+      {
+        "entity_id": "entity_67_0",
+        "entity_type": "Brand",
+        "user_id": "user_0096"
+      },
+      {
+        "entity_id": "entity_67_1",
+        "entity_type": "Sponsor",
+        "user_id": "user_0628"
+      },
+      {
+        "entity_id": "entity_67_2",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_67_3",
+        "entity_type": "Sponsor",
+        "user_id": "user_0602"
+      },
+      {
+        "entity_id": "entity_67_4",
+        "entity_type": "Business",
+        "user_id": "user_0593"
+      },
+      {
+        "entity_id": "entity_67_5",
+        "entity_type": "Brand",
+        "user_id": "user_0693"
+      },
+      {
+        "entity_id": "entity_67_6",
+        "entity_type": "Business",
+        "user_id": "user_0947"
+      },
+      {
+        "entity_id": "entity_67_7",
+        "entity_type": "Brand",
+        "user_id": "user_0408"
+      },
+      {
+        "entity_id": "entity_67_8",
+        "entity_type": "Sponsor",
+        "user_id": null
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 3813.1737833654324,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0068",
+    "host_id": "user_0052",
+    "category": "art",
+    "location": {
+      "lat": 73.46167572786881,
+      "lng": -71.82012791645043
+    },
+    "event_date": 1769092097.1122923,
+    "duration_hours": 7.4927612155503525,
+    "entities": [
+      {
+        "entity_id": "entity_68_0",
+        "entity_type": "User",
+        "user_id": "user_0374"
+      },
+      {
+        "entity_id": "entity_68_1",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_68_2",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_68_3",
+        "entity_type": "Sponsor",
+        "user_id": "user_0725"
+      },
+      {
+        "entity_id": "entity_68_4",
+        "entity_type": "Sponsor",
+        "user_id": "user_0368"
+      },
+      {
+        "entity_id": "entity_68_5",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_68_6",
+        "entity_type": "Sponsor",
+        "user_id": "user_0812"
+      },
+      {
+        "entity_id": "entity_68_7",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_68_8",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_68_9",
+        "entity_type": "Business",
+        "user_id": "user_0245"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 5601.638511026507,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0069",
+    "host_id": "user_0875",
+    "category": "business",
+    "location": {
+      "lat": -54.5967050297042,
+      "lng": 97.9430858374306
+    },
+    "event_date": 1777297400.2903318,
+    "duration_hours": 3.9349909195111614,
+    "entities": [
+      {
+        "entity_id": "entity_69_0",
+        "entity_type": "Sponsor",
+        "user_id": "user_0815"
+      },
+      {
+        "entity_id": "entity_69_1",
+        "entity_type": "User",
+        "user_id": "user_0082"
+      },
+      {
+        "entity_id": "entity_69_2",
+        "entity_type": "Brand",
+        "user_id": "user_0482"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 5251.101505393885,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0070",
+    "host_id": "user_0359",
+    "category": "technology",
+    "location": {
+      "lat": 54.3807708573645,
+      "lng": -177.49565002422463
+    },
+    "event_date": 1770509892.1919417,
+    "duration_hours": 4.241232878746661,
+    "entities": [
+      {
+        "entity_id": "entity_70_0",
+        "entity_type": "User",
+        "user_id": "user_0377"
+      },
+      {
+        "entity_id": "entity_70_1",
+        "entity_type": "Sponsor",
+        "user_id": "user_0969"
+      },
+      {
+        "entity_id": "entity_70_2",
+        "entity_type": "User",
+        "user_id": "user_0648"
+      },
+      {
+        "entity_id": "entity_70_3",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_70_4",
+        "entity_type": "User",
+        "user_id": "user_0697"
+      },
+      {
+        "entity_id": "entity_70_5",
+        "entity_type": "Brand",
+        "user_id": null
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 8499.734087335977,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0071",
+    "host_id": "user_0015",
+    "category": "health",
+    "location": {
+      "lat": 63.48221062560263,
+      "lng": 15.979657538485505
+    },
+    "event_date": 1774277446.2861893,
+    "duration_hours": 7.272916866385583,
+    "entities": [
+      {
+        "entity_id": "entity_71_0",
+        "entity_type": "User",
+        "user_id": "user_0311"
+      },
+      {
+        "entity_id": "entity_71_1",
+        "entity_type": "Sponsor",
+        "user_id": "user_0079"
+      },
+      {
+        "entity_id": "entity_71_2",
+        "entity_type": "Business",
+        "user_id": "user_0213"
+      },
+      {
+        "entity_id": "entity_71_3",
+        "entity_type": "Brand",
+        "user_id": "user_0850"
+      },
+      {
+        "entity_id": "entity_71_4",
+        "entity_type": "Business",
+        "user_id": "user_0865"
+      },
+      {
+        "entity_id": "entity_71_5",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_71_6",
+        "entity_type": "Brand",
+        "user_id": "user_0065"
+      },
+      {
+        "entity_id": "entity_71_7",
+        "entity_type": "Business",
+        "user_id": "user_0034"
+      },
+      {
+        "entity_id": "entity_71_8",
+        "entity_type": "Brand",
+        "user_id": "user_0416"
+      },
+      {
+        "entity_id": "entity_71_9",
+        "entity_type": "Sponsor",
+        "user_id": null
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 3673.387976995687,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0072",
+    "host_id": "user_0936",
+    "category": "health",
+    "location": {
+      "lat": -68.47076350111259,
+      "lng": 49.77416443893381
+    },
+    "event_date": 1770203086.2899415,
+    "duration_hours": 3.134013246460113,
+    "entities": [
+      {
+        "entity_id": "entity_72_0",
+        "entity_type": "User",
+        "user_id": "user_0264"
+      },
+      {
+        "entity_id": "entity_72_1",
+        "entity_type": "User",
+        "user_id": "user_0065"
+      },
+      {
+        "entity_id": "entity_72_2",
+        "entity_type": "Brand",
+        "user_id": "user_0994"
+      },
+      {
+        "entity_id": "entity_72_3",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_72_4",
+        "entity_type": "User",
+        "user_id": "user_0880"
+      },
+      {
+        "entity_id": "entity_72_5",
+        "entity_type": "Brand",
+        "user_id": "user_0818"
+      },
+      {
+        "entity_id": "entity_72_6",
+        "entity_type": "Brand",
+        "user_id": "user_0948"
+      },
+      {
+        "entity_id": "entity_72_7",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_72_8",
+        "entity_type": "Brand",
+        "user_id": "user_0125"
+      },
+      {
+        "entity_id": "entity_72_9",
+        "entity_type": "Sponsor",
+        "user_id": "user_0095"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 5890.843873686494,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0073",
+    "host_id": "user_0278",
+    "category": "science",
+    "location": {
+      "lat": -26.65004302749392,
+      "lng": -128.48162174073192
+    },
+    "event_date": 1772161612.6476889,
+    "duration_hours": 2.3688142858831442,
+    "entities": [
+      {
+        "entity_id": "entity_73_0",
+        "entity_type": "Business",
+        "user_id": "user_0637"
+      },
+      {
+        "entity_id": "entity_73_1",
+        "entity_type": "Brand",
+        "user_id": "user_0168"
+      },
+      {
+        "entity_id": "entity_73_2",
+        "entity_type": "Brand",
+        "user_id": "user_0356"
+      },
+      {
+        "entity_id": "entity_73_3",
+        "entity_type": "Brand",
+        "user_id": "user_0039"
+      },
+      {
+        "entity_id": "entity_73_4",
+        "entity_type": "Business",
+        "user_id": "user_0551"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 5822.507065395413,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0074",
+    "host_id": "user_0816",
+    "category": "business",
+    "location": {
+      "lat": 31.13059107967611,
+      "lng": 58.58703075169611
+    },
+    "event_date": 1766646858.821753,
+    "duration_hours": 3.111686123039571,
+    "entities": [
+      {
+        "entity_id": "entity_74_0",
+        "entity_type": "Sponsor",
+        "user_id": "user_0605"
+      },
+      {
+        "entity_id": "entity_74_1",
+        "entity_type": "Brand",
+        "user_id": "user_0652"
+      },
+      {
+        "entity_id": "entity_74_2",
+        "entity_type": "Brand",
+        "user_id": "user_0070"
+      },
+      {
+        "entity_id": "entity_74_3",
+        "entity_type": "Brand",
+        "user_id": "user_0723"
+      },
+      {
+        "entity_id": "entity_74_4",
+        "entity_type": "Sponsor",
+        "user_id": "user_0398"
+      },
+      {
+        "entity_id": "entity_74_5",
+        "entity_type": "Sponsor",
+        "user_id": null
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 3917.9540006124416,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0075",
+    "host_id": "user_0729",
+    "category": "science",
+    "location": {
+      "lat": -21.760880938360646,
+      "lng": 75.87372299475872
+    },
+    "event_date": 1777869438.5143752,
+    "duration_hours": 5.351872896108123,
+    "entities": [
+      {
+        "entity_id": "entity_75_0",
+        "entity_type": "Business",
+        "user_id": "user_0301"
+      },
+      {
+        "entity_id": "entity_75_1",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_75_2",
+        "entity_type": "User",
+        "user_id": "user_0750"
+      },
+      {
+        "entity_id": "entity_75_3",
+        "entity_type": "User",
+        "user_id": "user_0353"
+      },
+      {
+        "entity_id": "entity_75_4",
+        "entity_type": "User",
+        "user_id": "user_0454"
+      },
+      {
+        "entity_id": "entity_75_5",
+        "entity_type": "Brand",
+        "user_id": "user_0507"
+      },
+      {
+        "entity_id": "entity_75_6",
+        "entity_type": "User",
+        "user_id": "user_0247"
+      },
+      {
+        "entity_id": "entity_75_7",
+        "entity_type": "Sponsor",
+        "user_id": "user_0309"
+      },
+      {
+        "entity_id": "entity_75_8",
+        "entity_type": "Sponsor",
+        "user_id": "user_0414"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 2224.023417445243,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0076",
+    "host_id": "user_0074",
+    "category": "science",
+    "location": {
+      "lat": -52.221378356457805,
+      "lng": -119.55917118291133
+    },
+    "event_date": 1774335804.5990183,
+    "duration_hours": 2.980222219271107,
+    "entities": [
+      {
+        "entity_id": "entity_76_0",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_76_1",
+        "entity_type": "User",
+        "user_id": "user_0996"
+      },
+      {
+        "entity_id": "entity_76_2",
+        "entity_type": "Brand",
+        "user_id": "user_0311"
+      },
+      {
+        "entity_id": "entity_76_3",
+        "entity_type": "Business",
+        "user_id": "user_0358"
+      },
+      {
+        "entity_id": "entity_76_4",
+        "entity_type": "Brand",
+        "user_id": "user_0827"
+      },
+      {
+        "entity_id": "entity_76_5",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_76_6",
+        "entity_type": "Business",
+        "user_id": null
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 1184.5931747245145,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0077",
+    "host_id": "user_0238",
+    "category": "health",
+    "location": {
+      "lat": 69.89650429216177,
+      "lng": 122.19216529578836
+    },
+    "event_date": 1778628131.8242438,
+    "duration_hours": 4.063587348154103,
+    "entities": [
+      {
+        "entity_id": "entity_77_0",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_77_1",
+        "entity_type": "Sponsor",
+        "user_id": "user_0043"
+      },
+      {
+        "entity_id": "entity_77_2",
+        "entity_type": "Sponsor",
+        "user_id": "user_0802"
+      },
+      {
+        "entity_id": "entity_77_3",
+        "entity_type": "Sponsor",
+        "user_id": "user_0549"
+      },
+      {
+        "entity_id": "entity_77_4",
+        "entity_type": "Sponsor",
+        "user_id": "user_0797"
+      },
+      {
+        "entity_id": "entity_77_5",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_77_6",
+        "entity_type": "Sponsor",
+        "user_id": "user_0874"
+      },
+      {
+        "entity_id": "entity_77_7",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_77_8",
+        "entity_type": "User",
+        "user_id": "user_0975"
+      },
+      {
+        "entity_id": "entity_77_9",
+        "entity_type": "User",
+        "user_id": "user_0875"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 8861.25703446653,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0078",
+    "host_id": "user_0482",
+    "category": "health",
+    "location": {
+      "lat": 64.27815235419276,
+      "lng": -35.935421753381625
+    },
+    "event_date": 1774881323.9861221,
+    "duration_hours": 2.6839203084143097,
+    "entities": [
+      {
+        "entity_id": "entity_78_0",
+        "entity_type": "Business",
+        "user_id": "user_0791"
+      },
+      {
+        "entity_id": "entity_78_1",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_78_2",
+        "entity_type": "Brand",
+        "user_id": "user_0489"
+      },
+      {
+        "entity_id": "entity_78_3",
+        "entity_type": "Business",
+        "user_id": "user_0897"
+      },
+      {
+        "entity_id": "entity_78_4",
+        "entity_type": "Brand",
+        "user_id": "user_0821"
+      },
+      {
+        "entity_id": "entity_78_5",
+        "entity_type": "User",
+        "user_id": "user_0793"
+      },
+      {
+        "entity_id": "entity_78_6",
+        "entity_type": "User",
+        "user_id": null
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 1443.9886357421453,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0079",
+    "host_id": "user_0348",
+    "category": "science",
+    "location": {
+      "lat": -48.22983336428721,
+      "lng": -157.78767930299233
+    },
+    "event_date": 1775946776.8986475,
+    "duration_hours": 4.071462365794639,
+    "entities": [
+      {
+        "entity_id": "entity_79_0",
+        "entity_type": "Sponsor",
+        "user_id": "user_0107"
+      },
+      {
+        "entity_id": "entity_79_1",
+        "entity_type": "User",
+        "user_id": "user_0341"
+      },
+      {
+        "entity_id": "entity_79_2",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_79_3",
+        "entity_type": "Business",
+        "user_id": "user_0754"
+      },
+      {
+        "entity_id": "entity_79_4",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_79_5",
+        "entity_type": "Business",
+        "user_id": null
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 8128.716195231641,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0080",
+    "host_id": "user_0447",
+    "category": "business",
+    "location": {
+      "lat": -56.964066940972344,
+      "lng": -154.26031422517633
+    },
+    "event_date": 1780457573.7171576,
+    "duration_hours": 6.177973663431201,
+    "entities": [
+      {
+        "entity_id": "entity_80_0",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_80_1",
+        "entity_type": "User",
+        "user_id": "user_0098"
+      },
+      {
+        "entity_id": "entity_80_2",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_80_3",
+        "entity_type": "User",
+        "user_id": "user_0503"
+      },
+      {
+        "entity_id": "entity_80_4",
+        "entity_type": "Sponsor",
+        "user_id": "user_0438"
+      },
+      {
+        "entity_id": "entity_80_5",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_80_6",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_80_7",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_80_8",
+        "entity_type": "Sponsor",
+        "user_id": "user_0441"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 2467.055732672747,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0081",
+    "host_id": "user_0600",
+    "category": "science",
+    "location": {
+      "lat": 19.298220922131534,
+      "lng": 92.31763340896195
+    },
+    "event_date": 1767753442.6273127,
+    "duration_hours": 2.768164920576104,
+    "entities": [
+      {
+        "entity_id": "entity_81_0",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_81_1",
+        "entity_type": "User",
+        "user_id": "user_0508"
+      },
+      {
+        "entity_id": "entity_81_2",
+        "entity_type": "User",
+        "user_id": "user_0965"
+      },
+      {
+        "entity_id": "entity_81_3",
+        "entity_type": "Brand",
+        "user_id": "user_0468"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 5066.970184575034,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0082",
+    "host_id": "user_0397",
+    "category": "technology",
+    "location": {
+      "lat": 36.221663929453555,
+      "lng": -130.5530482418697
+    },
+    "event_date": 1781458277.1112201,
+    "duration_hours": 3.368925330596639,
+    "entities": [
+      {
+        "entity_id": "entity_82_0",
+        "entity_type": "Business",
+        "user_id": "user_0466"
+      },
+      {
+        "entity_id": "entity_82_1",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_82_2",
+        "entity_type": "Sponsor",
+        "user_id": "user_0707"
+      },
+      {
+        "entity_id": "entity_82_3",
+        "entity_type": "Sponsor",
+        "user_id": "user_0747"
+      },
+      {
+        "entity_id": "entity_82_4",
+        "entity_type": "Brand",
+        "user_id": "user_0469"
+      },
+      {
+        "entity_id": "entity_82_5",
+        "entity_type": "Brand",
+        "user_id": "user_0559"
+      },
+      {
+        "entity_id": "entity_82_6",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_82_7",
+        "entity_type": "Sponsor",
+        "user_id": "user_0240"
+      },
+      {
+        "entity_id": "entity_82_8",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_82_9",
+        "entity_type": "User",
+        "user_id": "user_0475"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 4992.1135458774825,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0083",
+    "host_id": "user_0526",
+    "category": "art",
+    "location": {
+      "lat": 0.8403371176994234,
+      "lng": -15.031663221437878
+    },
+    "event_date": 1773810453.2171326,
+    "duration_hours": 2.6319395092383724,
+    "entities": [
+      {
+        "entity_id": "entity_83_0",
+        "entity_type": "User",
+        "user_id": "user_0791"
+      },
+      {
+        "entity_id": "entity_83_1",
+        "entity_type": "Brand",
+        "user_id": "user_0419"
+      },
+      {
+        "entity_id": "entity_83_2",
+        "entity_type": "User",
+        "user_id": "user_0623"
+      },
+      {
+        "entity_id": "entity_83_3",
+        "entity_type": "User",
+        "user_id": "user_0202"
+      },
+      {
+        "entity_id": "entity_83_4",
+        "entity_type": "Brand",
+        "user_id": "user_0516"
+      },
+      {
+        "entity_id": "entity_83_5",
+        "entity_type": "Sponsor",
+        "user_id": "user_0861"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 5712.21811044283,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0084",
+    "host_id": "user_0456",
+    "category": "art",
+    "location": {
+      "lat": 75.70018259260486,
+      "lng": -44.35187389819615
+    },
+    "event_date": 1766747667.8872025,
+    "duration_hours": 2.2491807980105936,
+    "entities": [
+      {
+        "entity_id": "entity_84_0",
+        "entity_type": "User",
+        "user_id": "user_0018"
+      },
+      {
+        "entity_id": "entity_84_1",
+        "entity_type": "Brand",
+        "user_id": "user_0245"
+      },
+      {
+        "entity_id": "entity_84_2",
+        "entity_type": "Business",
+        "user_id": "user_0260"
+      },
+      {
+        "entity_id": "entity_84_3",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_84_4",
+        "entity_type": "User",
+        "user_id": "user_0570"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 6201.682690282304,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0085",
+    "host_id": "user_0621",
+    "category": "science",
+    "location": {
+      "lat": 49.493972527436384,
+      "lng": 99.68048865564957
+    },
+    "event_date": 1770589296.1880214,
+    "duration_hours": 2.1768888038873637,
+    "entities": [
+      {
+        "entity_id": "entity_85_0",
+        "entity_type": "User",
+        "user_id": "user_0871"
+      },
+      {
+        "entity_id": "entity_85_1",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_85_2",
+        "entity_type": "Sponsor",
+        "user_id": "user_0491"
+      },
+      {
+        "entity_id": "entity_85_3",
+        "entity_type": "User",
+        "user_id": "user_0455"
+      },
+      {
+        "entity_id": "entity_85_4",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_85_5",
+        "entity_type": "Sponsor",
+        "user_id": "user_0465"
+      },
+      {
+        "entity_id": "entity_85_6",
+        "entity_type": "Brand",
+        "user_id": "user_0135"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 3360.1968449833334,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0086",
+    "host_id": "user_0903",
+    "category": "art",
+    "location": {
+      "lat": -18.24387004721972,
+      "lng": 105.10113098691389
+    },
+    "event_date": 1771588389.118818,
+    "duration_hours": 6.700361231118871,
+    "entities": [
+      {
+        "entity_id": "entity_86_0",
+        "entity_type": "Business",
+        "user_id": "user_0979"
+      },
+      {
+        "entity_id": "entity_86_1",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_86_2",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_86_3",
+        "entity_type": "Business",
+        "user_id": "user_0635"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 1547.473827087894,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0087",
+    "host_id": "user_0243",
+    "category": "art",
+    "location": {
+      "lat": 56.15874837106298,
+      "lng": -38.97065004150057
+    },
+    "event_date": 1767155467.6610618,
+    "duration_hours": 3.0351617504549644,
+    "entities": [
+      {
+        "entity_id": "entity_87_0",
+        "entity_type": "Business",
+        "user_id": "user_0173"
+      },
+      {
+        "entity_id": "entity_87_1",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_87_2",
+        "entity_type": "User",
+        "user_id": "user_0050"
+      },
+      {
+        "entity_id": "entity_87_3",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_87_4",
+        "entity_type": "Sponsor",
+        "user_id": "user_0667"
+      },
+      {
+        "entity_id": "entity_87_5",
+        "entity_type": "Business",
+        "user_id": "user_0699"
+      },
+      {
+        "entity_id": "entity_87_6",
+        "entity_type": "Brand",
+        "user_id": "user_0979"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 9602.903118163917,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0088",
+    "host_id": "user_0961",
+    "category": "business",
+    "location": {
+      "lat": -8.760906334324526,
+      "lng": 106.95100026144436
+    },
+    "event_date": 1774447321.8813858,
+    "duration_hours": 2.5509773908906905,
+    "entities": [
+      {
+        "entity_id": "entity_88_0",
+        "entity_type": "Business",
+        "user_id": "user_0799"
+      },
+      {
+        "entity_id": "entity_88_1",
+        "entity_type": "User",
+        "user_id": "user_0001"
+      },
+      {
+        "entity_id": "entity_88_2",
+        "entity_type": "Brand",
+        "user_id": "user_0636"
+      },
+      {
+        "entity_id": "entity_88_3",
+        "entity_type": "Brand",
+        "user_id": null
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 3162.9670879084397,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0089",
+    "host_id": "user_0098",
+    "category": "health",
+    "location": {
+      "lat": 3.7297212740556107,
+      "lng": 124.2965761815674
+    },
+    "event_date": 1778004055.7386715,
+    "duration_hours": 7.453823256692207,
+    "entities": [
+      {
+        "entity_id": "entity_89_0",
+        "entity_type": "Business",
+        "user_id": "user_0749"
+      },
+      {
+        "entity_id": "entity_89_1",
+        "entity_type": "User",
+        "user_id": "user_0770"
+      },
+      {
+        "entity_id": "entity_89_2",
+        "entity_type": "User",
+        "user_id": "user_0700"
+      },
+      {
+        "entity_id": "entity_89_3",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_89_4",
+        "entity_type": "Sponsor",
+        "user_id": "user_0047"
+      },
+      {
+        "entity_id": "entity_89_5",
+        "entity_type": "Sponsor",
+        "user_id": "user_0784"
+      },
+      {
+        "entity_id": "entity_89_6",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_89_7",
+        "entity_type": "User",
+        "user_id": "user_0875"
+      },
+      {
+        "entity_id": "entity_89_8",
+        "entity_type": "Business",
+        "user_id": "user_0378"
+      },
+      {
+        "entity_id": "entity_89_9",
+        "entity_type": "User",
+        "user_id": "user_0580"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 1454.1123314859417,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0090",
+    "host_id": "user_0812",
+    "category": "science",
+    "location": {
+      "lat": 55.41339764544466,
+      "lng": 91.04861941245552
+    },
+    "event_date": 1777847709.81992,
+    "duration_hours": 6.646658588424893,
+    "entities": [
+      {
+        "entity_id": "entity_90_0",
+        "entity_type": "Business",
+        "user_id": "user_0721"
+      },
+      {
+        "entity_id": "entity_90_1",
+        "entity_type": "Business",
+        "user_id": "user_0361"
+      },
+      {
+        "entity_id": "entity_90_2",
+        "entity_type": "Brand",
+        "user_id": "user_0761"
+      },
+      {
+        "entity_id": "entity_90_3",
+        "entity_type": "Business",
+        "user_id": "user_0276"
+      },
+      {
+        "entity_id": "entity_90_4",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_90_5",
+        "entity_type": "Brand",
+        "user_id": "user_0630"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 9169.605436675112,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0091",
+    "host_id": "user_0867",
+    "category": "art",
+    "location": {
+      "lat": -2.9698196527388276,
+      "lng": 1.6673054536830367
+    },
+    "event_date": 1779974715.0160432,
+    "duration_hours": 5.5657502399506065,
+    "entities": [
+      {
+        "entity_id": "entity_91_0",
+        "entity_type": "User",
+        "user_id": "user_0552"
+      },
+      {
+        "entity_id": "entity_91_1",
+        "entity_type": "Sponsor",
+        "user_id": "user_0550"
+      },
+      {
+        "entity_id": "entity_91_2",
+        "entity_type": "Sponsor",
+        "user_id": "user_0202"
+      },
+      {
+        "entity_id": "entity_91_3",
+        "entity_type": "User",
+        "user_id": "user_0216"
+      },
+      {
+        "entity_id": "entity_91_4",
+        "entity_type": "User",
+        "user_id": "user_0569"
+      },
+      {
+        "entity_id": "entity_91_5",
+        "entity_type": "User",
+        "user_id": null
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 4746.269054952298,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0092",
+    "host_id": "user_0959",
+    "category": "health",
+    "location": {
+      "lat": 12.34110363011576,
+      "lng": -172.93648921825547
+    },
+    "event_date": 1775545626.3796632,
+    "duration_hours": 2.7999900796144086,
+    "entities": [
+      {
+        "entity_id": "entity_92_0",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_92_1",
+        "entity_type": "Business",
+        "user_id": "user_0423"
+      },
+      {
+        "entity_id": "entity_92_2",
+        "entity_type": "Business",
+        "user_id": "user_0234"
+      },
+      {
+        "entity_id": "entity_92_3",
+        "entity_type": "User",
+        "user_id": "user_0420"
+      },
+      {
+        "entity_id": "entity_92_4",
+        "entity_type": "Brand",
+        "user_id": "user_0221"
+      },
+      {
+        "entity_id": "entity_92_5",
+        "entity_type": "Sponsor",
+        "user_id": "user_0986"
+      },
+      {
+        "entity_id": "entity_92_6",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_92_7",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_92_8",
+        "entity_type": "Business",
+        "user_id": "user_0656"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 7915.828036578246,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0093",
+    "host_id": "user_0784",
+    "category": "science",
+    "location": {
+      "lat": 15.123578920850932,
+      "lng": 50.90993399482346
+    },
+    "event_date": 1775580710.9115803,
+    "duration_hours": 2.5811160935787116,
+    "entities": [
+      {
+        "entity_id": "entity_93_0",
+        "entity_type": "Brand",
+        "user_id": "user_0283"
+      },
+      {
+        "entity_id": "entity_93_1",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_93_2",
+        "entity_type": "User",
+        "user_id": "user_0172"
+      },
+      {
+        "entity_id": "entity_93_3",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_93_4",
+        "entity_type": "User",
+        "user_id": "user_0489"
+      },
+      {
+        "entity_id": "entity_93_5",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_93_6",
+        "entity_type": "Business",
+        "user_id": "user_0425"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 7459.452216476857,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0094",
+    "host_id": "user_0101",
+    "category": "technology",
+    "location": {
+      "lat": -36.35560342550208,
+      "lng": 107.78102517408723
+    },
+    "event_date": 1775442954.442736,
+    "duration_hours": 3.1253916395312693,
+    "entities": [
+      {
+        "entity_id": "entity_94_0",
+        "entity_type": "Business",
+        "user_id": "user_0534"
+      },
+      {
+        "entity_id": "entity_94_1",
+        "entity_type": "Brand",
+        "user_id": "user_0354"
+      },
+      {
+        "entity_id": "entity_94_2",
+        "entity_type": "Brand",
+        "user_id": "user_0889"
+      },
+      {
+        "entity_id": "entity_94_3",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_94_4",
+        "entity_type": "Sponsor",
+        "user_id": "user_0890"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 3488.109994613515,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0095",
+    "host_id": "user_0758",
+    "category": "science",
+    "location": {
+      "lat": -87.40056229611254,
+      "lng": -112.88326356494878
+    },
+    "event_date": 1772473752.5875595,
+    "duration_hours": 6.612793503271824,
+    "entities": [
+      {
+        "entity_id": "entity_95_0",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_95_1",
+        "entity_type": "User",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_95_2",
+        "entity_type": "Sponsor",
+        "user_id": "user_0219"
+      },
+      {
+        "entity_id": "entity_95_3",
+        "entity_type": "Sponsor",
+        "user_id": null
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 2303.7136566311606,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0096",
+    "host_id": "user_0963",
+    "category": "health",
+    "location": {
+      "lat": -11.240477821567866,
+      "lng": 151.63638272190568
+    },
+    "event_date": 1781327311.8687053,
+    "duration_hours": 5.707984807491826,
+    "entities": [
+      {
+        "entity_id": "entity_96_0",
+        "entity_type": "Sponsor",
+        "user_id": "user_0331"
+      },
+      {
+        "entity_id": "entity_96_1",
+        "entity_type": "Sponsor",
+        "user_id": "user_0319"
+      },
+      {
+        "entity_id": "entity_96_2",
+        "entity_type": "Business",
+        "user_id": "user_0634"
+      },
+      {
+        "entity_id": "entity_96_3",
+        "entity_type": "User",
+        "user_id": "user_0865"
+      },
+      {
+        "entity_id": "entity_96_4",
+        "entity_type": "User",
+        "user_id": "user_0731"
+      },
+      {
+        "entity_id": "entity_96_5",
+        "entity_type": "Business",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_96_6",
+        "entity_type": "Sponsor",
+        "user_id": "user_0512"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 7781.771690918671,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0097",
+    "host_id": "user_0053",
+    "category": "art",
+    "location": {
+      "lat": -47.18360600554959,
+      "lng": -8.320759429603513
+    },
+    "event_date": 1780636623.1907175,
+    "duration_hours": 5.470637447641484,
+    "entities": [
+      {
+        "entity_id": "entity_97_0",
+        "entity_type": "Brand",
+        "user_id": "user_0305"
+      },
+      {
+        "entity_id": "entity_97_1",
+        "entity_type": "User",
+        "user_id": "user_0085"
+      },
+      {
+        "entity_id": "entity_97_2",
+        "entity_type": "User",
+        "user_id": "user_0563"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 2729.4070686506084,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0098",
+    "host_id": "user_0625",
+    "category": "health",
+    "location": {
+      "lat": -71.09885716017878,
+      "lng": -77.21634895514408
+    },
+    "event_date": 1771408510.9963546,
+    "duration_hours": 6.836372122592071,
+    "entities": [
+      {
+        "entity_id": "entity_98_0",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_98_1",
+        "entity_type": "Business",
+        "user_id": "user_0614"
+      },
+      {
+        "entity_id": "entity_98_2",
+        "entity_type": "Business",
+        "user_id": "user_0141"
+      },
+      {
+        "entity_id": "entity_98_3",
+        "entity_type": "User",
+        "user_id": "user_0199"
+      },
+      {
+        "entity_id": "entity_98_4",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_98_5",
+        "entity_type": "Business",
+        "user_id": "user_0134"
+      },
+      {
+        "entity_id": "entity_98_6",
+        "entity_type": "Business",
+        "user_id": "user_0089"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 1805.3491181518807,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  },
+  {
+    "event_id": "event_0099",
+    "host_id": "user_0977",
+    "category": "technology",
+    "location": {
+      "lat": -24.44215239603708,
+      "lng": -126.1948006861309
+    },
+    "event_date": 1775816092.352883,
+    "duration_hours": 5.683555603275545,
+    "entities": [
+      {
+        "entity_id": "entity_99_0",
+        "entity_type": "User",
+        "user_id": "user_0774"
+      },
+      {
+        "entity_id": "entity_99_1",
+        "entity_type": "Sponsor",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_99_2",
+        "entity_type": "Brand",
+        "user_id": "user_0631"
+      },
+      {
+        "entity_id": "entity_99_3",
+        "entity_type": "Brand",
+        "user_id": "user_0645"
+      },
+      {
+        "entity_id": "entity_99_4",
+        "entity_type": "Brand",
+        "user_id": null
+      },
+      {
+        "entity_id": "entity_99_5",
+        "entity_type": "Brand",
+        "user_id": "user_0534"
+      },
+      {
+        "entity_id": "entity_99_6",
+        "entity_type": "Sponsor",
+        "user_id": "user_0259"
+      },
+      {
+        "entity_id": "entity_99_7",
+        "entity_type": "User",
+        "user_id": "user_0692"
+      }
+    ],
+    "n_way_match": true,
+    "total_revenue": 6229.172450942101,
+    "revenue_split": null,
+    "is_locked": false,
+    "locked_at": null,
+    "partnership_id": null,
+    "exclusivity_checked": false,
+    "expertise_boost_applied": false
+  }
+]

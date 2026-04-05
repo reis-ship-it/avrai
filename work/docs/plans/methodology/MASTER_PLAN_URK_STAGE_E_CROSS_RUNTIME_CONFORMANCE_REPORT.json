@@ -1,0 +1,32 @@
+{
+  "errors": [],
+  "evaluation_window": {
+    "end": "2026-02-27T23:59:00Z",
+    "start": "2026-02-27T00:00:00Z"
+  },
+  "generated_at": "2026-02-27T23:59:50Z",
+  "invariant_conformance": {
+    "checks_executed": 640,
+    "max_policy_divergence_events": 0,
+    "observed_contract_coverage_pct": 100.0,
+    "observed_policy_divergence_events": 0,
+    "observed_replay_determinism_pct": 100.0,
+    "required_contract_coverage_pct": 100.0,
+    "required_replay_determinism_pct": 100.0,
+    "within_threshold": true
+  },
+  "runtime_set": {
+    "observed_runtime_count": 4,
+    "required_runtime_count": 4,
+    "runtimes": [
+      "user_runtime",
+      "event_ops_runtime",
+      "business_ops_runtime",
+      "expert_services_runtime"
+    ],
+    "within_threshold": true
+  },
+  "source": "configs/runtime/urk_stage_e_cross_runtime_conformance_controls.json",
+  "verdict": "PASS",
+  "version": "v1"
+}

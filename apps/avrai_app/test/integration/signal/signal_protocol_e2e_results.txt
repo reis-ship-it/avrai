@@ -1,0 +1,666 @@
+[2025-12-30T11:49:14.862192] Alice Initialization Start
+  status: starting
+  timestamp: 2025-12-30T11:49:14.861643
+---
+[2025-12-30T11:49:14.867242] Before Protocol Initialize
+  step: 1
+---
+[2025-12-31T22:51:01.497343] Alice Initialization Start
+  status: starting
+  timestamp: 2025-12-31T22:51:01.496600
+---
+[2025-12-31T22:51:01.502897] Before Protocol Initialize
+  step: 1
+---
+[2025-12-31T22:51:01.506419] After Protocol Initialize
+  step: 1
+  status: failed
+  error: SignalProtocolException: Failed to initialize Signal FFI bindings: Invalid argument(s): Failed to lookup symbol 'signal_privatekey_generate': dlsym(RTLD_DEFAULT, signal_privatekey_generate): symbol not found
+  errorType: SignalProtocolException
+---
+[2025-12-31T22:51:01.507474] Before Platform Bridge Initialize
+  step: 2
+---
+[2025-12-31T22:51:01.508684] After Platform Bridge Initialize
+  step: 2
+  status: success
+---
+[2025-12-31T22:51:01.509255] Before Rust Wrapper Initialize
+  step: 3
+---
+[2025-12-31T22:51:01.510871] After Rust Wrapper Initialize
+  step: 3
+  status: success
+---
+[2025-12-31T22:51:01.511371] Before Store Callbacks Initialize
+  step: 4
+---
+[2025-12-31T22:51:01.513608] After Store Callbacks Initialize
+  step: 4
+  status: success
+---
+[2025-12-31T22:51:01.515486] Bob Initialization Start
+  status: starting
+  timestamp: 2025-12-31T22:51:01.515439
+---
+[2025-12-31T22:51:01.516615] Bob Initialization Complete
+  status: success
+  initialized: false
+  duration_ms: 0
+---
+[2025-12-31T22:51:01.519361] Test Start
+  signalProtocolReady: false
+  willTestFallback: true
+---
+[2025-12-31T22:51:01.544141] Initialization Skipped
+  reason: libraries_not_available
+---
+[2025-12-31T22:51:01.564545] AES-256-GCM Fallback
+  status: success
+  encryptionType: aes256gcm
+  duration_ms: 15
+---
+========================================
+TEST SUMMARY: AES-256-GCM Fallback Test
+Status: PASSED
+Timestamp: 2025-12-31T22:51:01.565296
+encryption: success
+fallbackWorking: true
+========================================
+
+[2025-12-31T22:51:01.568853] Initialization Skipped
+  reason: libraries_not_available
+---
+[2025-12-31T22:51:01.573751] HybridEncryptionService Fallback
+  status: success
+  encryptionType: aes256gcm
+  duration_ms: 0
+  encryptedContentLength: 56
+---
+========================================
+TEST SUMMARY: HybridEncryptionService Fallback Test
+Status: PASSED
+Timestamp: 2025-12-31T22:51:01.574175
+fallbackWorking: true
+encryptionType: aes256gcm
+========================================
+
+[2025-12-31T22:51:01.576221] Initialization Skipped
+  reason: libraries_not_available
+---
+[2025-12-31T22:51:01.587505] AnonymousCommunicationProtocol Encryption
+  status: success
+  duration_ms: 7
+  encryptionType: aes256gcm
+  messageId: msg_1767243061585_598376
+  targetAgentId: agent_bob
+  encryptedPayloadLength: 168
+---
+========================================
+TEST SUMMARY: AnonymousCommunicationProtocol Test
+Status: PASSED
+Timestamp: 2025-12-31T22:51:01.588090
+encryption: success
+encryptionType: aes256gcm
+messageId: msg_1767243061585_598376
+========================================
+
+[2025-12-31T22:51:52.498490] Alice Initialization Start
+  status: starting
+  timestamp: 2025-12-31T22:51:52.497679
+---
+[2025-12-31T22:51:52.503967] Before Protocol Initialize
+  step: 1
+---
+[2025-12-31T23:04:42.549931] Alice Initialization Start
+  status: starting
+  timestamp: 2025-12-31T23:04:42.549201
+---
+[2025-12-31T23:04:42.555905] Before Protocol Initialize
+  step: 1
+---
+[2025-12-31T23:05:21.840142] Alice Initialization Start
+  status: starting
+  timestamp: 2025-12-31T23:05:21.839446
+---
+[2025-12-31T23:05:21.869180] Before Protocol Initialize
+  step: 1
+---
+[2026-01-01T15:58:27.039504] Alice Initialization Start
+  status: starting
+  timestamp: 2026-01-01T15:58:27.038569
+---
+[2026-01-01T15:58:27.045030] Before Protocol Initialize
+  step: 1
+---
+[2026-01-01T15:58:27.055503] After Protocol Initialize
+  step: 1
+  status: success
+---
+[2026-01-01T15:58:27.056384] Before Platform Bridge Initialize
+  step: 2
+---
+[2026-01-01T15:58:27.057920] After Platform Bridge Initialize
+  step: 2
+  status: success
+---
+[2026-01-01T15:58:27.058642] Before Rust Wrapper Initialize
+  step: 3
+---
+[2026-01-01T15:58:27.059947] After Rust Wrapper Initialize
+  step: 3
+  status: success
+---
+[2026-01-01T15:58:27.060733] Before Store Callbacks Initialize
+  step: 4
+---
+[2026-01-01T15:58:27.066404] After Store Callbacks Initialize
+  step: 4
+  status: success
+---
+[2026-01-01T15:58:27.067100] Alice Initialization Complete
+  status: success
+  protocolInitialized: true
+  platformBridgeInitialized: true
+  rustWrapperInitialized: true
+  storeCallbacksInitialized: true
+---
+[2026-01-01T15:58:27.068951] Bob Initialization Start
+  status: starting
+  timestamp: 2026-01-01T15:58:27.068878
+---
+[2026-01-01T15:58:27.071323] Bob Initialization Complete
+  status: success
+  initialized: true
+  duration_ms: 1
+---
+[2026-01-01T15:58:27.074545] Test Start
+  signalProtocolReady: true
+  willTestSignalProtocol: true
+---
+[2026-01-01T15:58:27.101326] X3DH Key Exchange
+  status: completed
+  duration_ms: 12
+  recipientId: agent_bob
+---
+[2026-01-01T15:58:27.112498] Message Encryption
+  status: success
+  encryptionType: signalProtocol
+  duration_ms: 7
+---
+[2026-01-01T15:58:27.114351] Message Encryption
+  status: success
+  encryptionType: signalProtocol
+  payloadSize: 92
+  messageType: heartbeat
+  senderId: agent_alice
+  recipientId: agent_bob
+---
+========================================
+TEST SUMMARY: AI2AIProtocol Signal Protocol E2E
+Status: PASSED
+Timestamp: 2026-01-01T15:58:27.115279
+prekeyBundleGeneration: success
+x3dhKeyExchange: success
+messageEncryption: success
+encryptionType: signalProtocol
+note: Encryption verified. Full round-trip requires packet serialization.
+========================================
+
+[2026-01-01T15:58:27.118314] Alice Initialization Start
+  status: starting
+  timestamp: 2026-01-01T15:58:27.118252
+---
+[2026-01-01T15:58:27.118985] Before Protocol Initialize
+  step: 1
+---
+[2026-01-01T15:58:27.119777] After Protocol Initialize
+  step: 1
+  status: success
+---
+[2026-01-01T15:58:27.120327] Before Platform Bridge Initialize
+  step: 2
+---
+[2026-01-01T15:58:27.120776] After Platform Bridge Initialize
+  step: 2
+  status: success
+---
+[2026-01-01T15:58:27.121374] Before Rust Wrapper Initialize
+  step: 3
+---
+[2026-01-01T15:58:27.121798] After Rust Wrapper Initialize
+  step: 3
+  status: success
+---
+[2026-01-01T15:58:27.122326] Before Store Callbacks Initialize
+  step: 4
+---
+[2026-01-01T15:58:27.126258] After Store Callbacks Initialize
+  step: 4
+  status: success
+---
+[2026-01-01T15:58:27.127029] Alice Initialization Complete
+  status: success
+  protocolInitialized: true
+  platformBridgeInitialized: true
+  rustWrapperInitialized: true
+  storeCallbacksInitialized: true
+---
+[2026-01-01T15:58:27.128504] Bob Initialization Start
+  status: starting
+  timestamp: 2026-01-01T15:58:27.128444
+---
+[2026-01-01T15:58:27.129555] Bob Initialization Complete
+  status: success
+  initialized: true
+  duration_ms: 0
+---
+[2026-01-01T15:58:27.140740] AES-256-GCM Fallback
+  status: success
+  encryptionType: aes256gcm
+  duration_ms: 8
+---
+========================================
+TEST SUMMARY: AES-256-GCM Fallback Test
+Status: PASSED
+Timestamp: 2026-01-01T15:58:27.141324
+encryption: success
+fallbackWorking: true
+========================================
+
+[2026-01-01T15:58:27.143997] Alice Initialization Start
+  status: starting
+  timestamp: 2026-01-01T15:58:27.143952
+---
+[2026-01-01T15:58:27.144599] Before Protocol Initialize
+  step: 1
+---
+[2026-01-01T15:58:27.145282] After Protocol Initialize
+  step: 1
+  status: success
+---
+[2026-01-01T15:58:27.146049] Before Platform Bridge Initialize
+  step: 2
+---
+[2026-01-01T15:58:27.146390] After Platform Bridge Initialize
+  step: 2
+  status: success
+---
+[2026-01-01T15:58:27.146900] Before Rust Wrapper Initialize
+  step: 3
+---
+[2026-01-01T15:58:27.147232] After Rust Wrapper Initialize
+  step: 3
+  status: success
+---
+[2026-01-01T15:58:27.147743] Before Store Callbacks Initialize
+  step: 4
+---
+[2026-01-01T15:58:27.148484] After Store Callbacks Initialize
+  step: 4
+  status: success
+---
+[2026-01-01T15:58:27.148900] Alice Initialization Complete
+  status: success
+  protocolInitialized: true
+  platformBridgeInitialized: true
+  rustWrapperInitialized: true
+  storeCallbacksInitialized: true
+---
+[2026-01-01T15:58:27.150088] Bob Initialization Start
+  status: starting
+  timestamp: 2026-01-01T15:58:27.150024
+---
+[2026-01-01T15:58:27.151129] Bob Initialization Complete
+  status: success
+  initialized: true
+  duration_ms: 0
+---
+[2026-01-01T15:58:27.155510] HybridEncryptionService Fallback
+  status: success
+  encryptionType: aes256gcm
+  duration_ms: 0
+  encryptedContentLength: 56
+---
+========================================
+TEST SUMMARY: HybridEncryptionService Fallback Test
+Status: PASSED
+Timestamp: 2026-01-01T15:58:27.155926
+fallbackWorking: true
+encryptionType: aes256gcm
+========================================
+
+[2026-01-01T15:58:27.158101] Alice Initialization Start
+  status: starting
+  timestamp: 2026-01-01T15:58:27.158040
+---
+[2026-01-01T15:58:27.158659] Before Protocol Initialize
+  step: 1
+---
+[2026-01-01T15:58:27.159311] After Protocol Initialize
+  step: 1
+  status: success
+---
+[2026-01-01T15:58:27.159884] Before Platform Bridge Initialize
+  step: 2
+---
+[2026-01-01T15:58:27.160223] After Platform Bridge Initialize
+  step: 2
+  status: success
+---
+[2026-01-01T15:58:27.160733] Before Rust Wrapper Initialize
+  step: 3
+---
+[2026-01-01T15:58:27.161143] After Rust Wrapper Initialize
+  step: 3
+  status: success
+---
+[2026-01-01T15:58:27.161710] Before Store Callbacks Initialize
+  step: 4
+---
+[2026-01-01T15:58:27.162575] After Store Callbacks Initialize
+  step: 4
+  status: success
+---
+[2026-01-01T15:58:27.163028] Alice Initialization Complete
+  status: success
+  protocolInitialized: true
+  platformBridgeInitialized: true
+  rustWrapperInitialized: true
+  storeCallbacksInitialized: true
+---
+[2026-01-01T15:58:27.164344] Bob Initialization Start
+  status: starting
+  timestamp: 2026-01-01T15:58:27.164286
+---
+[2026-01-01T15:58:27.165235] Bob Initialization Complete
+  status: success
+  initialized: true
+  duration_ms: 0
+---
+[2026-01-01T15:58:27.178898] AnonymousCommunicationProtocol Encryption
+  status: success
+  duration_ms: 8
+  encryptionType: signalProtocol
+  messageId: msg_1767304707177_398829
+  targetAgentId: agent_bob
+  encryptedPayloadLength: 2476
+---
+========================================
+TEST SUMMARY: AnonymousCommunicationProtocol Test
+Status: PASSED
+Timestamp: 2026-01-01T15:58:27.179413
+encryption: success
+encryptionType: signalProtocol
+messageId: msg_1767304707177_398829
+========================================
+
+[2026-01-01T16:09:06.151914] Alice Initialization Start
+  status: starting
+  timestamp: 2026-01-01T16:09:06.151136
+---
+[2026-01-01T16:09:06.156635] Before Protocol Initialize
+  step: 1
+---
+[2026-01-01T16:09:06.167823] After Protocol Initialize
+  step: 1
+  status: success
+---
+[2026-01-01T16:09:06.168742] Before Platform Bridge Initialize
+  step: 2
+---
+[2026-01-01T16:09:06.170225] After Platform Bridge Initialize
+  step: 2
+  status: success
+---
+[2026-01-01T16:09:06.171059] Before Rust Wrapper Initialize
+  step: 3
+---
+[2026-01-01T16:09:06.172311] After Rust Wrapper Initialize
+  step: 3
+  status: success
+---
+[2026-01-01T16:09:06.173112] Before Store Callbacks Initialize
+  step: 4
+---
+[2026-01-01T16:09:06.178424] After Store Callbacks Initialize
+  step: 4
+  status: success
+---
+[2026-01-01T16:09:06.179122] Alice Initialization Complete
+  status: success
+  protocolInitialized: true
+  platformBridgeInitialized: true
+  rustWrapperInitialized: true
+  storeCallbacksInitialized: true
+---
+[2026-01-01T16:09:06.181091] Bob Initialization Start
+  status: starting
+  timestamp: 2026-01-01T16:09:06.180973
+---
+[2026-01-01T16:09:06.183461] Bob Initialization Complete
+  status: success
+  initialized: true
+  duration_ms: 1
+---
+[2026-01-01T16:09:06.186555] Test Start
+  signalProtocolReady: true
+  willTestSignalProtocol: true
+---
+[2026-01-01T16:09:06.214199] X3DH Key Exchange
+  status: completed
+  duration_ms: 13
+  recipientId: agent_bob
+---
+[2026-01-01T16:09:06.226782] Message Encryption
+  status: success
+  encryptionType: signalProtocol
+  duration_ms: 8
+---
+[2026-01-01T16:09:06.228384] Message Encryption
+  status: success
+  encryptionType: signalProtocol
+  payloadSize: 92
+  messageType: heartbeat
+  senderId: agent_alice
+  recipientId: agent_bob
+---
+========================================
+TEST SUMMARY: AI2AIProtocol Signal Protocol E2E
+Status: PASSED
+Timestamp: 2026-01-01T16:09:06.229322
+prekeyBundleGeneration: success
+x3dhKeyExchange: success
+messageEncryption: success
+encryptionType: signalProtocol
+note: Encryption verified. Full round-trip requires packet serialization.
+========================================
+
+[2026-01-01T16:09:06.232425] Alice Initialization Start
+  status: starting
+  timestamp: 2026-01-01T16:09:06.232380
+---
+[2026-01-01T16:09:06.233091] Before Protocol Initialize
+  step: 1
+---
+[2026-01-01T16:09:06.233880] After Protocol Initialize
+  step: 1
+  status: success
+---
+[2026-01-01T16:09:06.234439] Before Platform Bridge Initialize
+  step: 2
+---
+[2026-01-01T16:09:06.234939] After Platform Bridge Initialize
+  step: 2
+  status: success
+---
+[2026-01-01T16:09:06.235579] Before Rust Wrapper Initialize
+  step: 3
+---
+[2026-01-01T16:09:06.236027] After Rust Wrapper Initialize
+  step: 3
+  status: success
+---
+[2026-01-01T16:09:06.236645] Before Store Callbacks Initialize
+  step: 4
+---
+[2026-01-01T16:09:06.240296] After Store Callbacks Initialize
+  step: 4
+  status: success
+---
+[2026-01-01T16:09:06.240939] Alice Initialization Complete
+  status: success
+  protocolInitialized: true
+  platformBridgeInitialized: true
+  rustWrapperInitialized: true
+  storeCallbacksInitialized: true
+---
+[2026-01-01T16:09:06.242365] Bob Initialization Start
+  status: starting
+  timestamp: 2026-01-01T16:09:06.242322
+---
+[2026-01-01T16:09:06.243614] Bob Initialization Complete
+  status: success
+  initialized: true
+  duration_ms: 0
+---
+[2026-01-01T16:09:06.255014] AES-256-GCM Fallback
+  status: success
+  encryptionType: aes256gcm
+  duration_ms: 8
+---
+========================================
+TEST SUMMARY: AES-256-GCM Fallback Test
+Status: PASSED
+Timestamp: 2026-01-01T16:09:06.255577
+encryption: success
+fallbackWorking: true
+========================================
+
+[2026-01-01T16:09:06.258206] Alice Initialization Start
+  status: starting
+  timestamp: 2026-01-01T16:09:06.258106
+---
+[2026-01-01T16:09:06.258782] Before Protocol Initialize
+  step: 1
+---
+[2026-01-01T16:09:06.259539] After Protocol Initialize
+  step: 1
+  status: success
+---
+[2026-01-01T16:09:06.260467] Before Platform Bridge Initialize
+  step: 2
+---
+[2026-01-01T16:09:06.260934] After Platform Bridge Initialize
+  step: 2
+  status: success
+---
+[2026-01-01T16:09:06.261510] Before Rust Wrapper Initialize
+  step: 3
+---
+[2026-01-01T16:09:06.261984] After Rust Wrapper Initialize
+  step: 3
+  status: success
+---
+[2026-01-01T16:09:06.262568] Before Store Callbacks Initialize
+  step: 4
+---
+[2026-01-01T16:09:06.263357] After Store Callbacks Initialize
+  step: 4
+  status: success
+---
+[2026-01-01T16:09:06.263833] Alice Initialization Complete
+  status: success
+  protocolInitialized: true
+  platformBridgeInitialized: true
+  rustWrapperInitialized: true
+  storeCallbacksInitialized: true
+---
+[2026-01-01T16:09:06.265082] Bob Initialization Start
+  status: starting
+  timestamp: 2026-01-01T16:09:06.265042
+---
+[2026-01-01T16:09:06.266075] Bob Initialization Complete
+  status: success
+  initialized: true
+  duration_ms: 0
+---
+[2026-01-01T16:09:06.271281] HybridEncryptionService Fallback
+  status: success
+  encryptionType: aes256gcm
+  duration_ms: 0
+  encryptedContentLength: 56
+---
+========================================
+TEST SUMMARY: HybridEncryptionService Fallback Test
+Status: PASSED
+Timestamp: 2026-01-01T16:09:06.271816
+fallbackWorking: true
+encryptionType: aes256gcm
+========================================
+
+[2026-01-01T16:09:06.274380] Alice Initialization Start
+  status: starting
+  timestamp: 2026-01-01T16:09:06.274325
+---
+[2026-01-01T16:09:06.275012] Before Protocol Initialize
+  step: 1
+---
+[2026-01-01T16:09:06.275647] After Protocol Initialize
+  step: 1
+  status: success
+---
+[2026-01-01T16:09:06.276262] Before Platform Bridge Initialize
+  step: 2
+---
+[2026-01-01T16:09:06.276618] After Platform Bridge Initialize
+  step: 2
+  status: success
+---
+[2026-01-01T16:09:06.277285] Before Rust Wrapper Initialize
+  step: 3
+---
+[2026-01-01T16:09:06.277723] After Rust Wrapper Initialize
+  step: 3
+  status: success
+---
+[2026-01-01T16:09:06.278267] Before Store Callbacks Initialize
+  step: 4
+---
+[2026-01-01T16:09:06.279251] After Store Callbacks Initialize
+  step: 4
+  status: success
+---
+[2026-01-01T16:09:06.279644] Alice Initialization Complete
+  status: success
+  protocolInitialized: true
+  platformBridgeInitialized: true
+  rustWrapperInitialized: true
+  storeCallbacksInitialized: true
+---
+[2026-01-01T16:09:06.280742] Bob Initialization Start
+  status: starting
+  timestamp: 2026-01-01T16:09:06.280691
+---
+[2026-01-01T16:09:06.281927] Bob Initialization Complete
+  status: success
+  initialized: true
+  duration_ms: 0
+---
+[2026-01-01T16:09:06.297195] AnonymousCommunicationProtocol Encryption
+  status: success
+  duration_ms: 9
+  encryptionType: signalProtocol
+  messageId: msg_1767305346295_982848
+  targetAgentId: agent_bob
+  encryptedPayloadLength: 2476
+---
+========================================
+TEST SUMMARY: AnonymousCommunicationProtocol Test
+Status: PASSED
+Timestamp: 2026-01-01T16:09:06.297737
+encryption: success
+encryptionType: signalProtocol
+messageId: msg_1767305346295_982848
+========================================
+

@@ -1,0 +1,3 @@
+scenario,homogenization_percent,meaningful_encounters,random_encounters,meaningful_ratio
+Random Only,17.569191962073162,0,191,0.0
+Meaningful + Random,54.05558270897441,4593,191,96.00752508361204

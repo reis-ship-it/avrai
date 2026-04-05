@@ -1,0 +1,49 @@
+{
+  "patent_number": "7",
+  "patent_name": "Real-Time Trend Detection with Privacy Preservation",
+  "experiments": {
+    "experiment_1": {
+      "experiment": "Real-Time Stream Processing Latency",
+      "avg_latency_ms": 0.0009312629699707031,
+      "max_latency_ms": 0.032901763916015625,
+      "p95_latency_ms": 0.0011920928955078125,
+      "p99_latency_ms": 0.0012016296386718663,
+      "meets_target_rate": 1.0,
+      "target_latency_ms": 1000.0,
+      "num_samples": 500
+    },
+    "experiment_2": {
+      "experiment": "Privacy-Preserving Aggregation Accuracy",
+      "avg_privacy_loss": 6.055255813603775,
+      "max_privacy_loss": 50.01726220184389,
+      "correlation": 0.8949485892731853,
+      "p_value": 4.893712597756724e-12,
+      "num_privacy_budgets_tested": 4,
+      "num_categories": 8
+    },
+    "experiment_3": {
+      "experiment": "Trend Prediction Accuracy",
+      "growth_rate_mae": 0.054603314436723414,
+      "acceleration_mae": 0.12177758067914732,
+      "growth_rate_correlation": 0.9856246841841401,
+      "acceleration_correlation": -0.2598482618306813,
+      "emerging_prediction_accuracy": 0.0,
+      "num_categories": 8
+    },
+    "experiment_4": {
+      "experiment": "Multi-Source Fusion Effectiveness",
+      "avg_ai_weight": 0.30072219682634843,
+      "avg_community_weight": 0.3991954701250578,
+      "avg_temporal_weight": 0.20001982869341672,
+      "avg_location_weight": 0.10006250435517709,
+      "expected_ai_weight": 0.3,
+      "expected_community_weight": 0.4,
+      "expected_temporal_weight": 0.2,
+      "expected_location_weight": 0.1,
+      "correlation_with_ground_truth": 0.0,
+      "num_categories": 1
+    }
+  },
+  "execution_time_seconds": 0.04895901679992676,
+  "timestamp": "2025-12-22 14:21:21"
+}

@@ -1,0 +1,25 @@
+{
+  "control_pack_id": "admin_private_server_security_private_mesh",
+  "scope": "phase-c private mesh controls for vpn-equivalent restricted admin access",
+  "master_plan_refs": ["10.9.24", "10.10.10"],
+  "related_milestones": ["M26-P10-3", "M26-P7-1"],
+  "mesh_topology": {
+    "mesh_provider_options": ["headscale_tailscale", "wireguard"],
+    "admin_api_private_interface_only": true,
+    "public_dns_for_admin_api_enabled": false,
+    "mesh_acl_tags": ["admin_client", "admin_api", "observability"]
+  },
+  "routing_policy": {
+    "admin_api_reachable_only_via_mesh": true,
+    "split_tunnel_for_admin_plane_allowed": false,
+    "unknown_mesh_peer_policy": "deny"
+  },
+  "operational_controls": {
+    "peer_approval_required": true,
+    "peer_expiration_days": 30,
+    "offboarding_revocation_sla_minutes": 15
+  },
+  "status": "enforced",
+  "last_updated": "2026-03-14",
+  "notes": "Private mesh is enforced for all admin/autoresearch control-plane traffic."
+}

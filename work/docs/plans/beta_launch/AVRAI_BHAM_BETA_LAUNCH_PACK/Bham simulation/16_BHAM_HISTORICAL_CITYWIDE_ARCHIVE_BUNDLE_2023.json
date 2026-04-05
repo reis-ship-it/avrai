@@ -1,0 +1,270 @@
+{
+  "bundleId": "bham-historical-citywide-archive-2023-1",
+  "replayYear": 2023,
+  "generatedAtUtc": "2026-03-11T22:45:00Z",
+  "entries": [
+    {
+      "sourceName": "Bhamwiki",
+      "rawOutputKey": "bhamwiki",
+      "requiredFields": [
+        "record_id",
+        "entity_type",
+        "entity_id",
+        "observed_at",
+        "published_at",
+        "entity_history",
+        "opening_closure_history",
+        "neighborhood_links"
+      ],
+      "dedupeKeys": [
+        "page_title",
+        "normalized_entity",
+        "last_revision"
+      ],
+      "normalizationTargets": [
+        "community",
+        "event",
+        "locality",
+        "venue"
+      ],
+      "requiresReview": false,
+      "templateRecord": {
+        "record_id": "<required>",
+        "entity_type": "venue",
+        "entity_id": "<required>",
+        "observed_at": "<required>",
+        "published_at": "<required>",
+        "entity_history": "<required>",
+        "opening_closure_history": "<required>",
+        "neighborhood_links": "<required>",
+        "locality": "<bham_locality>"
+      },
+      "records": [
+        {
+          "record_id": "bhamwiki-forest-park-south-avondale-2023",
+          "entity_type": "locality",
+          "entity_id": "forest_park_south_avondale",
+          "observed_at": "2023-12-31T00:00:00Z",
+          "published_at": "2026-03-11T22:20:00Z",
+          "valid_from": "2023-01-01T00:00:00Z",
+          "last_verified_at": "2026-03-11T22:20:00Z",
+          "entity_history": "Bhamwiki documents Forest Park-South Avondale as a Birmingham neighborhood with an active neighborhood association rhythm and a strong Avondale/Forest Park civic identity.",
+          "opening_closure_history": "Neighborhood association meeting rhythm active in 2023; no closure state implied.",
+          "neighborhood_links": [
+            "Forest Park",
+            "South Avondale",
+            "Avondale Library"
+          ],
+          "locality": "bham_forest_park_south_avondale",
+          "name": "Forest Park-South Avondale",
+          "title": "Forest Park-South Avondale",
+          "page_title": "Forest Park-South Avondale",
+          "meeting_dates": "First Tuesday at 6:00 PM at Avondale Library",
+          "category": "neighborhood_association_locality",
+          "retrospective_evidence": true,
+          "historical_admissibility": "retrospective_archive",
+          "confidence": 0.79,
+          "uncertainty_minutes": 10080,
+          "source_url": "https://www.bhamwiki.com/w/Forest_Park-South_Avondale",
+          "source_excerpt": "Neighborhood association meets on the first Tuesday at Avondale Library."
+        },
+        {
+          "record_id": "bhamwiki-eastwood-neighborhood-2023",
+          "entity_type": "community",
+          "entity_id": "eastwood_neighborhood_association",
+          "observed_at": "2023-12-31T00:00:00Z",
+          "published_at": "2026-03-11T22:20:00Z",
+          "valid_from": "2023-01-01T00:00:00Z",
+          "last_verified_at": "2026-03-11T22:20:00Z",
+          "entity_history": "Bhamwiki documents Eastwood as a Birmingham neighborhood with an active neighborhood association structure.",
+          "opening_closure_history": "Neighborhood association meeting rhythm active in 2023; no closure state implied.",
+          "neighborhood_links": [
+            "Eastwood"
+          ],
+          "locality": "bham_eastwood",
+          "name": "Eastwood Neighborhood Association",
+          "title": "Eastwood Neighborhood Association",
+          "page_title": "Eastwood",
+          "meeting_dates": "First Thursday at 6:30 PM via online meeting",
+          "category": "neighborhood_association",
+          "retrospective_evidence": true,
+          "historical_admissibility": "retrospective_archive",
+          "confidence": 0.74,
+          "uncertainty_minutes": 10080,
+          "source_url": "https://www.bhamwiki.com/w/Eastwood",
+          "source_excerpt": "Neighborhood association meeting rhythm captured in the Eastwood page."
+        },
+        {
+          "record_id": "bhamwiki-friends-of-avondale-park-2023",
+          "entity_type": "community",
+          "entity_id": "friends_of_avondale_park",
+          "observed_at": "2023-12-31T00:00:00Z",
+          "published_at": "2026-03-11T22:20:00Z",
+          "valid_from": "1988-01-01T00:00:00Z",
+          "last_verified_at": "2026-03-11T22:20:00Z",
+          "entity_history": "Friends of Avondale Park was founded in 1988 as a neighborhood community organization tied to Avondale Park stewardship and programming.",
+          "opening_closure_history": "Community organization active through 2023; no closure state documented.",
+          "neighborhood_links": [
+            "Avondale",
+            "Avondale Park"
+          ],
+          "locality": "bham_avondale",
+          "name": "Friends of Avondale Park",
+          "title": "Friends of Avondale Park",
+          "page_title": "Friends of Avondale Park",
+          "category": "community_organization",
+          "retrospective_evidence": true,
+          "historical_admissibility": "retrospective_archive",
+          "confidence": 0.8,
+          "uncertainty_minutes": 43200,
+          "source_url": "https://www.bhamwiki.com/w/Friends_of_Avondale_Park",
+          "source_excerpt": "Founded in 1988."
+        },
+        {
+          "record_id": "bhamwiki-grassroots-coalition-2023",
+          "entity_type": "community",
+          "entity_id": "grassroots_coalition_of_birmingham",
+          "observed_at": "2023-12-31T00:00:00Z",
+          "published_at": "2026-03-11T22:20:00Z",
+          "valid_from": "2017-01-01T00:00:00Z",
+          "last_verified_at": "2026-03-11T22:20:00Z",
+          "entity_history": "The Grassroots Coalition of Birmingham was founded in 2017 as a Birmingham community-building and artistic collective.",
+          "opening_closure_history": "Community organization active through 2023; no closure state documented.",
+          "neighborhood_links": [
+            "Birmingham"
+          ],
+          "locality": "bham_citywide",
+          "name": "Grassroots Coalition of Birmingham",
+          "title": "Grassroots Coalition of Birmingham",
+          "page_title": "Grassroots Coalition of Birmingham",
+          "category": "community_collective",
+          "retrospective_evidence": true,
+          "historical_admissibility": "retrospective_archive",
+          "confidence": 0.75,
+          "uncertainty_minutes": 43200,
+          "source_url": "https://www.bhamwiki.com/w/Grassroots_Coalition_of_Birmingham",
+          "source_excerpt": "Founded in 2017."
+        },
+        {
+          "record_id": "bhamwiki-jones-valley-teaching-farm-2023",
+          "entity_type": "community",
+          "entity_id": "jones_valley_teaching_farm",
+          "observed_at": "2023-12-31T00:00:00Z",
+          "published_at": "2026-03-11T22:20:00Z",
+          "valid_from": "2001-01-01T00:00:00Z",
+          "last_verified_at": "2026-03-11T22:20:00Z",
+          "entity_history": "Jones Valley Teaching Farm began in 2001 and became a lasting Birmingham educational and food-systems community institution.",
+          "opening_closure_history": "Institution active through 2023; no closure state documented.",
+          "neighborhood_links": [
+            "Birmingham",
+            "urban agriculture"
+          ],
+          "locality": "bham_citywide",
+          "name": "Jones Valley Teaching Farm",
+          "title": "Jones Valley Teaching Farm",
+          "page_title": "Jones Valley Teaching Farm",
+          "category": "education_food_community",
+          "retrospective_evidence": true,
+          "historical_admissibility": "retrospective_archive",
+          "confidence": 0.77,
+          "uncertainty_minutes": 43200,
+          "source_url": "https://www.bhamwiki.com/w/Jones_Valley_Teaching_Farm",
+          "source_excerpt": "Founded in 2001."
+        },
+        {
+          "record_id": "bhamwiki-southside-branch-library-2023",
+          "entity_type": "venue",
+          "entity_id": "southside_branch_library",
+          "observed_at": "2023-12-31T00:00:00Z",
+          "published_at": "2026-03-11T22:20:00Z",
+          "valid_from": "1996-01-01T00:00:00Z",
+          "last_verified_at": "2026-03-11T22:20:00Z",
+          "entity_history": "Bhamwiki documents the Southside Branch Library as a continuation of a branch first opened in 1945, with the current building opening in 1996.",
+          "opening_closure_history": "Active library branch in 2023; current building dates from 1996.",
+          "neighborhood_links": [
+            "Southside",
+            "Birmingham Public Library"
+          ],
+          "locality": "bham_southside",
+          "name": "Southside Branch Library",
+          "title": "Southside Branch Library",
+          "page_title": "Southside Branch Library",
+          "category": "public_library_branch",
+          "retrospective_evidence": true,
+          "historical_admissibility": "retrospective_archive",
+          "confidence": 0.81,
+          "uncertainty_minutes": 43200,
+          "source_url": "https://www.bhamwiki.com/w/Southside_Branch_Library",
+          "source_excerpt": "First branch opened in 1945; current building opened in 1996."
+        },
+        {
+          "record_id": "bhamwiki-saturn-2023",
+          "entity_type": "club",
+          "entity_id": "saturn_birmingham",
+          "observed_at": "2023-12-31T00:00:00Z",
+          "published_at": "2026-03-11T22:20:00Z",
+          "valid_from": "2015-05-01T00:00:00Z",
+          "last_verified_at": "2026-03-11T22:20:00Z",
+          "entity_history": "Bhamwiki documents Saturn opening in Avondale on May 1, 2015 as a major live-music and cultural venue.",
+          "opening_closure_history": "Open through 2023; no closure state documented.",
+          "neighborhood_links": [
+            "Avondale",
+            "41st Street South"
+          ],
+          "locality": "bham_avondale",
+          "name": "Saturn",
+          "title": "Saturn",
+          "page_title": "Saturn",
+          "category": "music_club",
+          "retrospective_evidence": true,
+          "historical_admissibility": "retrospective_archive",
+          "confidence": 0.84,
+          "uncertainty_minutes": 1440,
+          "source_url": "https://www.bhamwiki.com/w/Saturn",
+          "source_excerpt": "Opened in Avondale on May 1, 2015."
+        },
+        {
+          "record_id": "bhamwiki-iron-city-2023",
+          "entity_type": "club",
+          "entity_id": "iron_city_birmingham",
+          "observed_at": "2023-12-31T00:00:00Z",
+          "published_at": "2026-03-11T22:20:00Z",
+          "valid_from": "2013-01-01T00:00:00Z",
+          "last_verified_at": "2026-03-11T22:20:00Z",
+          "entity_history": "Bhamwiki documents Iron City opening in 2013 as a major Birmingham live-event venue.",
+          "opening_closure_history": "Open through 2023; no closure state documented.",
+          "neighborhood_links": [
+            "Southside",
+            "22nd Street South"
+          ],
+          "locality": "bham_southside",
+          "name": "Iron City",
+          "title": "Iron City",
+          "page_title": "Iron City",
+          "category": "live_event_club",
+          "retrospective_evidence": true,
+          "historical_admissibility": "retrospective_archive",
+          "confidence": 0.8,
+          "uncertainty_minutes": 43200,
+          "source_url": "https://www.bhamwiki.com/w/Iron_City",
+          "source_excerpt": "Opened in 2013."
+        }
+      ],
+      "notes": [
+        "This is the first true archived citywide historical row layer for BHAM replay.",
+        "Rows are retrospective historical evidence and should reconstruct 2023 state without being mistaken for live-known 2023 data."
+      ],
+      "status": "populated"
+    }
+  ],
+  "notes": [
+    "Historical citywide archive bundle for BHAM replay year 2023.",
+    "This bundle is retrospective historical evidence rather than live-captured 2023 telemetry.",
+    "Use it to reconstruct durable citywide venue, community, club, and locality truth."
+  ],
+  "metadata": {
+    "evidenceMode": "retrospective_archive_reconstruction",
+    "historicalRowCount": 8,
+    "sourceCount": 1
+  }
+}

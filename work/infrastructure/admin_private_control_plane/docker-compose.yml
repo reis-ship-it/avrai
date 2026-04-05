@@ -1,0 +1,41 @@
+services:
+  admin-control-plane-gateway:
+    build:
+      context: ./gateway
+    env_file:
+      - ./.env
+    environment:
+      ADMIN_CONTROL_PLANE_OPA_URL: ${ADMIN_CONTROL_PLANE_OPA_URL:-http://opa:8181}
+      ADMIN_CONTROL_PLANE_RESEARCH_BROKER_URL: ${ADMIN_CONTROL_PLANE_RESEARCH_BROKER_URL:-http://broker:8091}
+    ports:
+      - "${ADMIN_CONTROL_PLANE_PORT:-7443}:7443"
+    depends_on:
+      opa:
+        condition: service_started
+      broker:
+        condition: service_started
+    restart: unless-stopped
+
+  broker:
+    build:
+      context: ./broker
+    env_file:
+      - ./.env
+    environment:
+      RESEARCH_EGRESS_BROKER_SHARED_KEY: ${RESEARCH_EGRESS_BROKER_SHARED_KEY}
+    expose:
+      - "8091"
+    restart: unless-stopped
+
+  opa:
+    image: openpolicyagent/opa:0.69.0-static
+    command:
+      - "run"
+      - "--server"
+      - "--addr=0.0.0.0:8181"
+      - "/policies"
+    volumes:
+      - ./opa:/policies:ro
+    expose:
+      - "8181"
+    restart: unless-stopped

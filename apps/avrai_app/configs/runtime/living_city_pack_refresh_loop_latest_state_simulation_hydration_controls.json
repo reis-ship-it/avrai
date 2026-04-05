@@ -1,0 +1,27 @@
+{
+  "milestone_id": "M31-P10-9",
+  "ui_label": "Living City-Pack Refresh Loop",
+  "scope": "versioned city-pack refresh and latest-state simulation hydration for any supported place using app, runtime/OS, and governed reality-model evidence after M31-P10-8",
+  "master_plan_refs": [
+    "10.9.12",
+    "10.9.22",
+    "10.9.23",
+    "10.9.24",
+    "10.9.25"
+  ],
+  "dependencies": [
+    "M31-P10-8"
+  ],
+  "guardrails": {
+    "starts_only_after_m31_p10_8_closeout": true,
+    "city_pack_structural_ref_remains_stable_versioned_identity": true,
+    "latest_state_hydration_must_preserve_lineage_and_freshness_receipts": true,
+    "operator_selected_places_must_be_supported_by_available_avrai_data": true,
+    "denied_or_low_confidence_evidence_cannot_silently_rewrite_served_city_pack_basis": true,
+    "historical_versions_must_remain_roll_backable_and_inspectable": true,
+    "atomic_time_validity_is_receipt_context_not_quantum_execution_bypass": true
+  },
+  "refresh_mode": "versioned_living_city_pack_with_latest_state_hydration",
+  "status": "queued_follow_on",
+  "opened_on": "2026-04-01"
+}

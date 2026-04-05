@@ -1,0 +1,610 @@
+================================================================================
+TEST QUALITY ANALYSIS REPORT
+================================================================================
+
+SUMMARY
+--------------------------------------------------------------------------------
+Total Files Analyzed: 47
+Total Tests: 650
+Total Issues Found: 144
+
+Issue Breakdown:
+  - Property Assignment Tests: 110
+  - Trivial Checks: 13
+  - JSON Field Tests: 21
+
+FILES BY PRIORITY (Highest Low-Value Percentage First)
+--------------------------------------------------------------------------------
+
+Showing top 30 files (out of 47 total files)
+
+
+File: test/unit/models/brand_account_test.dart
+  Total Tests: 2
+  Low-Value Percentage: 50.0%
+  Issues: 1
+    - Property Assignment: 1
+    - Trivial Checks: 0
+    - JSON Field Tests: 0
+    - Granular Edge Cases: 0
+  Business Logic Tests: 1
+  Estimated Refactoring Time: 7 minutes
+
+File: test/unit/models/brand_discovery_test.dart
+  Total Tests: 2
+  Low-Value Percentage: 50.0%
+  Issues: 1
+    - Property Assignment: 1
+    - Trivial Checks: 0
+    - JSON Field Tests: 0
+    - Granular Edge Cases: 0
+  Business Logic Tests: 1
+  Estimated Refactoring Time: 7 minutes
+
+File: test/unit/models/partnership_expertise_boost_test.dart
+  Total Tests: 4
+  Low-Value Percentage: 50.0%
+  Issues: 2
+    - Property Assignment: 2
+    - Trivial Checks: 0
+    - JSON Field Tests: 0
+    - Granular Edge Cases: 0
+  Business Logic Tests: 1
+  Estimated Refactoring Time: 9 minutes
+
+File: test/unit/models/spot_test.dart
+  Total Tests: 14
+  Low-Value Percentage: 50.0%
+  Issues: 7
+    - Property Assignment: 7
+    - Trivial Checks: 0
+    - JSON Field Tests: 0
+    - Granular Edge Cases: 0
+  Business Logic Tests: 3
+  Estimated Refactoring Time: 19 minutes
+
+File: test/unit/models/unified_models_test.dart
+  Total Tests: 11
+  Low-Value Percentage: 45.5%
+  Issues: 5
+    - Property Assignment: 4
+    - Trivial Checks: 1
+    - JSON Field Tests: 0
+    - Granular Edge Cases: 0
+  Business Logic Tests: 5
+  Estimated Refactoring Time: 15 minutes
+
+File: test/unit/models/sponsorship_test.dart
+  Total Tests: 8
+  Low-Value Percentage: 37.5%
+  Issues: 3
+    - Property Assignment: 3
+    - Trivial Checks: 0
+    - JSON Field Tests: 0
+    - Granular Edge Cases: 0
+  Business Logic Tests: 2
+  Estimated Refactoring Time: 11 minutes
+
+File: test/unit/models/anonymous_user_test.dart
+  Total Tests: 6
+  Low-Value Percentage: 33.3%
+  Issues: 2
+    - Property Assignment: 2
+    - Trivial Checks: 0
+    - JSON Field Tests: 0
+    - Granular Edge Cases: 0
+  Business Logic Tests: 4
+  Estimated Refactoring Time: 9 minutes
+
+File: test/unit/models/business_patron_preferences_test.dart
+  Total Tests: 24
+  Low-Value Percentage: 33.3%
+  Issues: 8
+    - Property Assignment: 6
+    - Trivial Checks: 1
+    - JSON Field Tests: 1
+    - Granular Edge Cases: 0
+  Business Logic Tests: 6
+  Estimated Refactoring Time: 21 minutes
+
+File: test/unit/models/community_test.dart
+  Total Tests: 27
+  Low-Value Percentage: 33.3%
+  Issues: 9
+    - Property Assignment: 8
+    - Trivial Checks: 0
+    - JSON Field Tests: 1
+    - Granular Edge Cases: 0
+  Business Logic Tests: 4
+  Estimated Refactoring Time: 23 minutes
+
+File: test/unit/models/event_feedback_test.dart
+  Total Tests: 15
+  Low-Value Percentage: 33.3%
+  Issues: 5
+    - Property Assignment: 2
+    - Trivial Checks: 1
+    - JSON Field Tests: 2
+    - Granular Edge Cases: 0
+  Business Logic Tests: 0
+  Estimated Refactoring Time: 15 minutes
+
+File: test/unit/models/event_partnership_test.dart
+  Total Tests: 9
+  Low-Value Percentage: 33.3%
+  Issues: 3
+    - Property Assignment: 3
+    - Trivial Checks: 0
+    - JSON Field Tests: 0
+    - Granular Edge Cases: 0
+  Business Logic Tests: 1
+  Estimated Refactoring Time: 11 minutes
+
+File: test/unit/models/expertise_pin_test.dart
+  Total Tests: 24
+  Low-Value Percentage: 33.3%
+  Issues: 8
+    - Property Assignment: 6
+    - Trivial Checks: 1
+    - JSON Field Tests: 1
+    - Granular Edge Cases: 0
+  Business Logic Tests: 4
+  Estimated Refactoring Time: 21 minutes
+
+File: test/unit/models/geographic_scope_test.dart
+  Total Tests: 15
+  Low-Value Percentage: 33.3%
+  Issues: 5
+    - Property Assignment: 4
+    - Trivial Checks: 0
+    - JSON Field Tests: 1
+    - Granular Edge Cases: 0
+  Business Logic Tests: 2
+  Estimated Refactoring Time: 15 minutes
+
+File: test/unit/models/large_city_test.dart
+  Total Tests: 12
+  Low-Value Percentage: 33.3%
+  Issues: 4
+    - Property Assignment: 3
+    - Trivial Checks: 0
+    - JSON Field Tests: 1
+    - Granular Edge Cases: 0
+  Business Logic Tests: 0
+  Estimated Refactoring Time: 13 minutes
+
+File: test/unit/models/locality_test.dart
+  Total Tests: 12
+  Low-Value Percentage: 33.3%
+  Issues: 4
+    - Property Assignment: 3
+    - Trivial Checks: 0
+    - JSON Field Tests: 1
+    - Granular Edge Cases: 0
+  Business Logic Tests: 0
+  Estimated Refactoring Time: 13 minutes
+
+File: test/unit/models/product_tracking_test.dart
+  Total Tests: 3
+  Low-Value Percentage: 33.3%
+  Issues: 1
+    - Property Assignment: 1
+    - Trivial Checks: 0
+    - JSON Field Tests: 0
+    - Granular Edge Cases: 0
+  Business Logic Tests: 2
+  Estimated Refactoring Time: 7 minutes
+
+File: test/unit/models/user_partnership_test.dart
+  Total Tests: 6
+  Low-Value Percentage: 33.3%
+  Issues: 2
+    - Property Assignment: 2
+    - Trivial Checks: 0
+    - JSON Field Tests: 0
+    - Granular Edge Cases: 0
+  Business Logic Tests: 1
+  Estimated Refactoring Time: 9 minutes
+
+File: test/unit/models/expertise_event_test.dart
+  Total Tests: 22
+  Low-Value Percentage: 31.8%
+  Issues: 7
+    - Property Assignment: 5
+    - Trivial Checks: 1
+    - JSON Field Tests: 1
+    - Granular Edge Cases: 0
+  Business Logic Tests: 2
+  Estimated Refactoring Time: 19 minutes
+
+File: test/unit/models/expertise_level_test.dart
+  Total Tests: 16
+  Low-Value Percentage: 31.2%
+  Issues: 5
+    - Property Assignment: 5
+    - Trivial Checks: 0
+    - JSON Field Tests: 0
+    - Granular Edge Cases: 0
+  Business Logic Tests: 1
+  Estimated Refactoring Time: 15 minutes
+
+File: test/unit/models/business_account_test.dart
+  Total Tests: 7
+  Low-Value Percentage: 28.6%
+  Issues: 2
+    - Property Assignment: 1
+    - Trivial Checks: 1
+    - JSON Field Tests: 0
+    - Granular Edge Cases: 0
+  Business Logic Tests: 2
+  Estimated Refactoring Time: 9 minutes
+
+File: test/unit/models/platform_phase_test.dart
+  Total Tests: 7
+  Low-Value Percentage: 28.6%
+  Issues: 2
+    - Property Assignment: 2
+    - Trivial Checks: 0
+    - JSON Field Tests: 0
+    - Granular Edge Cases: 0
+  Business Logic Tests: 0
+  Estimated Refactoring Time: 9 minutes
+
+File: test/unit/models/community_event_test.dart
+  Total Tests: 20
+  Low-Value Percentage: 25.0%
+  Issues: 5
+    - Property Assignment: 4
+    - Trivial Checks: 0
+    - JSON Field Tests: 1
+    - Granular Edge Cases: 0
+  Business Logic Tests: 1
+  Estimated Refactoring Time: 15 minutes
+
+File: test/unit/models/dispute_test.dart
+  Total Tests: 16
+  Low-Value Percentage: 25.0%
+  Issues: 4
+    - Property Assignment: 2
+    - Trivial Checks: 1
+    - JSON Field Tests: 1
+    - Granular Edge Cases: 0
+  Business Logic Tests: 0
+  Estimated Refactoring Time: 13 minutes
+
+File: test/unit/models/multi_party_sponsorship_test.dart
+  Total Tests: 4
+  Low-Value Percentage: 25.0%
+  Issues: 1
+    - Property Assignment: 1
+    - Trivial Checks: 0
+    - JSON Field Tests: 0
+    - Granular Edge Cases: 0
+  Business Logic Tests: 1
+  Estimated Refactoring Time: 7 minutes
+
+File: test/unit/models/business_verification_test.dart
+  Total Tests: 30
+  Low-Value Percentage: 20.0%
+  Issues: 6
+    - Property Assignment: 3
+    - Trivial Checks: 2
+    - JSON Field Tests: 1
+    - Granular Edge Cases: 0
+  Business Logic Tests: 18
+  Estimated Refactoring Time: 17 minutes
+
+File: test/unit/models/locality_value_test.dart
+  Total Tests: 10
+  Low-Value Percentage: 20.0%
+  Issues: 2
+    - Property Assignment: 1
+    - Trivial Checks: 0
+    - JSON Field Tests: 1
+    - Granular Edge Cases: 0
+  Business Logic Tests: 1
+  Estimated Refactoring Time: 9 minutes
+
+File: test/unit/models/partnership_event_test.dart
+  Total Tests: 5
+  Low-Value Percentage: 20.0%
+  Issues: 1
+    - Property Assignment: 1
+    - Trivial Checks: 0
+    - JSON Field Tests: 0
+    - Granular Edge Cases: 0
+  Business Logic Tests: 1
+  Estimated Refactoring Time: 7 minutes
+
+File: test/unit/models/unified_user_test.dart
+  Total Tests: 15
+  Low-Value Percentage: 20.0%
+  Issues: 3
+    - Property Assignment: 3
+    - Trivial Checks: 0
+    - JSON Field Tests: 0
+    - Granular Edge Cases: 0
+  Business Logic Tests: 8
+  Estimated Refactoring Time: 11 minutes
+
+File: test/unit/models/club_test.dart
+  Total Tests: 36
+  Low-Value Percentage: 19.4%
+  Issues: 7
+    - Property Assignment: 6
+    - Trivial Checks: 0
+    - JSON Field Tests: 1
+    - Granular Edge Cases: 0
+  Business Logic Tests: 13
+  Estimated Refactoring Time: 19 minutes
+
+File: test/unit/models/cancellation_test.dart
+  Total Tests: 16
+  Low-Value Percentage: 18.8%
+  Issues: 3
+    - Property Assignment: 1
+    - Trivial Checks: 1
+    - JSON Field Tests: 1
+    - Granular Edge Cases: 0
+  Business Logic Tests: 0
+  Estimated Refactoring Time: 11 minutes
+
+================================================================================
+SUMMARY BY DIRECTORY
+================================================================================
+
+Directory: test/unit/models
+  Files: 47
+  Total Tests: 650
+  Issues: 144 (22.2%)
+    - Property Assignment: 110
+    - Trivial Checks: 13
+    - JSON Field Tests: 21
+
+================================================================================
+DETAILED ISSUES (Top 10 Files)
+================================================================================
+
+File: test/unit/models/brand_account_test.dart
+--------------------------------------------------------------------------------
+  Line 47: should serialize and deserialize without data loss
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (3 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+
+File: test/unit/models/brand_discovery_test.dart
+--------------------------------------------------------------------------------
+  Line 65: should serialize and deserialize without data loss
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (3 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+
+File: test/unit/models/partnership_expertise_boost_test.dart
+--------------------------------------------------------------------------------
+  Line 40: should serialize and deserialize without data loss
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (3 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+  Line 58: should handle missing and null fields with defaults
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (4 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+
+File: test/unit/models/spot_test.dart
+--------------------------------------------------------------------------------
+  Line 63: should accept any numeric rating value without bounds enforcement
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (17 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+  Line 81: should preserve tag order and allow duplicates
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (3 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+  Line 107: should handle address variations including null and empty
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (3 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+  Line 147: should handle missing and null fields with sensible defaults
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (3 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+  Line 181: should create immutable copy with updated fields
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (3 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+  Line 208: should handle very long strings
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (3 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+  Line 222: should handle many tags
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (3 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+
+File: test/unit/models/unified_models_test.dart
+--------------------------------------------------------------------------------
+  Line 49: should have correct string representation
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (4 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+  Line 100: should serialize and deserialize complex parameters correctly
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (3 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+  Line 148: should serialize and deserialize without data loss
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (3 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+  Line 164: should accept any numeric value and preserve timestamp precision
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (4 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+  Line 219: should handle empty collections and extreme values
+    Type: trivial_check (medium)
+    Issue: Trivial empty check - tests language feature
+    Suggestion: Consolidate with other edge cases into single test
+
+
+File: test/unit/models/sponsorship_test.dart
+--------------------------------------------------------------------------------
+  Line 107: should serialize and deserialize without data loss
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (4 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+  Line 156: should have correct display names
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (3 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+  Line 183: should have correct display names
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (4 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+
+File: test/unit/models/anonymous_user_test.dart
+--------------------------------------------------------------------------------
+  Line 16: test_1
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (3 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+  Line 38: should handle missing optional fields with defaults
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (3 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+
+File: test/unit/models/business_patron_preferences_test.dart
+--------------------------------------------------------------------------------
+  Line 19: should create preferences with default values
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (10 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+  Line 44: should create preferences with all fields
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (23 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+  Line 125: should have correct display names
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (4 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+  Line 240: should serialize to JSON correctly
+    Type: json_field_test (medium)
+    Issue: Tests JSON fields individually (6 fields)
+    Suggestion: Replace with round-trip test using TestHelpers.validateJsonRoundtrip
+
+  Line 261: should deserialize from JSON correctly
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (24 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+  Line 334: should handle null optional fields in JSON
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (4 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+  Line 334: should handle null optional fields in JSON
+    Type: trivial_check (medium)
+    Issue: Trivial null check - tests language feature
+    Suggestion: Consolidate with other edge cases into single test
+
+  Line 348: should create copy with modified fields
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (3 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+
+File: test/unit/models/community_test.dart
+--------------------------------------------------------------------------------
+  Line 53: should create community with required fields
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (8 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+  Line 77: should create community with default values
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (7 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+  Line 357: should track activity level
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (3 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+  Line 466: should serialize to JSON correctly
+    Type: json_field_test (medium)
+    Issue: Tests JSON fields individually (20 fields)
+    Suggestion: Replace with round-trip test using TestHelpers.validateJsonRoundtrip
+
+  Line 515: should deserialize from JSON correctly
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (18 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+  Line 562: should handle JSON roundtrip correctly
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (18 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+  Line 610: should handle missing optional fields in JSON
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (12 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+  Line 702: should create copy with updated fields
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (5 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+  Line 728: should preserve original values when fields not specified
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (3 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+
+File: test/unit/models/event_feedback_test.dart
+--------------------------------------------------------------------------------
+  Line 61: should create feedback with minimal fields
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (3 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+  Line 108: should serialize to JSON correctly
+    Type: json_field_test (medium)
+    Issue: Tests JSON fields individually (11 fields)
+    Suggestion: Replace with round-trip test using TestHelpers.validateJsonRoundtrip
+
+  Line 141: should handle null optional fields in JSON
+    Type: property_assignment (high)
+    Issue: Test only checks property assignment (3 checks)
+    Suggestion: Remove - tests Dart constructor, not business logic
+
+  Line 141: should handle null optional fields in JSON
+    Type: trivial_check (medium)
+    Issue: Trivial null check - tests language feature
+    Suggestion: Consolidate with other edge cases into single test
+
+  Line 240: should serialize to JSON correctly
+    Type: json_field_test (medium)
+    Issue: Tests JSON fields individually (10 fields)
+    Suggestion: Replace with round-trip test using TestHelpers.validateJsonRoundtrip

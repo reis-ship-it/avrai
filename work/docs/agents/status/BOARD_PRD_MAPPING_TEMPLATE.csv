@@ -1,0 +1,2 @@
+milestone_id,milestone_title,prd_ids,master_plan_refs,architecture_spot,owner,status,pr_url,notes
+M1-P7-1,Example: Trigger and persistence hardening,"PRD-010;PRD-011;PRD-033","7.4.2;10.9.1;10.9.4",lib/core/services/ai_infrastructure,owner_name,planned,,Keep commit metadata aligned to milestone and subsection references.

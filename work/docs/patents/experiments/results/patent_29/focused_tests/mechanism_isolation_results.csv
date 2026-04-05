@@ -1,0 +1,7 @@
+configuration,use_n_way,use_decoherence,use_meaningful_connections,use_timing_flexibility,avg_compatibility,std_compatibility,duration_seconds
+Sequential Bipartite (Baseline),False,False,False,False,0.5811883857960571,0.06085134145673086,0.0004711151123046875
+N-way Matching Alone,True,False,False,False,0.5593487841739652,0.15335589012910542,0.011858940124511719
+Decoherence Alone (Sequential),False,True,False,False,0.5811883857960571,0.06085134145673086,0.0004169940948486328
+Meaningful Connections Alone (Sequential),False,False,True,False,0.5811883857960571,0.06085134145673086,0.0003998279571533203
+Timing Flexibility Alone (Sequential),False,False,False,True,0.5811883857960571,0.06085134145673086,0.0004229545593261719
+All Together,True,True,True,True,0.6310646405155114,0.16744003224841336,0.011350154876708984

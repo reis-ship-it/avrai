@@ -1,0 +1,8 @@
+{
+  "experiment": "AI-Only Data Visibility Accuracy",
+  "avg_ai_keys_visible": 9.0,
+  "avg_personal_keys_visible": 0.0,
+  "avg_location_keys_visible": 3.0,
+  "ai_only_accuracy": 1.0,
+  "num_samples": 500
+}

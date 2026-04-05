@@ -1,0 +1,21 @@
+{
+  "milestone_id": "M26-P7-1",
+  "scope": "runtime os wave-26 endpoint parity and fail-closed policy adapter hardening",
+  "master_plan_refs": [
+    "7.4.3",
+    "7.7.5",
+    "10.10.9",
+    "10.10.12"
+  ],
+  "dependencies": [
+    "M26-P10-1"
+  ],
+  "guardrails": {
+    "enforce_endpoint_contract_parity": true,
+    "fail_closed_unknown_policy_fields": true,
+    "forbid_runtime_to_app_imports": true,
+    "boundary_and_placement_checks_required": true
+  },
+  "status": "complete",
+  "completed_on": "2026-02-28"
+}

@@ -1,0 +1,108 @@
+name: Simulated Headless Smoke Guard
+
+on:
+  push:
+    branches: [ bham-beta ]
+    paths:
+      - 'apps/avrai_app/**'
+      - 'runtime/**'
+      - 'shared/**'
+      - 'work/scripts/proof_run/**'
+      - 'work/scripts/ci/bootstrap_avrai_app_ci_env.sh'
+      - 'work/tools/validate_simulated_smoke_bundle.dart'
+      - 'work/tools/validate_simulated_smoke_artifact_index.dart'
+      - '.github/workflows/simulated-headless-smoke-guard.yml'
+  pull_request:
+    branches: [ main, develop, bham-beta ]
+    paths:
+      - 'apps/avrai_app/**'
+      - 'runtime/**'
+      - 'shared/**'
+      - 'work/scripts/proof_run/**'
+      - 'work/scripts/ci/bootstrap_avrai_app_ci_env.sh'
+      - 'work/tools/validate_simulated_smoke_bundle.dart'
+      - 'work/tools/validate_simulated_smoke_artifact_index.dart'
+      - '.github/workflows/simulated-headless-smoke-guard.yml'
+  workflow_dispatch:
+
+jobs:
+  android-simulated-headless-smoke:
+    name: Android Simulated Headless Smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.6'
+          channel: stable
+          cache: true
+
+      - name: Bootstrap app CI environment
+        run: bash scripts/ci/bootstrap_avrai_app_ci_env.sh
+
+      - name: Run Android simulated headless smoke
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          profile: pixel_7
+          script: bash scripts/proof_run/run_simulated_headless_smoke.sh android
+
+      - name: Validate Android smoke artifact index
+        if: always()
+        run: dart run work/tools/validate_simulated_smoke_artifact_index.dart reports/proof_runs
+
+      - name: Upload Android smoke artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-simulated-headless-smoke-artifacts
+          path: reports/proof_runs
+          if-no-files-found: warn
+
+  ios-simulated-headless-smoke:
+    name: iOS Simulated Headless Smoke
+    runs-on: macos-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.6'
+          channel: stable
+          cache: true
+
+      - name: Bootstrap app CI environment
+        run: bash scripts/ci/bootstrap_avrai_app_ci_env.sh
+
+      - name: Run iOS simulated headless smoke
+        env:
+          CI: true
+        run: bash scripts/proof_run/run_simulated_headless_smoke.sh ios
+
+      - name: Validate iOS smoke artifact index
+        if: always()
+        run: dart run work/tools/validate_simulated_smoke_artifact_index.dart reports/proof_runs
+
+      - name: Upload iOS smoke artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-simulated-headless-smoke-artifacts
+          path: reports/proof_runs
+          if-no-files-found: warn

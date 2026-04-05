@@ -1,0 +1,28 @@
+{
+  "milestone_id": "M31-P10-10",
+  "ui_label": "Simulation/Training Temporal Backbone",
+  "scope": "moves simulation snapshots lab outcomes rerun jobs bounded review handoffs and training exports onto the atomic and When-kernel temporal backbone after M31-P10-9",
+  "master_plan_refs": [
+    "10.9.12",
+    "10.9.22",
+    "10.9.23",
+    "10.9.24",
+    "10.9.25",
+    "12.6.10"
+  ],
+  "dependencies": [
+    "M31-P10-9"
+  ],
+  "guardrails": {
+    "starts_only_after_m31_p10_9_closeout": true,
+    "temporal_kernel_becomes_authoritative_for_freshness_and_ordering": true,
+    "atomic_clock_temporal_adapter_and_when_kernel_are_preferred_backbone": true,
+    "system_temporal_kernel_fallback_must_remain_audited_and_fail_closed": true,
+    "legacy_utc_fields_are_retained_during_migration": true,
+    "temporal_receipts_must_preserve_end_to_end_lineage": true,
+    "atomic_or_quantum_time_metadata_cannot_bypass_governance": true
+  },
+  "migration_mode": "additive_temporal_receipts_with_kernel_authority",
+  "status": "queued_follow_on",
+  "opened_on": "2026-04-02"
+}

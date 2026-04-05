@@ -1,0 +1,24 @@
+{
+  "data_generation": {
+    "duration": 0.38496994972229004,
+    "status": "success"
+  },
+  "patent_1": {
+    "duration": 1.313288927078247,
+    "status": "success"
+  },
+  "patent_3": {
+    "duration": 2.202605962753296,
+    "status": "success"
+  },
+  "patent_21": {
+    "duration": 0.40360403060913086,
+    "status": "success"
+  },
+  "patent_29": {
+    "duration": 4.030162811279297,
+    "status": "success"
+  },
+  "total_duration": 8.334748029708862,
+  "num_agents": 100000
+}

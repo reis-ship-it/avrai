@@ -1,0 +1,19 @@
+#include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"
+#include "Generated.xcconfig"
+#include? "Secrets.xcconfig"
+
+// SignalFfi.xcframework currently ships an arm64 simulator slice.
+// Exclude x86_64 so CocoaPods selects the available slice.
+ARCHS[sdk=iphonesimulator*] = arm64
+EXCLUDED_ARCHS[sdk=iphonesimulator*] = i386 x86_64
+IPHONEOS_DEPLOYMENT_TARGET = 17.0
+
+// Used by `ios/Runner/Info.plist` for `GMSApiKey`.
+// Provide a real value via untracked `ios/Flutter/Secrets.xcconfig` or CI secrets.
+GOOGLE_MAPS_IOS_API_KEY=
+
+// The beta build ships without the iOS local-LLM runtime bundle.
+// Keep debug/device builds aligned with release so linker settings do not pull
+// simulator-only TVM artifacts into iOS builds.
+OTHER_LDFLAGS = $(inherited)
+LIBRARY_SEARCH_PATHS = $(inherited)

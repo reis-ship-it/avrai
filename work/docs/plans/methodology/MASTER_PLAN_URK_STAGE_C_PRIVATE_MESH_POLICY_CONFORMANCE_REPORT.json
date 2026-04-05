@@ -1,0 +1,37 @@
+{
+  "encryption_and_keying": {
+    "checks_executed": 320,
+    "observed_double_encryption_coverage_pct": 100.0,
+    "observed_key_rotation_coverage_pct": 100.0,
+    "required_double_encryption_coverage_pct": 100.0,
+    "required_key_rotation_coverage_pct": 100.0,
+    "within_threshold": true
+  },
+  "errors": [],
+  "evaluation_window": {
+    "end": "2026-02-27T23:55:00Z",
+    "start": "2026-02-27T00:00:00Z"
+  },
+  "generated_at": "2026-02-27T23:59:00Z",
+  "lineage_and_policy_gate": {
+    "checks_executed": 420,
+    "max_policy_bypass_events": 0,
+    "observed_lineage_tag_coverage_pct": 100.0,
+    "observed_policy_bypass_events": 0,
+    "observed_policy_gate_coverage_pct": 100.0,
+    "required_lineage_tag_coverage_pct": 100.0,
+    "required_policy_gate_coverage_pct": 100.0,
+    "within_threshold": true
+  },
+  "payload_minimization": {
+    "checks_executed": 520,
+    "max_direct_identifier_leaks": 0,
+    "observed_direct_identifier_leaks": 0,
+    "observed_schema_conformance_pct": 100.0,
+    "required_schema_conformance_pct": 100.0,
+    "within_threshold": true
+  },
+  "source": "configs/runtime/urk_stage_c_private_mesh_policy_conformance_controls.json",
+  "verdict": "PASS",
+  "version": "v1"
+}

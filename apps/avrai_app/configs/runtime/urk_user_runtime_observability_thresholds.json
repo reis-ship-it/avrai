@@ -1,0 +1,50 @@
+{
+  "control_id": "urk_user_runtime_observability_thresholds",
+  "version": "1.0.0",
+  "description": "Alert thresholds for user runtime learning observability in admin URK console.",
+  "validation": {
+    "warn_opt_out_rate_pct": {
+      "min": 0.0,
+      "max": 100.0
+    },
+    "critical_opt_out_rate_pct": {
+      "min": 0.0,
+      "max": 100.0
+    },
+    "warn_rejection_rate_pct": {
+      "min": 0.0,
+      "max": 100.0
+    },
+    "critical_rejection_rate_pct": {
+      "min": 0.0,
+      "max": 100.0
+    },
+    "require_critical_gte_warn": true
+  },
+  "windows": {
+    "1h": {
+      "warn_opt_out_rate_pct": 15.0,
+      "critical_opt_out_rate_pct": 25.0,
+      "warn_rejection_rate_pct": 20.0,
+      "critical_rejection_rate_pct": 30.0
+    },
+    "6h": {
+      "warn_opt_out_rate_pct": 12.0,
+      "critical_opt_out_rate_pct": 20.0,
+      "warn_rejection_rate_pct": 16.0,
+      "critical_rejection_rate_pct": 24.0
+    },
+    "24h": {
+      "warn_opt_out_rate_pct": 10.0,
+      "critical_opt_out_rate_pct": 16.0,
+      "warn_rejection_rate_pct": 14.0,
+      "critical_rejection_rate_pct": 20.0
+    },
+    "7d": {
+      "warn_opt_out_rate_pct": 8.0,
+      "critical_opt_out_rate_pct": 12.0,
+      "warn_rejection_rate_pct": 10.0,
+      "critical_rejection_rate_pct": 16.0
+    }
+  }
+}

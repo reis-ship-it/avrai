@@ -1,0 +1,21 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "evaluation_at": "2026-02-27T23:59:59Z",
+  "activation_coverage": {
+    "required_trigger_routing_coverage_pct": 100.0,
+    "observed_trigger_routing_coverage_pct": 100.0,
+    "required_policy_gate_coverage_pct": 100.0,
+    "observed_policy_gate_coverage_pct": 100.0,
+    "required_receipt_coverage_pct": 100.0,
+    "observed_receipt_coverage_pct": 100.0,
+    "checks_executed": 740
+  },
+  "activation_safety": {
+    "max_unauthorized_activations": 0,
+    "observed_unauthorized_activations": 0,
+    "max_dependency_bypasses": 0,
+    "observed_dependency_bypasses": 0,
+    "checks_executed": 310
+  }
+}

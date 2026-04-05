@@ -1,0 +1,28 @@
+{
+  "control_pack_id": "admin_private_server_security_mtls_policy",
+  "scope": "phase-d service authentication and policy enforcement controls",
+  "master_plan_refs": ["10.9.24", "10.9.25"],
+  "related_milestones": ["M26-P10-3", "M26-P7-1", "M26-P3-1"],
+  "transport_security": {
+    "mtls_client_to_api_required": true,
+    "mtls_service_to_service_required": true,
+    "device_bound_client_certs_required": true,
+    "cert_rotation_days": 60,
+    "cert_pinning_required": true
+  },
+  "policy_engine": {
+    "engine_options": ["opa", "cedar"],
+    "rbac_required": true,
+    "abac_required_for_sensitive_actions": true,
+    "policy_decision_logging_required": true,
+    "fail_closed_on_policy_engine_error": true
+  },
+  "privileged_actions": {
+    "step_up_auth_required": true,
+    "two_person_approval_for_break_glass": true,
+    "two_person_approval_for_open_web_and_promotion": true
+  },
+  "status": "enforced",
+  "last_updated": "2026-03-14",
+  "notes": "mTLS-bound policy enforcement is mandatory for beta governed autoresearch hardening."
+}

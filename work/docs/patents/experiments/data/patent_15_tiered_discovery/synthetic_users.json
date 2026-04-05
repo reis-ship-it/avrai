@@ -1,0 +1,6002 @@
+[
+  {
+    "user_id": "user_0000",
+    "preferences": {
+      "category_1": 0.6394267984578837,
+      "category_2": 0.025010755222666936,
+      "category_3": 0.27502931836911926
+    },
+    "direct_activity": 0.22321073814882275,
+    "ai2ai_confidence": 0.7364712141640124,
+    "network_confidence": 0.6766994874229113,
+    "context_match": 0.8921795677048454
+  },
+  {
+    "user_id": "user_0001",
+    "preferences": {
+      "category_1": 0.08693883262941615,
+      "category_2": 0.4219218196852704,
+      "category_3": 0.029797219438070344
+    },
+    "direct_activity": 0.21863797480360336,
+    "ai2ai_confidence": 0.5053552881033624,
+    "network_confidence": 0.026535969683863625,
+    "context_match": 0.1988376506866485
+  },
+  {
+    "user_id": "user_0002",
+    "preferences": {
+      "category_1": 0.6498844377795232,
+      "category_2": 0.5449414806032167,
+      "category_3": 0.2204406220406967
+    },
+    "direct_activity": 0.5892656838759087,
+    "ai2ai_confidence": 0.8094304566778266,
+    "network_confidence": 0.006498759678061017,
+    "context_match": 0.8058192518328079
+  },
+  {
+    "user_id": "user_0003",
+    "preferences": {
+      "category_1": 0.6981393949882269,
+      "category_2": 0.3402505165179919,
+      "category_3": 0.15547949981178155
+    },
+    "direct_activity": 0.9572130722067812,
+    "ai2ai_confidence": 0.33659454511262676,
+    "network_confidence": 0.09274584338014791,
+    "context_match": 0.09671637683346401
+  },
+  {
+    "user_id": "user_0004",
+    "preferences": {
+      "category_1": 0.8474943663474598,
+      "category_2": 0.6037260313668911,
+      "category_3": 0.8071282732743802
+    },
+    "direct_activity": 0.7297317866938179,
+    "ai2ai_confidence": 0.5362280914547007,
+    "network_confidence": 0.9731157639793706,
+    "context_match": 0.3785343772083535
+  },
+  {
+    "user_id": "user_0005",
+    "preferences": {
+      "category_1": 0.552040631273227,
+      "category_2": 0.8294046642529949,
+      "category_3": 0.6185197523642461
+    },
+    "direct_activity": 0.8617069003107772,
+    "ai2ai_confidence": 0.577352145256762,
+    "network_confidence": 0.7045718362149235,
+    "context_match": 0.045824383655662215
+  },
+  {
+    "user_id": "user_0006",
+    "preferences": {
+      "category_1": 0.22789827565154686,
+      "category_2": 0.28938796360210717,
+      "category_3": 0.0797919769236275
+    },
+    "direct_activity": 0.23279088636103018,
+    "ai2ai_confidence": 0.10100142940972912,
+    "network_confidence": 0.2779736031100921,
+    "context_match": 0.6356844442644002
+  },
+  {
+    "user_id": "user_0007",
+    "preferences": {
+      "category_1": 0.36483217897008424,
+      "category_2": 0.37018096711688264,
+      "category_3": 0.2095070307714877
+    },
+    "direct_activity": 0.26697782204911336,
+    "ai2ai_confidence": 0.936654587712494,
+    "network_confidence": 0.6480353852465935,
+    "context_match": 0.6091310056669882
+  },
+  {
+    "user_id": "user_0008",
+    "preferences": {
+      "category_1": 0.171138648198097,
+      "category_2": 0.7291267979503492,
+      "category_3": 0.1634024937619284
+    },
+    "direct_activity": 0.3794554417576478,
+    "ai2ai_confidence": 0.9895233506365952,
+    "network_confidence": 0.6399997598540929,
+    "context_match": 0.5569497437746462
+  },
+  {
+    "user_id": "user_0009",
+    "preferences": {
+      "category_1": 0.6846142509898746,
+      "category_2": 0.8428519201898096,
+      "category_3": 0.7759999115462448
+    },
+    "direct_activity": 0.22904807196410437,
+    "ai2ai_confidence": 0.03210024390403776,
+    "network_confidence": 0.3154530480590819,
+    "context_match": 0.26774087597570273
+  },
+  {
+    "user_id": "user_0010",
+    "preferences": {
+      "category_1": 0.21098284358632646,
+      "category_2": 0.9429097143350544,
+      "category_3": 0.8763676264726689
+    },
+    "direct_activity": 0.3146778807984779,
+    "ai2ai_confidence": 0.65543866529488,
+    "network_confidence": 0.39563190106066426,
+    "context_match": 0.9145475897405435
+  },
+  {
+    "user_id": "user_0011",
+    "preferences": {
+      "category_1": 0.4588518525873988,
+      "category_2": 0.26488016649805246,
+      "category_3": 0.24662750769398345
+    },
+    "direct_activity": 0.5613681341631508,
+    "ai2ai_confidence": 0.26274160852293527,
+    "network_confidence": 0.5845859902235405,
+    "context_match": 0.897822883602477
+  },
+  {
+    "user_id": "user_0012",
+    "preferences": {
+      "category_1": 0.39940050514039727,
+      "category_2": 0.21932075915728333,
+      "category_3": 0.9975376064951103
+    },
+    "direct_activity": 0.5095262936764645,
+    "ai2ai_confidence": 0.09090941217379389,
+    "network_confidence": 0.04711637542473457,
+    "context_match": 0.10964913035065915
+  },
+  {
+    "user_id": "user_0013",
+    "preferences": {
+      "category_1": 0.62744604170309,
+      "category_2": 0.7920793643629641,
+      "category_3": 0.42215996679968404
+    },
+    "direct_activity": 0.06352770615195713,
+    "ai2ai_confidence": 0.38161928650653676,
+    "network_confidence": 0.9961213802400968,
+    "context_match": 0.529114345099137
+  },
+  {
+    "user_id": "user_0014",
+    "preferences": {
+      "category_1": 0.9710783776136181,
+      "category_2": 0.8607797022344981,
+      "category_3": 0.011481021942819636
+    },
+    "direct_activity": 0.7207218193601946,
+    "ai2ai_confidence": 0.6817103690265748,
+    "network_confidence": 0.5369703304087952,
+    "context_match": 0.2668251899525428
+  },
+  {
+    "user_id": "user_0015",
+    "preferences": {
+      "category_1": 0.6409617985798081,
+      "category_2": 0.11155217359587644,
+      "category_3": 0.434765250669105
+    },
+    "direct_activity": 0.45372370632920644,
+    "ai2ai_confidence": 0.9538159275210801,
+    "network_confidence": 0.8758529403781941,
+    "context_match": 0.26338905075109076
+  },
+  {
+    "user_id": "user_0016",
+    "preferences": {
+      "category_1": 0.5005861130502983,
+      "category_2": 0.17865188053013137,
+      "category_3": 0.9126278393448205
+    },
+    "direct_activity": 0.8705185698367669,
+    "ai2ai_confidence": 0.2984447914486329,
+    "network_confidence": 0.6389494948660052,
+    "context_match": 0.6089702114381723
+  },
+  {
+    "user_id": "user_0017",
+    "preferences": {
+      "category_1": 0.1528392685496348,
+      "category_2": 0.7625108000751513,
+      "category_3": 0.5393790301196257
+    },
+    "direct_activity": 0.7786264786305582,
+    "ai2ai_confidence": 0.5303536721951775,
+    "network_confidence": 0.0005718961279435053,
+    "context_match": 0.3241560570046731
+  },
+  {
+    "user_id": "user_0018",
+    "preferences": {
+      "category_1": 0.019476742385832302,
+      "category_2": 0.9290986162646171,
+      "category_3": 0.8787218778231842
+    },
+    "direct_activity": 0.8316655293611794,
+    "ai2ai_confidence": 0.30751412540266143,
+    "network_confidence": 0.05792516649418755,
+    "context_match": 0.8780095992040405
+  },
+  {
+    "user_id": "user_0019",
+    "preferences": {
+      "category_1": 0.9469494452979941,
+      "category_2": 0.08565345206787878,
+      "category_3": 0.4859904633166138
+    },
+    "direct_activity": 0.06921251846838361,
+    "ai2ai_confidence": 0.7606021652572316,
+    "network_confidence": 0.7658344293069878,
+    "context_match": 0.1283914644997628
+  },
+  {
+    "user_id": "user_0020",
+    "preferences": {
+      "category_1": 0.4752823780987313,
+      "category_2": 0.5498035934949439,
+      "category_3": 0.2650566289400591
+    },
+    "direct_activity": 0.8724330410852574,
+    "ai2ai_confidence": 0.4231379402008869,
+    "network_confidence": 0.21179820544208205,
+    "context_match": 0.5392960887794583
+  },
+  {
+    "user_id": "user_0021",
+    "preferences": {
+      "category_1": 0.7299310690899762,
+      "category_2": 0.2011510633896959,
+      "category_3": 0.31171629130089495
+    },
+    "direct_activity": 0.9951493566608947,
+    "ai2ai_confidence": 0.6498780576394535,
+    "network_confidence": 0.43810008391450406,
+    "context_match": 0.5175758410355906
+  },
+  {
+    "user_id": "user_0022",
+    "preferences": {
+      "category_1": 0.12100419586826572,
+      "category_2": 0.22469733703155736,
+      "category_3": 0.33808556214745533
+    },
+    "direct_activity": 0.5883087184572333,
+    "ai2ai_confidence": 0.230114732596577,
+    "network_confidence": 0.22021738445155947,
+    "context_match": 0.07099308600903254
+  },
+  {
+    "user_id": "user_0023",
+    "preferences": {
+      "category_1": 0.6311029572700989,
+      "category_2": 0.22894178381115438,
+      "category_3": 0.905420013006128
+    },
+    "direct_activity": 0.8596354002537465,
+    "ai2ai_confidence": 0.07085734988865344,
+    "network_confidence": 0.23800463436899522,
+    "context_match": 0.6689777782962806
+  },
+  {
+    "user_id": "user_0024",
+    "preferences": {
+      "category_1": 0.2142368073704386,
+      "category_2": 0.132311848725025,
+      "category_3": 0.935514240580671
+    },
+    "direct_activity": 0.5710430933252845,
+    "ai2ai_confidence": 0.47267102631179414,
+    "network_confidence": 0.7846194242907534,
+    "context_match": 0.8074969977666434
+  },
+  {
+    "user_id": "user_0025",
+    "preferences": {
+      "category_1": 0.1904099143618777,
+      "category_2": 0.09693081422882333,
+      "category_3": 0.4310511824063775
+    },
+    "direct_activity": 0.4235786230199208,
+    "ai2ai_confidence": 0.467024668036675,
+    "network_confidence": 0.7290758494598506,
+    "context_match": 0.6733645472933015
+  },
+  {
+    "user_id": "user_0026",
+    "preferences": {
+      "category_1": 0.9841652113659661,
+      "category_2": 0.09841787115195888,
+      "category_3": 0.4026212821022688
+    },
+    "direct_activity": 0.33930260539496315,
+    "ai2ai_confidence": 0.8616725363527911,
+    "network_confidence": 0.24865633392028563,
+    "context_match": 0.1902089084408115
+  },
+  {
+    "user_id": "user_0027",
+    "preferences": {
+      "category_1": 0.4486135478331319,
+      "category_2": 0.4218816398344042,
+      "category_3": 0.27854514466694047
+    },
+    "direct_activity": 0.2498064478821005,
+    "ai2ai_confidence": 0.9232655992760128,
+    "network_confidence": 0.44313074505345695,
+    "context_match": 0.8613491047618306
+  },
+  {
+    "user_id": "user_0028",
+    "preferences": {
+      "category_1": 0.5503253124498481,
+      "category_2": 0.05058832952488124,
+      "category_3": 0.9992824684127266
+    },
+    "direct_activity": 0.8360275850799519,
+    "ai2ai_confidence": 0.9689962572847513,
+    "network_confidence": 0.9263669830081276,
+    "context_match": 0.8486957344143055
+  },
+  {
+    "user_id": "user_0029",
+    "preferences": {
+      "category_1": 0.16631111060391401,
+      "category_2": 0.48564112545071847,
+      "category_3": 0.21374729919918167
+    },
+    "direct_activity": 0.4010402925494526,
+    "ai2ai_confidence": 0.058635399972178925,
+    "network_confidence": 0.3789731189769161,
+    "context_match": 0.9853088437797259
+  },
+  {
+    "user_id": "user_0030",
+    "preferences": {
+      "category_1": 0.26520305817215195,
+      "category_2": 0.7840706019485694,
+      "category_3": 0.4550083673391433
+    },
+    "direct_activity": 0.4230074859901629,
+    "ai2ai_confidence": 0.9573176408596732,
+    "network_confidence": 0.9954226894927138,
+    "context_match": 0.5557683234056182
+  },
+  {
+    "user_id": "user_0031",
+    "preferences": {
+      "category_1": 0.718408275296326,
+      "category_2": 0.15479682527406413,
+      "category_3": 0.2967078254945642
+    },
+    "direct_activity": 0.9687093649691588,
+    "ai2ai_confidence": 0.5791802908162562,
+    "network_confidence": 0.5421952013742742,
+    "context_match": 0.7479755603790641
+  },
+  {
+    "user_id": "user_0032",
+    "preferences": {
+      "category_1": 0.05716527290748308,
+      "category_2": 0.5841775944589712,
+      "category_3": 0.5028503829195136
+    },
+    "direct_activity": 0.8527198920482854,
+    "ai2ai_confidence": 0.15743272793948326,
+    "network_confidence": 0.9607789032744504,
+    "context_match": 0.08011146524058688
+  },
+  {
+    "user_id": "user_0033",
+    "preferences": {
+      "category_1": 0.1858249609807232,
+      "category_2": 0.5950351064500277,
+      "category_3": 0.6752125536040902
+    },
+    "direct_activity": 0.2352038950009312,
+    "ai2ai_confidence": 0.11988661394712419,
+    "network_confidence": 0.8902873141294375,
+    "context_match": 0.24621534778862486
+  },
+  {
+    "user_id": "user_0034",
+    "preferences": {
+      "category_1": 0.5945191535334412,
+      "category_2": 0.6193815103321031,
+      "category_3": 0.4192249153358725
+    },
+    "direct_activity": 0.5836722892912247,
+    "ai2ai_confidence": 0.5227827155319589,
+    "network_confidence": 0.9347062577364272,
+    "context_match": 0.20425919942353643
+  },
+  {
+    "user_id": "user_0035",
+    "preferences": {
+      "category_1": 0.7161918007894148,
+      "category_2": 0.23868595261584602,
+      "category_3": 0.3957858467912545
+    },
+    "direct_activity": 0.6716902229599713,
+    "ai2ai_confidence": 0.2999970797987622,
+    "network_confidence": 0.31617719627185403,
+    "context_match": 0.7518644924144021
+  },
+  {
+    "user_id": "user_0036",
+    "preferences": {
+      "category_1": 0.07254311449315731,
+      "category_2": 0.4582855226185861,
+      "category_3": 0.9984544408544423
+    },
+    "direct_activity": 0.9960964478550944,
+    "ai2ai_confidence": 0.073260721099633,
+    "network_confidence": 0.2131543122670404,
+    "context_match": 0.26520041475040135
+  },
+  {
+    "user_id": "user_0037",
+    "preferences": {
+      "category_1": 0.9332593779937091,
+      "category_2": 0.8808641736864395,
+      "category_3": 0.8792702424845428
+    },
+    "direct_activity": 0.36952708873888396,
+    "ai2ai_confidence": 0.15774683235723197,
+    "network_confidence": 0.833744954639807,
+    "context_match": 0.703539925087371
+  },
+  {
+    "user_id": "user_0038",
+    "preferences": {
+      "category_1": 0.6116777657259501,
+      "category_2": 0.9872330636315043,
+      "category_3": 0.6539763177107326
+    },
+    "direct_activity": 0.007823107152157949,
+    "ai2ai_confidence": 0.8171041351154616,
+    "network_confidence": 0.2993787521999779,
+    "context_match": 0.6633887149660773
+  },
+  {
+    "user_id": "user_0039",
+    "preferences": {
+      "category_1": 0.9389300039271039,
+      "category_2": 0.13429111439336772,
+      "category_3": 0.11542867041910221
+    },
+    "direct_activity": 0.10703597770941764,
+    "ai2ai_confidence": 0.5532236408848159,
+    "network_confidence": 0.2723482123148163,
+    "context_match": 0.6048298270302239
+  },
+  {
+    "user_id": "user_0040",
+    "preferences": {
+      "category_1": 0.7176121871387979,
+      "category_2": 0.20359731232745293,
+      "category_3": 0.6342379588850797
+    },
+    "direct_activity": 0.2639839016304094,
+    "ai2ai_confidence": 0.48853185214937656,
+    "network_confidence": 0.9053364910793232,
+    "context_match": 0.8461037132948555
+  },
+  {
+    "user_id": "user_0041",
+    "preferences": {
+      "category_1": 0.09229846771273342,
+      "category_2": 0.42357577256372636,
+      "category_3": 0.27668022397225167
+    },
+    "direct_activity": 0.0035456890877823,
+    "ai2ai_confidence": 0.7711192230196271,
+    "network_confidence": 0.6371133773013796,
+    "context_match": 0.2619552624343482
+  },
+  {
+    "user_id": "user_0042",
+    "preferences": {
+      "category_1": 0.7412309083479308,
+      "category_2": 0.5516804211263913,
+      "category_3": 0.42768691898067934
+    },
+    "direct_activity": 0.009669699608339966,
+    "ai2ai_confidence": 0.07524386007376704,
+    "network_confidence": 0.883106393300143,
+    "context_match": 0.9039285715598931
+  },
+  {
+    "user_id": "user_0043",
+    "preferences": {
+      "category_1": 0.5455902892055223,
+      "category_2": 0.8345950198860167,
+      "category_3": 0.582509566489794
+    },
+    "direct_activity": 0.14809378556748265,
+    "ai2ai_confidence": 0.12744551928213876,
+    "network_confidence": 0.3082583499301337,
+    "context_match": 0.89898148874259
+  },
+  {
+    "user_id": "user_0044",
+    "preferences": {
+      "category_1": 0.7961223048880417,
+      "category_2": 0.8607025820009028,
+      "category_3": 0.8989246365264746
+    },
+    "direct_activity": 0.21007653833975404,
+    "ai2ai_confidence": 0.24952973922292443,
+    "network_confidence": 0.10279362167178563,
+    "context_match": 0.7801162418714427
+  },
+  {
+    "user_id": "user_0045",
+    "preferences": {
+      "category_1": 0.8841347014510089,
+      "category_2": 0.4063773898321168,
+      "category_3": 0.6206615101507128
+    },
+    "direct_activity": 0.15455333833220464,
+    "ai2ai_confidence": 0.9298810156936744,
+    "network_confidence": 0.864605696219964,
+    "context_match": 0.9762060329309629
+  },
+  {
+    "user_id": "user_0046",
+    "preferences": {
+      "category_1": 0.8107717199403969,
+      "category_2": 0.8814162046633244,
+      "category_3": 0.024786361898188725
+    },
+    "direct_activity": 0.7365644717550821,
+    "ai2ai_confidence": 0.33218546794642867,
+    "network_confidence": 0.9308158860483255,
+    "context_match": 0.8022351389371389
+  },
+  {
+    "user_id": "user_0047",
+    "preferences": {
+      "category_1": 0.8640640283752794,
+      "category_2": 0.810749316574389,
+      "category_3": 0.26680570959447203
+    },
+    "direct_activity": 0.7873745091354711,
+    "ai2ai_confidence": 0.10809562640295711,
+    "network_confidence": 0.8721667829060897,
+    "context_match": 0.8585932513377816
+  },
+  {
+    "user_id": "user_0048",
+    "preferences": {
+      "category_1": 0.22243371754566443,
+      "category_2": 0.816586605596929,
+      "category_3": 0.4603032346789421
+    },
+    "direct_activity": 0.30519086733860057,
+    "ai2ai_confidence": 0.7953454991528618,
+    "network_confidence": 0.22759548740777036,
+    "context_match": 0.02366443470145152
+  },
+  {
+    "user_id": "user_0049",
+    "preferences": {
+      "category_1": 0.19312978832770866,
+      "category_2": 0.3282619511977065,
+      "category_3": 0.8643529420302863
+    },
+    "direct_activity": 0.9668891040483611,
+    "ai2ai_confidence": 0.2791249927218714,
+    "network_confidence": 0.6414817386076277,
+    "context_match": 0.39967838436006087
+  },
+  {
+    "user_id": "user_0050",
+    "preferences": {
+      "category_1": 0.9811496871982601,
+      "category_2": 0.5362157324787219,
+      "category_3": 0.9392371403247157
+    },
+    "direct_activity": 0.11534175185142759,
+    "ai2ai_confidence": 0.970400611022228,
+    "network_confidence": 0.17856781617246364,
+    "context_match": 0.9625343157615555
+  },
+  {
+    "user_id": "user_0051",
+    "preferences": {
+      "category_1": 0.2654663625229686,
+      "category_2": 0.1084025472147111,
+      "category_3": 0.43456375856464435
+    },
+    "direct_activity": 0.7285450606527043,
+    "ai2ai_confidence": 0.31367731419499123,
+    "network_confidence": 0.6062088533061433,
+    "context_match": 0.5114230596694781
+  },
+  {
+    "user_id": "user_0052",
+    "preferences": {
+      "category_1": 0.38519543334472717,
+      "category_2": 0.5765880434965995,
+      "category_3": 0.25472250613858194
+    },
+    "direct_activity": 0.7087852838341706,
+    "ai2ai_confidence": 0.0016912782186294661,
+    "network_confidence": 0.9255751654990827,
+    "context_match": 0.5384519970927919
+  },
+  {
+    "user_id": "user_0053",
+    "preferences": {
+      "category_1": 0.7194299991448455,
+      "category_2": 0.7419500778394765,
+      "category_3": 0.6706285044329995
+    },
+    "direct_activity": 0.3642214717812642,
+    "ai2ai_confidence": 0.06997381112631018,
+    "network_confidence": 0.6642376849112723,
+    "context_match": 0.3302000360425964
+  },
+  {
+    "user_id": "user_0054",
+    "preferences": {
+      "category_1": 0.31391564505835967,
+      "category_2": 0.8480152795063355,
+      "category_3": 0.7197542630139502
+    },
+    "direct_activity": 0.3003222682112642,
+    "ai2ai_confidence": 0.30928466220865325,
+    "network_confidence": 0.40839290861921684,
+    "context_match": 0.40240038705772463
+  },
+  {
+    "user_id": "user_0055",
+    "preferences": {
+      "category_1": 0.295655202525947,
+      "category_2": 0.12728779905915322,
+      "category_3": 0.4204463337729083
+    },
+    "direct_activity": 0.940363670730183,
+    "ai2ai_confidence": 0.6773179452727329,
+    "network_confidence": 0.9028055457325826,
+    "context_match": 0.6155149159513805
+  },
+  {
+    "user_id": "user_0056",
+    "preferences": {
+      "category_1": 0.3009498745655653,
+      "category_2": 0.5479372131356982,
+      "category_3": 0.0004059396972875273
+    },
+    "direct_activity": 0.2869137168689272,
+    "ai2ai_confidence": 0.4298881499898346,
+    "network_confidence": 0.579984781195682,
+    "context_match": 0.6547056237030716
+  },
+  {
+    "user_id": "user_0057",
+    "preferences": {
+      "category_1": 0.4649881902470142,
+      "category_2": 0.4421597993048074,
+      "category_3": 0.2137014009891003
+    },
+    "direct_activity": 0.47318618590932626,
+    "ai2ai_confidence": 0.9011808258282542,
+    "network_confidence": 0.7960247601267803,
+    "context_match": 0.16969139619805473
+  },
+  {
+    "user_id": "user_0058",
+    "preferences": {
+      "category_1": 0.08479553672512175,
+      "category_2": 0.5154520099152164,
+      "category_3": 0.6329408557657957
+    },
+    "direct_activity": 0.3351882554098009,
+    "ai2ai_confidence": 0.8184234645366643,
+    "network_confidence": 0.7511381375407322,
+    "context_match": 0.672795670557167
+  },
+  {
+    "user_id": "user_0059",
+    "preferences": {
+      "category_1": 0.22464066599728827,
+      "category_2": 0.19912993272657664,
+      "category_3": 0.024425387726826342
+    },
+    "direct_activity": 0.24484254407835015,
+    "ai2ai_confidence": 0.47513634421880513,
+    "network_confidence": 0.8497376946247319,
+    "context_match": 0.0728282291845691
+  },
+  {
+    "user_id": "user_0060",
+    "preferences": {
+      "category_1": 0.41444101099771935,
+      "category_2": 0.6297653807377137,
+      "category_3": 0.1944352367397093
+    },
+    "direct_activity": 0.6963542504905049,
+    "ai2ai_confidence": 0.49437716901043693,
+    "network_confidence": 0.24398443957843885,
+    "context_match": 0.6560580111117841
+  },
+  {
+    "user_id": "user_0061",
+    "preferences": {
+      "category_1": 0.00554481813803176,
+      "category_2": 0.7509644766184729,
+      "category_3": 0.7700461885740251
+    },
+    "direct_activity": 0.10658729656353894,
+    "ai2ai_confidence": 0.4251461939427341,
+    "network_confidence": 0.17588668170653166,
+    "context_match": 0.9579660422795397
+  },
+  {
+    "user_id": "user_0062",
+    "preferences": {
+      "category_1": 0.5179577504437408,
+      "category_2": 0.05021838514064092,
+      "category_3": 0.24919827965997166
+    },
+    "direct_activity": 0.8483363473516597,
+    "ai2ai_confidence": 0.45646182547017256,
+    "network_confidence": 0.8014166017222645,
+    "context_match": 0.6675777325863531
+  },
+  {
+    "user_id": "user_0063",
+    "preferences": {
+      "category_1": 0.987892453066448,
+      "category_2": 0.5954523184694197,
+      "category_3": 0.9500396084431559
+    },
+    "direct_activity": 0.891425925810437,
+    "ai2ai_confidence": 0.6126523227617628,
+    "network_confidence": 0.7192739612759671,
+    "context_match": 0.504778164824402
+  },
+  {
+    "user_id": "user_0064",
+    "preferences": {
+      "category_1": 0.830569169721415,
+      "category_2": 0.5478719506108284,
+      "category_3": 0.8972081032332622
+    },
+    "direct_activity": 0.7436554421595849,
+    "ai2ai_confidence": 0.4746744368230533,
+    "network_confidence": 0.25919154846501935,
+    "context_match": 0.24723973750965955
+  },
+  {
+    "user_id": "user_0065",
+    "preferences": {
+      "category_1": 0.6376614367761563,
+      "category_2": 0.7658136842971655,
+      "category_3": 0.5212998128279821
+    },
+    "direct_activity": 0.6267484369817813,
+    "ai2ai_confidence": 0.2745974469175383,
+    "network_confidence": 0.07748335386473582,
+    "context_match": 0.2857281508631525
+  },
+  {
+    "user_id": "user_0066",
+    "preferences": {
+      "category_1": 0.2717151070821846,
+      "category_2": 0.3197095684187623,
+      "category_3": 0.5401522225184564
+    },
+    "direct_activity": 0.13837406151615572,
+    "ai2ai_confidence": 0.23126147972818678,
+    "network_confidence": 0.6939498122990523,
+    "context_match": 0.7064191416945522
+  },
+  {
+    "user_id": "user_0067",
+    "preferences": {
+      "category_1": 0.06422885071387807,
+      "category_2": 0.4075993696665867,
+      "category_3": 0.5426111405039153
+    },
+    "direct_activity": 0.41577423410315595,
+    "ai2ai_confidence": 0.20683438951441024,
+    "network_confidence": 0.4201435177734256,
+    "context_match": 0.9048384783401769
+  },
+  {
+    "user_id": "user_0068",
+    "preferences": {
+      "category_1": 0.5840794142042252,
+      "category_2": 0.6955229864979681,
+      "category_3": 0.8567320323039342
+    },
+    "direct_activity": 0.7655945761180695,
+    "ai2ai_confidence": 0.38038102892771164,
+    "network_confidence": 0.0058960835839930725,
+    "context_match": 0.3517588026718247
+  },
+  {
+    "user_id": "user_0069",
+    "preferences": {
+      "category_1": 0.7534751250593859,
+      "category_2": 0.8534479505691046,
+      "category_3": 0.9534303384701063
+    },
+    "direct_activity": 0.41902128262982186,
+    "ai2ai_confidence": 0.7475156689780508,
+    "network_confidence": 0.5461323097338391,
+    "context_match": 0.6032525889412413
+  },
+  {
+    "user_id": "user_0070",
+    "preferences": {
+      "category_1": 0.2205386943238189,
+      "category_2": 0.21942163462143616,
+      "category_3": 0.4358359760466366
+    },
+    "direct_activity": 0.02902481994671524,
+    "ai2ai_confidence": 0.33612954369838244,
+    "network_confidence": 0.6791418850283497,
+    "context_match": 0.4043166691376371
+  },
+  {
+    "user_id": "user_0071",
+    "preferences": {
+      "category_1": 0.16504473120350882,
+      "category_2": 0.46739014923231015,
+      "category_3": 0.1276277972811607
+    },
+    "direct_activity": 0.6222569609740647,
+    "ai2ai_confidence": 0.02696645190513769,
+    "network_confidence": 0.3940202563397047,
+    "context_match": 0.5643919830247741
+  },
+  {
+    "user_id": "user_0072",
+    "preferences": {
+      "category_1": 0.027102046340312436,
+      "category_2": 0.6427496480093358,
+      "category_3": 0.13569948723056424
+    },
+    "direct_activity": 0.4616984440515117,
+    "ai2ai_confidence": 0.05028463348862755,
+    "network_confidence": 0.37910386418813957,
+    "context_match": 0.21166028421148153
+  },
+  {
+    "user_id": "user_0073",
+    "preferences": {
+      "category_1": 0.32684580488130854,
+      "category_2": 0.7612297078940271,
+      "category_3": 0.3791262155641363
+    },
+    "direct_activity": 0.7520098235547849,
+    "ai2ai_confidence": 0.8319242851552726,
+    "network_confidence": 0.2522715317823806,
+    "context_match": 0.08190623276164255
+  },
+  {
+    "user_id": "user_0074",
+    "preferences": {
+      "category_1": 0.01938328705001069,
+      "category_2": 0.5394190479225337,
+      "category_3": 0.9999078285092092
+    },
+    "direct_activity": 0.3499603437201839,
+    "ai2ai_confidence": 0.650144093249875,
+    "network_confidence": 0.7812330496108949,
+    "context_match": 0.6517546552438894
+  },
+  {
+    "user_id": "user_0075",
+    "preferences": {
+      "category_1": 0.7542332040595262,
+      "category_2": 0.9496117327159889,
+      "category_3": 0.1993606823625329
+    },
+    "direct_activity": 0.020380017320332344,
+    "ai2ai_confidence": 0.15238234578479037,
+    "network_confidence": 0.12622097487420625,
+    "context_match": 0.6694588446199107
+  },
+  {
+    "user_id": "user_0076",
+    "preferences": {
+      "category_1": 0.5639695819300191,
+      "category_2": 0.21796454090650363,
+      "category_3": 0.6994649712461508
+    },
+    "direct_activity": 0.7668980983562408,
+    "ai2ai_confidence": 0.16778914336780226,
+    "network_confidence": 0.6072474938909317,
+    "context_match": 0.7479256519552858
+  },
+  {
+    "user_id": "user_0077",
+    "preferences": {
+      "category_1": 0.11453287137889767,
+      "category_2": 0.8193011743110851,
+      "category_3": 0.9647207730340877
+    },
+    "direct_activity": 0.10809874965760657,
+    "ai2ai_confidence": 0.025678425497466018,
+    "network_confidence": 0.3119572443946952,
+    "context_match": 0.6773472868504088
+  },
+  {
+    "user_id": "user_0078",
+    "preferences": {
+      "category_1": 0.9581728382058959,
+      "category_2": 0.3966544415166273,
+      "category_3": 0.7150147050494684
+    },
+    "direct_activity": 0.07599647784305996,
+    "ai2ai_confidence": 0.6906144159329803,
+    "network_confidence": 0.6272423956010444,
+    "context_match": 0.10190130544597653
+  },
+  {
+    "user_id": "user_0079",
+    "preferences": {
+      "category_1": 0.772480884951224,
+      "category_2": 0.8502932390887963,
+      "category_3": 0.6004116148168441
+    },
+    "direct_activity": 0.12105506506731512,
+    "ai2ai_confidence": 0.9838443515146713,
+    "network_confidence": 0.7826353463610196,
+    "context_match": 0.347203765308449
+  },
+  {
+    "user_id": "user_0080",
+    "preferences": {
+      "category_1": 0.42837801323474445,
+      "category_2": 0.3705708762180562,
+      "category_3": 0.5059607896770779
+    },
+    "direct_activity": 0.3412311748612832,
+    "ai2ai_confidence": 0.8495756269995773,
+    "network_confidence": 0.8223309180900581,
+    "context_match": 0.10553887064399858
+  },
+  {
+    "user_id": "user_0081",
+    "preferences": {
+      "category_1": 0.9607875672145786,
+      "category_2": 0.6355851061014459,
+      "category_3": 0.8287073110024582
+    },
+    "direct_activity": 0.7073086437060769,
+    "ai2ai_confidence": 0.43548714500767705,
+    "network_confidence": 0.7337953040133919,
+    "context_match": 0.9654737312380777
+  },
+  {
+    "user_id": "user_0082",
+    "preferences": {
+      "category_1": 0.27008239638740084,
+      "category_2": 0.8081992188067559,
+      "category_3": 0.5381729064482558
+    },
+    "direct_activity": 0.4834975038831961,
+    "ai2ai_confidence": 0.4355744930038943,
+    "network_confidence": 0.7310262143051223,
+    "context_match": 0.26839553804922534
+  },
+  {
+    "user_id": "user_0083",
+    "preferences": {
+      "category_1": 0.8517131600193318,
+      "category_2": 0.8307310188906034,
+      "category_3": 0.0866628980556744
+    },
+    "direct_activity": 0.881631184002772,
+    "ai2ai_confidence": 0.243863439190956,
+    "network_confidence": 0.46470846660323173,
+    "context_match": 0.6103317042305206
+  },
+  {
+    "user_id": "user_0084",
+    "preferences": {
+      "category_1": 0.37898930412826404,
+      "category_2": 0.02869999777008958,
+      "category_3": 0.8509528363124591
+    },
+    "direct_activity": 0.1818398571576918,
+    "ai2ai_confidence": 0.212119850179739,
+    "network_confidence": 0.7978323568280965,
+    "context_match": 0.34033884316428364
+  },
+  {
+    "user_id": "user_0085",
+    "preferences": {
+      "category_1": 0.8803199797582254,
+      "category_2": 0.7011837503322016,
+      "category_3": 0.2762685757561849
+    },
+    "direct_activity": 0.010151114438677111,
+    "ai2ai_confidence": 0.9480625777770312,
+    "network_confidence": 0.08561296195802126,
+    "context_match": 0.7200746641041943
+  },
+  {
+    "user_id": "user_0086",
+    "preferences": {
+      "category_1": 0.48857784684878736,
+      "category_2": 0.7581646534824664,
+      "category_3": 0.690609339446523
+    },
+    "direct_activity": 0.6459028997409523,
+    "ai2ai_confidence": 0.49082133507858616,
+    "network_confidence": 0.7929328681323174,
+    "context_match": 0.09305335055467168
+  },
+  {
+    "user_id": "user_0087",
+    "preferences": {
+      "category_1": 0.22159640047253015,
+      "category_2": 0.6917871552952018,
+      "category_3": 0.3062060301300884
+    },
+    "direct_activity": 0.5815555853323672,
+    "ai2ai_confidence": 0.47326048875952476,
+    "network_confidence": 0.5309219311457678,
+    "context_match": 0.42550381270521476
+  },
+  {
+    "user_id": "user_0088",
+    "preferences": {
+      "category_1": 0.7459354367136096,
+      "category_2": 0.33079129719593015,
+      "category_3": 0.7028549421857689
+    },
+    "direct_activity": 0.27091642697619633,
+    "ai2ai_confidence": 0.2514036762009415,
+    "network_confidence": 0.12065588475230582,
+    "context_match": 0.1925842934515174
+  },
+  {
+    "user_id": "user_0089",
+    "preferences": {
+      "category_1": 0.11955474125505283,
+      "category_2": 0.5358639653837498,
+      "category_3": 0.762189609484103
+    },
+    "direct_activity": 0.18514984243766197,
+    "ai2ai_confidence": 0.21638463987860568,
+    "network_confidence": 0.4841985872127087,
+    "context_match": 0.7245850010930516
+  },
+  {
+    "user_id": "user_0090",
+    "preferences": {
+      "category_1": 0.9766070228830568,
+      "category_2": 0.5246368691086079,
+      "category_3": 0.282998703274955
+    },
+    "direct_activity": 0.10052610809079077,
+    "ai2ai_confidence": 0.19411757809107344,
+    "network_confidence": 0.2274831634825547,
+    "context_match": 0.17944154368540333
+  },
+  {
+    "user_id": "user_0091",
+    "preferences": {
+      "category_1": 0.014148367256063832,
+      "category_2": 0.5341350892676633,
+      "category_3": 0.2743113267832673
+    },
+    "direct_activity": 0.9742949311027379,
+    "ai2ai_confidence": 0.5533589667986083,
+    "network_confidence": 0.6974173929101944,
+    "context_match": 0.1262794929584089
+  },
+  {
+    "user_id": "user_0092",
+    "preferences": {
+      "category_1": 0.868461197262944,
+      "category_2": 0.49087869452377886,
+      "category_3": 0.8727197349985346
+    },
+    "direct_activity": 0.5740642196263323,
+    "ai2ai_confidence": 0.4693969449305102,
+    "network_confidence": 0.44046879813601025,
+    "context_match": 0.18436367039008172
+  },
+  {
+    "user_id": "user_0093",
+    "preferences": {
+      "category_1": 0.051376717183577836,
+      "category_2": 0.9410635967681032,
+      "category_3": 0.4777291872656877
+    },
+    "direct_activity": 0.8221156452994304,
+    "ai2ai_confidence": 0.40070744225193977,
+    "network_confidence": 0.07408217025563979,
+    "context_match": 0.6294457069519983
+  },
+  {
+    "user_id": "user_0094",
+    "preferences": {
+      "category_1": 0.05360907429253314,
+      "category_2": 0.14919758447365516,
+      "category_3": 0.5628395970845642
+    },
+    "direct_activity": 0.3038355118422277,
+    "ai2ai_confidence": 0.9939181227102202,
+    "network_confidence": 0.11845156221146158,
+    "context_match": 0.7644434453261942
+  },
+  {
+    "user_id": "user_0095",
+    "preferences": {
+      "category_1": 0.6063176512429628,
+      "category_2": 0.7907408298434194,
+      "category_3": 0.22568713706503463
+    },
+    "direct_activity": 0.5225725351302178,
+    "ai2ai_confidence": 0.45051446488875424,
+    "network_confidence": 0.44272100401932835,
+    "context_match": 0.8601666658261801
+  },
+  {
+    "user_id": "user_0096",
+    "preferences": {
+      "category_1": 0.9900312604667979,
+      "category_2": 0.3053802443193604,
+      "category_3": 0.6210273210721485
+    },
+    "direct_activity": 0.6096309122451303,
+    "ai2ai_confidence": 0.740089305484545,
+    "network_confidence": 0.947590200325378,
+    "context_match": 0.20778790582355133
+  },
+  {
+    "user_id": "user_0097",
+    "preferences": {
+      "category_1": 0.211025195305393,
+      "category_2": 0.6604281371920366,
+      "category_3": 0.15705709338087714
+    },
+    "direct_activity": 0.17381354832643447,
+    "ai2ai_confidence": 0.07506486890116792,
+    "network_confidence": 0.002675722602885733,
+    "context_match": 0.4505037046177024
+  },
+  {
+    "user_id": "user_0098",
+    "preferences": {
+      "category_1": 0.5938111951195633,
+      "category_2": 0.2912592890310276,
+      "category_3": 0.23147623455602584
+    },
+    "direct_activity": 0.7069558298790333,
+    "ai2ai_confidence": 0.7029875580937172,
+    "network_confidence": 0.45403132640704325,
+    "context_match": 0.6873849200712427
+  },
+  {
+    "user_id": "user_0099",
+    "preferences": {
+      "category_1": 0.9239110444825487,
+      "category_2": 0.7878280266467313,
+      "category_3": 0.6250580071642219
+    },
+    "direct_activity": 0.6611830428533678,
+    "ai2ai_confidence": 0.9336684584455133,
+    "network_confidence": 0.42513896610421165,
+    "context_match": 0.5445623787105787
+  },
+  {
+    "user_id": "user_0100",
+    "preferences": {
+      "category_1": 0.6476347234024807,
+      "category_2": 0.9084114452126061,
+      "category_3": 0.8266311596500596
+    },
+    "direct_activity": 0.07140983685581415,
+    "ai2ai_confidence": 0.16592278922072468,
+    "network_confidence": 0.30761181261423254,
+    "context_match": 0.7489577220696233
+  },
+  {
+    "user_id": "user_0101",
+    "preferences": {
+      "category_1": 0.5692070493190924,
+      "category_2": 0.28861058830584174,
+      "category_3": 0.12435365817470823
+    },
+    "direct_activity": 0.6886779912120937,
+    "ai2ai_confidence": 0.6997336849757173,
+    "network_confidence": 0.9426762407440408,
+    "context_match": 0.5004721771179256
+  },
+  {
+    "user_id": "user_0102",
+    "preferences": {
+      "category_1": 0.4937952193450843,
+      "category_2": 0.08044185189930098,
+      "category_3": 0.03986078418361305
+    },
+    "direct_activity": 0.43202866416077257,
+    "ai2ai_confidence": 0.32232158335829997,
+    "network_confidence": 0.2503679024120039,
+    "context_match": 0.0913268866309852
+  },
+  {
+    "user_id": "user_0103",
+    "preferences": {
+      "category_1": 0.9619111021928367,
+      "category_2": 0.8359586139061813,
+      "category_3": 0.5751991092199304
+    },
+    "direct_activity": 0.9507862778063524,
+    "ai2ai_confidence": 0.9995724168774514,
+    "network_confidence": 0.6722815843032393,
+    "context_match": 0.2695110259670539
+  },
+  {
+    "user_id": "user_0104",
+    "preferences": {
+      "category_1": 0.040231673144616176,
+      "category_2": 0.7562688304125571,
+      "category_3": 0.47050082325163356
+    },
+    "direct_activity": 0.6515094894336864,
+    "ai2ai_confidence": 0.9160727879267675,
+    "network_confidence": 0.18148914722312592,
+    "context_match": 0.5853296252778544
+  },
+  {
+    "user_id": "user_0105",
+    "preferences": {
+      "category_1": 0.6347847194540869,
+      "category_2": 0.49172580219101336,
+      "category_3": 0.09124240629382718
+    },
+    "direct_activity": 0.34796105629465046,
+    "ai2ai_confidence": 0.333308393665092,
+    "network_confidence": 0.6701335095211854,
+    "context_match": 0.8577330944003526
+  },
+  {
+    "user_id": "user_0106",
+    "preferences": {
+      "category_1": 0.3298036635789654,
+      "category_2": 0.6936736739834325,
+      "category_3": 0.28821779536145575
+    },
+    "direct_activity": 0.9451935395632106,
+    "ai2ai_confidence": 0.8135660347379726,
+    "network_confidence": 0.5500966089717829,
+    "context_match": 0.45482590860172945
+  },
+  {
+    "user_id": "user_0107",
+    "preferences": {
+      "category_1": 0.3145171571701679,
+      "category_2": 0.3232737862759947,
+      "category_3": 0.9701847268085771
+    },
+    "direct_activity": 0.40417505700074563,
+    "ai2ai_confidence": 0.5145962523291051,
+    "network_confidence": 0.9881192147817541,
+    "context_match": 0.657660386483129
+  },
+  {
+    "user_id": "user_0108",
+    "preferences": {
+      "category_1": 0.542593594357195,
+      "category_2": 0.4132475707993215,
+      "category_3": 0.18758254139452712
+    },
+    "direct_activity": 0.36177935915167525,
+    "ai2ai_confidence": 0.7564431540555737,
+    "network_confidence": 0.625408742145009,
+    "context_match": 0.759990536061017
+  },
+  {
+    "user_id": "user_0109",
+    "preferences": {
+      "category_1": 0.20355823835027387,
+      "category_2": 0.5492196390853317,
+      "category_3": 0.9276727608444477
+    },
+    "direct_activity": 0.43811609507237825,
+    "ai2ai_confidence": 0.6982500291221723,
+    "network_confidence": 0.12142608336261984,
+    "context_match": 0.9731468158216944
+  },
+  {
+    "user_id": "user_0110",
+    "preferences": {
+      "category_1": 0.6088716670819649,
+      "category_2": 0.23929746232765037,
+      "category_3": 0.1583781638052324
+    },
+    "direct_activity": 0.55083900700267,
+    "ai2ai_confidence": 0.552251409053733,
+    "network_confidence": 0.09320920128152255,
+    "context_match": 0.9922571393952196
+  },
+  {
+    "user_id": "user_0111",
+    "preferences": {
+      "category_1": 0.912929878484168,
+      "category_2": 0.4614478941787834,
+      "category_3": 0.11746614908955755
+    },
+    "direct_activity": 0.8321431737689012,
+    "ai2ai_confidence": 0.49837550470719527,
+    "network_confidence": 0.7166033259917911,
+    "context_match": 0.5088720150695117
+  },
+  {
+    "user_id": "user_0112",
+    "preferences": {
+      "category_1": 0.2734248967132742,
+      "category_2": 0.8347239455766944,
+      "category_3": 0.9802446326033755
+    },
+    "direct_activity": 0.24373090607513836,
+    "ai2ai_confidence": 0.5512650768804697,
+    "network_confidence": 0.3835860132471499,
+    "context_match": 0.9218681499315619
+  },
+  {
+    "user_id": "user_0113",
+    "preferences": {
+      "category_1": 0.508240891592894,
+      "category_2": 0.8793262551464761,
+      "category_3": 0.8640269344285881
+    },
+    "direct_activity": 0.27624740282204097,
+    "ai2ai_confidence": 0.7900061820031135,
+    "network_confidence": 0.41494242355134514,
+    "context_match": 0.9342483936825201
+  },
+  {
+    "user_id": "user_0114",
+    "preferences": {
+      "category_1": 0.5077376758096565,
+      "category_2": 0.8205494731855784,
+      "category_3": 0.28283898328282664
+    },
+    "direct_activity": 0.2985558497717672,
+    "ai2ai_confidence": 0.5869377224141611,
+    "network_confidence": 0.9989023332293387,
+    "context_match": 0.489640346655701
+  },
+  {
+    "user_id": "user_0115",
+    "preferences": {
+      "category_1": 0.1485954183827891,
+      "category_2": 0.5385805777038737,
+      "category_3": 0.34512394169300753
+    },
+    "direct_activity": 0.551917417070811,
+    "ai2ai_confidence": 0.543430062958673,
+    "network_confidence": 0.4553446168665011,
+    "context_match": 0.3217773502290374
+  },
+  {
+    "user_id": "user_0116",
+    "preferences": {
+      "category_1": 0.18865237370710541,
+      "category_2": 0.6974984276205713,
+      "category_3": 0.5717976419849011
+    },
+    "direct_activity": 0.2335624460578931,
+    "ai2ai_confidence": 0.7755444750992588,
+    "network_confidence": 0.04364729909730192,
+    "context_match": 0.7447051515651959
+  },
+  {
+    "user_id": "user_0117",
+    "preferences": {
+      "category_1": 0.7052278810250026,
+      "category_2": 0.8114089025648769,
+      "category_3": 0.38607875249098234
+    },
+    "direct_activity": 0.6636888294845347,
+    "ai2ai_confidence": 0.820747551709555,
+    "network_confidence": 0.9808181386597851,
+    "context_match": 0.49532864961642353
+  },
+  {
+    "user_id": "user_0118",
+    "preferences": {
+      "category_1": 0.03701961134557619,
+      "category_2": 0.5022911501329659,
+      "category_3": 0.590180429309567
+    },
+    "direct_activity": 0.8697003133622154,
+    "ai2ai_confidence": 0.8741903740543083,
+    "network_confidence": 0.44030620977067714,
+    "context_match": 0.5259510868075614
+  },
+  {
+    "user_id": "user_0119",
+    "preferences": {
+      "category_1": 0.4569280744742422,
+      "category_2": 0.7224438275706426,
+      "category_3": 0.4099786197463644
+    },
+    "direct_activity": 0.6547813264277338,
+    "ai2ai_confidence": 0.15436121877154885,
+    "network_confidence": 0.46949060098473194,
+    "context_match": 0.9692036305742172
+  },
+  {
+    "user_id": "user_0120",
+    "preferences": {
+      "category_1": 0.3385612340514317,
+      "category_2": 0.692704598586882,
+      "category_3": 0.6498366525792726
+    },
+    "direct_activity": 0.8517652923506914,
+    "ai2ai_confidence": 0.8523413365658931,
+    "network_confidence": 0.8593421841682666,
+    "context_match": 0.38000939752265506
+  },
+  {
+    "user_id": "user_0121",
+    "preferences": {
+      "category_1": 0.31666115393339966,
+      "category_2": 0.718717425222983,
+      "category_3": 0.7594018093343636
+    },
+    "direct_activity": 0.8723830173985363,
+    "ai2ai_confidence": 0.03589909983768658,
+    "network_confidence": 0.06842074718155144,
+    "context_match": 0.6311610168546405
+  },
+  {
+    "user_id": "user_0122",
+    "preferences": {
+      "category_1": 0.9209290987802967,
+      "category_2": 0.9974259229562153,
+      "category_3": 0.746766366737927
+    },
+    "direct_activity": 0.4339714719231257,
+    "ai2ai_confidence": 0.09844312638319797,
+    "network_confidence": 0.6337478287807913,
+    "context_match": 0.8725792326070907
+  },
+  {
+    "user_id": "user_0123",
+    "preferences": {
+      "category_1": 0.4436785516617058,
+      "category_2": 0.6940011627932345,
+      "category_3": 0.903424062050486
+    },
+    "direct_activity": 0.04599096867721275,
+    "ai2ai_confidence": 0.7961434651622118,
+    "network_confidence": 0.2933677759652088,
+    "context_match": 0.37484108977531483
+  },
+  {
+    "user_id": "user_0124",
+    "preferences": {
+      "category_1": 0.14556979569939843,
+      "category_2": 0.53116631814876,
+      "category_3": 0.5659280619159368
+    },
+    "direct_activity": 0.7925194738809532,
+    "ai2ai_confidence": 0.16998364906809738,
+    "network_confidence": 0.07896835065999463,
+    "context_match": 0.8708395986448548
+  },
+  {
+    "user_id": "user_0125",
+    "preferences": {
+      "category_1": 0.6197103685374153,
+      "category_2": 0.24082979185631304,
+      "category_3": 0.9128290160235548
+    },
+    "direct_activity": 0.14311772012850965,
+    "ai2ai_confidence": 0.46114991335499755,
+    "network_confidence": 0.2539773394135423,
+    "context_match": 0.25532670815915404
+  },
+  {
+    "user_id": "user_0126",
+    "preferences": {
+      "category_1": 0.009397431454871041,
+      "category_2": 0.8046330769751463,
+      "category_3": 0.901209423598883
+    },
+    "direct_activity": 0.6776108856990795,
+    "ai2ai_confidence": 0.15797562207178695,
+    "network_confidence": 0.44172978360381443,
+    "context_match": 0.3455656244430817
+  },
+  {
+    "user_id": "user_0127",
+    "preferences": {
+      "category_1": 0.5875717051264214,
+      "category_2": 0.6389387023600122,
+      "category_3": 0.4243089384608977
+    },
+    "direct_activity": 0.25009822440770124,
+    "ai2ai_confidence": 0.8453039251425987,
+    "network_confidence": 0.19921699910889235,
+    "context_match": 0.38469324896734547
+  },
+  {
+    "user_id": "user_0128",
+    "preferences": {
+      "category_1": 0.4832080610592161,
+      "category_2": 0.23720570192757462,
+      "category_3": 0.5719226923507389
+    },
+    "direct_activity": 0.5748119301786451,
+    "ai2ai_confidence": 0.9926920436268976,
+    "network_confidence": 0.29523075388326936,
+    "context_match": 0.9779444845768627
+  },
+  {
+    "user_id": "user_0129",
+    "preferences": {
+      "category_1": 0.6582298159286807,
+      "category_2": 0.27448038017822773,
+      "category_3": 0.565929016955699
+    },
+    "direct_activity": 0.6857994927340121,
+    "ai2ai_confidence": 0.7446688411653252,
+    "network_confidence": 0.04904425077599994,
+    "context_match": 0.6064064930764745
+  },
+  {
+    "user_id": "user_0130",
+    "preferences": {
+      "category_1": 0.4967272865238703,
+      "category_2": 0.9041552908937254,
+      "category_3": 0.28619415145919447
+    },
+    "direct_activity": 0.7988601195075987,
+    "ai2ai_confidence": 0.607064998164266,
+    "network_confidence": 0.35232095583531653,
+    "context_match": 0.6366178780058919
+  },
+  {
+    "user_id": "user_0131",
+    "preferences": {
+      "category_1": 0.6208911631303041,
+      "category_2": 0.6777644586233594,
+      "category_3": 0.720928376670709
+    },
+    "direct_activity": 0.6591815403167537,
+    "ai2ai_confidence": 0.8383371169625166,
+    "network_confidence": 0.6282481036868983,
+    "context_match": 0.9034037040729679
+  },
+  {
+    "user_id": "user_0132",
+    "preferences": {
+      "category_1": 0.6463406088905228,
+      "category_2": 0.3089328839526361,
+      "category_3": 0.4408231901628116
+    },
+    "direct_activity": 0.5795738053684028,
+    "ai2ai_confidence": 0.7323597679392383,
+    "network_confidence": 0.09013337574621894,
+    "context_match": 0.2951104516291553
+  },
+  {
+    "user_id": "user_0133",
+    "preferences": {
+      "category_1": 0.7474808649383715,
+      "category_2": 0.17564007044430663,
+      "category_3": 0.13215979774678355
+    },
+    "direct_activity": 0.5394077589844211,
+    "ai2ai_confidence": 0.9714895812113399,
+    "network_confidence": 0.530852373702785,
+    "context_match": 0.9134869744816969
+  },
+  {
+    "user_id": "user_0134",
+    "preferences": {
+      "category_1": 0.8304726195673974,
+      "category_2": 0.2569700845632623,
+      "category_3": 0.8246898125424073
+    },
+    "direct_activity": 0.4818478298737412,
+    "ai2ai_confidence": 0.8064884937937665,
+    "network_confidence": 0.746559350717045,
+    "context_match": 0.3387152538018863
+  },
+  {
+    "user_id": "user_0135",
+    "preferences": {
+      "category_1": 0.1151697074497594,
+      "category_2": 0.9628932928688776,
+      "category_3": 0.14075701500588267
+    },
+    "direct_activity": 0.9665002094627521,
+    "ai2ai_confidence": 0.8601405968988218,
+    "network_confidence": 0.7242167120755182,
+    "context_match": 0.9799422427819034
+  },
+  {
+    "user_id": "user_0136",
+    "preferences": {
+      "category_1": 0.9672697473000323,
+      "category_2": 0.8045876440205619,
+      "category_3": 0.3657750494055664
+    },
+    "direct_activity": 0.7906819685889375,
+    "ai2ai_confidence": 0.013918655100901178,
+    "network_confidence": 0.5365723082690591,
+    "context_match": 0.45478602773387466
+  },
+  {
+    "user_id": "user_0137",
+    "preferences": {
+      "category_1": 0.6728283818737536,
+      "category_2": 0.6723407973510132,
+      "category_3": 0.584560091652166
+    },
+    "direct_activity": 0.8224173012267743,
+    "ai2ai_confidence": 0.9402918917795542,
+    "network_confidence": 0.10834610219923069,
+    "context_match": 0.23382190221158317
+  },
+  {
+    "user_id": "user_0138",
+    "preferences": {
+      "category_1": 0.025024649646482322,
+      "category_2": 0.8842348452148522,
+      "category_3": 0.5614073822498789
+    },
+    "direct_activity": 0.9152559087431594,
+    "ai2ai_confidence": 0.22136720007399002,
+    "network_confidence": 0.06321704116019544,
+    "context_match": 0.8238553513904476
+  },
+  {
+    "user_id": "user_0139",
+    "preferences": {
+      "category_1": 0.909387638427892,
+      "category_2": 0.30219017452925023,
+      "category_3": 0.4082958557954127
+    },
+    "direct_activity": 0.13977701250722108,
+    "ai2ai_confidence": 0.9462615328819463,
+    "network_confidence": 0.3043645843560052,
+    "context_match": 0.49262461897820586
+  },
+  {
+    "user_id": "user_0140",
+    "preferences": {
+      "category_1": 0.0971919986218216,
+      "category_2": 0.8872593085285023,
+      "category_3": 0.13566404870633653
+    },
+    "direct_activity": 0.4536437568888926,
+    "ai2ai_confidence": 0.6704862188501712,
+    "network_confidence": 0.7431401215231715,
+    "context_match": 0.9459740857794321
+  },
+  {
+    "user_id": "user_0141",
+    "preferences": {
+      "category_1": 0.41912675341472283,
+      "category_2": 0.7422690147653158,
+      "category_3": 0.15452290240983502
+    },
+    "direct_activity": 0.4148845274368069,
+    "ai2ai_confidence": 0.0990216347105285,
+    "network_confidence": 0.4893470377896145,
+    "context_match": 0.4081158856977005
+  },
+  {
+    "user_id": "user_0142",
+    "preferences": {
+      "category_1": 0.9515215253810595,
+      "category_2": 0.032716286855046905,
+      "category_3": 0.3705299587344354
+    },
+    "direct_activity": 0.44338308606070165,
+    "ai2ai_confidence": 0.950555169851427,
+    "network_confidence": 0.8554501933059546,
+    "context_match": 0.09935462460613032
+  },
+  {
+    "user_id": "user_0143",
+    "preferences": {
+      "category_1": 0.6856802654812854,
+      "category_2": 0.5444658614821449,
+      "category_3": 0.9778425294520467
+    },
+    "direct_activity": 0.35867384121231793,
+    "ai2ai_confidence": 0.3981396427443731,
+    "network_confidence": 0.18980856216107955,
+    "context_match": 0.12215971908726375
+  },
+  {
+    "user_id": "user_0144",
+    "preferences": {
+      "category_1": 0.848033188463681,
+      "category_2": 0.45471736857051714,
+      "category_3": 0.662768738061978
+    },
+    "direct_activity": 0.6417044672332176,
+    "ai2ai_confidence": 0.5971459595195451,
+    "network_confidence": 0.02135745473637063,
+    "context_match": 0.7867945904546167
+  },
+  {
+    "user_id": "user_0145",
+    "preferences": {
+      "category_1": 0.24356889716402363,
+      "category_2": 0.12592388530804288,
+      "category_3": 0.5645779759079633
+    },
+    "direct_activity": 0.0686101528243559,
+    "ai2ai_confidence": 0.7651573758885845,
+    "network_confidence": 0.2071573703466585,
+    "context_match": 0.21595135191867476
+  },
+  {
+    "user_id": "user_0146",
+    "preferences": {
+      "category_1": 0.8696954267695447,
+      "category_2": 0.3285595534322304,
+      "category_3": 0.1475541799414437
+    },
+    "direct_activity": 0.9005310356317582,
+    "ai2ai_confidence": 0.0028355514800163517,
+    "network_confidence": 0.8584061263801763,
+    "context_match": 0.144687980320508
+  },
+  {
+    "user_id": "user_0147",
+    "preferences": {
+      "category_1": 0.1299921314434368,
+      "category_2": 0.25065419672812383,
+      "category_3": 0.17449712090139347
+    },
+    "direct_activity": 0.6610576425973168,
+    "ai2ai_confidence": 0.02578014978619836,
+    "network_confidence": 0.014860327230708847,
+    "context_match": 0.7899846642347539
+  },
+  {
+    "user_id": "user_0148",
+    "preferences": {
+      "category_1": 0.23793160609046304,
+      "category_2": 0.32377146196202244,
+      "category_3": 0.1742462014061772
+    },
+    "direct_activity": 0.05239901786117651,
+    "ai2ai_confidence": 0.7417180569541495,
+    "network_confidence": 0.5260855265978671,
+    "context_match": 0.7456652750339957
+  },
+  {
+    "user_id": "user_0149",
+    "preferences": {
+      "category_1": 0.47624596542325026,
+      "category_2": 0.7780170393142027,
+      "category_3": 0.5132379576091917
+    },
+    "direct_activity": 0.10905401000384551,
+    "ai2ai_confidence": 0.5038386897858214,
+    "network_confidence": 0.9454156429701063,
+    "context_match": 0.043365036899171705
+  },
+  {
+    "user_id": "user_0150",
+    "preferences": {
+      "category_1": 0.7832269959803796,
+      "category_2": 0.8669809077598383,
+      "category_3": 0.5214512147130841
+    },
+    "direct_activity": 0.45804252209768204,
+    "ai2ai_confidence": 0.9640261831220287,
+    "network_confidence": 0.06082540749450582,
+    "context_match": 0.4789819109983633
+  },
+  {
+    "user_id": "user_0151",
+    "preferences": {
+      "category_1": 0.4016172545125605,
+      "category_2": 0.6860974960622327,
+      "category_3": 0.4902688541442253
+    },
+    "direct_activity": 0.9097008291152293,
+    "ai2ai_confidence": 0.0734907157664505,
+    "network_confidence": 0.08079047741079193,
+    "context_match": 0.60829742363344
+  },
+  {
+    "user_id": "user_0152",
+    "preferences": {
+      "category_1": 0.06568223332011391,
+      "category_2": 0.2750159995579532,
+      "category_3": 0.6330767243010155
+    },
+    "direct_activity": 0.5483564340483605,
+    "ai2ai_confidence": 0.32518544331866794,
+    "network_confidence": 0.9946277558609236,
+    "context_match": 0.5305568374313245
+  },
+  {
+    "user_id": "user_0153",
+    "preferences": {
+      "category_1": 0.4537154175754716,
+      "category_2": 0.6054267915353129,
+      "category_3": 0.09917846167904198
+    },
+    "direct_activity": 0.7017794185460662,
+    "ai2ai_confidence": 0.852792737295575,
+    "network_confidence": 0.6509166648813054,
+    "context_match": 0.7689627301047386
+  },
+  {
+    "user_id": "user_0154",
+    "preferences": {
+      "category_1": 0.7208399166575992,
+      "category_2": 0.2150230663274969,
+      "category_3": 0.4515549159652815
+    },
+    "direct_activity": 0.2284935743645844,
+    "ai2ai_confidence": 0.3389316188351752,
+    "network_confidence": 0.4534989029074473,
+    "context_match": 0.41598965026149526
+  },
+  {
+    "user_id": "user_0155",
+    "preferences": {
+      "category_1": 0.09508583927563086,
+      "category_2": 0.426764006260958,
+      "category_3": 0.6651078630603089
+    },
+    "direct_activity": 0.37430102343553684,
+    "ai2ai_confidence": 0.15263892476872376,
+    "network_confidence": 0.9229850357343844,
+    "context_match": 0.06713330813664775
+  },
+  {
+    "user_id": "user_0156",
+    "preferences": {
+      "category_1": 0.8317718884748545,
+      "category_2": 0.0932301017036774,
+      "category_3": 0.09656443256578562
+    },
+    "direct_activity": 0.7387959984887157,
+    "ai2ai_confidence": 0.8117692852773923,
+    "network_confidence": 0.5563707356153501,
+    "context_match": 0.586465082739477
+  },
+  {
+    "user_id": "user_0157",
+    "preferences": {
+      "category_1": 0.5615864139920724,
+      "category_2": 0.32964598141620505,
+      "category_3": 0.1222312853545593
+    },
+    "direct_activity": 0.35359807963376766,
+    "ai2ai_confidence": 0.6653405200029154,
+    "network_confidence": 0.7502842502514783,
+    "context_match": 0.8680921488690649
+  },
+  {
+    "user_id": "user_0158",
+    "preferences": {
+      "category_1": 0.7210606787461494,
+      "category_2": 0.9683986253114745,
+      "category_3": 0.600410091224677
+    },
+    "direct_activity": 0.351646185693149,
+    "ai2ai_confidence": 0.5779185183898549,
+    "network_confidence": 0.2127388056720061,
+    "context_match": 0.6567363029881521
+  },
+  {
+    "user_id": "user_0159",
+    "preferences": {
+      "category_1": 0.22424486910756558,
+      "category_2": 0.10821838192726663,
+      "category_3": 0.8453734186013451
+    },
+    "direct_activity": 0.36756105061535016,
+    "ai2ai_confidence": 0.7626056319368497,
+    "network_confidence": 0.5741000043314627,
+    "context_match": 0.8072213711523444
+  },
+  {
+    "user_id": "user_0160",
+    "preferences": {
+      "category_1": 0.8451551613283581,
+      "category_2": 0.9745466021257082,
+      "category_3": 0.8184268595406696
+    },
+    "direct_activity": 0.6135732805354648,
+    "ai2ai_confidence": 0.6426991638298314,
+    "network_confidence": 0.0262538314535834,
+    "context_match": 0.9290842909949364
+  },
+  {
+    "user_id": "user_0161",
+    "preferences": {
+      "category_1": 0.829460789959663,
+      "category_2": 0.26744772515411064,
+      "category_3": 0.1804160719608544
+    },
+    "direct_activity": 0.7026987728656047,
+    "ai2ai_confidence": 0.30898468882991015,
+    "network_confidence": 0.33982465677725837,
+    "context_match": 0.00610578940365869
+  },
+  {
+    "user_id": "user_0162",
+    "preferences": {
+      "category_1": 0.8698627065364382,
+      "category_2": 0.5663210947613763,
+      "category_3": 0.40078434399951557
+    },
+    "direct_activity": 0.14187465415126865,
+    "ai2ai_confidence": 0.6331720126555138,
+    "network_confidence": 0.03065709838090591,
+    "context_match": 0.7461117620057067
+  },
+  {
+    "user_id": "user_0163",
+    "preferences": {
+      "category_1": 0.21513288003351094,
+      "category_2": 0.41983249376450316,
+      "category_3": 0.3408959817693328
+    },
+    "direct_activity": 0.3700530924770039,
+    "ai2ai_confidence": 0.7215959677426732,
+    "network_confidence": 0.776835619966741,
+    "context_match": 0.5675935566143973
+  },
+  {
+    "user_id": "user_0164",
+    "preferences": {
+      "category_1": 0.0849570399771793,
+      "category_2": 0.05260882642552178,
+      "category_3": 0.15740989710715314
+    },
+    "direct_activity": 0.6178381819260306,
+    "ai2ai_confidence": 0.673968710613113,
+    "network_confidence": 0.27210284354621894,
+    "context_match": 0.6619386928082612
+  },
+  {
+    "user_id": "user_0165",
+    "preferences": {
+      "category_1": 0.48566170489099625,
+      "category_2": 0.4420441866977791,
+      "category_3": 0.27316684436476946
+    },
+    "direct_activity": 0.7549431436683707,
+    "ai2ai_confidence": 0.11381750811020175,
+    "network_confidence": 0.42991363339789035,
+    "context_match": 0.28324647008044934
+  },
+  {
+    "user_id": "user_0166",
+    "preferences": {
+      "category_1": 0.678486254760133,
+      "category_2": 0.4866327533642508,
+      "category_3": 0.6671325587363496
+    },
+    "direct_activity": 0.045417362604427525,
+    "ai2ai_confidence": 0.39526339608762895,
+    "network_confidence": 0.5993249569444504,
+    "context_match": 0.007687085899882873
+  },
+  {
+    "user_id": "user_0167",
+    "preferences": {
+      "category_1": 0.3014193620184368,
+      "category_2": 0.21123397922031228,
+      "category_3": 0.137234805257327
+    },
+    "direct_activity": 0.2555195040214593,
+    "ai2ai_confidence": 0.3281223559378411,
+    "network_confidence": 0.0077299065693119395,
+    "context_match": 0.7470141234297678
+  },
+  {
+    "user_id": "user_0168",
+    "preferences": {
+      "category_1": 0.1756948018758423,
+      "category_2": 0.38020744571523624,
+      "category_3": 0.7036712633826636
+    },
+    "direct_activity": 0.5002623465562132,
+    "ai2ai_confidence": 0.8333542024198782,
+    "network_confidence": 0.8062001865667638,
+    "context_match": 0.07207549659215784
+  },
+  {
+    "user_id": "user_0169",
+    "preferences": {
+      "category_1": 0.8617643620225885,
+      "category_2": 0.04230226156279138,
+      "category_3": 0.0187415365856457
+    },
+    "direct_activity": 0.9211624345024124,
+    "ai2ai_confidence": 0.8621100136120664,
+    "network_confidence": 0.5757591607368311,
+    "context_match": 0.573399680885843
+  },
+  {
+    "user_id": "user_0170",
+    "preferences": {
+      "category_1": 0.7094989615689342,
+      "category_2": 0.41769395984348057,
+      "category_3": 0.11517337266379823
+    },
+    "direct_activity": 0.02085655902474881,
+    "ai2ai_confidence": 0.32476817944551384,
+    "network_confidence": 0.8013221543104522,
+    "context_match": 0.6181252633042402
+  },
+  {
+    "user_id": "user_0171",
+    "preferences": {
+      "category_1": 0.8320259130717071,
+      "category_2": 0.9197697517413846,
+      "category_3": 0.08812988129788468
+    },
+    "direct_activity": 0.8444843598146969,
+    "ai2ai_confidence": 0.24331647482273366,
+    "network_confidence": 0.5888712883029119,
+    "context_match": 0.5239625430006316
+  },
+  {
+    "user_id": "user_0172",
+    "preferences": {
+      "category_1": 0.39576669685933297,
+      "category_2": 0.31027456183586133,
+      "category_3": 0.3395132811484639
+    },
+    "direct_activity": 0.33306862249313196,
+    "ai2ai_confidence": 0.16813270804568659,
+    "network_confidence": 0.5104832845421483,
+    "context_match": 0.11402663983855255
+  },
+  {
+    "user_id": "user_0173",
+    "preferences": {
+      "category_1": 0.509952062322972,
+      "category_2": 0.9059227315800504,
+      "category_3": 0.3493752654723803
+    },
+    "direct_activity": 0.7273791056739043,
+    "ai2ai_confidence": 0.8189486015248519,
+    "network_confidence": 0.8150370057500141,
+    "context_match": 0.23626884894672429
+  },
+  {
+    "user_id": "user_0174",
+    "preferences": {
+      "category_1": 0.14644421827769438,
+      "category_2": 0.19727180282398327,
+      "category_3": 0.6023989852731658
+    },
+    "direct_activity": 0.760215295546892,
+    "ai2ai_confidence": 0.6555090105187391,
+    "network_confidence": 0.17714612894722914,
+    "context_match": 0.7728480892475602
+  },
+  {
+    "user_id": "user_0175",
+    "preferences": {
+      "category_1": 0.49411702501738863,
+      "category_2": 0.7544458252469858,
+      "category_3": 0.7598771496077484
+    },
+    "direct_activity": 0.448905256995063,
+    "ai2ai_confidence": 0.9241542583856593,
+    "network_confidence": 0.5644917834027993,
+    "context_match": 0.6352983190605934
+  },
+  {
+    "user_id": "user_0176",
+    "preferences": {
+      "category_1": 0.6245217794418948,
+      "category_2": 0.8642468748314162,
+      "category_3": 0.6272174068997718
+    },
+    "direct_activity": 0.1509574013930769,
+    "ai2ai_confidence": 0.06828625849575609,
+    "network_confidence": 0.44220806383628486,
+    "context_match": 0.3028204351390129
+  },
+  {
+    "user_id": "user_0177",
+    "preferences": {
+      "category_1": 0.2746736674861592,
+      "category_2": 0.05617212021307805,
+      "category_3": 0.5073368852897782
+    },
+    "direct_activity": 0.31040785060631093,
+    "ai2ai_confidence": 0.4519138637006822,
+    "network_confidence": 0.05689005083395238,
+    "context_match": 0.8316966316631215
+  },
+  {
+    "user_id": "user_0178",
+    "preferences": {
+      "category_1": 0.076731001173455,
+      "category_2": 0.8642500339252391,
+      "category_3": 0.8552933714560903
+    },
+    "direct_activity": 0.6150083884155736,
+    "ai2ai_confidence": 0.5070678173339551,
+    "network_confidence": 0.4627116589272723,
+    "context_match": 0.5543163713383039
+  },
+  {
+    "user_id": "user_0179",
+    "preferences": {
+      "category_1": 0.7918177972653585,
+      "category_2": 0.8958767655568026,
+      "category_3": 0.44973370365090626
+    },
+    "direct_activity": 0.8098159176979711,
+    "ai2ai_confidence": 0.6518374546486099,
+    "network_confidence": 0.32152676288042836,
+    "context_match": 0.4756290279430695
+  },
+  {
+    "user_id": "user_0180",
+    "preferences": {
+      "category_1": 0.15086107669563853,
+      "category_2": 0.061873700101100715,
+      "category_3": 0.10350187727039162
+    },
+    "direct_activity": 0.8991268339557735,
+    "ai2ai_confidence": 0.3434377758382676,
+    "network_confidence": 0.7143155491674626,
+    "context_match": 0.5045490015009574
+  },
+  {
+    "user_id": "user_0181",
+    "preferences": {
+      "category_1": 0.17255891143636493,
+      "category_2": 0.24774372359828423,
+      "category_3": 0.437758274309233
+    },
+    "direct_activity": 0.4394217917626243,
+    "ai2ai_confidence": 0.5227480352655456,
+    "network_confidence": 0.15874620798154138,
+    "context_match": 0.3728519821013271
+  },
+  {
+    "user_id": "user_0182",
+    "preferences": {
+      "category_1": 0.2828935786144179,
+      "category_2": 0.4087693972473203,
+      "category_3": 0.33836714684141955
+    },
+    "direct_activity": 0.5978858623829895,
+    "ai2ai_confidence": 0.7892269315636647,
+    "network_confidence": 0.6473053569693069,
+    "context_match": 0.06591185427971746
+  },
+  {
+    "user_id": "user_0183",
+    "preferences": {
+      "category_1": 0.09450594751509434,
+      "category_2": 0.678379344840081,
+      "category_3": 0.2841469738781137
+    },
+    "direct_activity": 0.7237336550024618,
+    "ai2ai_confidence": 0.6565640864104779,
+    "network_confidence": 0.9063426971636772,
+    "context_match": 0.8732796620605389
+  },
+  {
+    "user_id": "user_0184",
+    "preferences": {
+      "category_1": 0.3333620360605566,
+      "category_2": 0.5827395145864196,
+      "category_3": 0.14142838058431784
+    },
+    "direct_activity": 0.3498207875358442,
+    "ai2ai_confidence": 0.9676965076927446,
+    "network_confidence": 0.698479962811881,
+    "context_match": 0.39195798433536033
+  },
+  {
+    "user_id": "user_0185",
+    "preferences": {
+      "category_1": 0.5950412281515748,
+      "category_2": 0.9380021995657608,
+      "category_3": 0.30958188741596093
+    },
+    "direct_activity": 0.3766793060563002,
+    "ai2ai_confidence": 0.7916619578635435,
+    "network_confidence": 0.813184783814801,
+    "context_match": 0.6701163999947225
+  },
+  {
+    "user_id": "user_0186",
+    "preferences": {
+      "category_1": 0.8289589728944645,
+      "category_2": 0.7387746721294828,
+      "category_3": 0.6854144402775763
+    },
+    "direct_activity": 0.526393339734174,
+    "ai2ai_confidence": 0.6460248207334879,
+    "network_confidence": 0.4234063663221037,
+    "context_match": 0.3618280963467846
+  },
+  {
+    "user_id": "user_0187",
+    "preferences": {
+      "category_1": 0.3625976689820444,
+      "category_2": 0.18026292287684464,
+      "category_3": 0.21419266120890035
+    },
+    "direct_activity": 0.9476682675343469,
+    "ai2ai_confidence": 0.4862709208727273,
+    "network_confidence": 0.22654304653388724,
+    "context_match": 0.1375653531770793
+  },
+  {
+    "user_id": "user_0188",
+    "preferences": {
+      "category_1": 0.07716508430087632,
+      "category_2": 0.8444283886858833,
+      "category_3": 0.10114076366789415
+    },
+    "direct_activity": 0.770874720363101,
+    "ai2ai_confidence": 0.835119826634556,
+    "network_confidence": 0.8836821654925616,
+    "context_match": 0.03774749235756125
+  },
+  {
+    "user_id": "user_0189",
+    "preferences": {
+      "category_1": 0.33676437196428155,
+      "category_2": 0.7663076044472416,
+      "category_3": 0.13104904142950802
+    },
+    "direct_activity": 0.37671987082252467,
+    "ai2ai_confidence": 0.1622472120884505,
+    "network_confidence": 0.8313450566891255,
+    "context_match": 0.7710978137309884
+  },
+  {
+    "user_id": "user_0190",
+    "preferences": {
+      "category_1": 0.8090437196393011,
+      "category_2": 0.1655391657440587,
+      "category_3": 0.43767340513834674
+    },
+    "direct_activity": 0.41085861149653347,
+    "ai2ai_confidence": 0.6763629221885329,
+    "network_confidence": 0.23753020144692505,
+    "context_match": 0.44419870980527565
+  },
+  {
+    "user_id": "user_0191",
+    "preferences": {
+      "category_1": 0.28492793256335824,
+      "category_2": 0.7485365180954363,
+      "category_3": 0.44892796303334037
+    },
+    "direct_activity": 0.5340111496982611,
+    "ai2ai_confidence": 0.3094678965627896,
+    "network_confidence": 0.8086238710907864,
+    "context_match": 0.4690156050322527
+  },
+  {
+    "user_id": "user_0192",
+    "preferences": {
+      "category_1": 0.8351133927257074,
+      "category_2": 0.3678409582250328,
+      "category_3": 0.9471301702441229
+    },
+    "direct_activity": 0.9844397935315773,
+    "ai2ai_confidence": 0.4616799784409892,
+    "network_confidence": 0.2817717327037754,
+    "context_match": 0.3818724341907105
+  },
+  {
+    "user_id": "user_0193",
+    "preferences": {
+      "category_1": 0.5274597884614827,
+      "category_2": 0.9662681532059473,
+      "category_3": 0.8168912395812401
+    },
+    "direct_activity": 0.8012592241515476,
+    "ai2ai_confidence": 0.1383985346034312,
+    "network_confidence": 0.25000321158900707,
+    "context_match": 0.6411790362044472
+  },
+  {
+    "user_id": "user_0194",
+    "preferences": {
+      "category_1": 0.874116945052237,
+      "category_2": 0.5545407454244312,
+      "category_3": 0.10258973174840935
+    },
+    "direct_activity": 0.8458922767334385,
+    "ai2ai_confidence": 0.8511660480847788,
+    "network_confidence": 0.28506301405932843,
+    "context_match": 0.7631168302916909
+  },
+  {
+    "user_id": "user_0195",
+    "preferences": {
+      "category_1": 0.2727912995913566,
+      "category_2": 0.9053062089782412,
+      "category_3": 0.1473486559916043
+    },
+    "direct_activity": 0.4374725601949808,
+    "ai2ai_confidence": 0.9464132630117607,
+    "network_confidence": 0.2220380069069806,
+    "context_match": 0.45112799022070893
+  },
+  {
+    "user_id": "user_0196",
+    "preferences": {
+      "category_1": 0.3495850781386489,
+      "category_2": 0.02667019080293853,
+      "category_3": 0.05325688717107446
+    },
+    "direct_activity": 0.5020071146932354,
+    "ai2ai_confidence": 0.23577807386343264,
+    "network_confidence": 0.9945253512382912,
+    "context_match": 0.3749126734177676
+  },
+  {
+    "user_id": "user_0197",
+    "preferences": {
+      "category_1": 0.02818754552815006,
+      "category_2": 0.9308259047499531,
+      "category_3": 0.8391762876116057
+    },
+    "direct_activity": 0.6499606842941816,
+    "ai2ai_confidence": 0.791380637482176,
+    "network_confidence": 0.13759958772587166,
+    "context_match": 0.28687939731326817
+  },
+  {
+    "user_id": "user_0198",
+    "preferences": {
+      "category_1": 0.8297615831528226,
+      "category_2": 0.6960719885759836,
+      "category_3": 0.1387926918181862
+    },
+    "direct_activity": 0.7055361752890804,
+    "ai2ai_confidence": 0.4486014739822466,
+    "network_confidence": 0.005251198305617932,
+    "context_match": 0.07922577127072128
+  },
+  {
+    "user_id": "user_0199",
+    "preferences": {
+      "category_1": 0.2559239284370447,
+      "category_2": 0.834963099282381,
+      "category_3": 0.5488042454438354
+    },
+    "direct_activity": 0.7272347853249318,
+    "ai2ai_confidence": 0.5277715058867243,
+    "network_confidence": 0.11118686032423841,
+    "context_match": 0.28810157803923053
+  },
+  {
+    "user_id": "user_0200",
+    "preferences": {
+      "category_1": 0.30115119458622,
+      "category_2": 0.04774944661885128,
+      "category_3": 0.41982554375344305
+    },
+    "direct_activity": 0.7938991086394381,
+    "ai2ai_confidence": 0.45711361663644867,
+    "network_confidence": 0.110857895290015,
+    "context_match": 0.9051468856619985
+  },
+  {
+    "user_id": "user_0201",
+    "preferences": {
+      "category_1": 0.596739042818947,
+      "category_2": 0.016435352205894427,
+      "category_3": 0.5153757302094061
+    },
+    "direct_activity": 0.24193813442099332,
+    "ai2ai_confidence": 0.14357684024626005,
+    "network_confidence": 0.42923889310333374,
+    "context_match": 0.6148095827759507
+  },
+  {
+    "user_id": "user_0202",
+    "preferences": {
+      "category_1": 0.24056423880654354,
+      "category_2": 0.4165675952085398,
+      "category_3": 0.6643713017420091
+    },
+    "direct_activity": 0.08561395498726176,
+    "ai2ai_confidence": 0.9746544909522217,
+    "network_confidence": 0.06767932290884604,
+    "context_match": 0.5260594453221705
+  },
+  {
+    "user_id": "user_0203",
+    "preferences": {
+      "category_1": 0.5073276965797866,
+      "category_2": 0.9883314855964674,
+      "category_3": 0.5541519524181955
+    },
+    "direct_activity": 0.3904537325600641,
+    "ai2ai_confidence": 0.470135078158486,
+    "network_confidence": 0.63567079146863,
+    "context_match": 0.9810394225515603
+  },
+  {
+    "user_id": "user_0204",
+    "preferences": {
+      "category_1": 0.25365026106921273,
+      "category_2": 0.016242231108947625,
+      "category_3": 0.7885200162795153
+    },
+    "direct_activity": 0.3448024931633913,
+    "ai2ai_confidence": 0.7329410214506417,
+    "network_confidence": 0.6282569624756564,
+    "context_match": 0.7715013741098591
+  },
+  {
+    "user_id": "user_0205",
+    "preferences": {
+      "category_1": 0.7351869848123113,
+      "category_2": 0.3325186083719849,
+      "category_3": 0.044335688295208175
+    },
+    "direct_activity": 0.5460137452076915,
+    "ai2ai_confidence": 0.8135088655560881,
+    "network_confidence": 0.17508912705170843,
+    "context_match": 0.7791425934782815
+  },
+  {
+    "user_id": "user_0206",
+    "preferences": {
+      "category_1": 0.46462289974703774,
+      "category_2": 0.6953892519960639,
+      "category_3": 0.6317358477583378
+    },
+    "direct_activity": 0.8114976818476064,
+    "ai2ai_confidence": 0.06310053703222462,
+    "network_confidence": 0.7761903997034217,
+    "context_match": 0.4576795774473532
+  },
+  {
+    "user_id": "user_0207",
+    "preferences": {
+      "category_1": 0.29344257117503125,
+      "category_2": 0.043806275659123095,
+      "category_3": 0.19946983371518834
+    },
+    "direct_activity": 0.041905941930381996,
+    "ai2ai_confidence": 0.9333709799503973,
+    "network_confidence": 0.5153835892544988,
+    "context_match": 0.9891227022961234
+  },
+  {
+    "user_id": "user_0208",
+    "preferences": {
+      "category_1": 0.5430306976541859,
+      "category_2": 0.2533137652026174,
+      "category_3": 0.7532909188188649
+    },
+    "direct_activity": 0.1911034307339109,
+    "ai2ai_confidence": 0.3569741760353634,
+    "network_confidence": 0.780841566978425,
+    "context_match": 0.8657982770780576
+  },
+  {
+    "user_id": "user_0209",
+    "preferences": {
+      "category_1": 0.33192468638134454,
+      "category_2": 0.1244750082443834,
+      "category_3": 0.368019174314673
+    },
+    "direct_activity": 0.8894865170122814,
+    "ai2ai_confidence": 0.7433077055196212,
+    "network_confidence": 0.8946374949550533,
+    "context_match": 0.38664476826069216
+  },
+  {
+    "user_id": "user_0210",
+    "preferences": {
+      "category_1": 0.973723584315309,
+      "category_2": 0.49620322653702265,
+      "category_3": 0.4975233924936273
+    },
+    "direct_activity": 0.9243104666269636,
+    "ai2ai_confidence": 0.519275853534942,
+    "network_confidence": 0.8011480874017738,
+    "context_match": 0.7270813243426357
+  },
+  {
+    "user_id": "user_0211",
+    "preferences": {
+      "category_1": 0.07892700605546787,
+      "category_2": 0.6024532988302272,
+      "category_3": 0.8223412795398867
+    },
+    "direct_activity": 0.545474397344637,
+    "ai2ai_confidence": 0.32121142821459403,
+    "network_confidence": 0.08006891107499525,
+    "context_match": 0.6609192214581366
+  },
+  {
+    "user_id": "user_0212",
+    "preferences": {
+      "category_1": 0.30649585609075247,
+      "category_2": 0.6026216277305998,
+      "category_3": 0.4261160728830454
+    },
+    "direct_activity": 0.6897648084454863,
+    "ai2ai_confidence": 0.3515469837719921,
+    "network_confidence": 0.042355162850129524,
+    "context_match": 0.8700371750563921
+  },
+  {
+    "user_id": "user_0213",
+    "preferences": {
+      "category_1": 0.3525593103084823,
+      "category_2": 0.998150597773049,
+      "category_3": 0.2745553600748576
+    },
+    "direct_activity": 0.9800272791942791,
+    "ai2ai_confidence": 0.9479043786030863,
+    "network_confidence": 0.07504116498815927,
+    "context_match": 0.6375125378832983
+  },
+  {
+    "user_id": "user_0214",
+    "preferences": {
+      "category_1": 0.3633111306509823,
+      "category_2": 0.8010959755621699,
+      "category_3": 0.6794106078146899
+    },
+    "direct_activity": 0.9527893962796078,
+    "ai2ai_confidence": 0.14277946836254973,
+    "network_confidence": 0.6075729033208553,
+    "context_match": 0.7813119697434665
+  },
+  {
+    "user_id": "user_0215",
+    "preferences": {
+      "category_1": 0.034798965798542025,
+      "category_2": 0.06723336306210881,
+      "category_3": 0.7785153735068654
+    },
+    "direct_activity": 0.36632847310714856,
+    "ai2ai_confidence": 0.3828544016887777,
+    "network_confidence": 0.5672446417241195,
+    "context_match": 0.6050948288547855
+  },
+  {
+    "user_id": "user_0216",
+    "preferences": {
+      "category_1": 0.6790620569133949,
+      "category_2": 0.9488235292655565,
+      "category_3": 0.3720133784706837
+    },
+    "direct_activity": 0.7630844717985795,
+    "ai2ai_confidence": 0.5739217783338957,
+    "network_confidence": 0.5294598815362896,
+    "context_match": 0.39803404595244996
+  },
+  {
+    "user_id": "user_0217",
+    "preferences": {
+      "category_1": 0.6495607367060315,
+      "category_2": 0.24961165309339794,
+      "category_3": 0.11344861258501804
+    },
+    "direct_activity": 0.7356748594794277,
+    "ai2ai_confidence": 0.4990439602564668,
+    "network_confidence": 0.3869873800392635,
+    "context_match": 0.5616727107596471
+  },
+  {
+    "user_id": "user_0218",
+    "preferences": {
+      "category_1": 0.2617766765874958,
+      "category_2": 0.26028977113990337,
+      "category_3": 0.4462731124056162
+    },
+    "direct_activity": 0.9963651121547608,
+    "ai2ai_confidence": 0.285576877698158,
+    "network_confidence": 0.9164789095418814,
+    "context_match": 0.4912001952542241
+  },
+  {
+    "user_id": "user_0219",
+    "preferences": {
+      "category_1": 0.12263742190397087,
+      "category_2": 0.8528262903843227,
+      "category_3": 0.45204268524539737
+    },
+    "direct_activity": 0.8986790307862303,
+    "ai2ai_confidence": 0.44511119274245503,
+    "network_confidence": 0.08779074110473106,
+    "context_match": 0.6819292602506372
+  },
+  {
+    "user_id": "user_0220",
+    "preferences": {
+      "category_1": 0.8455212189746995,
+      "category_2": 0.31958777209997014,
+      "category_3": 0.34742529473856454
+    },
+    "direct_activity": 0.06493907831607115,
+    "ai2ai_confidence": 0.5421713612255623,
+    "network_confidence": 0.8913316823538889,
+    "context_match": 0.8513620507531259
+  },
+  {
+    "user_id": "user_0221",
+    "preferences": {
+      "category_1": 0.7118091040072126,
+      "category_2": 0.9273244567231778,
+      "category_3": 0.6377000225640163
+    },
+    "direct_activity": 0.7936963838450027,
+    "ai2ai_confidence": 0.5087557451743008,
+    "network_confidence": 0.12136245507845689,
+    "context_match": 0.20098037117768575
+  },
+  {
+    "user_id": "user_0222",
+    "preferences": {
+      "category_1": 0.13887687203836574,
+      "category_2": 0.7903730608077492,
+      "category_3": 0.026284026808265692
+    },
+    "direct_activity": 0.5540214372595951,
+    "ai2ai_confidence": 0.3689111655012207,
+    "network_confidence": 0.8036617262885865,
+    "context_match": 0.5516469339264275
+  },
+  {
+    "user_id": "user_0223",
+    "preferences": {
+      "category_1": 0.6119483626205209,
+      "category_2": 0.08621548165193271,
+      "category_3": 0.30929071752846216
+    },
+    "direct_activity": 0.9995950439343869,
+    "ai2ai_confidence": 0.7188696598907195,
+    "network_confidence": 0.5256956548303001,
+    "context_match": 0.769164550374698
+  },
+  {
+    "user_id": "user_0224",
+    "preferences": {
+      "category_1": 0.8233393995083906,
+      "category_2": 0.07375071291123902,
+      "category_3": 0.9723797315137659
+    },
+    "direct_activity": 0.6423385893863813,
+    "ai2ai_confidence": 0.4499744956629961,
+    "network_confidence": 0.680108990649581,
+    "context_match": 0.3445147807026997
+  },
+  {
+    "user_id": "user_0225",
+    "preferences": {
+      "category_1": 0.8779601516504117,
+      "category_2": 0.7802629288383084,
+      "category_3": 0.639793929366663
+    },
+    "direct_activity": 0.18196313655213736,
+    "ai2ai_confidence": 0.9662646139341068,
+    "network_confidence": 0.43261828648197487,
+    "context_match": 0.9107122709468873
+  },
+  {
+    "user_id": "user_0226",
+    "preferences": {
+      "category_1": 0.05541285001777707,
+      "category_2": 0.12416112063901219,
+      "category_3": 0.15301546681020062
+    },
+    "direct_activity": 0.16465707989012413,
+    "ai2ai_confidence": 0.3226607511545556,
+    "network_confidence": 0.7093321325292459,
+    "context_match": 0.34602308234187307
+  },
+  {
+    "user_id": "user_0227",
+    "preferences": {
+      "category_1": 0.9409040549315347,
+      "category_2": 0.8949259168211244,
+      "category_3": 0.8459337061558656
+    },
+    "direct_activity": 0.25060530898199906,
+    "ai2ai_confidence": 0.6350570913877459,
+    "network_confidence": 0.5508414154831397,
+    "context_match": 0.1251702951269027
+  },
+  {
+    "user_id": "user_0228",
+    "preferences": {
+      "category_1": 0.30282460610887607,
+      "category_2": 0.5334780297683805,
+      "category_3": 0.5025731447412627
+    },
+    "direct_activity": 0.16863590174770682,
+    "ai2ai_confidence": 0.9416069878685959,
+    "network_confidence": 0.15419426687956317,
+    "context_match": 0.6587328733837543
+  },
+  {
+    "user_id": "user_0229",
+    "preferences": {
+      "category_1": 0.720632768437273,
+      "category_2": 0.6051389078618554,
+      "category_3": 0.842530004113389
+    },
+    "direct_activity": 0.5636180344312958,
+    "ai2ai_confidence": 0.825236267326632,
+    "network_confidence": 0.028373487898877614,
+    "context_match": 0.04546180329134197
+  },
+  {
+    "user_id": "user_0230",
+    "preferences": {
+      "category_1": 0.6414537338243601,
+      "category_2": 0.5767712314773791,
+      "category_3": 0.6511299774855999
+    },
+    "direct_activity": 0.7669590009163111,
+    "ai2ai_confidence": 0.4165867836632462,
+    "network_confidence": 0.6389911922088705,
+    "context_match": 0.49803806013611607
+  },
+  {
+    "user_id": "user_0231",
+    "preferences": {
+      "category_1": 0.6271640102980843,
+      "category_2": 0.2896716568016058,
+      "category_3": 0.956650169954405
+    },
+    "direct_activity": 0.48294481817541945,
+    "ai2ai_confidence": 0.804688154215733,
+    "network_confidence": 0.6849908411956767,
+    "context_match": 0.2974338714297423
+  },
+  {
+    "user_id": "user_0232",
+    "preferences": {
+      "category_1": 0.07297302550534579,
+      "category_2": 0.059913032934668986,
+      "category_3": 0.439605499920411
+    },
+    "direct_activity": 0.4842511301073592,
+    "ai2ai_confidence": 0.2040230135633987,
+    "network_confidence": 0.6066602628206363,
+    "context_match": 0.31258249924693304
+  },
+  {
+    "user_id": "user_0233",
+    "preferences": {
+      "category_1": 0.7183628851124375,
+      "category_2": 0.7341997548045468,
+      "category_3": 0.8607773657543253
+    },
+    "direct_activity": 0.9753741279148802,
+    "ai2ai_confidence": 0.13076615155238647,
+    "network_confidence": 0.37054019805029126,
+    "context_match": 0.5616512157483692
+  },
+  {
+    "user_id": "user_0234",
+    "preferences": {
+      "category_1": 0.31911588640315725,
+      "category_2": 0.46647256704063644,
+      "category_3": 0.2674716744541824
+    },
+    "direct_activity": 0.24791888252554561,
+    "ai2ai_confidence": 0.09681165256057145,
+    "network_confidence": 0.2902120049699015,
+    "context_match": 0.38414983350160603
+  },
+  {
+    "user_id": "user_0235",
+    "preferences": {
+      "category_1": 0.6153774441639687,
+      "category_2": 0.2482702803811866,
+      "category_3": 0.8653075017207177
+    },
+    "direct_activity": 0.15969966213016096,
+    "ai2ai_confidence": 0.32743582080119493,
+    "network_confidence": 0.5776870378935964,
+    "context_match": 0.31271492086227304
+  },
+  {
+    "user_id": "user_0236",
+    "preferences": {
+      "category_1": 0.7631213751386285,
+      "category_2": 0.4982655420599088,
+      "category_3": 0.5147248392314845
+    },
+    "direct_activity": 0.49875970839765416,
+    "ai2ai_confidence": 0.3085404820544293,
+    "network_confidence": 0.023176298216351032,
+    "context_match": 0.9452328040692373
+  },
+  {
+    "user_id": "user_0237",
+    "preferences": {
+      "category_1": 0.5054444630237716,
+      "category_2": 0.9666866305524754,
+      "category_3": 0.2151444225262411
+    },
+    "direct_activity": 0.35289508885635534,
+    "ai2ai_confidence": 0.05054040462789189,
+    "network_confidence": 0.4948942035251763,
+    "context_match": 0.8823394763682011
+  },
+  {
+    "user_id": "user_0238",
+    "preferences": {
+      "category_1": 0.6542600368896171,
+      "category_2": 0.4705868533681957,
+      "category_3": 0.536690749288927
+    },
+    "direct_activity": 0.8471723653934679,
+    "ai2ai_confidence": 0.4309277693475405,
+    "network_confidence": 0.8824557309185929,
+    "context_match": 0.7275080633593919
+  },
+  {
+    "user_id": "user_0239",
+    "preferences": {
+      "category_1": 0.7638567641619896,
+      "category_2": 0.365937352517563,
+      "category_3": 0.4005816210147566
+    },
+    "direct_activity": 0.5702816438810293,
+    "ai2ai_confidence": 0.19465530188771907,
+    "network_confidence": 0.5532229266211517,
+    "context_match": 0.07353174974284182
+  },
+  {
+    "user_id": "user_0240",
+    "preferences": {
+      "category_1": 0.5042555291232047,
+      "category_2": 0.7644041147072396,
+      "category_3": 0.279720677623982
+    },
+    "direct_activity": 0.9890907006207226,
+    "ai2ai_confidence": 0.6803986401188608,
+    "network_confidence": 0.11881101972358954,
+    "context_match": 0.975082815413784
+  },
+  {
+    "user_id": "user_0241",
+    "preferences": {
+      "category_1": 0.39390371272860714,
+      "category_2": 0.7948972283809458,
+      "category_3": 0.3390852999525653
+    },
+    "direct_activity": 0.9389485669553754,
+    "ai2ai_confidence": 0.7549651722927939,
+    "network_confidence": 0.19905788155244997,
+    "context_match": 0.5091225162251821
+  },
+  {
+    "user_id": "user_0242",
+    "preferences": {
+      "category_1": 0.5000779035706439,
+      "category_2": 0.04530335246707473,
+      "category_3": 0.1370363735675204
+    },
+    "direct_activity": 0.3330407053527672,
+    "ai2ai_confidence": 0.47374415039519,
+    "network_confidence": 0.45698855928287396,
+    "context_match": 0.6062605224038041
+  },
+  {
+    "user_id": "user_0243",
+    "preferences": {
+      "category_1": 0.5155057321472539,
+      "category_2": 0.32796584763652625,
+      "category_3": 0.613068121064678
+    },
+    "direct_activity": 0.1625020458769394,
+    "ai2ai_confidence": 0.9906157375611401,
+    "network_confidence": 0.7393193605736041,
+    "context_match": 0.29923434252831826
+  },
+  {
+    "user_id": "user_0244",
+    "preferences": {
+      "category_1": 0.33637345215167835,
+      "category_2": 0.8282893859573759,
+      "category_3": 0.5323398298758764
+    },
+    "direct_activity": 0.7087398064354379,
+    "ai2ai_confidence": 0.2997905647374137,
+    "network_confidence": 0.8157488332438242,
+    "context_match": 0.3683578098657696
+  },
+  {
+    "user_id": "user_0245",
+    "preferences": {
+      "category_1": 0.6738063924730165,
+      "category_2": 0.9798980311791619,
+      "category_3": 0.5837021418487863
+    },
+    "direct_activity": 0.7967548139301471,
+    "ai2ai_confidence": 0.7253242125518553,
+    "network_confidence": 0.6880436512027717,
+    "context_match": 0.026647154963833186
+  },
+  {
+    "user_id": "user_0246",
+    "preferences": {
+      "category_1": 0.4745902140850605,
+      "category_2": 0.9670706961720509,
+      "category_3": 0.7829039914314214
+    },
+    "direct_activity": 0.7761620251720721,
+    "ai2ai_confidence": 0.5776343958641829,
+    "network_confidence": 0.7214001122963067,
+    "context_match": 0.58352327704764
+  },
+  {
+    "user_id": "user_0247",
+    "preferences": {
+      "category_1": 0.17051206174665934,
+      "category_2": 0.6290252411453636,
+      "category_3": 0.6197358055010894
+    },
+    "direct_activity": 0.8411671249582643,
+    "ai2ai_confidence": 0.14777570830033182,
+    "network_confidence": 0.6807268950506788,
+    "context_match": 0.03157051334209937
+  },
+  {
+    "user_id": "user_0248",
+    "preferences": {
+      "category_1": 0.9482051707843013,
+      "category_2": 0.10989552133369684,
+      "category_3": 0.018937367506612568
+    },
+    "direct_activity": 0.3136924834458552,
+    "ai2ai_confidence": 0.15143125811934544,
+    "network_confidence": 0.6905002609185255,
+    "context_match": 0.41037740932270506
+  },
+  {
+    "user_id": "user_0249",
+    "preferences": {
+      "category_1": 0.774972301807091,
+      "category_2": 0.9205209498972107,
+      "category_3": 0.8728177089123204
+    },
+    "direct_activity": 0.7358372712686814,
+    "ai2ai_confidence": 0.06228128601443195,
+    "network_confidence": 0.1380824857852102,
+    "context_match": 0.2073417049712447
+  },
+  {
+    "user_id": "user_0250",
+    "preferences": {
+      "category_1": 0.3250495344260548,
+      "category_2": 0.6622267997143491,
+      "category_3": 0.5254771514000354
+    },
+    "direct_activity": 0.31375259873781713,
+    "ai2ai_confidence": 0.17318242385732774,
+    "network_confidence": 0.9121241609240104,
+    "context_match": 0.34232701768184615
+  },
+  {
+    "user_id": "user_0251",
+    "preferences": {
+      "category_1": 0.3542869886448128,
+      "category_2": 0.7719897841487408,
+      "category_3": 0.7209245613272927
+    },
+    "direct_activity": 0.6433090999994615,
+    "ai2ai_confidence": 0.6933133100298209,
+    "network_confidence": 0.6100765800787515,
+    "context_match": 0.1922641691367134
+  },
+  {
+    "user_id": "user_0252",
+    "preferences": {
+      "category_1": 0.24651913552736038,
+      "category_2": 0.5580866508074042,
+      "category_3": 0.2248670379928167
+    },
+    "direct_activity": 0.972910627590569,
+    "ai2ai_confidence": 0.2976145652769079,
+    "network_confidence": 0.28900413740352493,
+    "context_match": 0.20727779485464026
+  },
+  {
+    "user_id": "user_0253",
+    "preferences": {
+      "category_1": 0.7049882597401967,
+      "category_2": 0.31704074501844803,
+      "category_3": 0.3488031742013066
+    },
+    "direct_activity": 0.9337003747708006,
+    "ai2ai_confidence": 0.7954053560023335,
+    "network_confidence": 0.27345753675542306,
+    "context_match": 0.12187410573271507
+  },
+  {
+    "user_id": "user_0254",
+    "preferences": {
+      "category_1": 0.6766222457825457,
+      "category_2": 0.3796941853743825,
+      "category_3": 0.9801605373213622
+    },
+    "direct_activity": 0.8183774601305623,
+    "ai2ai_confidence": 0.9546088633914613,
+    "network_confidence": 0.8046158339565703,
+    "context_match": 0.2904526519929356
+  },
+  {
+    "user_id": "user_0255",
+    "preferences": {
+      "category_1": 0.2876303416141399,
+      "category_2": 0.7141412874983953,
+      "category_3": 0.3463635140956165
+    },
+    "direct_activity": 0.4423761118648354,
+    "ai2ai_confidence": 0.2564439754734821,
+    "network_confidence": 0.4790792630164832,
+    "context_match": 0.20206800720059648
+  },
+  {
+    "user_id": "user_0256",
+    "preferences": {
+      "category_1": 0.5385779237086528,
+      "category_2": 0.9330239337833077,
+      "category_3": 0.6961713006468226
+    },
+    "direct_activity": 0.13727295480092294,
+    "ai2ai_confidence": 0.6156770344144923,
+    "network_confidence": 0.5868304985708152,
+    "context_match": 0.2424580384102868
+  },
+  {
+    "user_id": "user_0257",
+    "preferences": {
+      "category_1": 0.669833964893104,
+      "category_2": 0.5310414897327992,
+      "category_3": 0.6379445734086376
+    },
+    "direct_activity": 0.05249110683946279,
+    "ai2ai_confidence": 0.4133013660482586,
+    "network_confidence": 0.7173580562502436,
+    "context_match": 0.1005449047773479
+  },
+  {
+    "user_id": "user_0258",
+    "preferences": {
+      "category_1": 0.7707660580982791,
+      "category_2": 0.00518144640713003,
+      "category_3": 0.5503525657796167
+    },
+    "direct_activity": 0.9290996801699778,
+    "ai2ai_confidence": 0.40690745154688346,
+    "network_confidence": 0.9350320985961516,
+    "context_match": 0.8783996215142282
+  },
+  {
+    "user_id": "user_0259",
+    "preferences": {
+      "category_1": 0.4774485204408965,
+      "category_2": 0.19945597466760168,
+      "category_3": 0.9639140388909357
+    },
+    "direct_activity": 0.3211677021191667,
+    "ai2ai_confidence": 0.6458979178902698,
+    "network_confidence": 0.9079369587356224,
+    "context_match": 0.08946072051151632
+  },
+  {
+    "user_id": "user_0260",
+    "preferences": {
+      "category_1": 0.5741333531753733,
+      "category_2": 0.5351522768936047,
+      "category_3": 0.7231176782424233
+    },
+    "direct_activity": 0.936669379750626,
+    "ai2ai_confidence": 0.9132297256698525,
+    "network_confidence": 0.1750647754809631,
+    "context_match": 0.8822449731648332
+  },
+  {
+    "user_id": "user_0261",
+    "preferences": {
+      "category_1": 0.17578870753886255,
+      "category_2": 0.919634811850934,
+      "category_3": 0.99717180308851
+    },
+    "direct_activity": 0.39699457427829965,
+    "ai2ai_confidence": 0.4953838973217578,
+    "network_confidence": 0.9366087447777628,
+    "context_match": 0.9621313800833424
+  },
+  {
+    "user_id": "user_0262",
+    "preferences": {
+      "category_1": 0.926039697896443,
+      "category_2": 0.8767431679179234,
+      "category_3": 0.009267168480099786
+    },
+    "direct_activity": 0.5679618686644954,
+    "ai2ai_confidence": 0.10730069077353799,
+    "network_confidence": 0.9829938883710064,
+    "context_match": 0.28456165235004627
+  },
+  {
+    "user_id": "user_0263",
+    "preferences": {
+      "category_1": 0.9890994700887233,
+      "category_2": 0.5433004835569749,
+      "category_3": 0.49391242034181915
+    },
+    "direct_activity": 0.9385605017408724,
+    "ai2ai_confidence": 0.8510597385779967,
+    "network_confidence": 0.4680207690062901,
+    "context_match": 0.19281139827380978
+  },
+  {
+    "user_id": "user_0264",
+    "preferences": {
+      "category_1": 0.11264676102015447,
+      "category_2": 0.16249426253973864,
+      "category_3": 0.45891447103236116
+    },
+    "direct_activity": 0.2572648802295191,
+    "ai2ai_confidence": 0.18619906912806772,
+    "network_confidence": 0.736617895492257,
+    "context_match": 0.7907676644252557
+  },
+  {
+    "user_id": "user_0265",
+    "preferences": {
+      "category_1": 0.5677812224209393,
+      "category_2": 0.7572827502575612,
+      "category_3": 0.17549491383846472
+    },
+    "direct_activity": 0.8561465042734577,
+    "ai2ai_confidence": 0.8970427617839751,
+    "network_confidence": 0.8269898252763096,
+    "context_match": 0.5152806589597959
+  },
+  {
+    "user_id": "user_0266",
+    "preferences": {
+      "category_1": 0.0867377698483559,
+      "category_2": 0.6692558534099542,
+      "category_3": 0.18478120104733997
+    },
+    "direct_activity": 0.14061187563429844,
+    "ai2ai_confidence": 0.3236016700850828,
+    "network_confidence": 0.248047083667145,
+    "context_match": 0.26078527706544385
+  },
+  {
+    "user_id": "user_0267",
+    "preferences": {
+      "category_1": 0.2355212528015339,
+      "category_2": 0.753756651781457,
+      "category_3": 0.9540348226549126
+    },
+    "direct_activity": 0.3019458396916147,
+    "ai2ai_confidence": 0.7228825284009974,
+    "network_confidence": 0.01143573419416799,
+    "context_match": 0.6536833670701987
+  },
+  {
+    "user_id": "user_0268",
+    "preferences": {
+      "category_1": 0.6927685904227389,
+      "category_2": 0.062124331800536114,
+      "category_3": 0.11822484780397258
+    },
+    "direct_activity": 0.3068063420036198,
+    "ai2ai_confidence": 0.40541661296839726,
+    "network_confidence": 0.5025204712383896,
+    "context_match": 0.8951183698162541
+  },
+  {
+    "user_id": "user_0269",
+    "preferences": {
+      "category_1": 0.703557035102256,
+      "category_2": 0.3109779483846603,
+      "category_3": 0.11741574584477632
+    },
+    "direct_activity": 0.9161303858506353,
+    "ai2ai_confidence": 0.2950376001562468,
+    "network_confidence": 0.614625448143849,
+    "context_match": 0.21912860093534392
+  },
+  {
+    "user_id": "user_0270",
+    "preferences": {
+      "category_1": 0.13356878219680413,
+      "category_2": 0.1531855646891792,
+      "category_3": 0.7477348371508565
+    },
+    "direct_activity": 0.6057389480890694,
+    "ai2ai_confidence": 0.41584561543122467,
+    "network_confidence": 0.5492345088183648,
+    "context_match": 0.4708280768793115
+  },
+  {
+    "user_id": "user_0271",
+    "preferences": {
+      "category_1": 0.5375176876932009,
+      "category_2": 0.6640944393396638,
+      "category_3": 0.21841162265732594
+    },
+    "direct_activity": 0.24746542930857773,
+    "ai2ai_confidence": 0.7547395497248653,
+    "network_confidence": 0.8731350584877333,
+    "context_match": 0.08187030647327487
+  },
+  {
+    "user_id": "user_0272",
+    "preferences": {
+      "category_1": 0.4467479774964833,
+      "category_2": 0.7037661251558726,
+      "category_3": 0.07810272214744018
+    },
+    "direct_activity": 0.5641687222734748,
+    "ai2ai_confidence": 0.06175804755668379,
+    "network_confidence": 0.5476492487109315,
+    "context_match": 0.5054870560925958
+  },
+  {
+    "user_id": "user_0273",
+    "preferences": {
+      "category_1": 0.5727016742278647,
+      "category_2": 0.1498523813824143,
+      "category_3": 0.3281176377422065
+    },
+    "direct_activity": 0.520341541184787,
+    "ai2ai_confidence": 0.11624002218466423,
+    "network_confidence": 0.20540148553936155,
+    "context_match": 0.5831476784410176
+  },
+  {
+    "user_id": "user_0274",
+    "preferences": {
+      "category_1": 0.09094164445168784,
+      "category_2": 0.5103753540328345,
+      "category_3": 0.8086920831772372
+    },
+    "direct_activity": 0.453432300179782,
+    "ai2ai_confidence": 0.5132478432016415,
+    "network_confidence": 0.45679847571187604,
+    "context_match": 0.05773678093252477
+  },
+  {
+    "user_id": "user_0275",
+    "preferences": {
+      "category_1": 0.4623783057389237,
+      "category_2": 0.8069153525543925,
+      "category_3": 0.7232800798250023
+    },
+    "direct_activity": 0.3959487099532575,
+    "ai2ai_confidence": 0.8164532259331305,
+    "network_confidence": 0.7458044828318157,
+    "context_match": 0.5783112650590354
+  },
+  {
+    "user_id": "user_0276",
+    "preferences": {
+      "category_1": 0.04528980272782879,
+      "category_2": 0.34452886656213455,
+      "category_3": 0.0637599121120832
+    },
+    "direct_activity": 0.9941236604769201,
+    "ai2ai_confidence": 0.9345827988849464,
+    "network_confidence": 0.0690191461603138,
+    "context_match": 0.9337755625849307
+  },
+  {
+    "user_id": "user_0277",
+    "preferences": {
+      "category_1": 0.031734871023079037,
+      "category_2": 0.40886693581924827,
+      "category_3": 0.7689720625834827
+    },
+    "direct_activity": 0.7658276829237117,
+    "ai2ai_confidence": 0.978333284924101,
+    "network_confidence": 0.6458808180971635,
+    "context_match": 0.42036193888232787
+  },
+  {
+    "user_id": "user_0278",
+    "preferences": {
+      "category_1": 0.9928565985808789,
+      "category_2": 0.38247961885137205,
+      "category_3": 0.8696202853107085
+    },
+    "direct_activity": 0.9067673115245726,
+    "ai2ai_confidence": 0.3756455338019876,
+    "network_confidence": 0.6827303541015414,
+    "context_match": 0.6617925381254681
+  },
+  {
+    "user_id": "user_0279",
+    "preferences": {
+      "category_1": 0.5393002639188602,
+      "category_2": 0.653534098418702,
+      "category_3": 0.34776988713915025
+    },
+    "direct_activity": 0.17847362900411168,
+    "ai2ai_confidence": 0.5372584863980012,
+    "network_confidence": 0.5288425395440093,
+    "context_match": 0.7278581409061281
+  },
+  {
+    "user_id": "user_0280",
+    "preferences": {
+      "category_1": 0.22269021596626648,
+      "category_2": 0.003473294944907779,
+      "category_3": 0.022735327321966592
+    },
+    "direct_activity": 0.29836298870298184,
+    "ai2ai_confidence": 0.6734998577765671,
+    "network_confidence": 0.5444453390250208,
+    "context_match": 0.5319336084967587
+  },
+  {
+    "user_id": "user_0281",
+    "preferences": {
+      "category_1": 0.8233604373757843,
+      "category_2": 0.24751203850377557,
+      "category_3": 0.34615973498762675
+    },
+    "direct_activity": 0.2756497277951273,
+    "ai2ai_confidence": 0.9374103611350668,
+    "network_confidence": 0.7250239459089184,
+    "context_match": 0.11284463876647732
+  },
+  {
+    "user_id": "user_0282",
+    "preferences": {
+      "category_1": 0.8094781835391944,
+      "category_2": 0.4192405984917521,
+      "category_3": 0.7660534675139034
+    },
+    "direct_activity": 0.8837566218453745,
+    "ai2ai_confidence": 0.01564579636354957,
+    "network_confidence": 0.20608162185021417,
+    "context_match": 0.10089671309250703
+  },
+  {
+    "user_id": "user_0283",
+    "preferences": {
+      "category_1": 0.03357627575428079,
+      "category_2": 0.5977848967315527,
+      "category_3": 0.7032862668649287
+    },
+    "direct_activity": 0.0486763212437491,
+    "ai2ai_confidence": 0.7405410784798616,
+    "network_confidence": 0.4022653508109063,
+    "context_match": 0.23433927848756164
+  },
+  {
+    "user_id": "user_0284",
+    "preferences": {
+      "category_1": 0.2172692101775534,
+      "category_2": 0.8637302426700564,
+      "category_3": 0.05644403502446094
+    },
+    "direct_activity": 0.5038958489409345,
+    "ai2ai_confidence": 0.28926345135391884,
+    "network_confidence": 0.8157862567633168,
+    "context_match": 0.7315174831160183
+  },
+  {
+    "user_id": "user_0285",
+    "preferences": {
+      "category_1": 0.318903696369192,
+      "category_2": 0.5979176742772624,
+      "category_3": 0.6725319014369137
+    },
+    "direct_activity": 0.32066511539298315,
+    "ai2ai_confidence": 0.30176443514420326,
+    "network_confidence": 0.14326043416332868,
+    "context_match": 0.6602124238107432
+  },
+  {
+    "user_id": "user_0286",
+    "preferences": {
+      "category_1": 0.22104274044603256,
+      "category_2": 0.3005009537574196,
+      "category_3": 0.060957637106762164
+    },
+    "direct_activity": 0.9485202550267213,
+    "ai2ai_confidence": 0.879713890963883,
+    "network_confidence": 0.9115776656205444,
+    "context_match": 0.62599313764833
+  },
+  {
+    "user_id": "user_0287",
+    "preferences": {
+      "category_1": 0.4272005822945435,
+      "category_2": 0.49562078749302096,
+      "category_3": 0.9722902353436859
+    },
+    "direct_activity": 0.9415864098319118,
+    "ai2ai_confidence": 0.6713425247457223,
+    "network_confidence": 0.785804595980518,
+    "context_match": 0.3187344573163122
+  },
+  {
+    "user_id": "user_0288",
+    "preferences": {
+      "category_1": 0.41632463342144466,
+      "category_2": 0.1492176078251637,
+      "category_3": 0.37646018850713203
+    },
+    "direct_activity": 0.7544160972381253,
+    "ai2ai_confidence": 0.47351882041221993,
+    "network_confidence": 0.8493409322600405,
+    "context_match": 0.3007364187951478
+  },
+  {
+    "user_id": "user_0289",
+    "preferences": {
+      "category_1": 0.7075767974879722,
+      "category_2": 0.8057761599348869,
+      "category_3": 0.9147411738159055
+    },
+    "direct_activity": 0.5623859495869091,
+    "ai2ai_confidence": 0.9677861885466267,
+    "network_confidence": 0.5572867581992731,
+    "context_match": 0.13409275105907803
+  },
+  {
+    "user_id": "user_0290",
+    "preferences": {
+      "category_1": 0.24285851608958575,
+      "category_2": 0.2033367330600544,
+      "category_3": 0.6467058515479447
+    },
+    "direct_activity": 0.9222261045112223,
+    "ai2ai_confidence": 0.8471333859196118,
+    "network_confidence": 0.09246399652686366,
+    "context_match": 0.7245847123072019
+  },
+  {
+    "user_id": "user_0291",
+    "preferences": {
+      "category_1": 0.1904816184307383,
+      "category_2": 0.2684615878549812,
+      "category_3": 0.6736719206345785
+    },
+    "direct_activity": 0.6029220449890759,
+    "ai2ai_confidence": 0.8736204584895396,
+    "network_confidence": 0.18816329393275533,
+    "context_match": 0.76169641753721
+  },
+  {
+    "user_id": "user_0292",
+    "preferences": {
+      "category_1": 0.7243052398521491,
+      "category_2": 0.5588504762725273,
+      "category_3": 0.4793942064709148
+    },
+    "direct_activity": 0.8694738515245379,
+    "ai2ai_confidence": 0.3329643108188213,
+    "network_confidence": 0.9570197605266731,
+    "context_match": 0.015333706228492838
+  },
+  {
+    "user_id": "user_0293",
+    "preferences": {
+      "category_1": 0.9371597632022477,
+      "category_2": 0.962077556114459,
+      "category_3": 0.11731619944333449
+    },
+    "direct_activity": 0.9995720070178117,
+    "ai2ai_confidence": 0.4789208763423658,
+    "network_confidence": 0.24259318184574152,
+    "context_match": 0.6044015340787812
+  },
+  {
+    "user_id": "user_0294",
+    "preferences": {
+      "category_1": 0.2045131429778937,
+      "category_2": 0.9151264595935564,
+      "category_3": 0.5520792925478145
+    },
+    "direct_activity": 0.7755138820637703,
+    "ai2ai_confidence": 0.38066174437292255,
+    "network_confidence": 0.533650127416263,
+    "context_match": 0.35925955555157574
+  },
+  {
+    "user_id": "user_0295",
+    "preferences": {
+      "category_1": 0.2615616273853526,
+      "category_2": 0.5128165400237735,
+      "category_3": 0.49727729310098334
+    },
+    "direct_activity": 0.09860823156548004,
+    "ai2ai_confidence": 0.9813184568465767,
+    "network_confidence": 0.4694904220225584,
+    "context_match": 0.8397311815636849
+  },
+  {
+    "user_id": "user_0296",
+    "preferences": {
+      "category_1": 0.9143304988974891,
+      "category_2": 0.37070492143125844,
+      "category_3": 0.4139301705786246
+    },
+    "direct_activity": 0.5625247274643543,
+    "ai2ai_confidence": 0.22127409831622524,
+    "network_confidence": 0.14592271310254856,
+    "context_match": 0.26077410990976957
+  },
+  {
+    "user_id": "user_0297",
+    "preferences": {
+      "category_1": 0.9347582502963535,
+      "category_2": 0.5791429260374005,
+      "category_3": 0.4175780735551736
+    },
+    "direct_activity": 0.15241141018414328,
+    "ai2ai_confidence": 0.3298652859778599,
+    "network_confidence": 0.37983977474115416,
+    "context_match": 0.8333627152869851
+  },
+  {
+    "user_id": "user_0298",
+    "preferences": {
+      "category_1": 0.4993014823693225,
+      "category_2": 0.6546079661210219,
+      "category_3": 0.6848466123459062
+    },
+    "direct_activity": 0.2573267576348828,
+    "ai2ai_confidence": 0.8215919396923563,
+    "network_confidence": 0.9665082672503437,
+    "context_match": 0.6416944543987072
+  },
+  {
+    "user_id": "user_0299",
+    "preferences": {
+      "category_1": 0.4905955825807824,
+      "category_2": 0.168233645951541,
+      "category_3": 0.7949755143536341
+    },
+    "direct_activity": 0.16926571086018172,
+    "ai2ai_confidence": 0.7203135307620937,
+    "network_confidence": 0.4883163212541324,
+    "context_match": 0.9168993896943668
+  },
+  {
+    "user_id": "user_0300",
+    "preferences": {
+      "category_1": 0.5421368553513551,
+      "category_2": 0.6418094631823665,
+      "category_3": 0.05873205158073014
+    },
+    "direct_activity": 0.03382375716469055,
+    "ai2ai_confidence": 0.8466973831827224,
+    "network_confidence": 0.9451881112008982,
+    "context_match": 0.6682155433931528
+  },
+  {
+    "user_id": "user_0301",
+    "preferences": {
+      "category_1": 0.7643388435720192,
+      "category_2": 0.4123922224155927,
+      "category_3": 0.8425447168253485
+    },
+    "direct_activity": 0.2314333920774455,
+    "ai2ai_confidence": 0.7071695637034598,
+    "network_confidence": 0.009141461690661767,
+    "context_match": 0.5057329196930651
+  },
+  {
+    "user_id": "user_0302",
+    "preferences": {
+      "category_1": 0.3732006926868119,
+      "category_2": 0.617835235876803,
+      "category_3": 0.6667547295533397
+    },
+    "direct_activity": 0.6165193610843379,
+    "ai2ai_confidence": 0.4832041536218251,
+    "network_confidence": 0.48785438400307124,
+    "context_match": 0.0066123569921588965
+  },
+  {
+    "user_id": "user_0303",
+    "preferences": {
+      "category_1": 0.5516435609112569,
+      "category_2": 0.011850968127892436,
+      "category_3": 0.5294176468416506
+    },
+    "direct_activity": 0.274740737197832,
+    "ai2ai_confidence": 0.9774793482325117,
+    "network_confidence": 0.0171425976024272,
+    "context_match": 0.8131572209139099
+  },
+  {
+    "user_id": "user_0304",
+    "preferences": {
+      "category_1": 0.6740329521192103,
+      "category_2": 0.8061676989474289,
+      "category_3": 0.9097733659987661
+    },
+    "direct_activity": 0.1070164286944929,
+    "ai2ai_confidence": 0.09631389025140846,
+    "network_confidence": 0.14889748574025052,
+    "context_match": 0.1919320569916132
+  },
+  {
+    "user_id": "user_0305",
+    "preferences": {
+      "category_1": 0.5264559854002162,
+      "category_2": 0.8152143907132826,
+      "category_3": 0.2673247366766358
+    },
+    "direct_activity": 0.39689642249807144,
+    "ai2ai_confidence": 0.37305158346368217,
+    "network_confidence": 0.40602740987388597,
+    "context_match": 0.5650021824479691
+  },
+  {
+    "user_id": "user_0306",
+    "preferences": {
+      "category_1": 0.9902330316397273,
+      "category_2": 0.22585725262742218,
+      "category_3": 0.6840416254703855
+    },
+    "direct_activity": 0.8478671020315357,
+    "ai2ai_confidence": 0.6537357195591531,
+    "network_confidence": 0.8582191590211872,
+    "context_match": 0.7595858501768448
+  },
+  {
+    "user_id": "user_0307",
+    "preferences": {
+      "category_1": 0.09350050542710941,
+      "category_2": 0.3792640222398159,
+      "category_3": 0.5527014395296953
+    },
+    "direct_activity": 0.0561149391289657,
+    "ai2ai_confidence": 0.009450172654130617,
+    "network_confidence": 0.17138357522104763,
+    "context_match": 0.499858393112792
+  },
+  {
+    "user_id": "user_0308",
+    "preferences": {
+      "category_1": 0.4339096519716623,
+      "category_2": 0.7843763107901112,
+      "category_3": 0.565856627951035
+    },
+    "direct_activity": 0.8579603133636694,
+    "ai2ai_confidence": 0.09536183547073007,
+    "network_confidence": 0.528159185641648,
+    "context_match": 0.042551757617045105
+  },
+  {
+    "user_id": "user_0309",
+    "preferences": {
+      "category_1": 0.21141705588454718,
+      "category_2": 0.8681168905816056,
+      "category_3": 0.8875543070344936
+    },
+    "direct_activity": 0.4755002876452733,
+    "ai2ai_confidence": 0.046561970741743286,
+    "network_confidence": 0.07434805992565108,
+    "context_match": 0.9255848100809232
+  },
+  {
+    "user_id": "user_0310",
+    "preferences": {
+      "category_1": 0.8993116508650086,
+      "category_2": 0.5635098640479835,
+      "category_3": 0.03290178015347189
+    },
+    "direct_activity": 0.9287663612546593,
+    "ai2ai_confidence": 0.31448469322665096,
+    "network_confidence": 0.9614691898760058,
+    "context_match": 0.5870361040844884
+  },
+  {
+    "user_id": "user_0311",
+    "preferences": {
+      "category_1": 0.7522544698468651,
+      "category_2": 0.7127113999493597,
+      "category_3": 0.398296020395122
+    },
+    "direct_activity": 0.07693749144134587,
+    "ai2ai_confidence": 0.16245025071470587,
+    "network_confidence": 0.2404721943042868,
+    "context_match": 0.834650560091752
+  },
+  {
+    "user_id": "user_0312",
+    "preferences": {
+      "category_1": 0.3891566073673588,
+      "category_2": 0.8965257670027198,
+      "category_3": 0.33172983962182856
+    },
+    "direct_activity": 0.7556092645208923,
+    "ai2ai_confidence": 0.1399505942351973,
+    "network_confidence": 0.9884779579141031,
+    "context_match": 0.7241635700943149
+  },
+  {
+    "user_id": "user_0313",
+    "preferences": {
+      "category_1": 0.5007928516377251,
+      "category_2": 0.9743233274359964,
+      "category_3": 0.0536964319473936
+    },
+    "direct_activity": 0.43708825284349917,
+    "ai2ai_confidence": 0.838674657613175,
+    "network_confidence": 0.34059274647510596,
+    "context_match": 0.7690056533654424
+  },
+  {
+    "user_id": "user_0314",
+    "preferences": {
+      "category_1": 0.9548583969146658,
+      "category_2": 0.3967030493089595,
+      "category_3": 0.7735549161313224
+    },
+    "direct_activity": 0.029625658945165112,
+    "ai2ai_confidence": 0.2733270286287973,
+    "network_confidence": 0.9925858784507974,
+    "context_match": 0.49060345611079326
+  },
+  {
+    "user_id": "user_0315",
+    "preferences": {
+      "category_1": 0.3558111977058479,
+      "category_2": 0.9411428449707254,
+      "category_3": 0.4318479462395447
+    },
+    "direct_activity": 0.6796948580881589,
+    "ai2ai_confidence": 0.6606719075148755,
+    "network_confidence": 0.08569411763673573,
+    "context_match": 0.6186158902598878
+  },
+  {
+    "user_id": "user_0316",
+    "preferences": {
+      "category_1": 0.7980551738027466,
+      "category_2": 0.7131085326783857,
+      "category_3": 0.08203800967314856
+    },
+    "direct_activity": 0.15422096386551842,
+    "ai2ai_confidence": 0.7116771547786167,
+    "network_confidence": 0.6339008819630509,
+    "context_match": 0.7396552889765946
+  },
+  {
+    "user_id": "user_0317",
+    "preferences": {
+      "category_1": 0.31667822868153617,
+      "category_2": 0.10655091771126113,
+      "category_3": 0.005195222370030117
+    },
+    "direct_activity": 0.30826745513629805,
+    "ai2ai_confidence": 0.3599174973468966,
+    "network_confidence": 0.2697664432393865,
+    "context_match": 0.1325070044941994
+  },
+  {
+    "user_id": "user_0318",
+    "preferences": {
+      "category_1": 0.18739178352787722,
+      "category_2": 0.44884367702145145,
+      "category_3": 0.5547400006088677
+    },
+    "direct_activity": 0.4080441750831375,
+    "ai2ai_confidence": 0.0262619040132972,
+    "network_confidence": 0.35391428734525887,
+    "context_match": 0.09306426045987415
+  },
+  {
+    "user_id": "user_0319",
+    "preferences": {
+      "category_1": 0.5980437977942729,
+      "category_2": 0.32443033057241266,
+      "category_3": 0.3852379173959837
+    },
+    "direct_activity": 0.291847351296321,
+    "ai2ai_confidence": 0.3877995593783937,
+    "network_confidence": 0.08469951692852251,
+    "context_match": 0.9011360448564331
+  },
+  {
+    "user_id": "user_0320",
+    "preferences": {
+      "category_1": 0.9052075743133589,
+      "category_2": 0.9781730640138873,
+      "category_3": 0.5719604307495395
+    },
+    "direct_activity": 0.1695829233923255,
+    "ai2ai_confidence": 0.38073202348874313,
+    "network_confidence": 0.13884005895941676,
+    "context_match": 0.30113126537506874
+  },
+  {
+    "user_id": "user_0321",
+    "preferences": {
+      "category_1": 0.4931239422107847,
+      "category_2": 0.0632671502769544,
+      "category_3": 0.43467626926274494
+    },
+    "direct_activity": 0.4211023397725243,
+    "ai2ai_confidence": 0.4842313139339285,
+    "network_confidence": 0.07692136139515715,
+    "context_match": 0.25169973778890287
+  },
+  {
+    "user_id": "user_0322",
+    "preferences": {
+      "category_1": 0.24659006834700292,
+      "category_2": 0.6250336877688947,
+      "category_3": 0.5938063980390786
+    },
+    "direct_activity": 0.19554822488026047,
+    "ai2ai_confidence": 0.106972367580902,
+    "network_confidence": 0.30465799575125696,
+    "context_match": 0.9488234623945652
+  },
+  {
+    "user_id": "user_0323",
+    "preferences": {
+      "category_1": 0.33221721531162696,
+      "category_2": 0.6201921878746893,
+      "category_3": 0.8040764619573825
+    },
+    "direct_activity": 0.3295417162792602,
+    "ai2ai_confidence": 0.334736223746957,
+    "network_confidence": 0.8154754700030031,
+    "context_match": 0.8595084671008352
+  },
+  {
+    "user_id": "user_0324",
+    "preferences": {
+      "category_1": 0.9742253765046068,
+      "category_2": 0.1361244715782648,
+      "category_3": 0.32066515537508766
+    },
+    "direct_activity": 0.9472789220161162,
+    "ai2ai_confidence": 0.2008514887020717,
+    "network_confidence": 0.31418328119544137,
+    "context_match": 0.9645746230947939
+  },
+  {
+    "user_id": "user_0325",
+    "preferences": {
+      "category_1": 0.9687252217466955,
+      "category_2": 0.2914481515800532,
+      "category_3": 0.69495776767211
+    },
+    "direct_activity": 0.4910073128921023,
+    "ai2ai_confidence": 0.5758792816249606,
+    "network_confidence": 0.2424242967805731,
+    "context_match": 0.3760553023241471
+  },
+  {
+    "user_id": "user_0326",
+    "preferences": {
+      "category_1": 0.8164945154329131,
+      "category_2": 0.3929351297394599,
+      "category_3": 0.11388782361199812
+    },
+    "direct_activity": 0.5638505086287859,
+    "ai2ai_confidence": 0.5922270342503855,
+    "network_confidence": 0.5456290854508221,
+    "context_match": 0.6817126331300877
+  },
+  {
+    "user_id": "user_0327",
+    "preferences": {
+      "category_1": 0.5500991569974728,
+      "category_2": 0.953004611486296,
+      "category_3": 0.46162222283314847
+    },
+    "direct_activity": 0.7083670512560635,
+    "ai2ai_confidence": 0.4384549543089086,
+    "network_confidence": 0.2913312079852953,
+    "context_match": 0.6928352793243427
+  },
+  {
+    "user_id": "user_0328",
+    "preferences": {
+      "category_1": 0.8189655680044585,
+      "category_2": 0.7956568359959544,
+      "category_3": 0.4091415902449015
+    },
+    "direct_activity": 0.49930321528896027,
+    "ai2ai_confidence": 0.6333360396536636,
+    "network_confidence": 0.24202116767079884,
+    "context_match": 0.6586629685323181
+  },
+  {
+    "user_id": "user_0329",
+    "preferences": {
+      "category_1": 0.7152363912994262,
+      "category_2": 0.7890767632200629,
+      "category_3": 0.07396513558228845
+    },
+    "direct_activity": 0.990700614436968,
+    "ai2ai_confidence": 0.4792346997726262,
+    "network_confidence": 0.40080509732937364,
+    "context_match": 0.506612643029509
+  },
+  {
+    "user_id": "user_0330",
+    "preferences": {
+      "category_1": 0.9203921844782957,
+      "category_2": 0.6917088658981076,
+      "category_3": 0.5436452033874777
+    },
+    "direct_activity": 0.7907209170492592,
+    "ai2ai_confidence": 0.3595294930162599,
+    "network_confidence": 0.8955015153608991,
+    "context_match": 0.5369059860245878
+  },
+  {
+    "user_id": "user_0331",
+    "preferences": {
+      "category_1": 0.6381803670108411,
+      "category_2": 0.08498193405098775,
+      "category_3": 0.7689540479200405
+    },
+    "direct_activity": 0.6576016445807656,
+    "ai2ai_confidence": 0.3550088194484896,
+    "network_confidence": 0.6469998479834043,
+    "context_match": 0.044296693527849595
+  },
+  {
+    "user_id": "user_0332",
+    "preferences": {
+      "category_1": 0.9836082059519827,
+      "category_2": 0.6774718958641857,
+      "category_3": 0.3996177462250823
+    },
+    "direct_activity": 0.7526827777296058,
+    "ai2ai_confidence": 0.9657167777138282,
+    "network_confidence": 0.43045554389018226,
+    "context_match": 0.010547772784579967
+  },
+  {
+    "user_id": "user_0333",
+    "preferences": {
+      "category_1": 0.25873837040365544,
+      "category_2": 0.5106762405250447,
+      "category_3": 0.5187977668493495
+    },
+    "direct_activity": 0.5805182955240041,
+    "ai2ai_confidence": 0.5752353982704261,
+    "network_confidence": 0.44577855150490675,
+    "context_match": 0.39113416867750284
+  },
+  {
+    "user_id": "user_0334",
+    "preferences": {
+      "category_1": 0.772342232462432,
+      "category_2": 0.5885899565401472,
+      "category_3": 0.5004657816197345
+    },
+    "direct_activity": 0.3449673875995183,
+    "ai2ai_confidence": 0.02456265302576932,
+    "network_confidence": 0.10454935800606169,
+    "context_match": 0.41597542852571256
+  },
+  {
+    "user_id": "user_0335",
+    "preferences": {
+      "category_1": 0.9617278656799704,
+      "category_2": 0.11606933795897467,
+      "category_3": 0.940676158146193
+    },
+    "direct_activity": 0.1416751768315483,
+    "ai2ai_confidence": 0.31189034389754144,
+    "network_confidence": 0.4553326352258771,
+    "context_match": 0.2068673262083145
+  },
+  {
+    "user_id": "user_0336",
+    "preferences": {
+      "category_1": 0.48292599877938847,
+      "category_2": 0.4761625312091635,
+      "category_3": 0.4381659382730271
+    },
+    "direct_activity": 0.6967632655236661,
+    "ai2ai_confidence": 0.31890947421770044,
+    "network_confidence": 0.3002640831819403,
+    "context_match": 0.8101859369186981
+  },
+  {
+    "user_id": "user_0337",
+    "preferences": {
+      "category_1": 0.11508526669878594,
+      "category_2": 0.8491800080469097,
+      "category_3": 0.6479699172777137
+    },
+    "direct_activity": 0.677139332890884,
+    "ai2ai_confidence": 0.16435409285070324,
+    "network_confidence": 0.9839004705882779,
+    "context_match": 0.2439129465519927
+  },
+  {
+    "user_id": "user_0338",
+    "preferences": {
+      "category_1": 0.17445323282413394,
+      "category_2": 0.1601357112153593,
+      "category_3": 0.5598489524898631
+    },
+    "direct_activity": 0.9584626217339497,
+    "ai2ai_confidence": 0.23185554741141035,
+    "network_confidence": 0.40504743628025286,
+    "context_match": 0.18445177515139366
+  },
+  {
+    "user_id": "user_0339",
+    "preferences": {
+      "category_1": 0.6404788766600781,
+      "category_2": 0.4321344524292825,
+      "category_3": 0.02919227434239058
+    },
+    "direct_activity": 0.6141069373719198,
+    "ai2ai_confidence": 0.19732443578224634,
+    "network_confidence": 0.5922031583603683,
+    "context_match": 0.3888357803557071
+  },
+  {
+    "user_id": "user_0340",
+    "preferences": {
+      "category_1": 0.7047356159597344,
+      "category_2": 0.20578447936732192,
+      "category_3": 0.7523254953604916
+    },
+    "direct_activity": 0.8087297886312608,
+    "ai2ai_confidence": 0.06256375146916437,
+    "network_confidence": 0.10175204872714239,
+    "context_match": 0.8719793300098851
+  },
+  {
+    "user_id": "user_0341",
+    "preferences": {
+      "category_1": 0.1869598356320934,
+      "category_2": 0.3259849115988185,
+      "category_3": 0.45755042220618547
+    },
+    "direct_activity": 0.2623533954523609,
+    "ai2ai_confidence": 0.8626365474573073,
+    "network_confidence": 0.5277150196277827,
+    "context_match": 0.6391085856661506
+  },
+  {
+    "user_id": "user_0342",
+    "preferences": {
+      "category_1": 0.5969708292829935,
+      "category_2": 0.6113084211390019,
+      "category_3": 0.587004714565218
+    },
+    "direct_activity": 0.3479246374367544,
+    "ai2ai_confidence": 0.8455178026695592,
+    "network_confidence": 0.617362679336425,
+    "context_match": 0.8137382542609338
+  },
+  {
+    "user_id": "user_0343",
+    "preferences": {
+      "category_1": 0.70598836094598,
+      "category_2": 0.2974448346993519,
+      "category_3": 0.6144845157129195
+    },
+    "direct_activity": 0.0847519686230278,
+    "ai2ai_confidence": 0.13394776965071065,
+    "network_confidence": 0.11786165266165671,
+    "context_match": 0.3053800025354989
+  },
+  {
+    "user_id": "user_0344",
+    "preferences": {
+      "category_1": 0.1830445183314835,
+      "category_2": 0.6934365417164455,
+      "category_3": 0.5108248694871609
+    },
+    "direct_activity": 0.4182391062112586,
+    "ai2ai_confidence": 0.13786729853455748,
+    "network_confidence": 0.383709962837687,
+    "context_match": 0.18575369929276564
+  },
+  {
+    "user_id": "user_0345",
+    "preferences": {
+      "category_1": 0.6355016420586352,
+      "category_2": 0.6934329265293553,
+      "category_3": 0.6452600950799504
+    },
+    "direct_activity": 0.999899552563092,
+    "ai2ai_confidence": 0.5549125758324974,
+    "network_confidence": 0.48964202619220887,
+    "context_match": 0.14029653509779705
+  },
+  {
+    "user_id": "user_0346",
+    "preferences": {
+      "category_1": 0.3145800146608443,
+      "category_2": 0.45100097074665113,
+      "category_3": 0.05361126263083682
+    },
+    "direct_activity": 0.3590391721713688,
+    "ai2ai_confidence": 0.009583439563281226,
+    "network_confidence": 0.1365347146624959,
+    "context_match": 0.8152159406538618
+  },
+  {
+    "user_id": "user_0347",
+    "preferences": {
+      "category_1": 0.9638290894149398,
+      "category_2": 0.5054380197306704,
+      "category_3": 0.49496984786640363
+    },
+    "direct_activity": 0.6846966705599865,
+    "ai2ai_confidence": 0.4156304352741119,
+    "network_confidence": 0.8398918021012227,
+    "context_match": 0.48869951193968564
+  },
+  {
+    "user_id": "user_0348",
+    "preferences": {
+      "category_1": 0.08267062578646689,
+      "category_2": 0.030860705643004804,
+      "category_3": 0.7610566185454242
+    },
+    "direct_activity": 0.2920899095587066,
+    "ai2ai_confidence": 0.274852918273534,
+    "network_confidence": 0.5376086182048194,
+    "context_match": 0.1682089774365737
+  },
+  {
+    "user_id": "user_0349",
+    "preferences": {
+      "category_1": 0.45732138727344906,
+      "category_2": 0.742518251929787,
+      "category_3": 0.7659195549436907
+    },
+    "direct_activity": 0.5497261845380513,
+    "ai2ai_confidence": 0.11321099529202316,
+    "network_confidence": 0.11420665135896879,
+    "context_match": 0.7751130278639955
+  },
+  {
+    "user_id": "user_0350",
+    "preferences": {
+      "category_1": 0.8232828079975666,
+      "category_2": 0.3668617721054209,
+      "category_3": 0.8226109277962613
+    },
+    "direct_activity": 0.04161052227023332,
+    "ai2ai_confidence": 0.7189802411300433,
+    "network_confidence": 0.5463532747219646,
+    "context_match": 0.9897757278766832
+  },
+  {
+    "user_id": "user_0351",
+    "preferences": {
+      "category_1": 0.1024164388774983,
+      "category_2": 0.8300707165425397,
+      "category_3": 0.7513454947436722
+    },
+    "direct_activity": 0.29770893510289365,
+    "ai2ai_confidence": 0.9993126692789077,
+    "network_confidence": 0.44973234283041374,
+    "context_match": 0.3485769768223138
+  },
+  {
+    "user_id": "user_0352",
+    "preferences": {
+      "category_1": 0.8167285851164385,
+      "category_2": 0.43906990338333296,
+      "category_3": 0.9939576843186171
+    },
+    "direct_activity": 0.7756316498807736,
+    "ai2ai_confidence": 0.23694605536668123,
+    "network_confidence": 0.8107027168394102,
+    "context_match": 0.5879238969768106
+  },
+  {
+    "user_id": "user_0353",
+    "preferences": {
+      "category_1": 0.3506308411139897,
+      "category_2": 0.7107539594937995,
+      "category_3": 0.6327706309271385
+    },
+    "direct_activity": 0.1659816176902592,
+    "ai2ai_confidence": 0.1392349659267761,
+    "network_confidence": 0.20661965618677336,
+    "context_match": 0.206942720751766
+  },
+  {
+    "user_id": "user_0354",
+    "preferences": {
+      "category_1": 0.05935783363934111,
+      "category_2": 0.35081547895283094,
+      "category_3": 0.281085018790198
+    },
+    "direct_activity": 0.538768546047638,
+    "ai2ai_confidence": 0.32365361585468166,
+    "network_confidence": 0.7040537617551885,
+    "context_match": 0.2893332434649436
+  },
+  {
+    "user_id": "user_0355",
+    "preferences": {
+      "category_1": 0.26734306627808013,
+      "category_2": 0.8580168449462576,
+      "category_3": 0.9854883022617942
+    },
+    "direct_activity": 0.67929931592331,
+    "ai2ai_confidence": 0.09522516381434276,
+    "network_confidence": 0.962771994993792,
+    "context_match": 0.7856910482912973
+  },
+  {
+    "user_id": "user_0356",
+    "preferences": {
+      "category_1": 0.9187687118298253,
+      "category_2": 0.9924862256446744,
+      "category_3": 0.8670475904337784
+    },
+    "direct_activity": 0.12688816861381025,
+    "ai2ai_confidence": 0.8660787949911568,
+    "network_confidence": 0.24967724193813978,
+    "context_match": 0.711394848839169
+  },
+  {
+    "user_id": "user_0357",
+    "preferences": {
+      "category_1": 0.8284818026986326,
+      "category_2": 0.7614735874798569,
+      "category_3": 0.676234553699946
+    },
+    "direct_activity": 0.48945872591563777,
+    "ai2ai_confidence": 0.5774255293041615,
+    "network_confidence": 0.2687171520874859,
+    "context_match": 0.41422508936503766
+  },
+  {
+    "user_id": "user_0358",
+    "preferences": {
+      "category_1": 0.45199172255036435,
+      "category_2": 0.6336277633502977,
+      "category_3": 0.8801250813073235
+    },
+    "direct_activity": 0.0930947840426174,
+    "ai2ai_confidence": 0.515613472087699,
+    "network_confidence": 0.2782256878517837,
+    "context_match": 0.9363361140885752
+  },
+  {
+    "user_id": "user_0359",
+    "preferences": {
+      "category_1": 0.369071174075422,
+      "category_2": 0.9502540788653826,
+      "category_3": 0.3272892801609303
+    },
+    "direct_activity": 0.0024730851419847433,
+    "ai2ai_confidence": 0.7741352904376932,
+    "network_confidence": 0.732724026539487,
+    "context_match": 0.730931937487053
+  },
+  {
+    "user_id": "user_0360",
+    "preferences": {
+      "category_1": 0.4584492566797177,
+      "category_2": 0.6641438208318425,
+      "category_3": 0.3582227293409872
+    },
+    "direct_activity": 0.06333068606017467,
+    "ai2ai_confidence": 0.5344244643875649,
+    "network_confidence": 0.21782993501520587,
+    "context_match": 0.42964310068523615
+  },
+  {
+    "user_id": "user_0361",
+    "preferences": {
+      "category_1": 0.21185146640773822,
+      "category_2": 0.26853683831442254,
+      "category_3": 0.828343617048808
+    },
+    "direct_activity": 0.33775515517078736,
+    "ai2ai_confidence": 0.5779336402609515,
+    "network_confidence": 0.5661421109171403,
+    "context_match": 0.48533790400850507
+  },
+  {
+    "user_id": "user_0362",
+    "preferences": {
+      "category_1": 0.3437396205526192,
+      "category_2": 0.6825519260932059,
+      "category_3": 0.04840926115172295
+    },
+    "direct_activity": 0.09957474191620586,
+    "ai2ai_confidence": 0.7838897618405682,
+    "network_confidence": 0.4595817626735669,
+    "context_match": 0.12423717923039845
+  },
+  {
+    "user_id": "user_0363",
+    "preferences": {
+      "category_1": 0.8576515999286138,
+      "category_2": 0.4412859488764266,
+      "category_3": 0.0006759315121042109
+    },
+    "direct_activity": 0.9580317693039723,
+    "ai2ai_confidence": 0.20231820639739972,
+    "network_confidence": 0.6885918819115103,
+    "context_match": 0.13191308738401353
+  },
+  {
+    "user_id": "user_0364",
+    "preferences": {
+      "category_1": 0.6499971993406527,
+      "category_2": 0.15897746290581938,
+      "category_3": 0.9327255627259242
+    },
+    "direct_activity": 0.27401945809528216,
+    "ai2ai_confidence": 0.6545879644187941,
+    "network_confidence": 0.25038927854910886,
+    "context_match": 0.37184376764676574
+  },
+  {
+    "user_id": "user_0365",
+    "preferences": {
+      "category_1": 0.9038002688356579,
+      "category_2": 0.16552507915934378,
+      "category_3": 0.3963415669322332
+    },
+    "direct_activity": 0.3055092448442307,
+    "ai2ai_confidence": 0.6994413715245735,
+    "network_confidence": 0.23414384148441947,
+    "context_match": 0.655485228383535
+  },
+  {
+    "user_id": "user_0366",
+    "preferences": {
+      "category_1": 0.7036980397640442,
+      "category_2": 0.001086303691723689,
+      "category_3": 0.4768067082609141
+    },
+    "direct_activity": 0.1326997920399866,
+    "ai2ai_confidence": 0.22619086145940603,
+    "network_confidence": 0.6799827251215791,
+    "context_match": 0.009286947608460161
+  },
+  {
+    "user_id": "user_0367",
+    "preferences": {
+      "category_1": 0.6955971072880487,
+      "category_2": 0.8171090269132985,
+      "category_3": 0.988154909464272
+    },
+    "direct_activity": 0.4223139337750599,
+    "ai2ai_confidence": 0.13217515109256084,
+    "network_confidence": 0.0708283054005121,
+    "context_match": 0.3830699256757727
+  },
+  {
+    "user_id": "user_0368",
+    "preferences": {
+      "category_1": 0.730763381763971,
+      "category_2": 0.10242717044950667,
+      "category_3": 0.3133514774409062
+    },
+    "direct_activity": 0.8809889949802706,
+    "ai2ai_confidence": 0.13712929474354563,
+    "network_confidence": 0.7734604836506241,
+    "context_match": 0.753157800991068
+  },
+  {
+    "user_id": "user_0369",
+    "preferences": {
+      "category_1": 0.13314623118621216,
+      "category_2": 0.992940155246385,
+      "category_3": 0.14285306683489385
+    },
+    "direct_activity": 0.530508276546681,
+    "ai2ai_confidence": 0.008474741953009568,
+    "network_confidence": 0.6500202131578069,
+    "context_match": 0.44009942077985187
+  },
+  {
+    "user_id": "user_0370",
+    "preferences": {
+      "category_1": 0.7224320263643224,
+      "category_2": 0.6280800383409025,
+      "category_3": 0.15137413084428097
+    },
+    "direct_activity": 0.4117098943596781,
+    "ai2ai_confidence": 0.6865661698757399,
+    "network_confidence": 0.85996252460215,
+    "context_match": 0.08668803346598852
+  },
+  {
+    "user_id": "user_0371",
+    "preferences": {
+      "category_1": 0.10046511247763878,
+      "category_2": 0.7524456465479524,
+      "category_3": 0.5895739177615131
+    },
+    "direct_activity": 0.3840319093431207,
+    "ai2ai_confidence": 0.9632487105532641,
+    "network_confidence": 0.31450366818216935,
+    "context_match": 0.1398301888092337
+  },
+  {
+    "user_id": "user_0372",
+    "preferences": {
+      "category_1": 0.2769676569448454,
+      "category_2": 0.08424871599798667,
+      "category_3": 0.5533966317847301
+    },
+    "direct_activity": 0.6000078672258529,
+    "ai2ai_confidence": 0.6075930989155233,
+    "network_confidence": 0.7789696525132599,
+    "context_match": 0.6904760750146538
+  },
+  {
+    "user_id": "user_0373",
+    "preferences": {
+      "category_1": 0.847892104439959,
+      "category_2": 0.6584053700851439,
+      "category_3": 0.3016493335771986
+    },
+    "direct_activity": 0.5177491277972375,
+    "ai2ai_confidence": 0.5095225661147126,
+    "network_confidence": 0.7478436409812496,
+    "context_match": 0.2955420512420667
+  },
+  {
+    "user_id": "user_0374",
+    "preferences": {
+      "category_1": 0.05456913101525296,
+      "category_2": 0.8979125603569896,
+      "category_3": 0.9546715113471528
+    },
+    "direct_activity": 0.49488771994326686,
+    "ai2ai_confidence": 0.11274366260380853,
+    "network_confidence": 0.49958254127265755,
+    "context_match": 0.5939297681377231
+  },
+  {
+    "user_id": "user_0375",
+    "preferences": {
+      "category_1": 0.5282865009361842,
+      "category_2": 0.9776969478433356,
+      "category_3": 0.9868825328431889
+    },
+    "direct_activity": 0.9339244016742159,
+    "ai2ai_confidence": 0.13198288073270203,
+    "network_confidence": 0.8608140039367475,
+    "context_match": 0.5683803887729609
+  },
+  {
+    "user_id": "user_0376",
+    "preferences": {
+      "category_1": 0.3654124628480987,
+      "category_2": 0.6829420490024262,
+      "category_3": 0.7627259378955857
+    },
+    "direct_activity": 0.9544529839408864,
+    "ai2ai_confidence": 0.7703670492246139,
+    "network_confidence": 0.016689401770856205,
+    "context_match": 0.06753256927276718
+  },
+  {
+    "user_id": "user_0377",
+    "preferences": {
+      "category_1": 0.2621852771620671,
+      "category_2": 0.03982686193718976,
+      "category_3": 0.06046885958820569
+    },
+    "direct_activity": 0.7892899989930914,
+    "ai2ai_confidence": 0.506610604274927,
+    "network_confidence": 0.628570696060576,
+    "context_match": 0.5010489655070751
+  },
+  {
+    "user_id": "user_0378",
+    "preferences": {
+      "category_1": 0.4154319943754019,
+      "category_2": 0.7018106386235163,
+      "category_3": 0.08242781192464588
+    },
+    "direct_activity": 0.5365648160700154,
+    "ai2ai_confidence": 0.616047055666748,
+    "network_confidence": 0.2774677357345601,
+    "context_match": 0.3099068856166419
+  },
+  {
+    "user_id": "user_0379",
+    "preferences": {
+      "category_1": 0.5113046982953314,
+      "category_2": 0.20319749395782782,
+      "category_3": 0.8080600809706533
+    },
+    "direct_activity": 0.5363901728894583,
+    "ai2ai_confidence": 0.3907315029683497,
+    "network_confidence": 0.6342942473532567,
+    "context_match": 0.8345264691847527
+  },
+  {
+    "user_id": "user_0380",
+    "preferences": {
+      "category_1": 0.6810556847092104,
+      "category_2": 0.06611508362121499,
+      "category_3": 0.6986758816054913
+    },
+    "direct_activity": 0.7299583774315415,
+    "ai2ai_confidence": 0.8464681151407762,
+    "network_confidence": 0.05790594402313043,
+    "context_match": 0.08621279839148932
+  },
+  {
+    "user_id": "user_0381",
+    "preferences": {
+      "category_1": 0.4344835886060191,
+      "category_2": 0.45337184229714267,
+      "category_3": 0.6088324044274436
+    },
+    "direct_activity": 0.3092900638735262,
+    "ai2ai_confidence": 0.7416935090575543,
+    "network_confidence": 0.7406581802341782,
+    "context_match": 0.11944300690788745
+  },
+  {
+    "user_id": "user_0382",
+    "preferences": {
+      "category_1": 0.7079006071180983,
+      "category_2": 0.7014996112238661,
+      "category_3": 0.16383263093540756
+    },
+    "direct_activity": 0.9530162017546976,
+    "ai2ai_confidence": 0.5230053627284083,
+    "network_confidence": 0.7829871015437458,
+    "context_match": 0.720765518093459
+  },
+  {
+    "user_id": "user_0383",
+    "preferences": {
+      "category_1": 0.16696295419238083,
+      "category_2": 0.12693060748112484,
+      "category_3": 0.7811239799369876
+    },
+    "direct_activity": 0.26876448640924566,
+    "ai2ai_confidence": 0.886414759740656,
+    "network_confidence": 0.7714302904896246,
+    "context_match": 0.029356251172803494
+  },
+  {
+    "user_id": "user_0384",
+    "preferences": {
+      "category_1": 0.8071078466573698,
+      "category_2": 0.27198059502135374,
+      "category_3": 0.06387198912314807
+    },
+    "direct_activity": 0.7123232482004954,
+    "ai2ai_confidence": 0.576651674714184,
+    "network_confidence": 0.07707003128638534,
+    "context_match": 0.4551977776794275
+  },
+  {
+    "user_id": "user_0385",
+    "preferences": {
+      "category_1": 0.3601238955217533,
+      "category_2": 0.49961000576138326,
+      "category_3": 0.5668861282384499
+    },
+    "direct_activity": 0.3676877778568117,
+    "ai2ai_confidence": 0.2551160810390781,
+    "network_confidence": 0.1029049150218696,
+    "context_match": 0.5739123051920565
+  },
+  {
+    "user_id": "user_0386",
+    "preferences": {
+      "category_1": 0.7227783733258665,
+      "category_2": 0.22840442315325105,
+      "category_3": 0.5088248849106468
+    },
+    "direct_activity": 0.04403790726280954,
+    "ai2ai_confidence": 0.8629284949026113,
+    "network_confidence": 0.24455145035670345,
+    "context_match": 0.47176458957773815
+  },
+  {
+    "user_id": "user_0387",
+    "preferences": {
+      "category_1": 0.3829794743673991,
+      "category_2": 0.15008466824115008,
+      "category_3": 0.9311600771571855
+    },
+    "direct_activity": 0.8574851977479724,
+    "ai2ai_confidence": 0.5528647884958645,
+    "network_confidence": 0.913947669521129,
+    "context_match": 0.7406658281065769
+  },
+  {
+    "user_id": "user_0388",
+    "preferences": {
+      "category_1": 0.4193693043627985,
+      "category_2": 0.32180201447206125,
+      "category_3": 0.41625659850131536
+    },
+    "direct_activity": 0.7202879214281971,
+    "ai2ai_confidence": 0.27125795800981667,
+    "network_confidence": 0.07788706996691197,
+    "context_match": 0.3728081667378613
+  },
+  {
+    "user_id": "user_0389",
+    "preferences": {
+      "category_1": 0.5020409425595828,
+      "category_2": 0.9019410092582714,
+      "category_3": 0.17934435027230566
+    },
+    "direct_activity": 0.8043380194587567,
+    "ai2ai_confidence": 0.981413863941495,
+    "network_confidence": 0.9540794074604276,
+    "context_match": 0.0689264377727451
+  },
+  {
+    "user_id": "user_0390",
+    "preferences": {
+      "category_1": 0.4650941779168861,
+      "category_2": 0.28230687062090243,
+      "category_3": 0.844846504261328
+    },
+    "direct_activity": 0.3273009217261189,
+    "ai2ai_confidence": 0.5530913953240676,
+    "network_confidence": 0.007969173557455522,
+    "context_match": 0.20067115345295583
+  },
+  {
+    "user_id": "user_0391",
+    "preferences": {
+      "category_1": 0.5638067408241869,
+      "category_2": 0.30390930726808296,
+      "category_3": 0.6227175238921046
+    },
+    "direct_activity": 0.4639266905804993,
+    "ai2ai_confidence": 0.5916909349848162,
+    "network_confidence": 0.49336067585488486,
+    "context_match": 0.7726132629505243
+  },
+  {
+    "user_id": "user_0392",
+    "preferences": {
+      "category_1": 0.1954224238728235,
+      "category_2": 0.9004432972264232,
+      "category_3": 0.7604822203216965
+    },
+    "direct_activity": 0.24512687437658287,
+    "ai2ai_confidence": 0.006377882751804065,
+    "network_confidence": 0.4100361095660199,
+    "context_match": 0.23299774185974298
+  },
+  {
+    "user_id": "user_0393",
+    "preferences": {
+      "category_1": 0.3464236977394062,
+      "category_2": 0.8395740068961739,
+      "category_3": 0.877198614251575
+    },
+    "direct_activity": 0.9509902621434433,
+    "ai2ai_confidence": 0.0014620405355777466,
+    "network_confidence": 0.6573038501759978,
+    "context_match": 0.8490059877789218
+  },
+  {
+    "user_id": "user_0394",
+    "preferences": {
+      "category_1": 0.7272150390409725,
+      "category_2": 0.10394901935155965,
+      "category_3": 0.5298144890600125
+    },
+    "direct_activity": 0.23816759452086567,
+    "ai2ai_confidence": 0.4920288768498976,
+    "network_confidence": 0.05989507565318963,
+    "context_match": 0.9969592701075485
+  },
+  {
+    "user_id": "user_0395",
+    "preferences": {
+      "category_1": 0.7116524747001027,
+      "category_2": 0.09302663835808822,
+      "category_3": 0.9212744029721064
+    },
+    "direct_activity": 0.8972874719314592,
+    "ai2ai_confidence": 0.519759218492037,
+    "network_confidence": 0.7008469096986796,
+    "context_match": 0.37249197407408075
+  },
+  {
+    "user_id": "user_0396",
+    "preferences": {
+      "category_1": 0.9745547901682511,
+      "category_2": 0.08490241751648953,
+      "category_3": 0.09557700533738556
+    },
+    "direct_activity": 0.13351385025095697,
+    "ai2ai_confidence": 0.819962891894216,
+    "network_confidence": 0.07483048432987749,
+    "context_match": 0.5678207282892083
+  },
+  {
+    "user_id": "user_0397",
+    "preferences": {
+      "category_1": 0.4349828784349853,
+      "category_2": 0.9642182747327408,
+      "category_3": 0.2367717347418965
+    },
+    "direct_activity": 0.26099093892361,
+    "ai2ai_confidence": 0.3150089154097583,
+    "network_confidence": 0.8008168219994952,
+    "context_match": 0.7007256063215421
+  },
+  {
+    "user_id": "user_0398",
+    "preferences": {
+      "category_1": 0.735352868782368,
+      "category_2": 0.3180577192661006,
+      "category_3": 0.2719558718324544
+    },
+    "direct_activity": 0.07468743580247972,
+    "ai2ai_confidence": 0.2027126262792337,
+    "network_confidence": 0.7799369824688629,
+    "context_match": 0.5847080358041289
+  },
+  {
+    "user_id": "user_0399",
+    "preferences": {
+      "category_1": 0.1554105513219367,
+      "category_2": 0.1643749806997682,
+      "category_3": 0.46605511243666176
+    },
+    "direct_activity": 0.40651255190921376,
+    "ai2ai_confidence": 0.5359245490900236,
+    "network_confidence": 0.9646347222502287,
+    "context_match": 0.20763622561035355
+  },
+  {
+    "user_id": "user_0400",
+    "preferences": {
+      "category_1": 0.3083077182125046,
+      "category_2": 0.2650079269147082,
+      "category_3": 0.11991355635539358
+    },
+    "direct_activity": 0.1576153770655162,
+    "ai2ai_confidence": 0.6860548429505152,
+    "network_confidence": 0.8263866879396498,
+    "context_match": 0.6968779832370764
+  },
+  {
+    "user_id": "user_0401",
+    "preferences": {
+      "category_1": 0.04032980810866338,
+      "category_2": 0.8359247509879862,
+      "category_3": 0.32779365888479195
+    },
+    "direct_activity": 0.09121290379134861,
+    "ai2ai_confidence": 0.24821878946125508,
+    "network_confidence": 0.3557427555042837,
+    "context_match": 0.5134596753787295
+  },
+  {
+    "user_id": "user_0402",
+    "preferences": {
+      "category_1": 0.6771833769890718,
+      "category_2": 0.2601667927212239,
+      "category_3": 0.9906766204079072
+    },
+    "direct_activity": 0.031082093358759555,
+    "ai2ai_confidence": 0.40439222644717465,
+    "network_confidence": 0.4522011694010627,
+    "context_match": 0.7480784472087092
+  },
+  {
+    "user_id": "user_0403",
+    "preferences": {
+      "category_1": 0.24985262822155108,
+      "category_2": 0.46204324887623893,
+      "category_3": 0.8038967534438501
+    },
+    "direct_activity": 0.13979303927312237,
+    "ai2ai_confidence": 0.011956923169412992,
+    "network_confidence": 0.830372331894636,
+    "context_match": 0.9825672374836216
+  },
+  {
+    "user_id": "user_0404",
+    "preferences": {
+      "category_1": 0.13071523754397796,
+      "category_2": 0.8236734151883558,
+      "category_3": 0.37223974381599767
+    },
+    "direct_activity": 0.6302975486038245,
+    "ai2ai_confidence": 0.6446850157085018,
+    "network_confidence": 0.5823238014140631,
+    "context_match": 0.25882065234652585
+  },
+  {
+    "user_id": "user_0405",
+    "preferences": {
+      "category_1": 0.8127470916136144,
+      "category_2": 0.021800182738612728,
+      "category_3": 0.06447203604690976
+    },
+    "direct_activity": 0.9024960819332815,
+    "ai2ai_confidence": 0.4434313238359888,
+    "network_confidence": 0.1287915489970045,
+    "context_match": 0.9050779703801529
+  },
+  {
+    "user_id": "user_0406",
+    "preferences": {
+      "category_1": 0.829356177217418,
+      "category_2": 0.33154989125227674,
+      "category_3": 0.04269631909043081
+    },
+    "direct_activity": 0.4609949220019407,
+    "ai2ai_confidence": 0.16798920872905643,
+    "network_confidence": 0.5738841998067228,
+    "context_match": 0.8216854015322838
+  },
+  {
+    "user_id": "user_0407",
+    "preferences": {
+      "category_1": 0.3949986882219194,
+      "category_2": 0.029482293000291482,
+      "category_3": 0.6832129167516828
+    },
+    "direct_activity": 0.17280721183078918,
+    "ai2ai_confidence": 0.21471610597002666,
+    "network_confidence": 0.18715111371116167,
+    "context_match": 0.2798545542807238
+  },
+  {
+    "user_id": "user_0408",
+    "preferences": {
+      "category_1": 0.8834237988936261,
+      "category_2": 0.03464944373150591,
+      "category_3": 0.6191765488458958
+    },
+    "direct_activity": 0.24578477924524544,
+    "ai2ai_confidence": 0.29510516299971645,
+    "network_confidence": 0.41199220629616506,
+    "context_match": 0.5506886652039805
+  },
+  {
+    "user_id": "user_0409",
+    "preferences": {
+      "category_1": 0.06097906893284277,
+      "category_2": 0.27977598743897136,
+      "category_3": 0.1372360171320648
+    },
+    "direct_activity": 0.19945780666658663,
+    "ai2ai_confidence": 0.884652516224965,
+    "network_confidence": 0.5258140582527797,
+    "context_match": 0.6307543888247554
+  },
+  {
+    "user_id": "user_0410",
+    "preferences": {
+      "category_1": 0.8021680827711275,
+      "category_2": 0.7948462443018702,
+      "category_3": 0.9894036157615339
+    },
+    "direct_activity": 0.781915766845425,
+    "ai2ai_confidence": 0.35911210983756503,
+    "network_confidence": 0.5445178060340516,
+    "context_match": 0.4846794854405083
+  },
+  {
+    "user_id": "user_0411",
+    "preferences": {
+      "category_1": 0.912677016598367,
+      "category_2": 0.5023932555437417,
+      "category_3": 0.3883812745693004
+    },
+    "direct_activity": 0.17981587369786922,
+    "ai2ai_confidence": 0.31887756732937955,
+    "network_confidence": 0.21902018807309453,
+    "context_match": 0.8957647816143137
+  },
+  {
+    "user_id": "user_0412",
+    "preferences": {
+      "category_1": 0.7785382813284745,
+      "category_2": 0.05859123027811852,
+      "category_3": 0.9915313234305708
+    },
+    "direct_activity": 0.5294322919654316,
+    "ai2ai_confidence": 0.7668421684502729,
+    "network_confidence": 0.9996057468113461,
+    "context_match": 0.9739798617335022
+  },
+  {
+    "user_id": "user_0413",
+    "preferences": {
+      "category_1": 0.10013433730495758,
+      "category_2": 0.6568644213762342,
+      "category_3": 0.26652700106568306
+    },
+    "direct_activity": 0.8162851616087348,
+    "ai2ai_confidence": 0.9172594825704405,
+    "network_confidence": 0.05590865585244975,
+    "context_match": 0.9963920485064571
+  },
+  {
+    "user_id": "user_0414",
+    "preferences": {
+      "category_1": 0.21941158604392486,
+      "category_2": 0.8465050904651331,
+      "category_3": 0.7973906873794088
+    },
+    "direct_activity": 0.35480463456515987,
+    "ai2ai_confidence": 0.8392222523059093,
+    "network_confidence": 0.8452209023662808,
+    "context_match": 0.17610036757999004
+  },
+  {
+    "user_id": "user_0415",
+    "preferences": {
+      "category_1": 0.5925195091814127,
+      "category_2": 0.8062102253593884,
+      "category_3": 0.69762656359958
+    },
+    "direct_activity": 0.9139800041285343,
+    "ai2ai_confidence": 0.02820656972715907,
+    "network_confidence": 0.7005608033514182,
+    "context_match": 0.9475587350700152
+  },
+  {
+    "user_id": "user_0416",
+    "preferences": {
+      "category_1": 0.5636064867831937,
+      "category_2": 0.5631088908640184,
+      "category_3": 0.18823366490525628
+    },
+    "direct_activity": 0.9880062104046431,
+    "ai2ai_confidence": 0.8816263598977603,
+    "network_confidence": 0.4922267238954052,
+    "context_match": 0.3090530721512196
+  },
+  {
+    "user_id": "user_0417",
+    "preferences": {
+      "category_1": 0.49043642012747923,
+      "category_2": 0.09025737685090285,
+      "category_3": 0.23262335808323908
+    },
+    "direct_activity": 0.21880894169157727,
+    "ai2ai_confidence": 0.5264485141485109,
+    "network_confidence": 0.0006834963838308061,
+    "context_match": 0.9178961859206465
+  },
+  {
+    "user_id": "user_0418",
+    "preferences": {
+      "category_1": 0.20146438335214112,
+      "category_2": 0.13048954561918258,
+      "category_3": 0.7169376326908161
+    },
+    "direct_activity": 0.918780787307206,
+    "ai2ai_confidence": 0.8442840864376507,
+    "network_confidence": 0.3235888113048372,
+    "context_match": 0.02191289624357229
+  },
+  {
+    "user_id": "user_0419",
+    "preferences": {
+      "category_1": 0.5866091750912095,
+      "category_2": 0.9172241474811186,
+      "category_3": 0.774366498819892
+    },
+    "direct_activity": 0.8464808875791346,
+    "ai2ai_confidence": 0.8606694665915507,
+    "network_confidence": 0.9605587502757579,
+    "context_match": 0.3735907800833732
+  },
+  {
+    "user_id": "user_0420",
+    "preferences": {
+      "category_1": 0.9419232134680416,
+      "category_2": 0.3955955623538543,
+      "category_3": 0.10103217018068633
+    },
+    "direct_activity": 0.3017651537254691,
+    "ai2ai_confidence": 0.13645166885749005,
+    "network_confidence": 0.15750388601684584,
+    "context_match": 0.9486935320263234
+  },
+  {
+    "user_id": "user_0421",
+    "preferences": {
+      "category_1": 0.7918425249998717,
+      "category_2": 0.9606621003687382,
+      "category_3": 0.649180265644814
+    },
+    "direct_activity": 0.17420267095553066,
+    "ai2ai_confidence": 0.9687428963331677,
+    "network_confidence": 0.693560398292543,
+    "context_match": 0.9288452089854253
+  },
+  {
+    "user_id": "user_0422",
+    "preferences": {
+      "category_1": 0.7869917925955768,
+      "category_2": 0.22323721398064245,
+      "category_3": 0.5889501557831036
+    },
+    "direct_activity": 0.1753516299902208,
+    "ai2ai_confidence": 0.306823229297958,
+    "network_confidence": 0.6884984395989572,
+    "context_match": 0.1273483647235355
+  },
+  {
+    "user_id": "user_0423",
+    "preferences": {
+      "category_1": 0.728830955935999,
+      "category_2": 0.9487881042212877,
+      "category_3": 0.9486981598499029
+    },
+    "direct_activity": 0.39160142727760194,
+    "ai2ai_confidence": 0.9942831305476306,
+    "network_confidence": 0.965183940287551,
+    "context_match": 0.03238274292708743
+  },
+  {
+    "user_id": "user_0424",
+    "preferences": {
+      "category_1": 0.6023886674509712,
+      "category_2": 0.9210382164180794,
+      "category_3": 0.9675316856159355
+    },
+    "direct_activity": 0.22089525043701208,
+    "ai2ai_confidence": 0.5655502461203205,
+    "network_confidence": 0.9366877935542542,
+    "context_match": 0.14064336814856837
+  },
+  {
+    "user_id": "user_0425",
+    "preferences": {
+      "category_1": 0.7453433281019824,
+      "category_2": 0.23799592514939694,
+      "category_3": 0.9823796549403568
+    },
+    "direct_activity": 0.16788741675158414,
+    "ai2ai_confidence": 0.8853202533951373,
+    "network_confidence": 0.08872601257012636,
+    "context_match": 0.7089658131452244
+  },
+  {
+    "user_id": "user_0426",
+    "preferences": {
+      "category_1": 0.639102687904879,
+      "category_2": 0.8866535152178218,
+      "category_3": 0.44662993409779383
+    },
+    "direct_activity": 0.2652124405628762,
+    "ai2ai_confidence": 0.2495408631352788,
+    "network_confidence": 0.06779478006423378,
+    "context_match": 0.2566579415427148
+  },
+  {
+    "user_id": "user_0427",
+    "preferences": {
+      "category_1": 0.10803460121462927,
+      "category_2": 0.001281157494689933,
+      "category_3": 0.3859370979534099
+    },
+    "direct_activity": 0.7325844944987686,
+    "ai2ai_confidence": 0.9691018251056852,
+    "network_confidence": 0.8845519975872275,
+    "context_match": 0.4930819934738476
+  },
+  {
+    "user_id": "user_0428",
+    "preferences": {
+      "category_1": 0.378712574774259,
+      "category_2": 0.5460239676784543,
+      "category_3": 0.10142855963712161
+    },
+    "direct_activity": 0.4794892503971605,
+    "ai2ai_confidence": 0.8640507204685769,
+    "network_confidence": 0.6509695631134773,
+    "context_match": 0.6871604042171144
+  },
+  {
+    "user_id": "user_0429",
+    "preferences": {
+      "category_1": 0.16265651174848839,
+      "category_2": 0.07370938956137418,
+      "category_3": 0.8457624840245603
+    },
+    "direct_activity": 0.29490861311613015,
+    "ai2ai_confidence": 0.3187169079566575,
+    "network_confidence": 0.9516621314341206,
+    "context_match": 0.07420040176665932
+  },
+  {
+    "user_id": "user_0430",
+    "preferences": {
+      "category_1": 0.1701052031511907,
+      "category_2": 0.37545788407999636,
+      "category_3": 0.7319850852713169
+    },
+    "direct_activity": 0.5470462586122314,
+    "ai2ai_confidence": 0.8981241731199735,
+    "network_confidence": 0.09310468538068661,
+    "context_match": 0.5940305440520949
+  },
+  {
+    "user_id": "user_0431",
+    "preferences": {
+      "category_1": 0.6136447257788938,
+      "category_2": 0.4827367864884782,
+      "category_3": 0.030993204052174983
+    },
+    "direct_activity": 0.9424422581019638,
+    "ai2ai_confidence": 0.1649971947619141,
+    "network_confidence": 0.8897532704040436,
+    "context_match": 0.15710377733078407
+  },
+  {
+    "user_id": "user_0432",
+    "preferences": {
+      "category_1": 0.10125781097333564,
+      "category_2": 0.20555047671793714,
+      "category_3": 0.18998425758838544
+    },
+    "direct_activity": 0.6971967038073571,
+    "ai2ai_confidence": 0.7220381045756756,
+    "network_confidence": 0.7299740056702899,
+    "context_match": 0.26526476934997656
+  },
+  {
+    "user_id": "user_0433",
+    "preferences": {
+      "category_1": 0.2815230734452653,
+      "category_2": 0.23754828494724567,
+      "category_3": 0.04963544303850986
+    },
+    "direct_activity": 0.5717698078577416,
+    "ai2ai_confidence": 0.839854504845651,
+    "network_confidence": 0.1535899345167342,
+    "context_match": 0.36082892122727306
+  },
+  {
+    "user_id": "user_0434",
+    "preferences": {
+      "category_1": 0.4276059574457135,
+      "category_2": 0.2945494489662148,
+      "category_3": 0.6620202260098677
+    },
+    "direct_activity": 0.6002155280137688,
+    "ai2ai_confidence": 0.19967480076094635,
+    "network_confidence": 0.025735692731685744,
+    "context_match": 0.17083219169222308
+  },
+  {
+    "user_id": "user_0435",
+    "preferences": {
+      "category_1": 0.2918114660461075,
+      "category_2": 0.08193609471299235,
+      "category_3": 0.8437690743469366
+    },
+    "direct_activity": 0.3083534001177294,
+    "ai2ai_confidence": 0.39746734850812293,
+    "network_confidence": 0.48909681212065725,
+    "context_match": 0.6610400547460049
+  },
+  {
+    "user_id": "user_0436",
+    "preferences": {
+      "category_1": 0.09113687755067923,
+      "category_2": 0.5441260292196803,
+      "category_3": 0.18488122054204725
+    },
+    "direct_activity": 0.8854926927495389,
+    "ai2ai_confidence": 0.36940166493194504,
+    "network_confidence": 0.4457752707944581,
+    "context_match": 0.26329596668288424
+  },
+  {
+    "user_id": "user_0437",
+    "preferences": {
+      "category_1": 0.4650579561546505,
+      "category_2": 0.2262422802826669,
+      "category_3": 0.2685619932729496
+    },
+    "direct_activity": 0.06163936966009931,
+    "ai2ai_confidence": 0.7522351421152871,
+    "network_confidence": 0.6674684591345684,
+    "context_match": 0.08570731183991709
+  },
+  {
+    "user_id": "user_0438",
+    "preferences": {
+      "category_1": 0.3437913865460467,
+      "category_2": 0.5414490060060221,
+      "category_3": 0.9707055371735758
+    },
+    "direct_activity": 0.5897264423036035,
+    "ai2ai_confidence": 0.5536019061579088,
+    "network_confidence": 0.8407971664302505,
+    "context_match": 0.8184052148653735
+  },
+  {
+    "user_id": "user_0439",
+    "preferences": {
+      "category_1": 0.41863207493445054,
+      "category_2": 0.5355144119789297,
+      "category_3": 0.8668940137055623
+    },
+    "direct_activity": 0.47482438812191996,
+    "ai2ai_confidence": 0.8816538694176228,
+    "network_confidence": 0.4762622810814686,
+    "context_match": 0.07895504977408319
+  },
+  {
+    "user_id": "user_0440",
+    "preferences": {
+      "category_1": 0.9027772013391541,
+      "category_2": 0.7143056991303599,
+      "category_3": 0.5021014703156048
+    },
+    "direct_activity": 0.9004550614715918,
+    "ai2ai_confidence": 0.8004503367206857,
+    "network_confidence": 0.6775348855760303,
+    "context_match": 0.620273114349303
+  },
+  {
+    "user_id": "user_0441",
+    "preferences": {
+      "category_1": 0.12028187475543328,
+      "category_2": 0.7571887556391934,
+      "category_3": 0.17287897280649445
+    },
+    "direct_activity": 0.9843679902491329,
+    "ai2ai_confidence": 0.9721648783377569,
+    "network_confidence": 0.8084607213193631,
+    "context_match": 0.12618599863853974
+  },
+  {
+    "user_id": "user_0442",
+    "preferences": {
+      "category_1": 0.42337489931559946,
+      "category_2": 0.9882799363369157,
+      "category_3": 0.43539324553250724
+    },
+    "direct_activity": 0.9972692267787756,
+    "ai2ai_confidence": 0.6272262122323978,
+    "network_confidence": 0.8341081186760042,
+    "context_match": 0.25788635998777654
+  },
+  {
+    "user_id": "user_0443",
+    "preferences": {
+      "category_1": 0.9108044857315942,
+      "category_2": 0.9141739368985866,
+      "category_3": 0.0670119530486124
+    },
+    "direct_activity": 0.38809915301475073,
+    "ai2ai_confidence": 0.3973549943570359,
+    "network_confidence": 0.32612680536973604,
+    "context_match": 0.2762008199072493
+  },
+  {
+    "user_id": "user_0444",
+    "preferences": {
+      "category_1": 0.45815718112261516,
+      "category_2": 0.8734662533727571,
+      "category_3": 0.7865506388277718
+    },
+    "direct_activity": 0.6230579285888082,
+    "ai2ai_confidence": 0.5225620104498092,
+    "network_confidence": 0.41959383422522867,
+    "context_match": 0.4144423987689787
+  },
+  {
+    "user_id": "user_0445",
+    "preferences": {
+      "category_1": 0.1481997412934446,
+      "category_2": 0.587934133281388,
+      "category_3": 0.758377387857673
+    },
+    "direct_activity": 0.9396499849871098,
+    "ai2ai_confidence": 0.9249281667592735,
+    "network_confidence": 0.5626837594773225,
+    "context_match": 0.10099044282544867
+  },
+  {
+    "user_id": "user_0446",
+    "preferences": {
+      "category_1": 0.2860928540488724,
+      "category_2": 0.5356334811459167,
+      "category_3": 0.34386917857746446
+    },
+    "direct_activity": 0.41089003729922047,
+    "ai2ai_confidence": 0.38304347287705287,
+    "network_confidence": 0.48558479228633067,
+    "context_match": 0.6089621519524352
+  },
+  {
+    "user_id": "user_0447",
+    "preferences": {
+      "category_1": 0.03746567049771343,
+      "category_2": 0.2754141420347538,
+      "category_3": 0.14385267062667373
+    },
+    "direct_activity": 0.608655264085627,
+    "ai2ai_confidence": 0.693661253167092,
+    "network_confidence": 0.038782532481795085,
+    "context_match": 0.8895742139142575
+  },
+  {
+    "user_id": "user_0448",
+    "preferences": {
+      "category_1": 0.3314940757342707,
+      "category_2": 0.23757929391630717,
+      "category_3": 0.7457498198391361
+    },
+    "direct_activity": 0.9208349829061653,
+    "ai2ai_confidence": 0.8970313621494226,
+    "network_confidence": 0.02023288859327188,
+    "context_match": 0.8173859253052775
+  },
+  {
+    "user_id": "user_0449",
+    "preferences": {
+      "category_1": 0.30305495344809663,
+      "category_2": 0.2803466531846416,
+      "category_3": 0.491619213359317
+    },
+    "direct_activity": 0.6961828446749748,
+    "ai2ai_confidence": 0.09821739027274123,
+    "network_confidence": 0.8689000250991986,
+    "context_match": 0.13438552096844048
+  },
+  {
+    "user_id": "user_0450",
+    "preferences": {
+      "category_1": 0.9742194246033105,
+      "category_2": 0.44311061333142887,
+      "category_3": 0.8258233317797505
+    },
+    "direct_activity": 0.26941998100876363,
+    "ai2ai_confidence": 0.41677272770538276,
+    "network_confidence": 0.6455548114276443,
+    "context_match": 0.18793569089261142
+  },
+  {
+    "user_id": "user_0451",
+    "preferences": {
+      "category_1": 0.2113905021058976,
+      "category_2": 0.8239694342551407,
+      "category_3": 0.740944798920008
+    },
+    "direct_activity": 0.7594932952262566,
+    "ai2ai_confidence": 0.8671889705502257,
+    "network_confidence": 0.8210173923984603,
+    "context_match": 0.5152697026095568
+  },
+  {
+    "user_id": "user_0452",
+    "preferences": {
+      "category_1": 0.15897244263900046,
+      "category_2": 0.31112309328890886,
+      "category_3": 0.5067952752365554
+    },
+    "direct_activity": 0.1356498210170598,
+    "ai2ai_confidence": 0.8512953409871922,
+    "network_confidence": 0.879332591359856,
+    "context_match": 0.028948159320185685
+  },
+  {
+    "user_id": "user_0453",
+    "preferences": {
+      "category_1": 0.19276344683155822,
+      "category_2": 0.8329299330765513,
+      "category_3": 0.836976677608695
+    },
+    "direct_activity": 0.24949026132427932,
+    "ai2ai_confidence": 0.45644866712808063,
+    "network_confidence": 0.9180310693411162,
+    "context_match": 0.7046339452200365
+  },
+  {
+    "user_id": "user_0454",
+    "preferences": {
+      "category_1": 0.2739774984743589,
+      "category_2": 0.8235062916891162,
+      "category_3": 0.5051263749371638
+    },
+    "direct_activity": 0.635409809075844,
+    "ai2ai_confidence": 0.12387285889069999,
+    "network_confidence": 0.030563192381993565,
+    "context_match": 0.3724667615353072
+  },
+  {
+    "user_id": "user_0455",
+    "preferences": {
+      "category_1": 0.5940435934521513,
+      "category_2": 0.17758369416386166,
+      "category_3": 0.8704807719184628
+    },
+    "direct_activity": 0.5868802484224268,
+    "ai2ai_confidence": 0.34975990164465454,
+    "network_confidence": 0.16351361451785085,
+    "context_match": 0.8944919203121954
+  },
+  {
+    "user_id": "user_0456",
+    "preferences": {
+      "category_1": 0.7489611344849333,
+      "category_2": 0.6888505376159543,
+      "category_3": 0.28506937643476193
+    },
+    "direct_activity": 0.3865656707409847,
+    "ai2ai_confidence": 0.1629074055986205,
+    "network_confidence": 0.5722580610203007,
+    "context_match": 0.9649176092022551
+  },
+  {
+    "user_id": "user_0457",
+    "preferences": {
+      "category_1": 0.8571111874383023,
+      "category_2": 0.647379891761482,
+      "category_3": 0.6776952460909708
+    },
+    "direct_activity": 0.2690835792689571,
+    "ai2ai_confidence": 0.4095071964955421,
+    "network_confidence": 0.020052357499524387,
+    "context_match": 0.7803036642606433
+  },
+  {
+    "user_id": "user_0458",
+    "preferences": {
+      "category_1": 0.7675727284118513,
+      "category_2": 0.008897986070045771,
+      "category_3": 0.9115154380523718
+    },
+    "direct_activity": 0.6473715541750241,
+    "ai2ai_confidence": 0.6011419504945338,
+    "network_confidence": 0.008463727114871311,
+    "context_match": 0.2523904413606515
+  },
+  {
+    "user_id": "user_0459",
+    "preferences": {
+      "category_1": 0.8050855691954864,
+      "category_2": 0.3054596983845568,
+      "category_3": 0.9670244433683767
+    },
+    "direct_activity": 0.642740311290164,
+    "ai2ai_confidence": 0.42380680065961907,
+    "network_confidence": 0.37647545227100077,
+    "context_match": 0.3487091992720813
+  },
+  {
+    "user_id": "user_0460",
+    "preferences": {
+      "category_1": 0.25199870927787604,
+      "category_2": 0.4666980154972157,
+      "category_3": 0.6771961563873133
+    },
+    "direct_activity": 0.8243108214706636,
+    "ai2ai_confidence": 0.3971525399721202,
+    "network_confidence": 0.10231210296860016,
+    "context_match": 0.5115137174683018
+  },
+  {
+    "user_id": "user_0461",
+    "preferences": {
+      "category_1": 0.6623554525262523,
+      "category_2": 0.8432839500857772,
+      "category_3": 0.3742297631610715
+    },
+    "direct_activity": 0.6473421200645904,
+    "ai2ai_confidence": 0.6090501046380168,
+    "network_confidence": 0.29847592625329744,
+    "context_match": 0.10810453058584346
+  },
+  {
+    "user_id": "user_0462",
+    "preferences": {
+      "category_1": 0.06383705389710992,
+      "category_2": 0.9883609658217671,
+      "category_3": 0.6405947456146558
+    },
+    "direct_activity": 0.8614916002518306,
+    "ai2ai_confidence": 0.26114690792649686,
+    "network_confidence": 0.7110937755717918,
+    "context_match": 0.8923737976809327
+  },
+  {
+    "user_id": "user_0463",
+    "preferences": {
+      "category_1": 0.29879111191898644,
+      "category_2": 0.14992929635415653,
+      "category_3": 0.7654743883036231
+    },
+    "direct_activity": 0.8996870447454949,
+    "ai2ai_confidence": 0.8054298226335298,
+    "network_confidence": 0.8023637444528116,
+    "context_match": 0.6000333011455716
+  },
+  {
+    "user_id": "user_0464",
+    "preferences": {
+      "category_1": 0.660530323681129,
+      "category_2": 0.6807557503873818,
+      "category_3": 0.7212831975926106
+    },
+    "direct_activity": 0.6554005704624416,
+    "ai2ai_confidence": 0.9974690995782959,
+    "network_confidence": 0.2594262727119889,
+    "context_match": 0.4185656860813416
+  },
+  {
+    "user_id": "user_0465",
+    "preferences": {
+      "category_1": 0.38827492100545835,
+      "category_2": 0.03531900482642425,
+      "category_3": 0.7080689593758711
+    },
+    "direct_activity": 0.5720424340368412,
+    "ai2ai_confidence": 0.1899151604113507,
+    "network_confidence": 0.7265498765809035,
+    "context_match": 0.2223631939762689
+  },
+  {
+    "user_id": "user_0466",
+    "preferences": {
+      "category_1": 0.5346351015442131,
+      "category_2": 0.784897055296117,
+      "category_3": 0.9065265055050548
+    },
+    "direct_activity": 0.6718684759624088,
+    "ai2ai_confidence": 0.5073148556068153,
+    "network_confidence": 0.8454192442445952,
+    "context_match": 0.8406386945964
+  },
+  {
+    "user_id": "user_0467",
+    "preferences": {
+      "category_1": 0.8764947843421105,
+      "category_2": 0.18113585780400077,
+      "category_3": 0.09760306381270933
+    },
+    "direct_activity": 0.12794413969605334,
+    "ai2ai_confidence": 0.2586518505602079,
+    "network_confidence": 0.8083438691424701,
+    "context_match": 0.7629182183193025
+  },
+  {
+    "user_id": "user_0468",
+    "preferences": {
+      "category_1": 0.18306835701259505,
+      "category_2": 0.6797123692899283,
+      "category_3": 0.33563246320511875
+    },
+    "direct_activity": 0.0892998220194392,
+    "ai2ai_confidence": 0.3552833961198324,
+    "network_confidence": 0.744209929342808,
+    "context_match": 0.30708527133220853
+  },
+  {
+    "user_id": "user_0469",
+    "preferences": {
+      "category_1": 0.7880904368075993,
+      "category_2": 0.33131713697077647,
+      "category_3": 0.2605592354057036
+    },
+    "direct_activity": 0.29405112165034275,
+    "ai2ai_confidence": 0.8512138882114102,
+    "network_confidence": 0.4705365676706802,
+    "context_match": 0.8663933696925397
+  },
+  {
+    "user_id": "user_0470",
+    "preferences": {
+      "category_1": 0.5835746197425805,
+      "category_2": 0.944300984000077,
+      "category_3": 0.07121573740407583
+    },
+    "direct_activity": 0.8894260614703878,
+    "ai2ai_confidence": 0.5004773744927044,
+    "network_confidence": 0.86749775469823,
+    "context_match": 0.3816692198055871
+  },
+  {
+    "user_id": "user_0471",
+    "preferences": {
+      "category_1": 0.29835575381746327,
+      "category_2": 0.05406197064257512,
+      "category_3": 0.8542397704033438
+    },
+    "direct_activity": 0.13736525917312392,
+    "ai2ai_confidence": 0.2002965907951435,
+    "network_confidence": 0.40919184675210407,
+    "context_match": 0.5694035879734539
+  },
+  {
+    "user_id": "user_0472",
+    "preferences": {
+      "category_1": 0.9066209345061276,
+      "category_2": 0.45757143306154124,
+      "category_3": 0.3163834576487089
+    },
+    "direct_activity": 0.715668456110036,
+    "ai2ai_confidence": 0.7789411774338145,
+    "network_confidence": 0.48758084574810745,
+    "context_match": 0.6310327722626952
+  },
+  {
+    "user_id": "user_0473",
+    "preferences": {
+      "category_1": 0.17682426656346073,
+      "category_2": 0.634498969152671,
+      "category_3": 0.004713501423993849
+    },
+    "direct_activity": 0.2735278622014996,
+    "ai2ai_confidence": 0.7611932812149992,
+    "network_confidence": 0.16860575658290766,
+    "context_match": 0.7644837361457579
+  },
+  {
+    "user_id": "user_0474",
+    "preferences": {
+      "category_1": 0.4895770906300164,
+      "category_2": 0.7635691671054993,
+      "category_3": 0.0880413437590446
+    },
+    "direct_activity": 0.6144797387250618,
+    "ai2ai_confidence": 0.6334875407025942,
+    "network_confidence": 0.4033934803979504,
+    "context_match": 0.9653278401300331
+  },
+  {
+    "user_id": "user_0475",
+    "preferences": {
+      "category_1": 0.38331642005346067,
+      "category_2": 0.037725318474937986,
+      "category_3": 0.19941425122811696
+    },
+    "direct_activity": 0.373101405427371,
+    "ai2ai_confidence": 0.014077118724632132,
+    "network_confidence": 0.32221313384806904,
+    "context_match": 0.833228666566564
+  },
+  {
+    "user_id": "user_0476",
+    "preferences": {
+      "category_1": 0.19057670994040454,
+      "category_2": 0.6767481416771101,
+      "category_3": 0.6266869286716226
+    },
+    "direct_activity": 0.24882312287588193,
+    "ai2ai_confidence": 0.6935247471703971,
+    "network_confidence": 0.3443497740633209,
+    "context_match": 0.12893080042830274
+  },
+  {
+    "user_id": "user_0477",
+    "preferences": {
+      "category_1": 0.3835504763076937,
+      "category_2": 0.5886706881680719,
+      "category_3": 0.16702018726830936
+    },
+    "direct_activity": 0.8238438296744104,
+    "ai2ai_confidence": 0.29820225349413876,
+    "network_confidence": 0.2908277918094866,
+    "context_match": 0.7278319114468128
+  },
+  {
+    "user_id": "user_0478",
+    "preferences": {
+      "category_1": 0.5963699186155024,
+      "category_2": 0.33783515120793295,
+      "category_3": 0.8879740438370417
+    },
+    "direct_activity": 0.9954724098279284,
+    "ai2ai_confidence": 0.34273283925755993,
+    "network_confidence": 0.9013837761445245,
+    "context_match": 0.3592508863666324
+  },
+  {
+    "user_id": "user_0479",
+    "preferences": {
+      "category_1": 0.18842603389086943,
+      "category_2": 0.9480843537069427,
+      "category_3": 0.9182054088414334
+    },
+    "direct_activity": 0.4033916445011253,
+    "ai2ai_confidence": 0.2284182848358255,
+    "network_confidence": 0.7271688281363213,
+    "context_match": 0.13120577641718256
+  },
+  {
+    "user_id": "user_0480",
+    "preferences": {
+      "category_1": 0.7340766193115209,
+      "category_2": 0.5896928347992416,
+      "category_3": 0.16898474189014712
+    },
+    "direct_activity": 0.3665914513998485,
+    "ai2ai_confidence": 0.6505403801212247,
+    "network_confidence": 0.037363427692595264,
+    "context_match": 0.8765441375994762
+  },
+  {
+    "user_id": "user_0481",
+    "preferences": {
+      "category_1": 0.2557891739252929,
+      "category_2": 0.5347334341938405,
+      "category_3": 0.048586961581737254
+    },
+    "direct_activity": 0.9946802336570648,
+    "ai2ai_confidence": 0.6619699158378947,
+    "network_confidence": 0.6535676184007526,
+    "context_match": 0.019741766514145165
+  },
+  {
+    "user_id": "user_0482",
+    "preferences": {
+      "category_1": 0.6897497483774261,
+      "category_2": 0.41677556517954384,
+      "category_3": 0.3802537629276146
+    },
+    "direct_activity": 0.5472823847289255,
+    "ai2ai_confidence": 0.4743963383277372,
+    "network_confidence": 0.15312709812443637,
+    "context_match": 0.6951920292209091
+  },
+  {
+    "user_id": "user_0483",
+    "preferences": {
+      "category_1": 0.6303113401629369,
+      "category_2": 0.3011164547567923,
+      "category_3": 0.661664576090722
+    },
+    "direct_activity": 0.6624829658888968,
+    "ai2ai_confidence": 0.2699771495371891,
+    "network_confidence": 0.6056343369240041,
+    "context_match": 0.13716352297980894
+  },
+  {
+    "user_id": "user_0484",
+    "preferences": {
+      "category_1": 0.8306527204708898,
+      "category_2": 0.10491423690009694,
+      "category_3": 0.7187662245161679
+    },
+    "direct_activity": 0.11773456843723928,
+    "ai2ai_confidence": 0.11401255268424793,
+    "network_confidence": 0.10626370830639498,
+    "context_match": 0.1986466617062822
+  },
+  {
+    "user_id": "user_0485",
+    "preferences": {
+      "category_1": 0.1997493861463585,
+      "category_2": 0.26299391561373187,
+      "category_3": 0.5231461075925806
+    },
+    "direct_activity": 0.20167318998218942,
+    "ai2ai_confidence": 0.7034367502462583,
+    "network_confidence": 0.29535120100061296,
+    "context_match": 0.039405707628568654
+  },
+  {
+    "user_id": "user_0486",
+    "preferences": {
+      "category_1": 0.49635471336809267,
+      "category_2": 0.207693984271615,
+      "category_3": 0.9331243446518774
+    },
+    "direct_activity": 0.3306036161967014,
+    "ai2ai_confidence": 0.0027379990573926927,
+    "network_confidence": 0.6716331324652048,
+    "context_match": 0.9068800442697921
+  },
+  {
+    "user_id": "user_0487",
+    "preferences": {
+      "category_1": 0.8352321652632412,
+      "category_2": 0.66902193050164,
+      "category_3": 0.1491444926667661
+    },
+    "direct_activity": 0.09008267357592448,
+    "ai2ai_confidence": 0.5117053469646589,
+    "network_confidence": 0.7235636168984789,
+    "context_match": 0.10129047859295737
+  },
+  {
+    "user_id": "user_0488",
+    "preferences": {
+      "category_1": 0.2558921027506649,
+      "category_2": 0.23116028649174591,
+      "category_3": 0.9886659307576041
+    },
+    "direct_activity": 0.29602217871043845,
+    "ai2ai_confidence": 0.4642773572361484,
+    "network_confidence": 0.09980891505761746,
+    "context_match": 0.1747018089453909
+  },
+  {
+    "user_id": "user_0489",
+    "preferences": {
+      "category_1": 0.03944451996869358,
+      "category_2": 0.29056717723767944,
+      "category_3": 0.8015961026904473
+    },
+    "direct_activity": 0.31270710696276427,
+    "ai2ai_confidence": 0.7385401957921762,
+    "network_confidence": 0.09499847033058029,
+    "context_match": 0.7582040048412383
+  },
+  {
+    "user_id": "user_0490",
+    "preferences": {
+      "category_1": 0.045889087093415215,
+      "category_2": 0.8519987250744882,
+      "category_3": 0.663355027490844
+    },
+    "direct_activity": 0.17051227635637534,
+    "ai2ai_confidence": 0.3575274042377443,
+    "network_confidence": 0.43771451678193474,
+    "context_match": 0.6218070333325072
+  },
+  {
+    "user_id": "user_0491",
+    "preferences": {
+      "category_1": 0.8784755373974736,
+      "category_2": 0.0929513154374223,
+      "category_3": 0.8149642895364964
+    },
+    "direct_activity": 0.18286942030364273,
+    "ai2ai_confidence": 0.4007775142807529,
+    "network_confidence": 0.962309930149754,
+    "context_match": 0.27183309075019013
+  },
+  {
+    "user_id": "user_0492",
+    "preferences": {
+      "category_1": 0.38571548975931425,
+      "category_2": 0.850671578036584,
+      "category_3": 0.7998990969489501
+    },
+    "direct_activity": 0.6488464838722637,
+    "ai2ai_confidence": 0.7969095570354069,
+    "network_confidence": 0.11305655637764611,
+    "context_match": 0.6961698735237949
+  },
+  {
+    "user_id": "user_0493",
+    "preferences": {
+      "category_1": 0.058646395665177375,
+      "category_2": 0.9424669879999,
+      "category_3": 0.1593953974821649
+    },
+    "direct_activity": 0.41602771663089655,
+    "ai2ai_confidence": 0.5907503029903385,
+    "network_confidence": 0.8022647840450959,
+    "context_match": 0.6783931362492055
+  },
+  {
+    "user_id": "user_0494",
+    "preferences": {
+      "category_1": 0.1812605605373021,
+      "category_2": 0.3797507791158876,
+      "category_3": 0.3585989148270966
+    },
+    "direct_activity": 0.02881622957122154,
+    "ai2ai_confidence": 0.6844641333814728,
+    "network_confidence": 0.8385364765471117,
+    "context_match": 0.9734445802253693
+  },
+  {
+    "user_id": "user_0495",
+    "preferences": {
+      "category_1": 0.13065532954841586,
+      "category_2": 0.9203979856381027,
+      "category_3": 0.11293747937376741
+    },
+    "direct_activity": 0.41128426373517424,
+    "ai2ai_confidence": 0.04597232537967,
+    "network_confidence": 0.26161286722848986,
+    "context_match": 0.3142379448738709
+  },
+  {
+    "user_id": "user_0496",
+    "preferences": {
+      "category_1": 0.7045681764806231,
+      "category_2": 0.6779289210201643,
+      "category_3": 0.7675287182899103
+    },
+    "direct_activity": 0.5766490081233795,
+    "ai2ai_confidence": 0.5650122256873914,
+    "network_confidence": 0.9778955575507985,
+    "context_match": 0.6698443582143154
+  },
+  {
+    "user_id": "user_0497",
+    "preferences": {
+      "category_1": 0.3383006417684232,
+      "category_2": 0.523103175224674,
+      "category_3": 0.7005801842975543
+    },
+    "direct_activity": 0.09524213845169471,
+    "ai2ai_confidence": 0.661713262845963,
+    "network_confidence": 0.2485769948507076,
+    "context_match": 0.34574948745750367
+  },
+  {
+    "user_id": "user_0498",
+    "preferences": {
+      "category_1": 0.6762955683574412,
+      "category_2": 0.3848766174067143,
+      "category_3": 0.8390330212297873
+    },
+    "direct_activity": 0.5583442367021879,
+    "ai2ai_confidence": 0.9877916247614772,
+    "network_confidence": 0.05456611522767585,
+    "context_match": 0.6433987165568129
+  },
+  {
+    "user_id": "user_0499",
+    "preferences": {
+      "category_1": 0.15692737330174122,
+      "category_2": 0.8488455747760008,
+      "category_3": 0.8518711514460662
+    },
+    "direct_activity": 0.8694156346127679,
+    "ai2ai_confidence": 0.07486524247698478,
+    "network_confidence": 0.49164796114440124,
+    "context_match": 0.24089181669723114
+  }
+]

@@ -1,0 +1,23 @@
+{
+  "version": "v1",
+  "window_start": "2026-02-27T11:00:00Z",
+  "window_end": "2026-02-27T11:15:00Z",
+  "incidents": [
+    {
+      "incident_id": "rollback-drill-001",
+      "signal": "unexpected_enforce_block_spike",
+      "observed_enforce_block_rate": 0.82,
+      "threshold": 0.65,
+      "rollback_required": true,
+      "notes": "Canary cohort exceeded enforce block threshold"
+    },
+    {
+      "incident_id": "rollback-drill-002",
+      "signal": "policy_reason_outlier",
+      "observed_unknown_reason_rate": 0.00,
+      "threshold": 0.05,
+      "rollback_required": false,
+      "notes": "Reason codes stayed within expected policy set"
+    }
+  ]
+}

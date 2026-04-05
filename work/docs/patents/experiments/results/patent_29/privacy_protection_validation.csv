@@ -1,0 +1,6 @@
+scenario,rate,meets_target,applied,precision_km
+agentid_only,1.0,True,,
+pii_removal,1.0,True,,
+quantum_anonymization,,,True,
+location_obfuscation,,,,1.0
+api_privacy,1.0,True,,

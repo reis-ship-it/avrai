@@ -1,0 +1,114 @@
+buildscript {
+    ext.kotlin_version = '2.1.0'
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.12.3'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.google.gms:google-services:4.4.1'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.buildDir = '../build'
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects { project ->
+    def targetJvmVersion = '17'
+    project.afterEvaluate {
+        tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+            kotlinOptions {
+                jvmTarget = targetJvmVersion
+            }
+        }
+
+        tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile).configureEach {
+            kotlinOptions {
+                jvmTarget = targetJvmVersion
+            }
+        }
+
+        def javaVersion = targetJvmVersion == '17' ? JavaVersion.VERSION_17 : JavaVersion.VERSION_1_8
+        tasks.withType(JavaCompile).configureEach {
+            sourceCompatibility = javaVersion
+            targetCompatibility = javaVersion
+        }
+
+        def androidExtension = project.extensions.findByName("android")
+        if (androidExtension != null) {
+            if (project.name != 'app') {
+                try {
+                    androidExtension.compileSdkVersion(34)
+                } catch (Exception ignored) {
+                    try {
+                        androidExtension.compileSdk = 34
+                    } catch (Exception ignored2) {}
+                }
+            }
+            androidExtension.compileOptions {
+                sourceCompatibility = javaVersion
+                targetCompatibility = javaVersion
+            }
+        }
+    }
+}
+subprojects {
+    project.evaluationDependsOn(':app')
+}
+
+subprojects { project ->
+    if (project.name == 'device_calendar') {
+        project.plugins.withId("com.android.library") {
+            def androidExtension = project.extensions.findByName("android")
+            if (androidExtension != null && androidExtension.hasProperty("namespace")) {
+                if (androidExtension.namespace == null || androidExtension.namespace.toString().trim().isEmpty()) {
+                    androidExtension.namespace = "com.builttoroam.devicecalendar"
+                }
+            }
+        }
+    }
+}
+
+// Force dependencies to resolve to versions compatible with our Kotlin toolchain
+allprojects {
+    configurations.all {
+        resolutionStrategy {
+            // http4k 5.47.0.0 is compiled with Kotlin 2.0 metadata. Pin to an older release built with Kotlin 1.8
+            force 'org.http4k:http4k-core:5.20.0.0'
+            // Force a newer appcompat version that has the ABC resources
+            force 'androidx.appcompat:appcompat:1.6.1'
+            force 'androidx.appcompat:appcompat-resources:1.6.1'
+            // Force an older preference version that doesn't reference missing ABC resources
+            force 'androidx.preference:preference:1.1.1'
+        }
+    }
+}
+
+// Skip compiling Patrol's Android code when assembling the app debug APK
+gradle.taskGraph.whenReady { graph ->
+    if (graph.hasTask(':app:assembleDebug')) {
+        try {
+            def patrol = project(':patrol')
+            patrol.tasks.matching { it.name.startsWith('compileDebug') || it.name.startsWith('bundleLibCompileToJarDebug') }.all { t ->
+                t.enabled = false
+            }
+            println('Patrol Android compile tasks disabled for :app:assembleDebug')
+        } catch (Throwable ignored) {
+            // Patrol module may not be present; ignore
+        }
+    }
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}

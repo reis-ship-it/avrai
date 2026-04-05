@@ -1,0 +1,3 @@
+compatibility_range,ground_truth_success_rate,no_privacy_success_rate,with_privacy_success_rate,privacy_error,no_privacy_error
+0.0-0.3,0.42971639950678175,1.0,1.0,0.5702836004932182,0.5702836004932182
+0.3-0.5,0.5238095238095238,1.0,0.8935130150559821,0.3697034912464583,0.47619047619047616

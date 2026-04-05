@@ -1,0 +1,24 @@
+[package]
+name = "signal_ffi_wrapper"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+# We build:
+# - cdylib: Android (.so) + desktop (.dylib/.so) for Dart FFI
+# - staticlib: iOS static linking via XCFramework
+crate-type = ["cdylib", "staticlib"]
+
+[dependencies]
+# FFI support
+libc = "0.2"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+panic = "abort"
+
+[profile.dev]
+opt-level = 0
+debug = true

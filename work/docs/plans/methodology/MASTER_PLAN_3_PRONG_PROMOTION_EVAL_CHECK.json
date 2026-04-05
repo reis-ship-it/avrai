@@ -1,0 +1,42 @@
+{
+  "approvals_attempted": 1,
+  "candidate_summaries": [
+    {
+      "candidate_id": "baseline-contract-candidate",
+      "compression_budget_exceeded_suites": [],
+      "compression_rollout_profile": null,
+      "missing_required_compression_suites": [],
+      "missing_required_suites": [],
+      "non_passing_required_compression_suites": [],
+      "non_passing_required_suites": [
+        "contradiction_stress"
+      ],
+      "promotion_decision": "hold"
+    },
+    {
+      "candidate_id": "candidate-reality-v1-canary-a",
+      "compression_budget_exceeded_suites": [],
+      "compression_rollout_profile": "compressed_reality_model_v1",
+      "missing_required_compression_suites": [],
+      "missing_required_suites": [],
+      "non_passing_required_compression_suites": [],
+      "non_passing_required_suites": [],
+      "promotion_decision": "approve"
+    }
+  ],
+  "compression_approvals_attempted": 1,
+  "errors": [],
+  "has_errors": false,
+  "manifest_version": "v2",
+  "required_compression_regression_suites": [
+    "ranking_drift",
+    "calibration_drift",
+    "contradiction_detection_degradation",
+    "uncertainty_honesty_regression"
+  ],
+  "required_suites": [
+    "offline_replay",
+    "adversarial_robustness",
+    "contradiction_stress"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "target_accuracy": 95.0,
+  "approaches_tested": 24,
+  "approaches_meeting_target": 2,
+  "best_approach": {
+    "name": "Post-Normalization Correction",
+    "parameter": "correction_strength=0.95",
+    "accuracy": 97.81651703704965
+  }
+}

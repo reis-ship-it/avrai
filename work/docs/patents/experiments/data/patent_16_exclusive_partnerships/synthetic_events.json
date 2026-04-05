@@ -1,0 +1,2002 @@
+[
+  {
+    "event_id": "event_0000",
+    "expert_id": "expert_0006",
+    "partner_id": "partner_0036",
+    "partnership_id": "partnership_0036",
+    "category": "technology",
+    "event_date": 1758717632.301638,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0001",
+    "expert_id": "expert_0022",
+    "partner_id": "partner_0008",
+    "partnership_id": "partnership_0008",
+    "category": "technology",
+    "event_date": 1766934048.5687664,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0002",
+    "expert_id": "expert_0028",
+    "partner_id": "partner_0010",
+    "partnership_id": "partnership_0010",
+    "category": "health",
+    "event_date": 1772247169.1273046,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0003",
+    "expert_id": "expert_0033",
+    "partner_id": "partner_0041",
+    "partnership_id": "partnership_0041",
+    "category": "technology",
+    "event_date": 1769514211.2311466,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0004",
+    "expert_id": "expert_0006",
+    "partner_id": "partner_0042",
+    "partnership_id": "partnership_0042",
+    "category": "science",
+    "event_date": 1768959366.8603282,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0005",
+    "expert_id": "expert_0035",
+    "partner_id": "partner_0047",
+    "partnership_id": null,
+    "category": "science",
+    "event_date": 1762685732.3271596,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0006",
+    "expert_id": "expert_0021",
+    "partner_id": "partner_0045",
+    "partnership_id": "partnership_0045",
+    "category": "science",
+    "event_date": 1762808317.7141151,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0007",
+    "expert_id": "expert_0031",
+    "partner_id": "partner_0032",
+    "partnership_id": null,
+    "category": "art",
+    "event_date": 1769264713.6633155,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0008",
+    "expert_id": "expert_0040",
+    "partner_id": "partner_0005",
+    "partnership_id": null,
+    "category": "business",
+    "event_date": 1772652551.4254656,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0009",
+    "expert_id": "expert_0049",
+    "partner_id": "partner_0021",
+    "partnership_id": "partnership_0021",
+    "category": "science",
+    "event_date": 1771470779.80212,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0010",
+    "expert_id": "expert_0028",
+    "partner_id": "partner_0047",
+    "partnership_id": "partnership_0047",
+    "category": "health",
+    "event_date": 1768481145.5599961,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0011",
+    "expert_id": "expert_0004",
+    "partner_id": "partner_0007",
+    "partnership_id": "partnership_0007",
+    "category": "science",
+    "event_date": 1769547298.4482214,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0012",
+    "expert_id": "expert_0035",
+    "partner_id": "partner_0037",
+    "partnership_id": null,
+    "category": "science",
+    "event_date": 1767057778.4939373,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0013",
+    "expert_id": "expert_0002",
+    "partner_id": "partner_0023",
+    "partnership_id": "partnership_0023",
+    "category": "art",
+    "event_date": 1765256801.274937,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0014",
+    "expert_id": "expert_0022",
+    "partner_id": "partner_0006",
+    "partnership_id": "partnership_0006",
+    "category": "health",
+    "event_date": 1761839868.640478,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0015",
+    "expert_id": "expert_0047",
+    "partner_id": "partner_0039",
+    "partnership_id": "partnership_0039",
+    "category": "science",
+    "event_date": 1772322821.1931858,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0016",
+    "expert_id": "expert_0011",
+    "partner_id": "partner_0010",
+    "partnership_id": "partnership_0010",
+    "category": "business",
+    "event_date": 1772970237.2848237,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0017",
+    "expert_id": "expert_0026",
+    "partner_id": "partner_0021",
+    "partnership_id": null,
+    "category": "science",
+    "event_date": 1758958235.8164647,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0018",
+    "expert_id": "expert_0024",
+    "partner_id": "partner_0006",
+    "partnership_id": null,
+    "category": "technology",
+    "event_date": 1762722120.7118402,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0019",
+    "expert_id": "expert_0022",
+    "partner_id": "partner_0029",
+    "partnership_id": "partnership_0029",
+    "category": "art",
+    "event_date": 1771925600.561035,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0020",
+    "expert_id": "expert_0001",
+    "partner_id": "partner_0014",
+    "partnership_id": null,
+    "category": "science",
+    "event_date": 1771333740.1131036,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0021",
+    "expert_id": "expert_0049",
+    "partner_id": "partner_0004",
+    "partnership_id": "partnership_0004",
+    "category": "art",
+    "event_date": 1764769701.2148755,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0022",
+    "expert_id": "expert_0034",
+    "partner_id": "partner_0043",
+    "partnership_id": "partnership_0043",
+    "category": "art",
+    "event_date": 1764033782.915733,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0023",
+    "expert_id": "expert_0011",
+    "partner_id": "partner_0016",
+    "partnership_id": "partnership_0016",
+    "category": "health",
+    "event_date": 1773179774.3225698,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0024",
+    "expert_id": "expert_0038",
+    "partner_id": "partner_0006",
+    "partnership_id": "partnership_0006",
+    "category": "business",
+    "event_date": 1773542091.9949658,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0025",
+    "expert_id": "expert_0038",
+    "partner_id": "partner_0027",
+    "partnership_id": null,
+    "category": "health",
+    "event_date": 1763948884.2770882,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0026",
+    "expert_id": "expert_0016",
+    "partner_id": "partner_0012",
+    "partnership_id": null,
+    "category": "technology",
+    "event_date": 1760371281.5494711,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0027",
+    "expert_id": "expert_0043",
+    "partner_id": "partner_0034",
+    "partnership_id": "partnership_0034",
+    "category": "science",
+    "event_date": 1769595787.0504391,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0028",
+    "expert_id": "expert_0021",
+    "partner_id": "partner_0042",
+    "partnership_id": "partnership_0042",
+    "category": "health",
+    "event_date": 1764237130.6453943,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0029",
+    "expert_id": "expert_0019",
+    "partner_id": "partner_0046",
+    "partnership_id": null,
+    "category": "health",
+    "event_date": 1763454774.4282014,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0030",
+    "expert_id": "expert_0044",
+    "partner_id": "partner_0025",
+    "partnership_id": "partnership_0025",
+    "category": "art",
+    "event_date": 1763382753.382927,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0031",
+    "expert_id": "expert_0024",
+    "partner_id": "partner_0042",
+    "partnership_id": "partnership_0042",
+    "category": "science",
+    "event_date": 1767194981.168934,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0032",
+    "expert_id": "expert_0000",
+    "partner_id": "partner_0035",
+    "partnership_id": "partnership_0035",
+    "category": "art",
+    "event_date": 1768145246.2891378,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0033",
+    "expert_id": "expert_0038",
+    "partner_id": "partner_0037",
+    "partnership_id": "partnership_0037",
+    "category": "art",
+    "event_date": 1763034840.4410095,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0034",
+    "expert_id": "expert_0032",
+    "partner_id": "partner_0013",
+    "partnership_id": "partnership_0013",
+    "category": "business",
+    "event_date": 1765804254.6509876,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0035",
+    "expert_id": "expert_0010",
+    "partner_id": "partner_0047",
+    "partnership_id": null,
+    "category": "technology",
+    "event_date": 1770916931.2432597,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0036",
+    "expert_id": "expert_0021",
+    "partner_id": "partner_0039",
+    "partnership_id": "partnership_0039",
+    "category": "technology",
+    "event_date": 1762986204.4868178,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0037",
+    "expert_id": "expert_0019",
+    "partner_id": "partner_0043",
+    "partnership_id": null,
+    "category": "science",
+    "event_date": 1771300880.036842,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0038",
+    "expert_id": "expert_0015",
+    "partner_id": "partner_0002",
+    "partnership_id": "partnership_0002",
+    "category": "business",
+    "event_date": 1771116424.452821,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0039",
+    "expert_id": "expert_0026",
+    "partner_id": "partner_0029",
+    "partnership_id": null,
+    "category": "health",
+    "event_date": 1768079291.145413,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0040",
+    "expert_id": "expert_0025",
+    "partner_id": "partner_0031",
+    "partnership_id": "partnership_0031",
+    "category": "science",
+    "event_date": 1761596615.118152,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0041",
+    "expert_id": "expert_0049",
+    "partner_id": "partner_0048",
+    "partnership_id": "partnership_0048",
+    "category": "technology",
+    "event_date": 1760867787.875238,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0042",
+    "expert_id": "expert_0033",
+    "partner_id": "partner_0044",
+    "partnership_id": "partnership_0044",
+    "category": "business",
+    "event_date": 1770678752.4824252,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0043",
+    "expert_id": "expert_0029",
+    "partner_id": "partner_0007",
+    "partnership_id": "partnership_0007",
+    "category": "science",
+    "event_date": 1759353754.6420891,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0044",
+    "expert_id": "expert_0038",
+    "partner_id": "partner_0035",
+    "partnership_id": "partnership_0035",
+    "category": "art",
+    "event_date": 1771036389.3063688,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0045",
+    "expert_id": "expert_0046",
+    "partner_id": "partner_0039",
+    "partnership_id": null,
+    "category": "health",
+    "event_date": 1773347774.3068938,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0046",
+    "expert_id": "expert_0010",
+    "partner_id": "partner_0028",
+    "partnership_id": null,
+    "category": "business",
+    "event_date": 1765209430.567054,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0047",
+    "expert_id": "expert_0017",
+    "partner_id": "partner_0040",
+    "partnership_id": null,
+    "category": "health",
+    "event_date": 1765572243.181095,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0048",
+    "expert_id": "expert_0004",
+    "partner_id": "partner_0028",
+    "partnership_id": "partnership_0028",
+    "category": "art",
+    "event_date": 1766109211.125871,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0049",
+    "expert_id": "expert_0005",
+    "partner_id": "partner_0034",
+    "partnership_id": "partnership_0034",
+    "category": "science",
+    "event_date": 1762219602.4416797,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0050",
+    "expert_id": "expert_0045",
+    "partner_id": "partner_0009",
+    "partnership_id": "partnership_0009",
+    "category": "science",
+    "event_date": 1760918476.7098176,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0051",
+    "expert_id": "expert_0029",
+    "partner_id": "partner_0034",
+    "partnership_id": "partnership_0034",
+    "category": "business",
+    "event_date": 1759571645.4027023,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0052",
+    "expert_id": "expert_0049",
+    "partner_id": "partner_0024",
+    "partnership_id": null,
+    "category": "health",
+    "event_date": 1759541114.647398,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0053",
+    "expert_id": "expert_0036",
+    "partner_id": "partner_0048",
+    "partnership_id": "partnership_0048",
+    "category": "business",
+    "event_date": 1773285915.0627992,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0054",
+    "expert_id": "expert_0048",
+    "partner_id": "partner_0019",
+    "partnership_id": null,
+    "category": "business",
+    "event_date": 1765990747.11714,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0055",
+    "expert_id": "expert_0034",
+    "partner_id": "partner_0026",
+    "partnership_id": null,
+    "category": "health",
+    "event_date": 1771845580.8436615,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0056",
+    "expert_id": "expert_0014",
+    "partner_id": "partner_0031",
+    "partnership_id": null,
+    "category": "art",
+    "event_date": 1771012308.1108925,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0057",
+    "expert_id": "expert_0042",
+    "partner_id": "partner_0021",
+    "partnership_id": "partnership_0021",
+    "category": "business",
+    "event_date": 1765350879.4158943,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0058",
+    "expert_id": "expert_0039",
+    "partner_id": "partner_0008",
+    "partnership_id": null,
+    "category": "health",
+    "event_date": 1769835227.1012788,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0059",
+    "expert_id": "expert_0042",
+    "partner_id": "partner_0036",
+    "partnership_id": "partnership_0036",
+    "category": "technology",
+    "event_date": 1758992140.5764506,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0060",
+    "expert_id": "expert_0011",
+    "partner_id": "partner_0029",
+    "partnership_id": "partnership_0029",
+    "category": "technology",
+    "event_date": 1759878309.2479672,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0061",
+    "expert_id": "expert_0020",
+    "partner_id": "partner_0029",
+    "partnership_id": "partnership_0029",
+    "category": "art",
+    "event_date": 1762618709.310499,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0062",
+    "expert_id": "expert_0026",
+    "partner_id": "partner_0048",
+    "partnership_id": "partnership_0048",
+    "category": "art",
+    "event_date": 1770411402.7336018,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0063",
+    "expert_id": "expert_0034",
+    "partner_id": "partner_0047",
+    "partnership_id": "partnership_0047",
+    "category": "technology",
+    "event_date": 1771557292.8651493,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0064",
+    "expert_id": "expert_0004",
+    "partner_id": "partner_0041",
+    "partnership_id": "partnership_0041",
+    "category": "technology",
+    "event_date": 1774123324.8654122,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0065",
+    "expert_id": "expert_0001",
+    "partner_id": "partner_0012",
+    "partnership_id": null,
+    "category": "health",
+    "event_date": 1770302593.105973,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0066",
+    "expert_id": "expert_0007",
+    "partner_id": "partner_0042",
+    "partnership_id": "partnership_0042",
+    "category": "health",
+    "event_date": 1760942608.558087,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0067",
+    "expert_id": "expert_0049",
+    "partner_id": "partner_0016",
+    "partnership_id": "partnership_0016",
+    "category": "art",
+    "event_date": 1773312275.5259573,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0068",
+    "expert_id": "expert_0045",
+    "partner_id": "partner_0047",
+    "partnership_id": "partnership_0047",
+    "category": "technology",
+    "event_date": 1761182215.0741022,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0069",
+    "expert_id": "expert_0006",
+    "partner_id": "partner_0019",
+    "partnership_id": "partnership_0019",
+    "category": "health",
+    "event_date": 1770668977.7302482,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0070",
+    "expert_id": "expert_0024",
+    "partner_id": "partner_0043",
+    "partnership_id": "partnership_0043",
+    "category": "business",
+    "event_date": 1758972109.1897867,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0071",
+    "expert_id": "expert_0044",
+    "partner_id": "partner_0037",
+    "partnership_id": "partnership_0037",
+    "category": "science",
+    "event_date": 1773214509.0649664,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0072",
+    "expert_id": "expert_0038",
+    "partner_id": "partner_0043",
+    "partnership_id": null,
+    "category": "technology",
+    "event_date": 1760157527.4187498,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0073",
+    "expert_id": "expert_0022",
+    "partner_id": "partner_0002",
+    "partnership_id": "partnership_0002",
+    "category": "health",
+    "event_date": 1770955683.9890223,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0074",
+    "expert_id": "expert_0041",
+    "partner_id": "partner_0032",
+    "partnership_id": "partnership_0032",
+    "category": "art",
+    "event_date": 1765234893.1782846,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0075",
+    "expert_id": "expert_0006",
+    "partner_id": "partner_0031",
+    "partnership_id": "partnership_0031",
+    "category": "business",
+    "event_date": 1758769524.5558395,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0076",
+    "expert_id": "expert_0045",
+    "partner_id": "partner_0029",
+    "partnership_id": "partnership_0029",
+    "category": "science",
+    "event_date": 1773514926.561783,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0077",
+    "expert_id": "expert_0017",
+    "partner_id": "partner_0041",
+    "partnership_id": null,
+    "category": "health",
+    "event_date": 1765345454.3956237,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0078",
+    "expert_id": "expert_0029",
+    "partner_id": "partner_0030",
+    "partnership_id": "partnership_0030",
+    "category": "business",
+    "event_date": 1771141872.5673497,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0079",
+    "expert_id": "expert_0015",
+    "partner_id": "partner_0020",
+    "partnership_id": "partnership_0020",
+    "category": "technology",
+    "event_date": 1771414582.7911086,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0080",
+    "expert_id": "expert_0029",
+    "partner_id": "partner_0048",
+    "partnership_id": "partnership_0048",
+    "category": "health",
+    "event_date": 1762910650.4479125,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0081",
+    "expert_id": "expert_0031",
+    "partner_id": "partner_0001",
+    "partnership_id": "partnership_0001",
+    "category": "art",
+    "event_date": 1768064636.9806662,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0082",
+    "expert_id": "expert_0021",
+    "partner_id": "partner_0016",
+    "partnership_id": "partnership_0016",
+    "category": "art",
+    "event_date": 1761400731.7749913,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0083",
+    "expert_id": "expert_0035",
+    "partner_id": "partner_0017",
+    "partnership_id": null,
+    "category": "technology",
+    "event_date": 1772263494.6416767,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0084",
+    "expert_id": "expert_0046",
+    "partner_id": "partner_0015",
+    "partnership_id": "partnership_0015",
+    "category": "business",
+    "event_date": 1766607345.3351495,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0085",
+    "expert_id": "expert_0030",
+    "partner_id": "partner_0044",
+    "partnership_id": null,
+    "category": "business",
+    "event_date": 1766171120.9906735,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0086",
+    "expert_id": "expert_0014",
+    "partner_id": "partner_0018",
+    "partnership_id": "partnership_0018",
+    "category": "business",
+    "event_date": 1765542768.9116545,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0087",
+    "expert_id": "expert_0023",
+    "partner_id": "partner_0037",
+    "partnership_id": "partnership_0037",
+    "category": "business",
+    "event_date": 1769331432.1556368,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0088",
+    "expert_id": "expert_0035",
+    "partner_id": "partner_0047",
+    "partnership_id": "partnership_0047",
+    "category": "art",
+    "event_date": 1767180369.7128074,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0089",
+    "expert_id": "expert_0016",
+    "partner_id": "partner_0019",
+    "partnership_id": "partnership_0019",
+    "category": "science",
+    "event_date": 1764044115.6419454,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0090",
+    "expert_id": "expert_0047",
+    "partner_id": "partner_0007",
+    "partnership_id": "partnership_0007",
+    "category": "health",
+    "event_date": 1760449198.63616,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0091",
+    "expert_id": "expert_0013",
+    "partner_id": "partner_0012",
+    "partnership_id": "partnership_0012",
+    "category": "business",
+    "event_date": 1773360806.1357327,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0092",
+    "expert_id": "expert_0033",
+    "partner_id": "partner_0048",
+    "partnership_id": "partnership_0048",
+    "category": "health",
+    "event_date": 1762872880.5151129,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0093",
+    "expert_id": "expert_0018",
+    "partner_id": "partner_0012",
+    "partnership_id": "partnership_0012",
+    "category": "science",
+    "event_date": 1762973954.1498342,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0094",
+    "expert_id": "expert_0034",
+    "partner_id": "partner_0045",
+    "partnership_id": "partnership_0045",
+    "category": "science",
+    "event_date": 1764185180.7039144,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0095",
+    "expert_id": "expert_0018",
+    "partner_id": "partner_0035",
+    "partnership_id": null,
+    "category": "science",
+    "event_date": 1762838848.0706387,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0096",
+    "expert_id": "expert_0000",
+    "partner_id": "partner_0006",
+    "partnership_id": null,
+    "category": "health",
+    "event_date": 1768492907.1927152,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0097",
+    "expert_id": "expert_0011",
+    "partner_id": "partner_0021",
+    "partnership_id": "partnership_0021",
+    "category": "technology",
+    "event_date": 1762994803.532148,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0098",
+    "expert_id": "expert_0004",
+    "partner_id": "partner_0007",
+    "partnership_id": null,
+    "category": "business",
+    "event_date": 1762499302.2454598,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0099",
+    "expert_id": "expert_0003",
+    "partner_id": "partner_0043",
+    "partnership_id": "partnership_0043",
+    "category": "science",
+    "event_date": 1766220400.8221629,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0100",
+    "expert_id": "expert_0005",
+    "partner_id": "partner_0019",
+    "partnership_id": "partnership_0019",
+    "category": "science",
+    "event_date": 1760893079.1502514,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0101",
+    "expert_id": "expert_0038",
+    "partner_id": "partner_0038",
+    "partnership_id": null,
+    "category": "health",
+    "event_date": 1760414917.0120316,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0102",
+    "expert_id": "expert_0028",
+    "partner_id": "partner_0028",
+    "partnership_id": "partnership_0028",
+    "category": "art",
+    "event_date": 1762082644.6721573,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0103",
+    "expert_id": "expert_0036",
+    "partner_id": "partner_0019",
+    "partnership_id": null,
+    "category": "health",
+    "event_date": 1771950070.3034587,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0104",
+    "expert_id": "expert_0048",
+    "partner_id": "partner_0006",
+    "partnership_id": null,
+    "category": "science",
+    "event_date": 1759509460.0101337,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0105",
+    "expert_id": "expert_0010",
+    "partner_id": "partner_0005",
+    "partnership_id": "partnership_0005",
+    "category": "science",
+    "event_date": 1768300768.0694184,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0106",
+    "expert_id": "expert_0026",
+    "partner_id": "partner_0000",
+    "partnership_id": "partnership_0000",
+    "category": "business",
+    "event_date": 1761275906.6201098,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0107",
+    "expert_id": "expert_0014",
+    "partner_id": "partner_0002",
+    "partnership_id": "partnership_0002",
+    "category": "art",
+    "event_date": 1769293858.2202635,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0108",
+    "expert_id": "expert_0004",
+    "partner_id": "partner_0029",
+    "partnership_id": null,
+    "category": "science",
+    "event_date": 1769567335.3828197,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0109",
+    "expert_id": "expert_0037",
+    "partner_id": "partner_0040",
+    "partnership_id": null,
+    "category": "science",
+    "event_date": 1772941422.8803368,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0110",
+    "expert_id": "expert_0009",
+    "partner_id": "partner_0041",
+    "partnership_id": "partnership_0041",
+    "category": "art",
+    "event_date": 1765184519.5173998,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0111",
+    "expert_id": "expert_0019",
+    "partner_id": "partner_0010",
+    "partnership_id": "partnership_0010",
+    "category": "health",
+    "event_date": 1771428526.1114268,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0112",
+    "expert_id": "expert_0028",
+    "partner_id": "partner_0018",
+    "partnership_id": "partnership_0018",
+    "category": "technology",
+    "event_date": 1770220548.8101778,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0113",
+    "expert_id": "expert_0017",
+    "partner_id": "partner_0025",
+    "partnership_id": "partnership_0025",
+    "category": "health",
+    "event_date": 1765861949.1502867,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0114",
+    "expert_id": "expert_0002",
+    "partner_id": "partner_0038",
+    "partnership_id": "partnership_0038",
+    "category": "business",
+    "event_date": 1766970551.5780783,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0115",
+    "expert_id": "expert_0005",
+    "partner_id": "partner_0001",
+    "partnership_id": "partnership_0001",
+    "category": "science",
+    "event_date": 1769996229.8914938,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0116",
+    "expert_id": "expert_0037",
+    "partner_id": "partner_0036",
+    "partnership_id": null,
+    "category": "technology",
+    "event_date": 1773532399.777861,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0117",
+    "expert_id": "expert_0036",
+    "partner_id": "partner_0017",
+    "partnership_id": "partnership_0017",
+    "category": "technology",
+    "event_date": 1774118108.5438392,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0118",
+    "expert_id": "expert_0041",
+    "partner_id": "partner_0033",
+    "partnership_id": "partnership_0033",
+    "category": "business",
+    "event_date": 1770440629.5494413,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0119",
+    "expert_id": "expert_0027",
+    "partner_id": "partner_0037",
+    "partnership_id": "partnership_0037",
+    "category": "business",
+    "event_date": 1772819522.314402,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0120",
+    "expert_id": "expert_0021",
+    "partner_id": "partner_0026",
+    "partnership_id": "partnership_0026",
+    "category": "art",
+    "event_date": 1773643505.3478608,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0121",
+    "expert_id": "expert_0026",
+    "partner_id": "partner_0021",
+    "partnership_id": null,
+    "category": "business",
+    "event_date": 1768994674.6566417,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0122",
+    "expert_id": "expert_0035",
+    "partner_id": "partner_0048",
+    "partnership_id": null,
+    "category": "technology",
+    "event_date": 1763055121.4700325,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0123",
+    "expert_id": "expert_0007",
+    "partner_id": "partner_0020",
+    "partnership_id": "partnership_0020",
+    "category": "business",
+    "event_date": 1765646210.847148,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0124",
+    "expert_id": "expert_0042",
+    "partner_id": "partner_0000",
+    "partnership_id": null,
+    "category": "health",
+    "event_date": 1772023847.719751,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0125",
+    "expert_id": "expert_0023",
+    "partner_id": "partner_0033",
+    "partnership_id": "partnership_0033",
+    "category": "health",
+    "event_date": 1765757414.4337413,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0126",
+    "expert_id": "expert_0003",
+    "partner_id": "partner_0048",
+    "partnership_id": "partnership_0048",
+    "category": "science",
+    "event_date": 1770336962.2484534,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0127",
+    "expert_id": "expert_0028",
+    "partner_id": "partner_0018",
+    "partnership_id": "partnership_0018",
+    "category": "business",
+    "event_date": 1762726016.9342036,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0128",
+    "expert_id": "expert_0015",
+    "partner_id": "partner_0038",
+    "partnership_id": null,
+    "category": "science",
+    "event_date": 1760461176.7650406,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0129",
+    "expert_id": "expert_0005",
+    "partner_id": "partner_0026",
+    "partnership_id": "partnership_0026",
+    "category": "science",
+    "event_date": 1763405544.4688811,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0130",
+    "expert_id": "expert_0007",
+    "partner_id": "partner_0029",
+    "partnership_id": null,
+    "category": "science",
+    "event_date": 1774004341.3484645,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0131",
+    "expert_id": "expert_0045",
+    "partner_id": "partner_0032",
+    "partnership_id": null,
+    "category": "art",
+    "event_date": 1766323494.1657984,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0132",
+    "expert_id": "expert_0015",
+    "partner_id": "partner_0030",
+    "partnership_id": "partnership_0030",
+    "category": "business",
+    "event_date": 1765034464.1299255,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0133",
+    "expert_id": "expert_0032",
+    "partner_id": "partner_0038",
+    "partnership_id": "partnership_0038",
+    "category": "science",
+    "event_date": 1767146032.792242,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0134",
+    "expert_id": "expert_0021",
+    "partner_id": "partner_0026",
+    "partnership_id": "partnership_0026",
+    "category": "health",
+    "event_date": 1772010105.2008326,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0135",
+    "expert_id": "expert_0019",
+    "partner_id": "partner_0046",
+    "partnership_id": "partnership_0046",
+    "category": "health",
+    "event_date": 1762727827.5726175,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0136",
+    "expert_id": "expert_0028",
+    "partner_id": "partner_0009",
+    "partnership_id": "partnership_0009",
+    "category": "health",
+    "event_date": 1767591726.7827578,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0137",
+    "expert_id": "expert_0034",
+    "partner_id": "partner_0048",
+    "partnership_id": "partnership_0048",
+    "category": "business",
+    "event_date": 1766105235.5447052,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0138",
+    "expert_id": "expert_0044",
+    "partner_id": "partner_0012",
+    "partnership_id": "partnership_0012",
+    "category": "science",
+    "event_date": 1765654277.7981148,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0139",
+    "expert_id": "expert_0026",
+    "partner_id": "partner_0049",
+    "partnership_id": "partnership_0049",
+    "category": "technology",
+    "event_date": 1767465355.2447581,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0140",
+    "expert_id": "expert_0024",
+    "partner_id": "partner_0024",
+    "partnership_id": "partnership_0024",
+    "category": "science",
+    "event_date": 1763521036.5577512,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0141",
+    "expert_id": "expert_0037",
+    "partner_id": "partner_0032",
+    "partnership_id": "partnership_0032",
+    "category": "art",
+    "event_date": 1766276109.475448,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0142",
+    "expert_id": "expert_0006",
+    "partner_id": "partner_0028",
+    "partnership_id": null,
+    "category": "health",
+    "event_date": 1772098337.590024,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0143",
+    "expert_id": "expert_0026",
+    "partner_id": "partner_0009",
+    "partnership_id": "partnership_0009",
+    "category": "science",
+    "event_date": 1772731947.2881534,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0144",
+    "expert_id": "expert_0021",
+    "partner_id": "partner_0016",
+    "partnership_id": null,
+    "category": "health",
+    "event_date": 1759736487.2333062,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0145",
+    "expert_id": "expert_0043",
+    "partner_id": "partner_0021",
+    "partnership_id": "partnership_0021",
+    "category": "health",
+    "event_date": 1769345700.2338452,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0146",
+    "expert_id": "expert_0048",
+    "partner_id": "partner_0045",
+    "partnership_id": "partnership_0045",
+    "category": "business",
+    "event_date": 1764482664.4668963,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0147",
+    "expert_id": "expert_0015",
+    "partner_id": "partner_0004",
+    "partnership_id": "partnership_0004",
+    "category": "art",
+    "event_date": 1772140059.00321,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0148",
+    "expert_id": "expert_0006",
+    "partner_id": "partner_0027",
+    "partnership_id": null,
+    "category": "technology",
+    "event_date": 1774084726.270445,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0149",
+    "expert_id": "expert_0002",
+    "partner_id": "partner_0001",
+    "partnership_id": "partnership_0001",
+    "category": "art",
+    "event_date": 1765472847.1520758,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0150",
+    "expert_id": "expert_0027",
+    "partner_id": "partner_0023",
+    "partnership_id": "partnership_0023",
+    "category": "science",
+    "event_date": 1770954381.4868376,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0151",
+    "expert_id": "expert_0011",
+    "partner_id": "partner_0043",
+    "partnership_id": "partnership_0043",
+    "category": "science",
+    "event_date": 1762370516.7819622,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0152",
+    "expert_id": "expert_0039",
+    "partner_id": "partner_0024",
+    "partnership_id": "partnership_0024",
+    "category": "science",
+    "event_date": 1761295436.9265764,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0153",
+    "expert_id": "expert_0029",
+    "partner_id": "partner_0014",
+    "partnership_id": "partnership_0014",
+    "category": "art",
+    "event_date": 1766312479.4254663,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0154",
+    "expert_id": "expert_0018",
+    "partner_id": "partner_0029",
+    "partnership_id": "partnership_0029",
+    "category": "health",
+    "event_date": 1765719998.7198386,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0155",
+    "expert_id": "expert_0037",
+    "partner_id": "partner_0022",
+    "partnership_id": "partnership_0022",
+    "category": "art",
+    "event_date": 1761029595.1911047,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0156",
+    "expert_id": "expert_0029",
+    "partner_id": "partner_0016",
+    "partnership_id": "partnership_0016",
+    "category": "art",
+    "event_date": 1768509533.0157487,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0157",
+    "expert_id": "expert_0006",
+    "partner_id": "partner_0030",
+    "partnership_id": "partnership_0030",
+    "category": "science",
+    "event_date": 1761670981.0867896,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0158",
+    "expert_id": "expert_0044",
+    "partner_id": "partner_0018",
+    "partnership_id": "partnership_0018",
+    "category": "art",
+    "event_date": 1764503735.8738213,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0159",
+    "expert_id": "expert_0017",
+    "partner_id": "partner_0025",
+    "partnership_id": null,
+    "category": "technology",
+    "event_date": 1758913962.942564,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0160",
+    "expert_id": "expert_0003",
+    "partner_id": "partner_0047",
+    "partnership_id": "partnership_0047",
+    "category": "health",
+    "event_date": 1767374086.3883502,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0161",
+    "expert_id": "expert_0049",
+    "partner_id": "partner_0018",
+    "partnership_id": null,
+    "category": "science",
+    "event_date": 1770161675.6577482,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0162",
+    "expert_id": "expert_0012",
+    "partner_id": "partner_0040",
+    "partnership_id": "partnership_0040",
+    "category": "health",
+    "event_date": 1768013833.1681106,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0163",
+    "expert_id": "expert_0042",
+    "partner_id": "partner_0049",
+    "partnership_id": null,
+    "category": "science",
+    "event_date": 1762470506.3109405,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0164",
+    "expert_id": "expert_0002",
+    "partner_id": "partner_0041",
+    "partnership_id": null,
+    "category": "art",
+    "event_date": 1768343272.8252027,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0165",
+    "expert_id": "expert_0046",
+    "partner_id": "partner_0023",
+    "partnership_id": "partnership_0023",
+    "category": "science",
+    "event_date": 1770837228.5639927,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0166",
+    "expert_id": "expert_0026",
+    "partner_id": "partner_0047",
+    "partnership_id": "partnership_0047",
+    "category": "science",
+    "event_date": 1759974512.5762742,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0167",
+    "expert_id": "expert_0033",
+    "partner_id": "partner_0023",
+    "partnership_id": null,
+    "category": "health",
+    "event_date": 1761695518.963069,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0168",
+    "expert_id": "expert_0030",
+    "partner_id": "partner_0016",
+    "partnership_id": null,
+    "category": "art",
+    "event_date": 1772779307.7438133,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0169",
+    "expert_id": "expert_0029",
+    "partner_id": "partner_0007",
+    "partnership_id": "partnership_0007",
+    "category": "technology",
+    "event_date": 1770183249.3390286,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0170",
+    "expert_id": "expert_0046",
+    "partner_id": "partner_0043",
+    "partnership_id": null,
+    "category": "business",
+    "event_date": 1760761811.4140506,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0171",
+    "expert_id": "expert_0005",
+    "partner_id": "partner_0023",
+    "partnership_id": null,
+    "category": "business",
+    "event_date": 1773615737.4266922,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0172",
+    "expert_id": "expert_0023",
+    "partner_id": "partner_0029",
+    "partnership_id": "partnership_0029",
+    "category": "art",
+    "event_date": 1758789221.2408142,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0173",
+    "expert_id": "expert_0006",
+    "partner_id": "partner_0023",
+    "partnership_id": null,
+    "category": "science",
+    "event_date": 1767663836.8620615,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0174",
+    "expert_id": "expert_0020",
+    "partner_id": "partner_0035",
+    "partnership_id": "partnership_0035",
+    "category": "health",
+    "event_date": 1765905166.5675373,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0175",
+    "expert_id": "expert_0044",
+    "partner_id": "partner_0029",
+    "partnership_id": "partnership_0029",
+    "category": "art",
+    "event_date": 1762015461.0122426,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0176",
+    "expert_id": "expert_0002",
+    "partner_id": "partner_0002",
+    "partnership_id": "partnership_0002",
+    "category": "art",
+    "event_date": 1768669730.185312,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0177",
+    "expert_id": "expert_0034",
+    "partner_id": "partner_0015",
+    "partnership_id": "partnership_0015",
+    "category": "science",
+    "event_date": 1774061420.8488865,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0178",
+    "expert_id": "expert_0044",
+    "partner_id": "partner_0047",
+    "partnership_id": "partnership_0047",
+    "category": "health",
+    "event_date": 1764616978.2827451,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0179",
+    "expert_id": "expert_0026",
+    "partner_id": "partner_0009",
+    "partnership_id": null,
+    "category": "technology",
+    "event_date": 1765091017.5858057,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0180",
+    "expert_id": "expert_0002",
+    "partner_id": "partner_0017",
+    "partnership_id": "partnership_0017",
+    "category": "art",
+    "event_date": 1771538353.1481276,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0181",
+    "expert_id": "expert_0023",
+    "partner_id": "partner_0015",
+    "partnership_id": "partnership_0015",
+    "category": "technology",
+    "event_date": 1761951736.4531214,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0182",
+    "expert_id": "expert_0022",
+    "partner_id": "partner_0041",
+    "partnership_id": "partnership_0041",
+    "category": "technology",
+    "event_date": 1773828146.1920831,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0183",
+    "expert_id": "expert_0029",
+    "partner_id": "partner_0007",
+    "partnership_id": "partnership_0007",
+    "category": "technology",
+    "event_date": 1764764626.0406694,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0184",
+    "expert_id": "expert_0001",
+    "partner_id": "partner_0038",
+    "partnership_id": "partnership_0038",
+    "category": "technology",
+    "event_date": 1768880137.7310507,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0185",
+    "expert_id": "expert_0036",
+    "partner_id": "partner_0008",
+    "partnership_id": "partnership_0008",
+    "category": "science",
+    "event_date": 1770808987.787462,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0186",
+    "expert_id": "expert_0037",
+    "partner_id": "partner_0013",
+    "partnership_id": null,
+    "category": "science",
+    "event_date": 1759639783.4134402,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0187",
+    "expert_id": "expert_0009",
+    "partner_id": "partner_0049",
+    "partnership_id": "partnership_0049",
+    "category": "health",
+    "event_date": 1771217358.2791138,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0188",
+    "expert_id": "expert_0008",
+    "partner_id": "partner_0009",
+    "partnership_id": null,
+    "category": "health",
+    "event_date": 1758616856.8133383,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0189",
+    "expert_id": "expert_0001",
+    "partner_id": "partner_0042",
+    "partnership_id": "partnership_0042",
+    "category": "science",
+    "event_date": 1762470932.3842387,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0190",
+    "expert_id": "expert_0037",
+    "partner_id": "partner_0015",
+    "partnership_id": null,
+    "category": "art",
+    "event_date": 1758803866.125817,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0191",
+    "expert_id": "expert_0047",
+    "partner_id": "partner_0008",
+    "partnership_id": "partnership_0008",
+    "category": "business",
+    "event_date": 1758818185.7274938,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0192",
+    "expert_id": "expert_0028",
+    "partner_id": "partner_0030",
+    "partnership_id": null,
+    "category": "art",
+    "event_date": 1766754440.4263802,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0193",
+    "expert_id": "expert_0014",
+    "partner_id": "partner_0032",
+    "partnership_id": "partnership_0032",
+    "category": "health",
+    "event_date": 1766554635.033471,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0194",
+    "expert_id": "expert_0033",
+    "partner_id": "partner_0042",
+    "partnership_id": null,
+    "category": "art",
+    "event_date": 1759247171.370591,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0195",
+    "expert_id": "expert_0030",
+    "partner_id": "partner_0003",
+    "partnership_id": null,
+    "category": "business",
+    "event_date": 1765696235.6204014,
+    "is_exclusive": false,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0196",
+    "expert_id": "expert_0028",
+    "partner_id": "partner_0045",
+    "partnership_id": "partnership_0045",
+    "category": "technology",
+    "event_date": 1765202165.6437836,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0197",
+    "expert_id": "expert_0004",
+    "partner_id": "partner_0009",
+    "partnership_id": "partnership_0009",
+    "category": "science",
+    "event_date": 1772558155.047944,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0198",
+    "expert_id": "expert_0045",
+    "partner_id": "partner_0035",
+    "partnership_id": "partnership_0035",
+    "category": "art",
+    "event_date": 1762849807.1418703,
+    "is_exclusive": true,
+    "is_breach": false
+  },
+  {
+    "event_id": "event_0199",
+    "expert_id": "expert_0029",
+    "partner_id": "partner_0018",
+    "partnership_id": "partnership_0018",
+    "category": "health",
+    "event_date": 1764496583.5271776,
+    "is_exclusive": true,
+    "is_breach": false
+  }
+]

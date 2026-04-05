@@ -1,0 +1,26 @@
+{
+  "milestone_id": "M31-P10-6",
+  "scope": "reality-model autonomous control plane stage-2 multi-environment executor parity and admin simulation-training quality",
+  "master_plan_refs": [
+    "10.9.12",
+    "10.9.22",
+    "10.9.23",
+    "10.9.24",
+    "10.9.25"
+  ],
+  "dependencies": [
+    "M31-P10-5",
+    "M31-P10-3",
+    "M31-P7-1",
+    "M31-P3-1"
+  ],
+  "guardrails": {
+    "admin_remains_non_authoritative_command_surface": true,
+    "runtime_backend_owns_jobs_evidence_policy_and_supervisor_decisions": true,
+    "promotion_rejection_rollback_gates_remain_fail_closed": true,
+    "multi_environment_executor_parity_required": true,
+    "admin_simulation_training_quality_must_track_environment_correctly": true
+  },
+  "status": "active_anchor",
+  "opened_on": "2026-03-31"
+}

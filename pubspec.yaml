@@ -1,0 +1,44 @@
+name: avrai_workspace
+description: Offline-first social discovery app for meaningful places (Workspace Root)
+publish_to: 'none'
+version: 0.5.0-beta+6
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+
+workspace:
+  - apps/admin_app
+  - apps/avrai_app
+  - engine/avrai_ai
+  - engine/avrai_knot
+  - engine/avrai_ml
+  - engine/avrai_quantum
+  - engine/reality_engine
+  - runtime/avrai_data
+  - runtime/avrai_network
+  - runtime/avrai_runtime_os
+  - shared/avrai_core
+
+dev_dependencies:
+  melos: ^7.3.0
+
+melos:
+  scripts:
+    dummy:
+      run: echo "OK"
+      description: Workspace smoke check.
+    test:
+      run: melos exec --dir-exists=test -c 4 -- flutter test --concurrency=1
+      description: Run all package test suites with stable concurrency.
+    analyze:
+      run: melos exec -c 6 -- flutter analyze
+      description: Run workspace analysis across all packages.
+    check:architecture:
+      run: dart run work/scripts/ci/check_architecture.dart
+      description: Validate package dependency boundaries.
+    check:repo_hygiene:
+      run: dart run work/scripts/ci/check_repo_hygiene.dart
+      description: Fail on tracked generated artifacts.
+    gate:repo_green:
+      run: bash work/scripts/ci/run_repo_green_gate.sh
+      description: Run the validated app-package, iOS, analyze, architecture, and hygiene gates.

@@ -1,0 +1,163 @@
+name: Quick Tests
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+      - 'analysis_options.yaml'
+      - 'apps/avrai_app/lib/**'
+      - 'apps/avrai_app/test/**'
+      - 'apps/admin_app/**'
+      - 'engine/**'
+      - 'runtime/**'
+      - 'shared/**'
+      - 'work/scripts/**'
+      - 'work/tools/**'
+      - '.github/workflows/quick-tests.yml'
+  workflow_dispatch:
+
+jobs:
+  quick-unit-tests:
+    name: Quick Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+        
+    - name: Get dependencies
+      run: flutter pub get
+
+    - name: Bootstrap CI-only runtime files
+      working-directory: apps/avrai_app
+      run: |
+        mkdir -p \
+          assets/models \
+          assets/models/optimized \
+          assets/tokenizers \
+          assets/three_js/renderers \
+          assets/fonts
+
+        if [ ! -f lib/supabase_config.dart ]; then
+          cat > lib/supabase_config.dart <<'EOF'
+        class SupabaseConfig {
+          static const String url = String.fromEnvironment('SUPABASE_URL', defaultValue: '');
+          static const String anonKey = String.fromEnvironment('SUPABASE_ANON_KEY', defaultValue: '');
+          static const String serviceRoleKey = String.fromEnvironment('SUPABASE_SERVICE_ROLE_KEY', defaultValue: '');
+          static const String environment = String.fromEnvironment('ENVIRONMENT', defaultValue: 'development');
+          static const bool debug = bool.fromEnvironment('SUPABASE_DEBUG', defaultValue: false);
+          static bool get isValid => url.isNotEmpty && anonKey.isNotEmpty;
+        }
+        EOF
+        fi
+
+        if [ ! -f lib/google_places_config.dart ]; then
+          cat > lib/google_places_config.dart <<'EOF'
+        class GooglePlacesConfig {
+          static const String apiKey = String.fromEnvironment('GOOGLE_PLACES_API_KEY', defaultValue: '');
+          static bool get isValid => apiKey.isNotEmpty;
+          static String getApiKey() => apiKey;
+        }
+        EOF
+        fi
+
+        if [ ! -f lib/weather_config.dart ]; then
+          cat > lib/weather_config.dart <<'EOF'
+        class WeatherConfig {
+          static const String apiKey = String.fromEnvironment('OPENWEATHERMAP_API_KEY', defaultValue: '');
+          static const String baseUrl = 'https://api.openweathermap.org/data/2.5';
+          static bool get isValid => apiKey.isNotEmpty;
+          static String getApiKey() => apiKey;
+          static String getCurrentWeatherUrl(double latitude, double longitude) => '$baseUrl/weather?lat=$latitude&lon=$longitude&appid=${getApiKey()}&units=metric';
+          static String getForecastUrl(double latitude, double longitude) => '$baseUrl/forecast?lat=$latitude&lon=$longitude&appid=${getApiKey()}&units=metric';
+        }
+        EOF
+        fi
+
+    - name: Generate package model code
+      run: |
+        (cd shared/avrai_core && dart pub get && dart run build_runner build --delete-conflicting-outputs)
+        (cd runtime/avrai_network && dart pub get && dart run build_runner build --delete-conflicting-outputs)
+
+    - name: Generate required app/test artifacts
+      working-directory: apps/avrai_app
+      run: |
+        dart run build_runner build \
+          --delete-conflicting-outputs \
+          --build-filter lib/data/database/app_database.g.dart \
+          --build-filter test/unit/ai2ai/connection_orchestrator_test.mocks.dart
+
+    - name: Repo guardrails (architecture + hygiene)
+      run: |
+        dart run scripts/ci/check_repo_hygiene.dart
+        dart run scripts/ci/check_architecture.dart
+        python3 scripts/ci/check_kernel_governance_wiring.py
+        python3 scripts/ci/check_admin_desktop_only.py
+        python3 scripts/ci/check_admin_ideal_architecture_alignment.py
+        bash scripts/check_no_spots_refs.sh
+      
+    - name: Run critical unit tests
+      run: |
+        # Core stable test suites
+        chmod +x scripts/test_core.sh
+        ./scripts/test_core.sh
+        # Supabase connectivity sanity (non-credentialed)
+        dart run scripts/supabase/test_supabase_connection.dart || true
+    - name: Supabase Flutter smoke (if secrets available)
+      working-directory: apps/avrai_app
+      env:
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL_DEV }}
+        SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY_DEV }}
+      run: flutter test test/ci/supabase_flutter_smoke_test.dart
+        
+    - name: Quick code analysis
+      run: flutter analyze --fatal-infos
+      
+    - name: Check formatting
+      run: dart format --set-exit-if-changed .
+      
+    - name: Generate test coverage (quick)
+      working-directory: apps/avrai_app
+      run: |
+        flutter test --coverage --exclude-tags=performance || true
+        if [ -f coverage/lcov.info ]; then
+          echo "Coverage file generated"
+        fi
+
+  connectivity-fix:
+    name: Fix Connectivity Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+        
+    - name: Get dependencies
+      run: flutter pub get
+      
+    - name: Fix connectivity test
+      run: |
+        # This is a placeholder for the connectivity test fix
+        echo "Connectivity test needs to be fixed in spots_repository_impl_test.dart"
+        echo "Change: .thenAnswer((_) async => ConnectivityResult.none);"
+        echo "To: .thenAnswer((_) async => [ConnectivityResult.none]);"
+        
+    - name: Test the fix
+      run: |
+        # This would run after the fix is applied
+        echo "Testing connectivity fix..."
+        # flutter test test/unit/data/repositories/spots_repository_impl_test.dart 

@@ -1,0 +1,28 @@
+{
+  "control_pack_id": "admin_private_server_security_zero_trust_access",
+  "scope": "phase-b zero-trust access enforcement before full private mesh rollout",
+  "master_plan_refs": ["10.9.24", "10.9.25"],
+  "related_milestones": ["M26-P10-3"],
+  "identity_and_access": {
+    "oidc_required": true,
+    "mfa_required": true,
+    "allowed_identity_groups": ["admin-operators"],
+    "session_ttl_minutes": 60,
+    "continuous_reauth_required": true
+  },
+  "device_posture": {
+    "managed_device_required": true,
+    "disk_encryption_required": true,
+    "os_patch_baseline_required": true,
+    "unmanaged_device_access": "deny"
+  },
+  "gateway_controls": {
+    "zero_trust_gateway_required": true,
+    "public_direct_admin_api_access": "deny",
+    "step_up_auth_for_high_impact_actions": true,
+    "dual_approval_for_break_glass_and_open_web": true
+  },
+  "status": "enforced",
+  "last_updated": "2026-03-14",
+  "notes": "Enforced zero-trust posture for private-mesh-only admin control-plane access."
+}

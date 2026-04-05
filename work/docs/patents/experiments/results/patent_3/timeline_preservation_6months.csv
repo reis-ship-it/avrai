@@ -1,0 +1,5 @@
+scenario,phases_preserved,expected_phases,integrity_rate,avg_compatibility,match_count,avg_drift,transitions_tracked,avg_query_time_ms,max_query_time_ms,meets_target
+timeline_integrity,7.0,7.0,1.0,,,,,,,
+historical_matching,,,,0.572140459463136,100.0,,,,,
+transition_tracking,,,,,,0.0348106108392128,120.0,,,
+query_performance,,,,,,,,0.005171298980712891,0.027894973754882812,True

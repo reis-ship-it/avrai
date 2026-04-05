@@ -1,0 +1,23 @@
+{
+  "milestone_id": "M31-P12-2",
+  "scope": "phase-12 air gap compression runtime adoption and resolution-budget enforcement across intake, event, and passive-collection surfaces",
+  "master_plan_refs": [
+    "12.4A.3",
+    "12.4A.4",
+    "12.4A.5",
+    "12.4A.6",
+    "12.4A.7"
+  ],
+  "dependencies": [
+    "M31-P12-1"
+  ],
+  "guardrails": {
+    "shared_compression_primitives_reused_not_reinvented": true,
+    "runtime_surfaces_fail_closed_on_distortion_over_budget": true,
+    "raw_payloads_remain_forbidden_after_air_gap_crossing": true,
+    "resolution_budgets_must_be_explicit": true,
+    "provenance_and_privacy_tags_must_survive_runtime_adoption": true
+  },
+  "status": "ready_follow_on",
+  "opened_on": "2026-03-31"
+}

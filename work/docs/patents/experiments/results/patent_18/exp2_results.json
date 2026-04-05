@@ -1,0 +1,9 @@
+{
+  "experiment": "Differential Privacy Noise Effectiveness",
+  "avg_total_distance_km": 0.48206596643760036,
+  "avg_noise_distance_km": 0.23751045849202412,
+  "max_noise_distance_km": 0.6536941652118285,
+  "noise_within_range": 0.9865771812080537,
+  "expected_noise_km": 0.5,
+  "num_samples": 447
+}

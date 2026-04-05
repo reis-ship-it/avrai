@@ -1,0 +1,21 @@
+{
+  "milestone_id": "M30-P10-2",
+  "scope": "apps wave-30 shell hardening and contract-consumer adapters",
+  "master_plan_refs": [
+    "10.1.6",
+    "10.10.9",
+    "10.10.11",
+    "10.10.12"
+  ],
+  "dependencies": [
+    "M30-P10-1"
+  ],
+  "guardrails": {
+    "forbid_direct_apps_engine_imports": true,
+    "require_contract_only_capability_consumption": true,
+    "admin_internal_only_login_agreement_required": true,
+    "concurrent_lane_compatibility_required": true
+  },
+  "status": "complete",
+  "completed_on": "2026-02-28"
+}

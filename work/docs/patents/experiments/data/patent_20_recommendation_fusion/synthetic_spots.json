@@ -1,0 +1,802 @@
+[
+  {
+    "spot_id": "spot_0000",
+    "category": "business",
+    "location": {
+      "lat": 31.612901974217976,
+      "lng": 4.022638874851339
+    }
+  },
+  {
+    "spot_id": "spot_0001",
+    "category": "science",
+    "location": {
+      "lat": 28.593134099715925,
+      "lng": -77.83689420251012
+    }
+  },
+  {
+    "spot_id": "spot_0002",
+    "category": "health",
+    "location": {
+      "lat": -29.66611402623584,
+      "lng": 114.63244723319912
+    }
+  },
+  {
+    "spot_id": "spot_0003",
+    "category": "science",
+    "location": {
+      "lat": 31.103220700290066,
+      "lng": -99.12936024097623
+    }
+  },
+  {
+    "spot_id": "spot_0004",
+    "category": "science",
+    "location": {
+      "lat": -63.47628679576091,
+      "lng": -163.36306148660697
+    }
+  },
+  {
+    "spot_id": "spot_0005",
+    "category": "business",
+    "location": {
+      "lat": 20.029315150922415,
+      "lng": 96.65616204007085
+    }
+  },
+  {
+    "spot_id": "spot_0006",
+    "category": "business",
+    "location": {
+      "lat": -15.40061802041052,
+      "lng": 46.71553706557694
+    }
+  },
+  {
+    "spot_id": "spot_0007",
+    "category": "science",
+    "location": {
+      "lat": 39.30226478981794,
+      "lng": -41.76775173860952
+    }
+  },
+  {
+    "spot_id": "spot_0008",
+    "category": "business",
+    "location": {
+      "lat": -46.082800875881006,
+      "lng": 56.18088400024226
+    }
+  },
+  {
+    "spot_id": "spot_0009",
+    "category": "technology",
+    "location": {
+      "lat": 70.67876871804597,
+      "lng": 129.75860355210767
+    }
+  },
+  {
+    "spot_id": "spot_0010",
+    "category": "technology",
+    "location": {
+      "lat": 50.1156732181185,
+      "lng": -101.21719074756501
+    }
+  },
+  {
+    "spot_id": "spot_0011",
+    "category": "health",
+    "location": {
+      "lat": -6.381020776634614,
+      "lng": 20.66608585202232
+    }
+  },
+  {
+    "spot_id": "spot_0012",
+    "category": "technology",
+    "location": {
+      "lat": -7.836871415368947,
+      "lng": 108.50997662001521
+    }
+  },
+  {
+    "spot_id": "spot_0013",
+    "category": "health",
+    "location": {
+      "lat": 87.82064155196065,
+      "lng": 34.36283464899108
+    }
+  },
+  {
+    "spot_id": "spot_0014",
+    "category": "business",
+    "location": {
+      "lat": 20.277418097117305,
+      "lng": 78.93862605934817
+    }
+  },
+  {
+    "spot_id": "spot_0015",
+    "category": "health",
+    "location": {
+      "lat": -13.186663765442006,
+      "lng": 146.46770296420084
+    }
+  },
+  {
+    "spot_id": "spot_0016",
+    "category": "business",
+    "location": {
+      "lat": 71.49745858198719,
+      "lng": 87.71595917745054
+    }
+  },
+  {
+    "spot_id": "spot_0017",
+    "category": "business",
+    "location": {
+      "lat": -8.987443695556536,
+      "lng": 90.63964314018415
+    }
+  },
+  {
+    "spot_id": "spot_0018",
+    "category": "art",
+    "location": {
+      "lat": 47.84646317348978,
+      "lng": 7.667932618073564
+    }
+  },
+  {
+    "spot_id": "spot_0019",
+    "category": "science",
+    "location": {
+      "lat": -40.57245955484311,
+      "lng": -152.10599260869512
+    }
+  },
+  {
+    "spot_id": "spot_0020",
+    "category": "art",
+    "location": {
+      "lat": -47.79115595736564,
+      "lng": -59.09488681632698
+    }
+  },
+  {
+    "spot_id": "spot_0021",
+    "category": "health",
+    "location": {
+      "lat": -75.49602162161968,
+      "lng": -125.70096311528883
+    }
+  },
+  {
+    "spot_id": "spot_0022",
+    "category": "business",
+    "location": {
+      "lat": 34.91096621382941,
+      "lng": 74.3108910100388
+    }
+  },
+  {
+    "spot_id": "spot_0023",
+    "category": "technology",
+    "location": {
+      "lat": -15.323778738320726,
+      "lng": -60.882699226289915
+    }
+  },
+  {
+    "spot_id": "spot_0024",
+    "category": "business",
+    "location": {
+      "lat": -15.160637861431923,
+      "lng": -105.53961977481231
+    }
+  },
+  {
+    "spot_id": "spot_0025",
+    "category": "business",
+    "location": {
+      "lat": -19.894173719950572,
+      "lng": 97.12647803327877
+    }
+  },
+  {
+    "spot_id": "spot_0026",
+    "category": "technology",
+    "location": {
+      "lat": 64.21176581470817,
+      "lng": 95.61404740250504
+    }
+  },
+  {
+    "spot_id": "spot_0027",
+    "category": "business",
+    "location": {
+      "lat": -4.143648139675747,
+      "lng": 159.38699667627486
+    }
+  },
+  {
+    "spot_id": "spot_0028",
+    "category": "art",
+    "location": {
+      "lat": 45.62552251068945,
+      "lng": 127.24126220487767
+    }
+  },
+  {
+    "spot_id": "spot_0029",
+    "category": "business",
+    "location": {
+      "lat": 6.8797021698416785,
+      "lng": 84.46826187228879
+    }
+  },
+  {
+    "spot_id": "spot_0030",
+    "category": "health",
+    "location": {
+      "lat": 71.60604253185514,
+      "lng": -4.237388081909842
+    }
+  },
+  {
+    "spot_id": "spot_0031",
+    "category": "art",
+    "location": {
+      "lat": -11.54952431160541,
+      "lng": -169.5510648191825
+    }
+  },
+  {
+    "spot_id": "spot_0032",
+    "category": "art",
+    "location": {
+      "lat": 30.397251712125083,
+      "lng": 107.331236791268
+    }
+  },
+  {
+    "spot_id": "spot_0033",
+    "category": "science",
+    "location": {
+      "lat": 61.29101935126056,
+      "lng": 151.03498344083135
+    }
+  },
+  {
+    "spot_id": "spot_0034",
+    "category": "health",
+    "location": {
+      "lat": 6.14225331585078,
+      "lng": 146.4943905312366
+    }
+  },
+  {
+    "spot_id": "spot_0035",
+    "category": "health",
+    "location": {
+      "lat": 11.590556944459337,
+      "lng": -170.24326331748753
+    }
+  },
+  {
+    "spot_id": "spot_0036",
+    "category": "business",
+    "location": {
+      "lat": -65.57409229849844,
+      "lng": -13.788560141455775
+    }
+  },
+  {
+    "spot_id": "spot_0037",
+    "category": "technology",
+    "location": {
+      "lat": -43.17186349452515,
+      "lng": -62.15303990097567
+    }
+  },
+  {
+    "spot_id": "spot_0038",
+    "category": "business",
+    "location": {
+      "lat": -31.167755121364465,
+      "lng": 94.04269484184977
+    }
+  },
+  {
+    "spot_id": "spot_0039",
+    "category": "business",
+    "location": {
+      "lat": -39.91380918501492,
+      "lng": 162.4334831498022
+    }
+  },
+  {
+    "spot_id": "spot_0040",
+    "category": "business",
+    "location": {
+      "lat": -44.591124279171495,
+      "lng": -150.51375620580868
+    }
+  },
+  {
+    "spot_id": "spot_0041",
+    "category": "technology",
+    "location": {
+      "lat": 44.824366994913134,
+      "lng": -161.24918103242803
+    }
+  },
+  {
+    "spot_id": "spot_0042",
+    "category": "art",
+    "location": {
+      "lat": -49.64001017044533,
+      "lng": -155.297386637003
+    }
+  },
+  {
+    "spot_id": "spot_0043",
+    "category": "technology",
+    "location": {
+      "lat": 45.76197673071471,
+      "lng": 161.860223777756
+    }
+  },
+  {
+    "spot_id": "spot_0044",
+    "category": "science",
+    "location": {
+      "lat": 61.06119233122766,
+      "lng": 43.680836371016824
+    }
+  },
+  {
+    "spot_id": "spot_0045",
+    "category": "science",
+    "location": {
+      "lat": -67.28022452264287,
+      "lng": 61.00518406316783
+    }
+  },
+  {
+    "spot_id": "spot_0046",
+    "category": "health",
+    "location": {
+      "lat": 80.59626399899733,
+      "lng": -12.58776596332055
+    }
+  },
+  {
+    "spot_id": "spot_0047",
+    "category": "art",
+    "location": {
+      "lat": 48.04165770412334,
+      "lng": -119.59590838759118
+    }
+  },
+  {
+    "spot_id": "spot_0048",
+    "category": "health",
+    "location": {
+      "lat": 83.47225393821756,
+      "lng": 78.60860229456296
+    }
+  },
+  {
+    "spot_id": "spot_0049",
+    "category": "science",
+    "location": {
+      "lat": 83.64973914613577,
+      "lng": -141.08445012326163
+    }
+  },
+  {
+    "spot_id": "spot_0050",
+    "category": "technology",
+    "location": {
+      "lat": 77.19969031328188,
+      "lng": 27.286822228469077
+    }
+  },
+  {
+    "spot_id": "spot_0051",
+    "category": "business",
+    "location": {
+      "lat": -18.602200527007085,
+      "lng": 77.40529381780863
+    }
+  },
+  {
+    "spot_id": "spot_0052",
+    "category": "technology",
+    "location": {
+      "lat": 16.577615024973397,
+      "lng": 119.00578816091462
+    }
+  },
+  {
+    "spot_id": "spot_0053",
+    "category": "science",
+    "location": {
+      "lat": -71.65776501972422,
+      "lng": 98.09311858244064
+    }
+  },
+  {
+    "spot_id": "spot_0054",
+    "category": "health",
+    "location": {
+      "lat": 54.995033456309955,
+      "lng": 106.6417979760763
+    }
+  },
+  {
+    "spot_id": "spot_0055",
+    "category": "health",
+    "location": {
+      "lat": 50.874362344983524,
+      "lng": -55.00664448895836
+    }
+  },
+  {
+    "spot_id": "spot_0056",
+    "category": "business",
+    "location": {
+      "lat": 29.073841323724068,
+      "lng": -155.1755748529294
+    }
+  },
+  {
+    "spot_id": "spot_0057",
+    "category": "art",
+    "location": {
+      "lat": -87.72261297014644,
+      "lng": -28.77885329694206
+    }
+  },
+  {
+    "spot_id": "spot_0058",
+    "category": "business",
+    "location": {
+      "lat": -71.00300328408025,
+      "lng": 165.88352419724828
+    }
+  },
+  {
+    "spot_id": "spot_0059",
+    "category": "business",
+    "location": {
+      "lat": 37.31555586709385,
+      "lng": -23.224627797236252
+    }
+  },
+  {
+    "spot_id": "spot_0060",
+    "category": "health",
+    "location": {
+      "lat": 83.78527162285397,
+      "lng": -82.7703373005357
+    }
+  },
+  {
+    "spot_id": "spot_0061",
+    "category": "health",
+    "location": {
+      "lat": 49.43546106688342,
+      "lng": -12.645442211577176
+    }
+  },
+  {
+    "spot_id": "spot_0062",
+    "category": "health",
+    "location": {
+      "lat": -41.68880315113944,
+      "lng": 126.61673760695948
+    }
+  },
+  {
+    "spot_id": "spot_0063",
+    "category": "technology",
+    "location": {
+      "lat": -39.79291514535537,
+      "lng": -17.711279930242625
+    }
+  },
+  {
+    "spot_id": "spot_0064",
+    "category": "business",
+    "location": {
+      "lat": 12.572936042097993,
+      "lng": 60.54784936037768
+    }
+  },
+  {
+    "spot_id": "spot_0065",
+    "category": "art",
+    "location": {
+      "lat": -84.83400040138388,
+      "lng": 126.34302107248527
+    }
+  },
+  {
+    "spot_id": "spot_0066",
+    "category": "science",
+    "location": {
+      "lat": -2.2410121695580187,
+      "lng": -52.2630121766057
+    }
+  },
+  {
+    "spot_id": "spot_0067",
+    "category": "art",
+    "location": {
+      "lat": -28.739008230428944,
+      "lng": 136.91519271296113
+    }
+  },
+  {
+    "spot_id": "spot_0068",
+    "category": "art",
+    "location": {
+      "lat": 10.042385025525078,
+      "lng": 5.985810617376302
+    }
+  },
+  {
+    "spot_id": "spot_0069",
+    "category": "science",
+    "location": {
+      "lat": -74.58966684755617,
+      "lng": 79.22687907750992
+    }
+  },
+  {
+    "spot_id": "spot_0070",
+    "category": "business",
+    "location": {
+      "lat": 9.931718084734939,
+      "lng": -93.4833829952824
+    }
+  },
+  {
+    "spot_id": "spot_0071",
+    "category": "business",
+    "location": {
+      "lat": 26.262521953371404,
+      "lng": -3.3043193717089707
+    }
+  },
+  {
+    "spot_id": "spot_0072",
+    "category": "technology",
+    "location": {
+      "lat": -73.2503969001591,
+      "lng": -100.22529582988915
+    }
+  },
+  {
+    "spot_id": "spot_0073",
+    "category": "science",
+    "location": {
+      "lat": -34.882914576584085,
+      "lng": 29.360010719652195
+    }
+  },
+  {
+    "spot_id": "spot_0074",
+    "category": "business",
+    "location": {
+      "lat": 9.625131901844938,
+      "lng": -56.247338107367085
+    }
+  },
+  {
+    "spot_id": "spot_0075",
+    "category": "health",
+    "location": {
+      "lat": -30.457566504732576,
+      "lng": 73.02777918687681
+    }
+  },
+  {
+    "spot_id": "spot_0076",
+    "category": "art",
+    "location": {
+      "lat": -34.80786155721052,
+      "lng": -97.00630513253721
+    }
+  },
+  {
+    "spot_id": "spot_0077",
+    "category": "science",
+    "location": {
+      "lat": -33.20137007892243,
+      "lng": 87.43718291007747
+    }
+  },
+  {
+    "spot_id": "spot_0078",
+    "category": "science",
+    "location": {
+      "lat": -55.52262485810195,
+      "lng": 85.89767526322225
+    }
+  },
+  {
+    "spot_id": "spot_0079",
+    "category": "art",
+    "location": {
+      "lat": 40.425300196749276,
+      "lng": 171.57852823790046
+    }
+  },
+  {
+    "spot_id": "spot_0080",
+    "category": "health",
+    "location": {
+      "lat": 17.42233329221432,
+      "lng": 172.9838269665047
+    }
+  },
+  {
+    "spot_id": "spot_0081",
+    "category": "science",
+    "location": {
+      "lat": -36.67563661227399,
+      "lng": -50.08281510622089
+    }
+  },
+  {
+    "spot_id": "spot_0082",
+    "category": "art",
+    "location": {
+      "lat": -87.45329389390851,
+      "lng": 12.288632136358785
+    }
+  },
+  {
+    "spot_id": "spot_0083",
+    "category": "art",
+    "location": {
+      "lat": -81.8071738230207,
+      "lng": -160.3706327139644
+    }
+  },
+  {
+    "spot_id": "spot_0084",
+    "category": "art",
+    "location": {
+      "lat": 35.535130723834996,
+      "lng": -134.5393825349728
+    }
+  },
+  {
+    "spot_id": "spot_0085",
+    "category": "business",
+    "location": {
+      "lat": -71.53422357820308,
+      "lng": -175.58445478481713
+    }
+  },
+  {
+    "spot_id": "spot_0086",
+    "category": "art",
+    "location": {
+      "lat": -5.508549912508158,
+      "lng": -21.431232671036298
+    }
+  },
+  {
+    "spot_id": "spot_0087",
+    "category": "science",
+    "location": {
+      "lat": 83.78957576489307,
+      "lng": -89.10777942252986
+    }
+  },
+  {
+    "spot_id": "spot_0088",
+    "category": "business",
+    "location": {
+      "lat": -69.46431466951358,
+      "lng": -156.47636335898432
+    }
+  },
+  {
+    "spot_id": "spot_0089",
+    "category": "business",
+    "location": {
+      "lat": -76.66520935398484,
+      "lng": 46.6004545027194
+    }
+  },
+  {
+    "spot_id": "spot_0090",
+    "category": "technology",
+    "location": {
+      "lat": -62.689138748827844,
+      "lng": 112.01114745901714
+    }
+  },
+  {
+    "spot_id": "spot_0091",
+    "category": "art",
+    "location": {
+      "lat": -74.66743648867859,
+      "lng": -90.65125612435818
+    }
+  },
+  {
+    "spot_id": "spot_0092",
+    "category": "health",
+    "location": {
+      "lat": 47.59982015871498,
+      "lng": 38.27435444746661
+    }
+  },
+  {
+    "spot_id": "spot_0093",
+    "category": "health",
+    "location": {
+      "lat": -49.37631532829377,
+      "lng": 8.126112646878425
+    }
+  },
+  {
+    "spot_id": "spot_0094",
+    "category": "business",
+    "location": {
+      "lat": 73.53078797228468,
+      "lng": -72.95287229374054
+    }
+  },
+  {
+    "spot_id": "spot_0095",
+    "category": "health",
+    "location": {
+      "lat": 88.20562688402362,
+      "lng": -70.06311204503025
+    }
+  },
+  {
+    "spot_id": "spot_0096",
+    "category": "health",
+    "location": {
+      "lat": -79.15854521294264,
+      "lng": 165.63915987634766
+    }
+  },
+  {
+    "spot_id": "spot_0097",
+    "category": "technology",
+    "location": {
+      "lat": 80.56623605856805,
+      "lng": -105.19635390352153
+    }
+  },
+  {
+    "spot_id": "spot_0098",
+    "category": "science",
+    "location": {
+      "lat": -42.363697447798664,
+      "lng": -150.77251243188564
+    }
+  },
+  {
+    "spot_id": "spot_0099",
+    "category": "science",
+    "location": {
+      "lat": -58.713561301241796,
+      "lng": -152.97664719557955
+    }
+  }
+]

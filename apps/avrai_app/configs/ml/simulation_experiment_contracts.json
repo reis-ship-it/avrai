@@ -1,0 +1,72 @@
+{
+  "schema_version": "1.0.0",
+  "simulation_specs": {
+    "sim-standard-v1": {
+      "description": "Universal staged experiment contract for all entity models.",
+      "stages": [
+        {
+          "name": "offline_replay",
+          "required_metrics": [
+            {
+              "name": "auc",
+              "direction": "gte",
+              "threshold": 0.72
+            },
+            {
+              "name": "calibration_error",
+              "direction": "lte",
+              "threshold": 0.08
+            }
+          ]
+        },
+        {
+          "name": "shadow",
+          "required_metrics": [
+            {
+              "name": "policy_violation_rate",
+              "direction": "lte",
+              "threshold": 0.005
+            },
+            {
+              "name": "decision_lift_vs_baseline",
+              "direction": "gte",
+              "threshold": 0.01
+            }
+          ]
+        },
+        {
+          "name": "limited_rollout",
+          "required_metrics": [
+            {
+              "name": "negative_outcome_delta",
+              "direction": "lte",
+              "threshold": 0.0
+            },
+            {
+              "name": "target_outcome_lift",
+              "direction": "gte",
+              "threshold": 0.015
+            }
+          ]
+        }
+      ],
+      "auto_improvement_actions": [
+        {
+          "trigger": "offline_replay_fail",
+          "action": "create_data_gap_followup",
+          "default_owner": "MLE"
+        },
+        {
+          "trigger": "shadow_fail",
+          "action": "create_guardrail_tuning_followup",
+          "default_owner": "AP"
+        },
+        {
+          "trigger": "limited_rollout_fail",
+          "action": "auto_rollback_and_retrain",
+          "default_owner": "AP"
+        }
+      ]
+    }
+  }
+}

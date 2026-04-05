@@ -1,0 +1,3002 @@
+[
+  {
+    "timestamp": 1766434822.927434,
+    "category": "technology",
+    "trend_score": 61.59071351433731,
+    "connection_rate": 0.3361268622845928
+  },
+  {
+    "timestamp": 1766438422.927435,
+    "category": "technology",
+    "trend_score": 61.30547971810457,
+    "connection_rate": 0.26435488435052557
+  },
+  {
+    "timestamp": 1766442022.927436,
+    "category": "technology",
+    "trend_score": 58.0098902991876,
+    "connection_rate": 0.2919567512602147
+  },
+  {
+    "timestamp": 1766445622.927436,
+    "category": "technology",
+    "trend_score": 65.61735775500362,
+    "connection_rate": 0.39478718545700364
+  },
+  {
+    "timestamp": 1766449222.927436,
+    "category": "technology",
+    "trend_score": 77.28755130805575,
+    "connection_rate": 0.49826822760863954
+  },
+  {
+    "timestamp": 1766452822.927436,
+    "category": "technology",
+    "trend_score": 57.460577165997144,
+    "connection_rate": 0.2723148013595388
+  },
+  {
+    "timestamp": 1766456422.927436,
+    "category": "technology",
+    "trend_score": 75.87768020193323,
+    "connection_rate": 0.4279254910471334
+  },
+  {
+    "timestamp": 1766460022.927436,
+    "category": "technology",
+    "trend_score": 61.59353512230047,
+    "connection_rate": 0.36614319282550767
+  },
+  {
+    "timestamp": 1766463622.927436,
+    "category": "technology",
+    "trend_score": 76.38178545548882,
+    "connection_rate": 0.47460509403272766
+  },
+  {
+    "timestamp": 1766467222.927437,
+    "category": "technology",
+    "trend_score": 77.25314581041006,
+    "connection_rate": 0.3286249861507274
+  },
+  {
+    "timestamp": 1766470822.927437,
+    "category": "technology",
+    "trend_score": 55.958179850739334,
+    "connection_rate": 0.1447826805219078
+  },
+  {
+    "timestamp": 1766474422.927437,
+    "category": "technology",
+    "trend_score": 68.43557432717505,
+    "connection_rate": 0.4858328768305976
+  },
+  {
+    "timestamp": 1766478022.927437,
+    "category": "technology",
+    "trend_score": 81.61206854708551,
+    "connection_rate": 0.47123029648960124
+  },
+  {
+    "timestamp": 1766481622.927437,
+    "category": "technology",
+    "trend_score": 56.77483220147979,
+    "connection_rate": 0.4520709332330267
+  },
+  {
+    "timestamp": 1766485222.927437,
+    "category": "technology",
+    "trend_score": 57.43490860853564,
+    "connection_rate": 0.30273919514953873
+  },
+  {
+    "timestamp": 1766488822.927437,
+    "category": "technology",
+    "trend_score": 58.426880947330616,
+    "connection_rate": 0.11872893100615611
+  },
+  {
+    "timestamp": 1766492422.927437,
+    "category": "technology",
+    "trend_score": 70.9244953191473,
+    "connection_rate": 0.2520999627215537
+  },
+  {
+    "timestamp": 1766496022.927437,
+    "category": "technology",
+    "trend_score": 57.53288911156423,
+    "connection_rate": 0.16313239190250123
+  },
+  {
+    "timestamp": 1766499622.927437,
+    "category": "technology",
+    "trend_score": 65.412350111294,
+    "connection_rate": 0.2693898068657187
+  },
+  {
+    "timestamp": 1766503222.927437,
+    "category": "technology",
+    "trend_score": 71.07572560912055,
+    "connection_rate": 0.3681104657954425
+  },
+  {
+    "timestamp": 1766506822.927437,
+    "category": "technology",
+    "trend_score": 70.40855257560756,
+    "connection_rate": 0.3853527996477901
+  },
+  {
+    "timestamp": 1766510422.927437,
+    "category": "technology",
+    "trend_score": 62.43660113922497,
+    "connection_rate": 0.11760847715841374
+  },
+  {
+    "timestamp": 1766514022.927438,
+    "category": "technology",
+    "trend_score": 78.42364996525109,
+    "connection_rate": 0.37637217805746603
+  },
+  {
+    "timestamp": 1766517622.927438,
+    "category": "technology",
+    "trend_score": 70.67820613988144,
+    "connection_rate": 0.33241349994499736
+  },
+  {
+    "timestamp": 1766521222.927438,
+    "category": "technology",
+    "trend_score": 68.30267864230723,
+    "connection_rate": 0.4539069879196489
+  },
+  {
+    "timestamp": 1766524822.927438,
+    "category": "technology",
+    "trend_score": 64.7907991849078,
+    "connection_rate": 0.19946196889983098
+  },
+  {
+    "timestamp": 1766528422.927438,
+    "category": "technology",
+    "trend_score": 57.010112747161976,
+    "connection_rate": 0.1259039713261915
+  },
+  {
+    "timestamp": 1766532022.927438,
+    "category": "technology",
+    "trend_score": 82.59519287299555,
+    "connection_rate": 0.24222854548691927
+  },
+  {
+    "timestamp": 1766535622.927438,
+    "category": "technology",
+    "trend_score": 54.720239573475986,
+    "connection_rate": 0.30101313879388947
+  },
+  {
+    "timestamp": 1766539222.927438,
+    "category": "technology",
+    "trend_score": 66.77589148167854,
+    "connection_rate": 0.30072351464018837
+  },
+  {
+    "timestamp": 1766542822.927438,
+    "category": "technology",
+    "trend_score": 63.83038279215924,
+    "connection_rate": 0.4962380796299072
+  },
+  {
+    "timestamp": 1766546422.927438,
+    "category": "technology",
+    "trend_score": 80.39844911359333,
+    "connection_rate": 0.12536399093026473
+  },
+  {
+    "timestamp": 1766550022.927438,
+    "category": "technology",
+    "trend_score": 74.19505594576466,
+    "connection_rate": 0.38990834131325824
+  },
+  {
+    "timestamp": 1766553622.927438,
+    "category": "technology",
+    "trend_score": 74.43582282034947,
+    "connection_rate": 0.4492531186478468
+  },
+  {
+    "timestamp": 1766557222.927438,
+    "category": "technology",
+    "trend_score": 82.7283157401024,
+    "connection_rate": 0.2366916066008221
+  },
+  {
+    "timestamp": 1766560822.927438,
+    "category": "technology",
+    "trend_score": 51.29713090173568,
+    "connection_rate": 0.23298028641867294
+  },
+  {
+    "timestamp": 1766564422.9274392,
+    "category": "technology",
+    "trend_score": 62.313678100885014,
+    "connection_rate": 0.22083526699421394
+  },
+  {
+    "timestamp": 1766568022.9274392,
+    "category": "technology",
+    "trend_score": 46.746439383771,
+    "connection_rate": 0.17729944496457142
+  },
+  {
+    "timestamp": 1766571622.9274392,
+    "category": "technology",
+    "trend_score": 50.074587731177665,
+    "connection_rate": 0.4022422007928358
+  },
+  {
+    "timestamp": 1766575222.9274392,
+    "category": "technology",
+    "trend_score": 58.09984151120808,
+    "connection_rate": 0.20347674368186947
+  },
+  {
+    "timestamp": 1766578822.9274392,
+    "category": "technology",
+    "trend_score": 83.9596420678432,
+    "connection_rate": 0.39179430604830845
+  },
+  {
+    "timestamp": 1766582422.9274392,
+    "category": "technology",
+    "trend_score": 56.69542704905328,
+    "connection_rate": 0.20834803108483393
+  },
+  {
+    "timestamp": 1766586022.9274392,
+    "category": "technology",
+    "trend_score": 69.98514530295503,
+    "connection_rate": 0.4676466893986453
+  },
+  {
+    "timestamp": 1766589622.9274392,
+    "category": "technology",
+    "trend_score": 66.79199604490222,
+    "connection_rate": 0.42190653954487467
+  },
+  {
+    "timestamp": 1766593222.9274392,
+    "category": "technology",
+    "trend_score": 58.4593068868424,
+    "connection_rate": 0.4721239164671993
+  },
+  {
+    "timestamp": 1766596822.9274392,
+    "category": "technology",
+    "trend_score": 59.60765116254954,
+    "connection_rate": 0.20448755019574222
+  },
+  {
+    "timestamp": 1766600422.9274392,
+    "category": "technology",
+    "trend_score": 70.74444059262215,
+    "connection_rate": 0.3718092178719682
+  },
+  {
+    "timestamp": 1766604022.9274392,
+    "category": "technology",
+    "trend_score": 78.26484913456906,
+    "connection_rate": 0.25259596374378745
+  },
+  {
+    "timestamp": 1766607622.9274392,
+    "category": "technology",
+    "trend_score": 74.01720225212793,
+    "connection_rate": 0.12474684782942896
+  },
+  {
+    "timestamp": 1766611222.9274392,
+    "category": "technology",
+    "trend_score": 51.59002364759383,
+    "connection_rate": 0.2257552035109784
+  },
+  {
+    "timestamp": 1766614822.9274392,
+    "category": "technology",
+    "trend_score": 62.25124258014798,
+    "connection_rate": 0.24895534992067173
+  },
+  {
+    "timestamp": 1766618422.9274392,
+    "category": "technology",
+    "trend_score": 69.26642351237626,
+    "connection_rate": 0.2204531038015889
+  },
+  {
+    "timestamp": 1766622022.92744,
+    "category": "technology",
+    "trend_score": 58.56920677211149,
+    "connection_rate": 0.25053420662474635
+  },
+  {
+    "timestamp": 1766625622.92744,
+    "category": "technology",
+    "trend_score": 71.88012999053235,
+    "connection_rate": 0.2739632053117156
+  },
+  {
+    "timestamp": 1766629222.92744,
+    "category": "technology",
+    "trend_score": 58.315692189891735,
+    "connection_rate": 0.4162011889558819
+  },
+  {
+    "timestamp": 1766632822.92744,
+    "category": "technology",
+    "trend_score": 67.26836054075049,
+    "connection_rate": 0.45698544391746576
+  },
+  {
+    "timestamp": 1766636422.92744,
+    "category": "technology",
+    "trend_score": 55.973031019799286,
+    "connection_rate": 0.41250379832512696
+  },
+  {
+    "timestamp": 1766640022.92744,
+    "category": "technology",
+    "trend_score": 62.229387288612486,
+    "connection_rate": 0.4195719850195544
+  },
+  {
+    "timestamp": 1766643622.92744,
+    "category": "technology",
+    "trend_score": 66.61400708094764,
+    "connection_rate": 0.3802393683469011
+  },
+  {
+    "timestamp": 1766647222.92744,
+    "category": "technology",
+    "trend_score": 64.25253684306428,
+    "connection_rate": 0.12147962751733093
+  },
+  {
+    "timestamp": 1766650822.92744,
+    "category": "technology",
+    "trend_score": 56.36299656520033,
+    "connection_rate": 0.21764493042541724
+  },
+  {
+    "timestamp": 1766654422.92744,
+    "category": "technology",
+    "trend_score": 71.38890433539854,
+    "connection_rate": 0.2895793715435751
+  },
+  {
+    "timestamp": 1766658022.92744,
+    "category": "technology",
+    "trend_score": 51.86761078225266,
+    "connection_rate": 0.1707510062483865
+  },
+  {
+    "timestamp": 1766661622.92744,
+    "category": "technology",
+    "trend_score": 61.26664146374584,
+    "connection_rate": 0.4826181180810959
+  },
+  {
+    "timestamp": 1766665222.92744,
+    "category": "technology",
+    "trend_score": 78.64311005094036,
+    "connection_rate": 0.49177154164567727
+  },
+  {
+    "timestamp": 1766668822.927441,
+    "category": "technology",
+    "trend_score": 80.17356780124847,
+    "connection_rate": 0.49665478634485416
+  },
+  {
+    "timestamp": 1766672422.927441,
+    "category": "technology",
+    "trend_score": 78.5889272234604,
+    "connection_rate": 0.27763533571578625
+  },
+  {
+    "timestamp": 1766676022.927441,
+    "category": "technology",
+    "trend_score": 86.42358878331564,
+    "connection_rate": 0.2634194725529203
+  },
+  {
+    "timestamp": 1766679622.927441,
+    "category": "technology",
+    "trend_score": 75.29831450378529,
+    "connection_rate": 0.46780870009846653
+  },
+  {
+    "timestamp": 1766683222.927441,
+    "category": "technology",
+    "trend_score": 63.35945832408079,
+    "connection_rate": 0.19119037815953407
+  },
+  {
+    "timestamp": 1766686822.927441,
+    "category": "technology",
+    "trend_score": 56.469920554365274,
+    "connection_rate": 0.3216430525492263
+  },
+  {
+    "timestamp": 1766690422.927441,
+    "category": "technology",
+    "trend_score": 75.22757881851138,
+    "connection_rate": 0.22390517928575485
+  },
+  {
+    "timestamp": 1766694022.927441,
+    "category": "technology",
+    "trend_score": 77.06904604431779,
+    "connection_rate": 0.24481167136703702
+  },
+  {
+    "timestamp": 1766697622.927441,
+    "category": "technology",
+    "trend_score": 72.8070179420953,
+    "connection_rate": 0.22220123306757583
+  },
+  {
+    "timestamp": 1766701222.927441,
+    "category": "technology",
+    "trend_score": 47.450936865039914,
+    "connection_rate": 0.45202178977937635
+  },
+  {
+    "timestamp": 1766704822.927441,
+    "category": "technology",
+    "trend_score": 69.70531147689927,
+    "connection_rate": 0.40790037076850805
+  },
+  {
+    "timestamp": 1766708422.927441,
+    "category": "technology",
+    "trend_score": 70.78401449874782,
+    "connection_rate": 0.4262395619848053
+  },
+  {
+    "timestamp": 1766712022.9274418,
+    "category": "technology",
+    "trend_score": 58.840396496641155,
+    "connection_rate": 0.21738793148119717
+  },
+  {
+    "timestamp": 1766715622.9274418,
+    "category": "technology",
+    "trend_score": 77.46337369222287,
+    "connection_rate": 0.3220355377760409
+  },
+  {
+    "timestamp": 1766719222.9274418,
+    "category": "technology",
+    "trend_score": 62.025630317530066,
+    "connection_rate": 0.36202191872269507
+  },
+  {
+    "timestamp": 1766722822.9274418,
+    "category": "technology",
+    "trend_score": 59.28656133502858,
+    "connection_rate": 0.11668101923146819
+  },
+  {
+    "timestamp": 1766726422.9274418,
+    "category": "technology",
+    "trend_score": 76.90501563319125,
+    "connection_rate": 0.1918177614361039
+  },
+  {
+    "timestamp": 1766730022.9274418,
+    "category": "technology",
+    "trend_score": 66.3831874768962,
+    "connection_rate": 0.43910818466400625
+  },
+  {
+    "timestamp": 1766733622.9274418,
+    "category": "technology",
+    "trend_score": 71.87328184639121,
+    "connection_rate": 0.3961225214714913
+  },
+  {
+    "timestamp": 1766737222.9274418,
+    "category": "technology",
+    "trend_score": 57.61816776042424,
+    "connection_rate": 0.46200119276929164
+  },
+  {
+    "timestamp": 1766740822.9274418,
+    "category": "technology",
+    "trend_score": 75.27990079279972,
+    "connection_rate": 0.4822046022399201
+  },
+  {
+    "timestamp": 1766744422.9274418,
+    "category": "technology",
+    "trend_score": 72.60735691992535,
+    "connection_rate": 0.24465270545611983
+  },
+  {
+    "timestamp": 1766748022.9274418,
+    "category": "technology",
+    "trend_score": 70.10442297434861,
+    "connection_rate": 0.10622783792551452
+  },
+  {
+    "timestamp": 1766751622.9274418,
+    "category": "technology",
+    "trend_score": 57.694507082670995,
+    "connection_rate": 0.33830256796876446
+  },
+  {
+    "timestamp": 1766755222.9274418,
+    "category": "technology",
+    "trend_score": 79.98565368392934,
+    "connection_rate": 0.3941364568054574
+  },
+  {
+    "timestamp": 1766758822.9274418,
+    "category": "technology",
+    "trend_score": 67.8779029962305,
+    "connection_rate": 0.16200142170428997
+  },
+  {
+    "timestamp": 1766762422.9274418,
+    "category": "technology",
+    "trend_score": 66.50808912425877,
+    "connection_rate": 0.33151006908141845
+  },
+  {
+    "timestamp": 1766766022.9274418,
+    "category": "technology",
+    "trend_score": 54.27520494424603,
+    "connection_rate": 0.25073686609432455
+  },
+  {
+    "timestamp": 1766769622.927443,
+    "category": "technology",
+    "trend_score": 71.81907923195094,
+    "connection_rate": 0.2525354048921842
+  },
+  {
+    "timestamp": 1766773222.927443,
+    "category": "technology",
+    "trend_score": 68.88355115202856,
+    "connection_rate": 0.33695715799787773
+  },
+  {
+    "timestamp": 1766776822.927443,
+    "category": "technology",
+    "trend_score": 71.0062106132224,
+    "connection_rate": 0.4941322047891359
+  },
+  {
+    "timestamp": 1766780422.927443,
+    "category": "technology",
+    "trend_score": 80.59315648994972,
+    "connection_rate": 0.32663249734070976
+  },
+  {
+    "timestamp": 1766784022.927443,
+    "category": "technology",
+    "trend_score": 70.39587853746924,
+    "connection_rate": 0.46964921418455574
+  },
+  {
+    "timestamp": 1766787622.927443,
+    "category": "technology",
+    "trend_score": 59.74510265356726,
+    "connection_rate": 0.455585464841463
+  },
+  {
+    "timestamp": 1766791222.927443,
+    "category": "technology",
+    "trend_score": 55.634359973191515,
+    "connection_rate": 0.46401630052864695
+  },
+  {
+    "timestamp": 1766794822.927443,
+    "category": "technology",
+    "trend_score": 67.09609455590588,
+    "connection_rate": 0.2923385790433465
+  },
+  {
+    "timestamp": 1766798422.927443,
+    "category": "technology",
+    "trend_score": 61.529251790895,
+    "connection_rate": 0.4187438341764822
+  },
+  {
+    "timestamp": 1766802022.927443,
+    "category": "technology",
+    "trend_score": 76.39405226091272,
+    "connection_rate": 0.3599502570747394
+  },
+  {
+    "timestamp": 1766805622.927443,
+    "category": "technology",
+    "trend_score": 62.47271608975938,
+    "connection_rate": 0.26845606500815855
+  },
+  {
+    "timestamp": 1766809222.927443,
+    "category": "technology",
+    "trend_score": 61.06770169827037,
+    "connection_rate": 0.44654182786477203
+  },
+  {
+    "timestamp": 1766812822.927443,
+    "category": "technology",
+    "trend_score": 60.61889920724926,
+    "connection_rate": 0.40923787353809227
+  },
+  {
+    "timestamp": 1766816422.927443,
+    "category": "technology",
+    "trend_score": 72.36732196196097,
+    "connection_rate": 0.42623214208766136
+  },
+  {
+    "timestamp": 1766820022.927443,
+    "category": "technology",
+    "trend_score": 56.23713493129704,
+    "connection_rate": 0.1078180638043266
+  },
+  {
+    "timestamp": 1766823622.927443,
+    "category": "technology",
+    "trend_score": 66.05465119356215,
+    "connection_rate": 0.13681101224966571
+  },
+  {
+    "timestamp": 1766827222.927444,
+    "category": "technology",
+    "trend_score": 55.513331252074764,
+    "connection_rate": 0.13611850948357476
+  },
+  {
+    "timestamp": 1766830822.927444,
+    "category": "technology",
+    "trend_score": 64.33804226399513,
+    "connection_rate": 0.31666153765896266
+  },
+  {
+    "timestamp": 1766834422.927444,
+    "category": "technology",
+    "trend_score": 74.01386475720899,
+    "connection_rate": 0.2877735109387567
+  },
+  {
+    "timestamp": 1766838022.927444,
+    "category": "technology",
+    "trend_score": 65.28520305599392,
+    "connection_rate": 0.3192939049074116
+  },
+  {
+    "timestamp": 1766841622.927444,
+    "category": "technology",
+    "trend_score": 83.03617750206105,
+    "connection_rate": 0.16372224506263217
+  },
+  {
+    "timestamp": 1766845222.927444,
+    "category": "technology",
+    "trend_score": 67.42311727936405,
+    "connection_rate": 0.3080156055024448
+  },
+  {
+    "timestamp": 1766848822.927444,
+    "category": "technology",
+    "trend_score": 72.20798392556806,
+    "connection_rate": 0.41263571266640786
+  },
+  {
+    "timestamp": 1766852422.927444,
+    "category": "technology",
+    "trend_score": 63.01675205475587,
+    "connection_rate": 0.43755718194703574
+  },
+  {
+    "timestamp": 1766856022.927444,
+    "category": "technology",
+    "trend_score": 51.88140394229594,
+    "connection_rate": 0.4773072066514953
+  },
+  {
+    "timestamp": 1766859622.927444,
+    "category": "technology",
+    "trend_score": 82.6803440440414,
+    "connection_rate": 0.35242389596097656
+  },
+  {
+    "timestamp": 1766863222.927444,
+    "category": "technology",
+    "trend_score": 84.07418483366642,
+    "connection_rate": 0.32131840841406756
+  },
+  {
+    "timestamp": 1766866822.927444,
+    "category": "technology",
+    "trend_score": 60.55997382086288,
+    "connection_rate": 0.12913586432923402
+  },
+  {
+    "timestamp": 1766870422.927444,
+    "category": "technology",
+    "trend_score": 61.28386570263642,
+    "connection_rate": 0.2827672609412293
+  },
+  {
+    "timestamp": 1766874022.927444,
+    "category": "technology",
+    "trend_score": 76.83626068186273,
+    "connection_rate": 0.4136233421404013
+  },
+  {
+    "timestamp": 1766877622.927444,
+    "category": "technology",
+    "trend_score": 54.53769897816234,
+    "connection_rate": 0.34342066858044296
+  },
+  {
+    "timestamp": 1766881222.927444,
+    "category": "technology",
+    "trend_score": 59.71340514281851,
+    "connection_rate": 0.47721005224444846
+  },
+  {
+    "timestamp": 1766884822.927445,
+    "category": "technology",
+    "trend_score": 89.60845227884057,
+    "connection_rate": 0.4653651800271258
+  },
+  {
+    "timestamp": 1766888422.927445,
+    "category": "technology",
+    "trend_score": 69.82577882975359,
+    "connection_rate": 0.2386445781022765
+  },
+  {
+    "timestamp": 1766892022.927445,
+    "category": "technology",
+    "trend_score": 71.09397815994815,
+    "connection_rate": 0.15056761802102964
+  },
+  {
+    "timestamp": 1766895622.927445,
+    "category": "technology",
+    "trend_score": 76.16157231692443,
+    "connection_rate": 0.38412264756716075
+  },
+  {
+    "timestamp": 1766899222.927445,
+    "category": "technology",
+    "trend_score": 75.17755314283453,
+    "connection_rate": 0.4593905697529648
+  },
+  {
+    "timestamp": 1766902822.927445,
+    "category": "technology",
+    "trend_score": 50.414008208057545,
+    "connection_rate": 0.43904732723390083
+  },
+  {
+    "timestamp": 1766906422.927445,
+    "category": "technology",
+    "trend_score": 62.48138170887224,
+    "connection_rate": 0.3884477999373639
+  },
+  {
+    "timestamp": 1766910022.927445,
+    "category": "technology",
+    "trend_score": 72.37765014511328,
+    "connection_rate": 0.4267308339974587
+  },
+  {
+    "timestamp": 1766913622.927445,
+    "category": "technology",
+    "trend_score": 59.052657097430306,
+    "connection_rate": 0.2678741189017534
+  },
+  {
+    "timestamp": 1766917222.927445,
+    "category": "technology",
+    "trend_score": 58.98367165845653,
+    "connection_rate": 0.29258812983605587
+  },
+  {
+    "timestamp": 1766920822.927445,
+    "category": "technology",
+    "trend_score": 87.84733745167796,
+    "connection_rate": 0.1365867290382643
+  },
+  {
+    "timestamp": 1766924422.927445,
+    "category": "technology",
+    "trend_score": 72.50024826961976,
+    "connection_rate": 0.1436829208763089
+  },
+  {
+    "timestamp": 1766928022.927445,
+    "category": "technology",
+    "trend_score": 75.00418871195907,
+    "connection_rate": 0.3975472699485043
+  },
+  {
+    "timestamp": 1766931622.927445,
+    "category": "technology",
+    "trend_score": 72.74502602212843,
+    "connection_rate": 0.17984382821276826
+  },
+  {
+    "timestamp": 1766935222.927445,
+    "category": "technology",
+    "trend_score": 48.795450105569806,
+    "connection_rate": 0.4827924414988366
+  },
+  {
+    "timestamp": 1766938822.9274461,
+    "category": "technology",
+    "trend_score": 67.94806204785924,
+    "connection_rate": 0.4140830347307276
+  },
+  {
+    "timestamp": 1766942422.9274461,
+    "category": "technology",
+    "trend_score": 62.70716762401144,
+    "connection_rate": 0.32699479020209005
+  },
+  {
+    "timestamp": 1766946022.9274461,
+    "category": "technology",
+    "trend_score": 56.58629957916469,
+    "connection_rate": 0.15260202466004472
+  },
+  {
+    "timestamp": 1766949622.9274461,
+    "category": "technology",
+    "trend_score": 73.89476081467208,
+    "connection_rate": 0.4837344665062583
+  },
+  {
+    "timestamp": 1766953222.9274461,
+    "category": "technology",
+    "trend_score": 76.25891918082212,
+    "connection_rate": 0.42437471609836763
+  },
+  {
+    "timestamp": 1766956822.9274461,
+    "category": "technology",
+    "trend_score": 63.73913062415322,
+    "connection_rate": 0.11816157446422895
+  },
+  {
+    "timestamp": 1766960422.9274461,
+    "category": "technology",
+    "trend_score": 52.8119980001576,
+    "connection_rate": 0.2873088267219122
+  },
+  {
+    "timestamp": 1766964022.9274461,
+    "category": "technology",
+    "trend_score": 58.5596102197799,
+    "connection_rate": 0.30960716534835364
+  },
+  {
+    "timestamp": 1766967622.9274461,
+    "category": "technology",
+    "trend_score": 70.08784784737843,
+    "connection_rate": 0.26225262839211283
+  },
+  {
+    "timestamp": 1766971222.9274461,
+    "category": "technology",
+    "trend_score": 59.78209617759161,
+    "connection_rate": 0.31918147569605526
+  },
+  {
+    "timestamp": 1766974822.9274461,
+    "category": "technology",
+    "trend_score": 67.98079729228613,
+    "connection_rate": 0.31886498720538536
+  },
+  {
+    "timestamp": 1766978422.9274461,
+    "category": "technology",
+    "trend_score": 76.50590605352849,
+    "connection_rate": 0.3522487907679295
+  },
+  {
+    "timestamp": 1766982022.9274461,
+    "category": "technology",
+    "trend_score": 59.0259888515678,
+    "connection_rate": 0.27820643131823664
+  },
+  {
+    "timestamp": 1766985622.9274461,
+    "category": "technology",
+    "trend_score": 71.02960412948204,
+    "connection_rate": 0.24097568714637047
+  },
+  {
+    "timestamp": 1766989222.9274461,
+    "category": "technology",
+    "trend_score": 76.9182079449865,
+    "connection_rate": 0.3376266480505893
+  },
+  {
+    "timestamp": 1766992822.9274461,
+    "category": "technology",
+    "trend_score": 62.86759803008852,
+    "connection_rate": 0.3799348691388169
+  },
+  {
+    "timestamp": 1766996422.9274461,
+    "category": "technology",
+    "trend_score": 63.77211385264247,
+    "connection_rate": 0.1333338647984904
+  },
+  {
+    "timestamp": 1767000022.927447,
+    "category": "technology",
+    "trend_score": 82.37733174035657,
+    "connection_rate": 0.10763864261604611
+  },
+  {
+    "timestamp": 1767003622.927447,
+    "category": "technology",
+    "trend_score": 49.8143574375168,
+    "connection_rate": 0.38107887559279086
+  },
+  {
+    "timestamp": 1767007222.927447,
+    "category": "technology",
+    "trend_score": 62.42564398606601,
+    "connection_rate": 0.4270290551183138
+  },
+  {
+    "timestamp": 1767010822.927447,
+    "category": "technology",
+    "trend_score": 49.37792571541829,
+    "connection_rate": 0.13307720025438488
+  },
+  {
+    "timestamp": 1767014422.927447,
+    "category": "technology",
+    "trend_score": 72.3633464001189,
+    "connection_rate": 0.4487691758930056
+  },
+  {
+    "timestamp": 1767018022.927447,
+    "category": "technology",
+    "trend_score": 84.48275839170729,
+    "connection_rate": 0.1315759638533221
+  },
+  {
+    "timestamp": 1767021622.927447,
+    "category": "technology",
+    "trend_score": 71.90985961697433,
+    "connection_rate": 0.4866449648080695
+  },
+  {
+    "timestamp": 1767025222.927447,
+    "category": "technology",
+    "trend_score": 74.72649673528839,
+    "connection_rate": 0.11279624831098821
+  },
+  {
+    "timestamp": 1767028822.927447,
+    "category": "technology",
+    "trend_score": 74.21284965401324,
+    "connection_rate": 0.4378099236760591
+  },
+  {
+    "timestamp": 1767032422.927447,
+    "category": "technology",
+    "trend_score": 73.18978484394744,
+    "connection_rate": 0.24646299077246578
+  },
+  {
+    "timestamp": 1767036022.927447,
+    "category": "technology",
+    "trend_score": 61.10937642772895,
+    "connection_rate": 0.25706816699458845
+  },
+  {
+    "timestamp": 1767039622.927447,
+    "category": "technology",
+    "trend_score": 52.5589413068732,
+    "connection_rate": 0.37601174979586127
+  },
+  {
+    "timestamp": 1767043222.927447,
+    "category": "technology",
+    "trend_score": 72.24772786393059,
+    "connection_rate": 0.27136329724075536
+  },
+  {
+    "timestamp": 1767046822.927447,
+    "category": "technology",
+    "trend_score": 63.12902569376737,
+    "connection_rate": 0.350744398276302
+  },
+  {
+    "timestamp": 1767050422.927447,
+    "category": "technology",
+    "trend_score": 65.31094281556119,
+    "connection_rate": 0.45676275543648726
+  },
+  {
+    "timestamp": 1767054022.927447,
+    "category": "technology",
+    "trend_score": 62.77969764462713,
+    "connection_rate": 0.3268328825845349
+  },
+  {
+    "timestamp": 1767057622.927448,
+    "category": "technology",
+    "trend_score": 80.85416775327106,
+    "connection_rate": 0.32775779348781764
+  },
+  {
+    "timestamp": 1767061222.927448,
+    "category": "technology",
+    "trend_score": 79.1142553240961,
+    "connection_rate": 0.42969912155717027
+  },
+  {
+    "timestamp": 1767064822.927448,
+    "category": "technology",
+    "trend_score": 57.74182315585829,
+    "connection_rate": 0.3781807389719445
+  },
+  {
+    "timestamp": 1767068422.927448,
+    "category": "technology",
+    "trend_score": 72.31033738548567,
+    "connection_rate": 0.4825666612917303
+  },
+  {
+    "timestamp": 1767072022.927448,
+    "category": "technology",
+    "trend_score": 87.4020655261181,
+    "connection_rate": 0.24998745579090126
+  },
+  {
+    "timestamp": 1767075622.927448,
+    "category": "technology",
+    "trend_score": 74.21269317050519,
+    "connection_rate": 0.16287021438531363
+  },
+  {
+    "timestamp": 1767079222.927448,
+    "category": "technology",
+    "trend_score": 66.38277827347909,
+    "connection_rate": 0.1850066273968464
+  },
+  {
+    "timestamp": 1767082822.927448,
+    "category": "technology",
+    "trend_score": 58.60985098313039,
+    "connection_rate": 0.31489556507698047
+  },
+  {
+    "timestamp": 1767086422.927448,
+    "category": "technology",
+    "trend_score": 67.19637754542876,
+    "connection_rate": 0.1597806519831274
+  },
+  {
+    "timestamp": 1767090022.927448,
+    "category": "technology",
+    "trend_score": 66.88424994087235,
+    "connection_rate": 0.11277931800877355
+  },
+  {
+    "timestamp": 1767093622.927448,
+    "category": "technology",
+    "trend_score": 64.88731016381895,
+    "connection_rate": 0.1022474397337637
+  },
+  {
+    "timestamp": 1767097222.927448,
+    "category": "technology",
+    "trend_score": 58.597785263052835,
+    "connection_rate": 0.16058672334670554
+  },
+  {
+    "timestamp": 1767100822.927448,
+    "category": "technology",
+    "trend_score": 59.80496173024195,
+    "connection_rate": 0.4710073560669876
+  },
+  {
+    "timestamp": 1767104422.927448,
+    "category": "technology",
+    "trend_score": 67.58811439840372,
+    "connection_rate": 0.4016948368443767
+  },
+  {
+    "timestamp": 1767108022.927448,
+    "category": "technology",
+    "trend_score": 75.48460671409516,
+    "connection_rate": 0.4442815011324527
+  },
+  {
+    "timestamp": 1767111622.927448,
+    "category": "technology",
+    "trend_score": 53.90243787458666,
+    "connection_rate": 0.11857048341913567
+  },
+  {
+    "timestamp": 1767115222.927448,
+    "category": "technology",
+    "trend_score": 65.82165837743015,
+    "connection_rate": 0.45389771668378964
+  },
+  {
+    "timestamp": 1767118822.927449,
+    "category": "technology",
+    "trend_score": 63.18412635783353,
+    "connection_rate": 0.2853469189701323
+  },
+  {
+    "timestamp": 1767122422.927449,
+    "category": "technology",
+    "trend_score": 59.103116633861866,
+    "connection_rate": 0.23770089996413507
+  },
+  {
+    "timestamp": 1767126022.927449,
+    "category": "technology",
+    "trend_score": 65.60214947614388,
+    "connection_rate": 0.48297408571317346
+  },
+  {
+    "timestamp": 1767129622.927449,
+    "category": "technology",
+    "trend_score": 56.59954074284421,
+    "connection_rate": 0.46415430761704723
+  },
+  {
+    "timestamp": 1767133222.927449,
+    "category": "technology",
+    "trend_score": 72.2478952692112,
+    "connection_rate": 0.32621735660571854
+  },
+  {
+    "timestamp": 1767136822.927449,
+    "category": "technology",
+    "trend_score": 64.77753999658275,
+    "connection_rate": 0.32009523078978397
+  },
+  {
+    "timestamp": 1767140422.927449,
+    "category": "technology",
+    "trend_score": 66.6515118025461,
+    "connection_rate": 0.288178071878789
+  },
+  {
+    "timestamp": 1767144022.927449,
+    "category": "technology",
+    "trend_score": 55.047191991260426,
+    "connection_rate": 0.4969661169443328
+  },
+  {
+    "timestamp": 1767147622.927449,
+    "category": "technology",
+    "trend_score": 69.4044880782755,
+    "connection_rate": 0.18637889047613362
+  },
+  {
+    "timestamp": 1767151222.927449,
+    "category": "technology",
+    "trend_score": 62.60948590586379,
+    "connection_rate": 0.45968587449901777
+  },
+  {
+    "timestamp": 1767154822.927449,
+    "category": "technology",
+    "trend_score": 55.95286136869128,
+    "connection_rate": 0.13838979302474536
+  },
+  {
+    "timestamp": 1767158422.927449,
+    "category": "technology",
+    "trend_score": 56.796861679422506,
+    "connection_rate": 0.3204799360446675
+  },
+  {
+    "timestamp": 1767162022.927449,
+    "category": "technology",
+    "trend_score": 63.9491731111168,
+    "connection_rate": 0.36499414427731747
+  },
+  {
+    "timestamp": 1767165622.927449,
+    "category": "technology",
+    "trend_score": 65.2485617431203,
+    "connection_rate": 0.18456900635702095
+  },
+  {
+    "timestamp": 1767169222.927449,
+    "category": "technology",
+    "trend_score": 57.553203078105454,
+    "connection_rate": 0.4813945262329534
+  },
+  {
+    "timestamp": 1767172822.927449,
+    "category": "technology",
+    "trend_score": 52.408897278546426,
+    "connection_rate": 0.3509211115085674
+  },
+  {
+    "timestamp": 1767176422.927449,
+    "category": "technology",
+    "trend_score": 80.91288590168669,
+    "connection_rate": 0.37835142060896065
+  },
+  {
+    "timestamp": 1767180022.927449,
+    "category": "technology",
+    "trend_score": 78.51263092509444,
+    "connection_rate": 0.150876846001901
+  },
+  {
+    "timestamp": 1767183622.9274502,
+    "category": "technology",
+    "trend_score": 76.48456518792055,
+    "connection_rate": 0.15225711018841898
+  },
+  {
+    "timestamp": 1767187222.9274502,
+    "category": "technology",
+    "trend_score": 75.17532758421662,
+    "connection_rate": 0.372872772766236
+  },
+  {
+    "timestamp": 1767190822.9274502,
+    "category": "technology",
+    "trend_score": 78.20051463547432,
+    "connection_rate": 0.2827672227013077
+  },
+  {
+    "timestamp": 1767194422.9274502,
+    "category": "technology",
+    "trend_score": 61.35401704416893,
+    "connection_rate": 0.12841506506141123
+  },
+  {
+    "timestamp": 1767198022.9274502,
+    "category": "technology",
+    "trend_score": 81.92448292435816,
+    "connection_rate": 0.37431508892262044
+  },
+  {
+    "timestamp": 1767201622.9274502,
+    "category": "technology",
+    "trend_score": 79.5367421957272,
+    "connection_rate": 0.16364854151618569
+  },
+  {
+    "timestamp": 1767205222.9274502,
+    "category": "technology",
+    "trend_score": 58.55766944541536,
+    "connection_rate": 0.4368587433259514
+  },
+  {
+    "timestamp": 1767208822.9274502,
+    "category": "technology",
+    "trend_score": 60.573025497680405,
+    "connection_rate": 0.326995635274529
+  },
+  {
+    "timestamp": 1767212422.9274502,
+    "category": "technology",
+    "trend_score": 62.398331708700056,
+    "connection_rate": 0.24675699593383907
+  },
+  {
+    "timestamp": 1767216022.9274502,
+    "category": "technology",
+    "trend_score": 75.64521168198952,
+    "connection_rate": 0.28420183048858255
+  },
+  {
+    "timestamp": 1767219622.9274502,
+    "category": "technology",
+    "trend_score": 74.76579820838768,
+    "connection_rate": 0.1336450683186291
+  },
+  {
+    "timestamp": 1767223222.9274502,
+    "category": "technology",
+    "trend_score": 60.94828561247985,
+    "connection_rate": 0.40522682602173854
+  },
+  {
+    "timestamp": 1767226822.9274502,
+    "category": "technology",
+    "trend_score": 92.70945663857032,
+    "connection_rate": 0.3739431241338538
+  },
+  {
+    "timestamp": 1767230422.9274502,
+    "category": "technology",
+    "trend_score": 45.689065138747736,
+    "connection_rate": 0.3588892924920273
+  },
+  {
+    "timestamp": 1767234022.9274502,
+    "category": "technology",
+    "trend_score": 59.45551230802936,
+    "connection_rate": 0.4528256798804501
+  },
+  {
+    "timestamp": 1767237622.9274502,
+    "category": "technology",
+    "trend_score": 56.0583051299478,
+    "connection_rate": 0.15497817373167022
+  },
+  {
+    "timestamp": 1767241222.9274502,
+    "category": "technology",
+    "trend_score": 57.86700151580981,
+    "connection_rate": 0.1605222317618485
+  },
+  {
+    "timestamp": 1767244822.9274502,
+    "category": "technology",
+    "trend_score": 72.59377696803456,
+    "connection_rate": 0.2971969245348678
+  },
+  {
+    "timestamp": 1767248422.9274502,
+    "category": "technology",
+    "trend_score": 77.94136177852073,
+    "connection_rate": 0.15900756311258682
+  },
+  {
+    "timestamp": 1767252022.927451,
+    "category": "technology",
+    "trend_score": 63.230017551038515,
+    "connection_rate": 0.3730793129809685
+  },
+  {
+    "timestamp": 1767255622.927451,
+    "category": "technology",
+    "trend_score": 53.42274216612021,
+    "connection_rate": 0.4862775026631524
+  },
+  {
+    "timestamp": 1767259222.927451,
+    "category": "technology",
+    "trend_score": 65.81598195263152,
+    "connection_rate": 0.12304127623042614
+  },
+  {
+    "timestamp": 1767262822.927451,
+    "category": "technology",
+    "trend_score": 70.37910393337114,
+    "connection_rate": 0.42356672492481573
+  },
+  {
+    "timestamp": 1767266422.927451,
+    "category": "technology",
+    "trend_score": 68.00632093578305,
+    "connection_rate": 0.2622671157955808
+  },
+  {
+    "timestamp": 1767270022.927451,
+    "category": "technology",
+    "trend_score": 72.41224079381992,
+    "connection_rate": 0.46645504143783134
+  },
+  {
+    "timestamp": 1767273622.927451,
+    "category": "technology",
+    "trend_score": 65.05763935430161,
+    "connection_rate": 0.4579657963530779
+  },
+  {
+    "timestamp": 1767277222.927451,
+    "category": "technology",
+    "trend_score": 81.01766712111764,
+    "connection_rate": 0.478795776365305
+  },
+  {
+    "timestamp": 1767280822.927451,
+    "category": "technology",
+    "trend_score": 79.1907841824714,
+    "connection_rate": 0.25721098597842224
+  },
+  {
+    "timestamp": 1767284422.927451,
+    "category": "technology",
+    "trend_score": 46.21436714268531,
+    "connection_rate": 0.1834486958561682
+  },
+  {
+    "timestamp": 1767288022.927451,
+    "category": "technology",
+    "trend_score": 67.9915479414794,
+    "connection_rate": 0.4633034914967994
+  },
+  {
+    "timestamp": 1767291622.927451,
+    "category": "technology",
+    "trend_score": 57.92872951612674,
+    "connection_rate": 0.13501534406771049
+  },
+  {
+    "timestamp": 1767295222.927451,
+    "category": "technology",
+    "trend_score": 82.73926545374019,
+    "connection_rate": 0.3302866321244444
+  },
+  {
+    "timestamp": 1767298822.927451,
+    "category": "technology",
+    "trend_score": 55.65394008955065,
+    "connection_rate": 0.281280132741081
+  },
+  {
+    "timestamp": 1767302422.927451,
+    "category": "technology",
+    "trend_score": 78.27879762410352,
+    "connection_rate": 0.20627803558585836
+  },
+  {
+    "timestamp": 1767306022.927451,
+    "category": "technology",
+    "trend_score": 81.05096249345488,
+    "connection_rate": 0.36026606125969207
+  },
+  {
+    "timestamp": 1767309622.9274518,
+    "category": "technology",
+    "trend_score": 79.31480842011685,
+    "connection_rate": 0.2203989707730757
+  },
+  {
+    "timestamp": 1767313222.9274518,
+    "category": "technology",
+    "trend_score": 61.663042089985915,
+    "connection_rate": 0.18800428705747568
+  },
+  {
+    "timestamp": 1767316822.9274518,
+    "category": "technology",
+    "trend_score": 51.97466417802514,
+    "connection_rate": 0.31366316272502115
+  },
+  {
+    "timestamp": 1767320422.9274518,
+    "category": "technology",
+    "trend_score": 74.36987547585126,
+    "connection_rate": 0.15683549920297024
+  },
+  {
+    "timestamp": 1767324022.9274518,
+    "category": "technology",
+    "trend_score": 73.64202078724719,
+    "connection_rate": 0.21234052872161757
+  },
+  {
+    "timestamp": 1767327622.9274518,
+    "category": "technology",
+    "trend_score": 86.7349987411059,
+    "connection_rate": 0.27317822840565487
+  },
+  {
+    "timestamp": 1767331222.9274518,
+    "category": "technology",
+    "trend_score": 72.15646472754281,
+    "connection_rate": 0.371485044056342
+  },
+  {
+    "timestamp": 1767334822.9274518,
+    "category": "technology",
+    "trend_score": 63.2624020446267,
+    "connection_rate": 0.4263471534153982
+  },
+  {
+    "timestamp": 1767338422.9274518,
+    "category": "technology",
+    "trend_score": 79.66024520053955,
+    "connection_rate": 0.1890257594136515
+  },
+  {
+    "timestamp": 1767342022.9274518,
+    "category": "technology",
+    "trend_score": 71.23006633759495,
+    "connection_rate": 0.17532011030608174
+  },
+  {
+    "timestamp": 1767345622.9274518,
+    "category": "technology",
+    "trend_score": 58.266024209339676,
+    "connection_rate": 0.4052768487611407
+  },
+  {
+    "timestamp": 1767349222.9274518,
+    "category": "technology",
+    "trend_score": 48.19509040889416,
+    "connection_rate": 0.4710286287547675
+  },
+  {
+    "timestamp": 1767352822.9274518,
+    "category": "technology",
+    "trend_score": 51.50550220315037,
+    "connection_rate": 0.16079322541905916
+  },
+  {
+    "timestamp": 1767356422.9274518,
+    "category": "technology",
+    "trend_score": 67.11308657245205,
+    "connection_rate": 0.36502722754085626
+  },
+  {
+    "timestamp": 1767360022.9274518,
+    "category": "technology",
+    "trend_score": 74.12945813306114,
+    "connection_rate": 0.3769198858492393
+  },
+  {
+    "timestamp": 1767363622.9274518,
+    "category": "technology",
+    "trend_score": 71.67853361960631,
+    "connection_rate": 0.13473783878796436
+  },
+  {
+    "timestamp": 1767367222.927453,
+    "category": "technology",
+    "trend_score": 73.26777845678878,
+    "connection_rate": 0.24042577060814888
+  },
+  {
+    "timestamp": 1767370822.927453,
+    "category": "technology",
+    "trend_score": 63.809421087037364,
+    "connection_rate": 0.17459481232051094
+  },
+  {
+    "timestamp": 1767374422.927453,
+    "category": "technology",
+    "trend_score": 71.41991327188127,
+    "connection_rate": 0.4865440834026642
+  },
+  {
+    "timestamp": 1767378022.927453,
+    "category": "technology",
+    "trend_score": 44.46859030243834,
+    "connection_rate": 0.16759038314454638
+  },
+  {
+    "timestamp": 1767381622.927453,
+    "category": "technology",
+    "trend_score": 53.287580093850714,
+    "connection_rate": 0.30888498605307857
+  },
+  {
+    "timestamp": 1767385222.927453,
+    "category": "technology",
+    "trend_score": 69.68679569183327,
+    "connection_rate": 0.45776078039918033
+  },
+  {
+    "timestamp": 1767388822.927453,
+    "category": "technology",
+    "trend_score": 57.95108287911637,
+    "connection_rate": 0.3029103617370369
+  },
+  {
+    "timestamp": 1767392422.927453,
+    "category": "technology",
+    "trend_score": 88.2044775571548,
+    "connection_rate": 0.11822467002704934
+  },
+  {
+    "timestamp": 1767396022.927453,
+    "category": "technology",
+    "trend_score": 58.90781010120097,
+    "connection_rate": 0.16335796961118249
+  },
+  {
+    "timestamp": 1767399622.927453,
+    "category": "technology",
+    "trend_score": 54.95052406512136,
+    "connection_rate": 0.13991067217058167
+  },
+  {
+    "timestamp": 1767403222.927453,
+    "category": "technology",
+    "trend_score": 78.88825852291508,
+    "connection_rate": 0.3711083637482544
+  },
+  {
+    "timestamp": 1767406822.927453,
+    "category": "technology",
+    "trend_score": 77.97461486680835,
+    "connection_rate": 0.4367258060880508
+  },
+  {
+    "timestamp": 1767410422.927453,
+    "category": "technology",
+    "trend_score": 65.28325042091247,
+    "connection_rate": 0.29139054775328666
+  },
+  {
+    "timestamp": 1767414022.927454,
+    "category": "technology",
+    "trend_score": 85.18845602426671,
+    "connection_rate": 0.18667637700483886
+  },
+  {
+    "timestamp": 1767417622.927454,
+    "category": "technology",
+    "trend_score": 66.16044972479344,
+    "connection_rate": 0.35389617415109453
+  },
+  {
+    "timestamp": 1767421222.927454,
+    "category": "technology",
+    "trend_score": 72.93584514496575,
+    "connection_rate": 0.4432257346527777
+  },
+  {
+    "timestamp": 1767424822.927454,
+    "category": "technology",
+    "trend_score": 78.01247857957878,
+    "connection_rate": 0.171455284161128
+  },
+  {
+    "timestamp": 1767428422.927454,
+    "category": "technology",
+    "trend_score": 70.02015069196156,
+    "connection_rate": 0.4972232322023328
+  },
+  {
+    "timestamp": 1767432022.927454,
+    "category": "technology",
+    "trend_score": 72.84837198422672,
+    "connection_rate": 0.41614231682437597
+  },
+  {
+    "timestamp": 1767435622.927454,
+    "category": "technology",
+    "trend_score": 67.043579307607,
+    "connection_rate": 0.208622409095823
+  },
+  {
+    "timestamp": 1767439222.927454,
+    "category": "technology",
+    "trend_score": 63.55672363848779,
+    "connection_rate": 0.22610212334726804
+  },
+  {
+    "timestamp": 1767442822.927454,
+    "category": "technology",
+    "trend_score": 61.73723152425405,
+    "connection_rate": 0.1054208215727765
+  },
+  {
+    "timestamp": 1767446422.927454,
+    "category": "technology",
+    "trend_score": 56.90649848472003,
+    "connection_rate": 0.4138180324042552
+  },
+  {
+    "timestamp": 1767450022.927454,
+    "category": "technology",
+    "trend_score": 69.79199751474165,
+    "connection_rate": 0.12530301902839827
+  },
+  {
+    "timestamp": 1767453622.927454,
+    "category": "technology",
+    "trend_score": 61.27728777799,
+    "connection_rate": 0.41971286587202516
+  },
+  {
+    "timestamp": 1767457222.927454,
+    "category": "technology",
+    "trend_score": 83.22961323718806,
+    "connection_rate": 0.1288083525821363
+  },
+  {
+    "timestamp": 1767460822.927454,
+    "category": "technology",
+    "trend_score": 45.22344259822156,
+    "connection_rate": 0.4733380874113001
+  },
+  {
+    "timestamp": 1767464422.927454,
+    "category": "technology",
+    "trend_score": 60.39428601291801,
+    "connection_rate": 0.31884870081141936
+  },
+  {
+    "timestamp": 1767468022.927455,
+    "category": "technology",
+    "trend_score": 58.76590337970384,
+    "connection_rate": 0.201448375489495
+  },
+  {
+    "timestamp": 1767471622.927455,
+    "category": "technology",
+    "trend_score": 71.28929699489764,
+    "connection_rate": 0.13843759338842407
+  },
+  {
+    "timestamp": 1767475222.927455,
+    "category": "technology",
+    "trend_score": 64.47250253714073,
+    "connection_rate": 0.40075910602942855
+  },
+  {
+    "timestamp": 1767478822.927455,
+    "category": "technology",
+    "trend_score": 68.55876586246329,
+    "connection_rate": 0.26239337633948234
+  },
+  {
+    "timestamp": 1767482422.927455,
+    "category": "technology",
+    "trend_score": 63.07505766677383,
+    "connection_rate": 0.29354909131325546
+  },
+  {
+    "timestamp": 1767486022.927455,
+    "category": "technology",
+    "trend_score": 66.64721427466415,
+    "connection_rate": 0.36998003353071407
+  },
+  {
+    "timestamp": 1767489622.927455,
+    "category": "technology",
+    "trend_score": 70.98889246537371,
+    "connection_rate": 0.2900617290995966
+  },
+  {
+    "timestamp": 1767493222.927455,
+    "category": "technology",
+    "trend_score": 79.4534203858271,
+    "connection_rate": 0.3739751177181775
+  },
+  {
+    "timestamp": 1767496822.927455,
+    "category": "technology",
+    "trend_score": 52.1171366415216,
+    "connection_rate": 0.4079853575892187
+  },
+  {
+    "timestamp": 1767500422.927455,
+    "category": "technology",
+    "trend_score": 78.27308533694597,
+    "connection_rate": 0.35477367739341015
+  },
+  {
+    "timestamp": 1767504022.927455,
+    "category": "technology",
+    "trend_score": 55.68726444777235,
+    "connection_rate": 0.4368659616217583
+  },
+  {
+    "timestamp": 1767507622.927455,
+    "category": "technology",
+    "trend_score": 71.56127671383634,
+    "connection_rate": 0.2824379229531911
+  },
+  {
+    "timestamp": 1767511222.927455,
+    "category": "technology",
+    "trend_score": 66.69861911535804,
+    "connection_rate": 0.3245049609669066
+  },
+  {
+    "timestamp": 1767514822.927455,
+    "category": "technology",
+    "trend_score": 59.13903422889222,
+    "connection_rate": 0.32895834281392716
+  },
+  {
+    "timestamp": 1767518422.927455,
+    "category": "technology",
+    "trend_score": 70.87593545103981,
+    "connection_rate": 0.25426276889600274
+  },
+  {
+    "timestamp": 1767522022.927455,
+    "category": "technology",
+    "trend_score": 56.47665744442396,
+    "connection_rate": 0.26268241776306606
+  },
+  {
+    "timestamp": 1767525622.927456,
+    "category": "technology",
+    "trend_score": 75.33475691417567,
+    "connection_rate": 0.49002059779286267
+  },
+  {
+    "timestamp": 1767529222.927456,
+    "category": "technology",
+    "trend_score": 55.360549779853365,
+    "connection_rate": 0.3539958940906306
+  },
+  {
+    "timestamp": 1767532822.927456,
+    "category": "technology",
+    "trend_score": 58.483343616540154,
+    "connection_rate": 0.3778885971634439
+  },
+  {
+    "timestamp": 1767536422.927456,
+    "category": "technology",
+    "trend_score": 62.31772414790867,
+    "connection_rate": 0.16444091040692488
+  },
+  {
+    "timestamp": 1767540022.927456,
+    "category": "technology",
+    "trend_score": 71.58911348324393,
+    "connection_rate": 0.3456326076089766
+  },
+  {
+    "timestamp": 1767543622.927456,
+    "category": "technology",
+    "trend_score": 63.907307994215095,
+    "connection_rate": 0.25738836928808967
+  },
+  {
+    "timestamp": 1767547222.927456,
+    "category": "technology",
+    "trend_score": 60.272745399171136,
+    "connection_rate": 0.20469008944827016
+  },
+  {
+    "timestamp": 1767550822.927456,
+    "category": "technology",
+    "trend_score": 58.30903406385463,
+    "connection_rate": 0.12919757304104304
+  },
+  {
+    "timestamp": 1767554422.927456,
+    "category": "technology",
+    "trend_score": 73.68721922292848,
+    "connection_rate": 0.4011925983651309
+  },
+  {
+    "timestamp": 1767558022.927456,
+    "category": "technology",
+    "trend_score": 68.40810084273402,
+    "connection_rate": 0.19056598119413826
+  },
+  {
+    "timestamp": 1767561622.927456,
+    "category": "technology",
+    "trend_score": 74.62162565719078,
+    "connection_rate": 0.36295306593062937
+  },
+  {
+    "timestamp": 1767565222.927456,
+    "category": "technology",
+    "trend_score": 69.86133763618135,
+    "connection_rate": 0.34217550075933345
+  },
+  {
+    "timestamp": 1767568822.927456,
+    "category": "technology",
+    "trend_score": 66.61097008896651,
+    "connection_rate": 0.40821481013994465
+  },
+  {
+    "timestamp": 1767572422.927456,
+    "category": "technology",
+    "trend_score": 58.09096781362385,
+    "connection_rate": 0.1031904399326633
+  },
+  {
+    "timestamp": 1767576022.927457,
+    "category": "technology",
+    "trend_score": 54.20691021341806,
+    "connection_rate": 0.29149487841631094
+  },
+  {
+    "timestamp": 1767579622.927457,
+    "category": "technology",
+    "trend_score": 58.97187986948317,
+    "connection_rate": 0.3521189025335174
+  },
+  {
+    "timestamp": 1767583222.927457,
+    "category": "technology",
+    "trend_score": 74.29024015304984,
+    "connection_rate": 0.15026437651304111
+  },
+  {
+    "timestamp": 1767586822.927457,
+    "category": "technology",
+    "trend_score": 60.91700586028563,
+    "connection_rate": 0.4715601565363654
+  },
+  {
+    "timestamp": 1767590422.927457,
+    "category": "technology",
+    "trend_score": 58.73769584370329,
+    "connection_rate": 0.39491868577790734
+  },
+  {
+    "timestamp": 1767594022.927457,
+    "category": "technology",
+    "trend_score": 60.55203635137296,
+    "connection_rate": 0.44338867185557573
+  },
+  {
+    "timestamp": 1767597622.927457,
+    "category": "technology",
+    "trend_score": 78.5518001687576,
+    "connection_rate": 0.3512017776892805
+  },
+  {
+    "timestamp": 1767601222.927457,
+    "category": "technology",
+    "trend_score": 67.96385159568092,
+    "connection_rate": 0.4690791504790309
+  },
+  {
+    "timestamp": 1767604822.927457,
+    "category": "technology",
+    "trend_score": 54.70223158004511,
+    "connection_rate": 0.20374996273446963
+  },
+  {
+    "timestamp": 1767608422.927457,
+    "category": "technology",
+    "trend_score": 72.55712611519863,
+    "connection_rate": 0.24839464440363024
+  },
+  {
+    "timestamp": 1767612022.927457,
+    "category": "technology",
+    "trend_score": 59.996768841300046,
+    "connection_rate": 0.3682994030143669
+  },
+  {
+    "timestamp": 1767615622.927457,
+    "category": "technology",
+    "trend_score": 59.970142883831464,
+    "connection_rate": 0.26263098778698524
+  },
+  {
+    "timestamp": 1767619222.927457,
+    "category": "technology",
+    "trend_score": 70.87297694182345,
+    "connection_rate": 0.3017738781614646
+  },
+  {
+    "timestamp": 1767622822.927457,
+    "category": "technology",
+    "trend_score": 74.15589223161383,
+    "connection_rate": 0.11306781635334762
+  },
+  {
+    "timestamp": 1767626422.927457,
+    "category": "technology",
+    "trend_score": 70.74925577333865,
+    "connection_rate": 0.32763234633313254
+  },
+  {
+    "timestamp": 1767630022.927457,
+    "category": "technology",
+    "trend_score": 73.94266190793341,
+    "connection_rate": 0.13586823238919124
+  },
+  {
+    "timestamp": 1767633622.927458,
+    "category": "technology",
+    "trend_score": 56.259893036331036,
+    "connection_rate": 0.4974187971280214
+  },
+  {
+    "timestamp": 1767637222.927458,
+    "category": "technology",
+    "trend_score": 78.67017845022183,
+    "connection_rate": 0.43388607313219507
+  },
+  {
+    "timestamp": 1767640822.927458,
+    "category": "technology",
+    "trend_score": 59.08486797294498,
+    "connection_rate": 0.2563373784373416
+  },
+  {
+    "timestamp": 1767644422.927458,
+    "category": "technology",
+    "trend_score": 67.7316574292177,
+    "connection_rate": 0.1795881307156141
+  },
+  {
+    "timestamp": 1767648022.927458,
+    "category": "technology",
+    "trend_score": 54.59750729423715,
+    "connection_rate": 0.1537768194979103
+  },
+  {
+    "timestamp": 1767651622.927458,
+    "category": "technology",
+    "trend_score": 60.25452614450599,
+    "connection_rate": 0.1877838349260943
+  },
+  {
+    "timestamp": 1767655222.927458,
+    "category": "technology",
+    "trend_score": 66.9386867494384,
+    "connection_rate": 0.2711105131605661
+  },
+  {
+    "timestamp": 1767658822.927458,
+    "category": "technology",
+    "trend_score": 52.58204591112447,
+    "connection_rate": 0.29135524812243135
+  },
+  {
+    "timestamp": 1767662422.927458,
+    "category": "technology",
+    "trend_score": 54.86680686293212,
+    "connection_rate": 0.21119760466144963
+  },
+  {
+    "timestamp": 1767666022.927458,
+    "category": "technology",
+    "trend_score": 59.51338168853605,
+    "connection_rate": 0.3326884822730083
+  },
+  {
+    "timestamp": 1767669622.927458,
+    "category": "technology",
+    "trend_score": 57.16062430218774,
+    "connection_rate": 0.46715992078411983
+  },
+  {
+    "timestamp": 1767673222.927458,
+    "category": "technology",
+    "trend_score": 74.37325443139099,
+    "connection_rate": 0.419821967427515
+  },
+  {
+    "timestamp": 1767676822.927458,
+    "category": "technology",
+    "trend_score": 65.3915662427215,
+    "connection_rate": 0.16521770643476197
+  },
+  {
+    "timestamp": 1767680422.927458,
+    "category": "technology",
+    "trend_score": 47.9254549281226,
+    "connection_rate": 0.425729682679993
+  },
+  {
+    "timestamp": 1767684022.927458,
+    "category": "technology",
+    "trend_score": 57.527266149266545,
+    "connection_rate": 0.4104751645280166
+  },
+  {
+    "timestamp": 1767687622.927458,
+    "category": "technology",
+    "trend_score": 57.41572609549286,
+    "connection_rate": 0.20418004218912117
+  },
+  {
+    "timestamp": 1767691222.927459,
+    "category": "technology",
+    "trend_score": 75.31768395205756,
+    "connection_rate": 0.12001857574676676
+  },
+  {
+    "timestamp": 1767694822.927459,
+    "category": "technology",
+    "trend_score": 57.708206499228304,
+    "connection_rate": 0.37105530342209614
+  },
+  {
+    "timestamp": 1767698422.927459,
+    "category": "technology",
+    "trend_score": 62.762289451250574,
+    "connection_rate": 0.3395188809636332
+  },
+  {
+    "timestamp": 1767702022.927459,
+    "category": "technology",
+    "trend_score": 76.89655082470462,
+    "connection_rate": 0.21269896838847263
+  },
+  {
+    "timestamp": 1767705622.927459,
+    "category": "technology",
+    "trend_score": 64.22728001045375,
+    "connection_rate": 0.35088042076714776
+  },
+  {
+    "timestamp": 1767709222.927459,
+    "category": "technology",
+    "trend_score": 55.636500573861994,
+    "connection_rate": 0.1343810706714583
+  },
+  {
+    "timestamp": 1767712822.927459,
+    "category": "technology",
+    "trend_score": 65.13277996880566,
+    "connection_rate": 0.49300808515656
+  },
+  {
+    "timestamp": 1767716422.927459,
+    "category": "technology",
+    "trend_score": 76.16487612509691,
+    "connection_rate": 0.4903991875016914
+  },
+  {
+    "timestamp": 1767720022.927459,
+    "category": "technology",
+    "trend_score": 68.88565077967324,
+    "connection_rate": 0.4191750992217049
+  },
+  {
+    "timestamp": 1767723622.927459,
+    "category": "technology",
+    "trend_score": 70.18564212536484,
+    "connection_rate": 0.20072766153348962
+  },
+  {
+    "timestamp": 1767727222.927459,
+    "category": "technology",
+    "trend_score": 51.66312033276473,
+    "connection_rate": 0.14080946496922817
+  },
+  {
+    "timestamp": 1767730822.927459,
+    "category": "technology",
+    "trend_score": 61.154851231122585,
+    "connection_rate": 0.323022524876605
+  },
+  {
+    "timestamp": 1767734422.927459,
+    "category": "technology",
+    "trend_score": 61.71406120876679,
+    "connection_rate": 0.17045902722145367
+  },
+  {
+    "timestamp": 1767738022.927459,
+    "category": "technology",
+    "trend_score": 61.758205219971686,
+    "connection_rate": 0.48324560878383405
+  },
+  {
+    "timestamp": 1767741622.927459,
+    "category": "technology",
+    "trend_score": 59.14706080786471,
+    "connection_rate": 0.490464789539268
+  },
+  {
+    "timestamp": 1767745222.9274602,
+    "category": "technology",
+    "trend_score": 68.84697583144658,
+    "connection_rate": 0.30742597430674956
+  },
+  {
+    "timestamp": 1767748822.9274602,
+    "category": "technology",
+    "trend_score": 51.185853436363026,
+    "connection_rate": 0.16648404303289768
+  },
+  {
+    "timestamp": 1767752422.9274602,
+    "category": "technology",
+    "trend_score": 62.44031323108129,
+    "connection_rate": 0.34483097423937537
+  },
+  {
+    "timestamp": 1767756022.9274602,
+    "category": "technology",
+    "trend_score": 68.62097426720817,
+    "connection_rate": 0.46150949949520625
+  },
+  {
+    "timestamp": 1767759622.9274602,
+    "category": "technology",
+    "trend_score": 68.372007648653,
+    "connection_rate": 0.22661296252642524
+  },
+  {
+    "timestamp": 1767763222.9274602,
+    "category": "technology",
+    "trend_score": 68.68497846655045,
+    "connection_rate": 0.16400718960776484
+  },
+  {
+    "timestamp": 1767766822.9274602,
+    "category": "technology",
+    "trend_score": 61.477817566268925,
+    "connection_rate": 0.1334859822444912
+  },
+  {
+    "timestamp": 1767770422.9274602,
+    "category": "technology",
+    "trend_score": 79.37252261483697,
+    "connection_rate": 0.16036375043549886
+  },
+  {
+    "timestamp": 1767774022.9274602,
+    "category": "technology",
+    "trend_score": 80.33684975629768,
+    "connection_rate": 0.1873465211452291
+  },
+  {
+    "timestamp": 1767777622.9274602,
+    "category": "technology",
+    "trend_score": 67.33650137811146,
+    "connection_rate": 0.2743566579948775
+  },
+  {
+    "timestamp": 1767781222.9274602,
+    "category": "technology",
+    "trend_score": 85.9767898801511,
+    "connection_rate": 0.3890879461069673
+  },
+  {
+    "timestamp": 1767784822.9274602,
+    "category": "technology",
+    "trend_score": 57.3830271072506,
+    "connection_rate": 0.20368357784599775
+  },
+  {
+    "timestamp": 1767788422.9274602,
+    "category": "technology",
+    "trend_score": 61.402012049065895,
+    "connection_rate": 0.1427876598329404
+  },
+  {
+    "timestamp": 1767792022.9274602,
+    "category": "technology",
+    "trend_score": 67.08472399693837,
+    "connection_rate": 0.44039658076897126
+  },
+  {
+    "timestamp": 1767795622.9274602,
+    "category": "technology",
+    "trend_score": 86.88282848345932,
+    "connection_rate": 0.1377444861822033
+  },
+  {
+    "timestamp": 1767799222.9274602,
+    "category": "technology",
+    "trend_score": 65.18717548866168,
+    "connection_rate": 0.4533743116636656
+  },
+  {
+    "timestamp": 1767802822.9274611,
+    "category": "technology",
+    "trend_score": 61.91349177702054,
+    "connection_rate": 0.4965735775275928
+  },
+  {
+    "timestamp": 1767806422.9274611,
+    "category": "technology",
+    "trend_score": 57.921585336600145,
+    "connection_rate": 0.3225088075913004
+  },
+  {
+    "timestamp": 1767810022.9274611,
+    "category": "technology",
+    "trend_score": 61.963789014214484,
+    "connection_rate": 0.10038399709039997
+  },
+  {
+    "timestamp": 1767813622.9274611,
+    "category": "technology",
+    "trend_score": 62.53697536475139,
+    "connection_rate": 0.3553123787773175
+  },
+  {
+    "timestamp": 1767817222.9274611,
+    "category": "technology",
+    "trend_score": 72.71354102748523,
+    "connection_rate": 0.3551223528436619
+  },
+  {
+    "timestamp": 1767820822.9274611,
+    "category": "technology",
+    "trend_score": 55.90110090301693,
+    "connection_rate": 0.2741377643472567
+  },
+  {
+    "timestamp": 1767824422.9274611,
+    "category": "technology",
+    "trend_score": 72.66121654133991,
+    "connection_rate": 0.27444748523433005
+  },
+  {
+    "timestamp": 1767828022.9274611,
+    "category": "technology",
+    "trend_score": 61.56941804446783,
+    "connection_rate": 0.2137288426253055
+  },
+  {
+    "timestamp": 1767831622.9274611,
+    "category": "technology",
+    "trend_score": 76.45312990771241,
+    "connection_rate": 0.4750643626185652
+  },
+  {
+    "timestamp": 1767835222.9274611,
+    "category": "technology",
+    "trend_score": 52.08326451389093,
+    "connection_rate": 0.44508034174143474
+  },
+  {
+    "timestamp": 1767838822.9274611,
+    "category": "technology",
+    "trend_score": 72.25857332271613,
+    "connection_rate": 0.2110740321140507
+  },
+  {
+    "timestamp": 1767842422.9274611,
+    "category": "technology",
+    "trend_score": 57.104818073877,
+    "connection_rate": 0.3198210985061598
+  },
+  {
+    "timestamp": 1767846022.9274611,
+    "category": "technology",
+    "trend_score": 62.9727084706201,
+    "connection_rate": 0.16723660143086427
+  },
+  {
+    "timestamp": 1767849622.9274611,
+    "category": "technology",
+    "trend_score": 75.48314711706311,
+    "connection_rate": 0.177356715631401
+  },
+  {
+    "timestamp": 1767853222.9274611,
+    "category": "technology",
+    "trend_score": 66.12346498198237,
+    "connection_rate": 0.17178417226717707
+  },
+  {
+    "timestamp": 1767856822.9274611,
+    "category": "technology",
+    "trend_score": 73.73670613174083,
+    "connection_rate": 0.3212602904114499
+  },
+  {
+    "timestamp": 1767860422.9274619,
+    "category": "technology",
+    "trend_score": 62.87461436577195,
+    "connection_rate": 0.4069225478513977
+  },
+  {
+    "timestamp": 1767864022.9274619,
+    "category": "technology",
+    "trend_score": 81.18393142928716,
+    "connection_rate": 0.40251460503383796
+  },
+  {
+    "timestamp": 1767867622.9274619,
+    "category": "technology",
+    "trend_score": 74.61502091779454,
+    "connection_rate": 0.4528056528332254
+  },
+  {
+    "timestamp": 1767871222.9274619,
+    "category": "technology",
+    "trend_score": 62.86423680395516,
+    "connection_rate": 0.42582294489041617
+  },
+  {
+    "timestamp": 1767874822.9274619,
+    "category": "technology",
+    "trend_score": 65.90544306798569,
+    "connection_rate": 0.4853900299737782
+  },
+  {
+    "timestamp": 1767878422.9274619,
+    "category": "technology",
+    "trend_score": 60.992696263568156,
+    "connection_rate": 0.19913286398069097
+  },
+  {
+    "timestamp": 1767882022.9274619,
+    "category": "technology",
+    "trend_score": 57.0512838884055,
+    "connection_rate": 0.36552960427356207
+  },
+  {
+    "timestamp": 1767885622.9274619,
+    "category": "technology",
+    "trend_score": 54.857868552052366,
+    "connection_rate": 0.3162257041011711
+  },
+  {
+    "timestamp": 1767889222.9274619,
+    "category": "technology",
+    "trend_score": 68.80392842625979,
+    "connection_rate": 0.39132916288417074
+  },
+  {
+    "timestamp": 1767892822.9274619,
+    "category": "technology",
+    "trend_score": 80.23053784062697,
+    "connection_rate": 0.10791393937486592
+  },
+  {
+    "timestamp": 1767896422.9274619,
+    "category": "technology",
+    "trend_score": 57.890007554450236,
+    "connection_rate": 0.3516598663429965
+  },
+  {
+    "timestamp": 1767900022.9274619,
+    "category": "technology",
+    "trend_score": 65.3464670597942,
+    "connection_rate": 0.14018046217054306
+  },
+  {
+    "timestamp": 1767903622.9274619,
+    "category": "technology",
+    "trend_score": 64.80512652982829,
+    "connection_rate": 0.27783787237561486
+  },
+  {
+    "timestamp": 1767907222.9274619,
+    "category": "technology",
+    "trend_score": 80.34780544465815,
+    "connection_rate": 0.2675997006283861
+  },
+  {
+    "timestamp": 1767910822.9274619,
+    "category": "technology",
+    "trend_score": 73.02571085469133,
+    "connection_rate": 0.17127803186900686
+  },
+  {
+    "timestamp": 1767914422.9274628,
+    "category": "technology",
+    "trend_score": 56.83069073686177,
+    "connection_rate": 0.24745578079203115
+  },
+  {
+    "timestamp": 1767918022.9274628,
+    "category": "technology",
+    "trend_score": 65.86170015235965,
+    "connection_rate": 0.32989845821092423
+  },
+  {
+    "timestamp": 1767921622.9274628,
+    "category": "technology",
+    "trend_score": 74.08823995450018,
+    "connection_rate": 0.45644365236885576
+  },
+  {
+    "timestamp": 1767925222.9274628,
+    "category": "technology",
+    "trend_score": 70.1152677641732,
+    "connection_rate": 0.10361298550366245
+  },
+  {
+    "timestamp": 1767928822.9274628,
+    "category": "technology",
+    "trend_score": 49.57746437852726,
+    "connection_rate": 0.20724682994902605
+  },
+  {
+    "timestamp": 1767932422.9274628,
+    "category": "technology",
+    "trend_score": 87.24346784530782,
+    "connection_rate": 0.12517165471455405
+  },
+  {
+    "timestamp": 1767936022.9274628,
+    "category": "technology",
+    "trend_score": 66.98880966450511,
+    "connection_rate": 0.3381155981340537
+  },
+  {
+    "timestamp": 1767939622.9274628,
+    "category": "technology",
+    "trend_score": 74.24503393771434,
+    "connection_rate": 0.32839143062897513
+  },
+  {
+    "timestamp": 1767943222.9274628,
+    "category": "technology",
+    "trend_score": 73.23135837491893,
+    "connection_rate": 0.43879195541819627
+  },
+  {
+    "timestamp": 1767946822.9274628,
+    "category": "technology",
+    "trend_score": 88.66371968746715,
+    "connection_rate": 0.23734507324176396
+  },
+  {
+    "timestamp": 1767950422.9274628,
+    "category": "technology",
+    "trend_score": 70.24928341759295,
+    "connection_rate": 0.41056229348266093
+  },
+  {
+    "timestamp": 1767954022.9274628,
+    "category": "technology",
+    "trend_score": 55.23975998097081,
+    "connection_rate": 0.3560038939558555
+  },
+  {
+    "timestamp": 1767957622.9274628,
+    "category": "technology",
+    "trend_score": 79.2120811999266,
+    "connection_rate": 0.494634068105814
+  },
+  {
+    "timestamp": 1767961222.9274628,
+    "category": "technology",
+    "trend_score": 62.46582650435674,
+    "connection_rate": 0.3407317248038405
+  },
+  {
+    "timestamp": 1767964822.9274628,
+    "category": "technology",
+    "trend_score": 64.70365009296674,
+    "connection_rate": 0.30803338320366935
+  },
+  {
+    "timestamp": 1767968422.9274628,
+    "category": "technology",
+    "trend_score": 52.67637327109029,
+    "connection_rate": 0.36629015745072924
+  },
+  {
+    "timestamp": 1767972022.927464,
+    "category": "technology",
+    "trend_score": 61.187964319482546,
+    "connection_rate": 0.3380017570760648
+  },
+  {
+    "timestamp": 1767975622.927464,
+    "category": "technology",
+    "trend_score": 65.95786979767462,
+    "connection_rate": 0.4936991985603979
+  },
+  {
+    "timestamp": 1767979222.927464,
+    "category": "technology",
+    "trend_score": 65.47162254421104,
+    "connection_rate": 0.11889731884190997
+  },
+  {
+    "timestamp": 1767982822.927464,
+    "category": "technology",
+    "trend_score": 56.73523040183773,
+    "connection_rate": 0.33686954941929736
+  },
+  {
+    "timestamp": 1767986422.927464,
+    "category": "technology",
+    "trend_score": 64.98331101067636,
+    "connection_rate": 0.24297455664695075
+  },
+  {
+    "timestamp": 1767990022.927464,
+    "category": "technology",
+    "trend_score": 62.005546730076716,
+    "connection_rate": 0.3165449221878244
+  },
+  {
+    "timestamp": 1767993622.927464,
+    "category": "technology",
+    "trend_score": 68.576600451921,
+    "connection_rate": 0.2919409481107611
+  },
+  {
+    "timestamp": 1767997222.927464,
+    "category": "technology",
+    "trend_score": 69.94347197155423,
+    "connection_rate": 0.35709562243117654
+  },
+  {
+    "timestamp": 1768000822.927464,
+    "category": "technology",
+    "trend_score": 75.41959955940983,
+    "connection_rate": 0.149150097512023
+  },
+  {
+    "timestamp": 1768004422.927464,
+    "category": "technology",
+    "trend_score": 62.27555100341318,
+    "connection_rate": 0.3381224034373238
+  },
+  {
+    "timestamp": 1768008022.927464,
+    "category": "technology",
+    "trend_score": 59.35127507645924,
+    "connection_rate": 0.471650249960629
+  },
+  {
+    "timestamp": 1768011622.927464,
+    "category": "technology",
+    "trend_score": 48.29151137584016,
+    "connection_rate": 0.4112475041331233
+  },
+  {
+    "timestamp": 1768015222.927464,
+    "category": "technology",
+    "trend_score": 64.0253724126332,
+    "connection_rate": 0.22617055157553823
+  },
+  {
+    "timestamp": 1768018822.927464,
+    "category": "technology",
+    "trend_score": 69.70585646467845,
+    "connection_rate": 0.2327140874740834
+  },
+  {
+    "timestamp": 1768022422.927464,
+    "category": "technology",
+    "trend_score": 52.524164341077245,
+    "connection_rate": 0.29956157597095723
+  },
+  {
+    "timestamp": 1768026022.927464,
+    "category": "technology",
+    "trend_score": 50.722393416753434,
+    "connection_rate": 0.33891508943688076
+  },
+  {
+    "timestamp": 1768029622.927465,
+    "category": "technology",
+    "trend_score": 57.49887960139125,
+    "connection_rate": 0.19008966777485556
+  },
+  {
+    "timestamp": 1768033222.927465,
+    "category": "technology",
+    "trend_score": 63.66163947115414,
+    "connection_rate": 0.18726454407461698
+  },
+  {
+    "timestamp": 1768036822.927465,
+    "category": "technology",
+    "trend_score": 74.7658681326061,
+    "connection_rate": 0.257754579567092
+  },
+  {
+    "timestamp": 1768040422.927465,
+    "category": "technology",
+    "trend_score": 72.46060509579631,
+    "connection_rate": 0.28892057012566497
+  },
+  {
+    "timestamp": 1768044022.927465,
+    "category": "technology",
+    "trend_score": 51.882878348614724,
+    "connection_rate": 0.4089603581151364
+  },
+  {
+    "timestamp": 1768047622.927465,
+    "category": "technology",
+    "trend_score": 57.79777745419142,
+    "connection_rate": 0.37004270649322546
+  },
+  {
+    "timestamp": 1768051222.927465,
+    "category": "technology",
+    "trend_score": 63.83867452200298,
+    "connection_rate": 0.23851013523323267
+  },
+  {
+    "timestamp": 1768054822.927465,
+    "category": "technology",
+    "trend_score": 60.05392213194098,
+    "connection_rate": 0.2472973573653334
+  },
+  {
+    "timestamp": 1768058422.927465,
+    "category": "technology",
+    "trend_score": 79.3707544258988,
+    "connection_rate": 0.1188654433586383
+  },
+  {
+    "timestamp": 1768062022.927465,
+    "category": "technology",
+    "trend_score": 59.192278607100874,
+    "connection_rate": 0.4058743070546432
+  },
+  {
+    "timestamp": 1768065622.927465,
+    "category": "technology",
+    "trend_score": 68.0936436210156,
+    "connection_rate": 0.3973399604951585
+  },
+  {
+    "timestamp": 1768069222.927465,
+    "category": "technology",
+    "trend_score": 58.56824214947612,
+    "connection_rate": 0.22011210233666847
+  },
+  {
+    "timestamp": 1768072822.927465,
+    "category": "technology",
+    "trend_score": 70.5806384503054,
+    "connection_rate": 0.18126981269314
+  },
+  {
+    "timestamp": 1768076422.927465,
+    "category": "technology",
+    "trend_score": 54.60018791253452,
+    "connection_rate": 0.18710929578925756
+  },
+  {
+    "timestamp": 1768080022.927465,
+    "category": "technology",
+    "trend_score": 63.03406878514117,
+    "connection_rate": 0.4673776674296718
+  },
+  {
+    "timestamp": 1768083622.927465,
+    "category": "technology",
+    "trend_score": 62.8626040804099,
+    "connection_rate": 0.17003303114201143
+  },
+  {
+    "timestamp": 1768087222.927466,
+    "category": "technology",
+    "trend_score": 58.18616434863121,
+    "connection_rate": 0.10385707105768027
+  },
+  {
+    "timestamp": 1768090822.927466,
+    "category": "technology",
+    "trend_score": 65.0758985844255,
+    "connection_rate": 0.278068136249511
+  },
+  {
+    "timestamp": 1768094422.927466,
+    "category": "technology",
+    "trend_score": 70.86756487968684,
+    "connection_rate": 0.2930523687963718
+  },
+  {
+    "timestamp": 1768098022.927466,
+    "category": "technology",
+    "trend_score": 51.62343720836283,
+    "connection_rate": 0.2699423124955865
+  },
+  {
+    "timestamp": 1768101622.927466,
+    "category": "technology",
+    "trend_score": 71.9950600598651,
+    "connection_rate": 0.2770772330233656
+  },
+  {
+    "timestamp": 1768105222.927466,
+    "category": "technology",
+    "trend_score": 53.00899903491367,
+    "connection_rate": 0.22415665455008715
+  },
+  {
+    "timestamp": 1768108822.927466,
+    "category": "technology",
+    "trend_score": 73.50688953848527,
+    "connection_rate": 0.3516419941004121
+  },
+  {
+    "timestamp": 1768112422.927466,
+    "category": "technology",
+    "trend_score": 69.82312591604583,
+    "connection_rate": 0.416118645754436
+  },
+  {
+    "timestamp": 1768116022.927466,
+    "category": "technology",
+    "trend_score": 67.9405718967114,
+    "connection_rate": 0.33097577696133224
+  },
+  {
+    "timestamp": 1768119622.927466,
+    "category": "technology",
+    "trend_score": 53.70445668510032,
+    "connection_rate": 0.3817086967378389
+  },
+  {
+    "timestamp": 1768123222.927466,
+    "category": "technology",
+    "trend_score": 53.66320582007991,
+    "connection_rate": 0.21792361852485667
+  },
+  {
+    "timestamp": 1768126822.927466,
+    "category": "technology",
+    "trend_score": 69.675009107393,
+    "connection_rate": 0.4603776032905952
+  },
+  {
+    "timestamp": 1768130422.927466,
+    "category": "technology",
+    "trend_score": 54.473900469670795,
+    "connection_rate": 0.45073668471257466
+  },
+  {
+    "timestamp": 1768134022.927466,
+    "category": "technology",
+    "trend_score": 53.64336039172842,
+    "connection_rate": 0.3079597149086547
+  },
+  {
+    "timestamp": 1768137622.927466,
+    "category": "technology",
+    "trend_score": 61.30926537094054,
+    "connection_rate": 0.2764429531848205
+  },
+  {
+    "timestamp": 1768141222.927467,
+    "category": "technology",
+    "trend_score": 82.97207387285691,
+    "connection_rate": 0.4354366572915872
+  },
+  {
+    "timestamp": 1768144822.927467,
+    "category": "technology",
+    "trend_score": 73.74745614479963,
+    "connection_rate": 0.28074128597591425
+  },
+  {
+    "timestamp": 1768148422.927467,
+    "category": "technology",
+    "trend_score": 62.11425982612822,
+    "connection_rate": 0.48619450110999385
+  },
+  {
+    "timestamp": 1768152022.927467,
+    "category": "technology",
+    "trend_score": 58.42217712485634,
+    "connection_rate": 0.2985358976142092
+  },
+  {
+    "timestamp": 1768155622.927467,
+    "category": "technology",
+    "trend_score": 66.68685250713467,
+    "connection_rate": 0.39044778113853273
+  },
+  {
+    "timestamp": 1768159222.927467,
+    "category": "technology",
+    "trend_score": 80.0369261922369,
+    "connection_rate": 0.14563077621269438
+  },
+  {
+    "timestamp": 1768162822.927467,
+    "category": "technology",
+    "trend_score": 64.9832574631512,
+    "connection_rate": 0.21004089696782824
+  },
+  {
+    "timestamp": 1768166422.927467,
+    "category": "technology",
+    "trend_score": 66.90683492412019,
+    "connection_rate": 0.36267646824395616
+  },
+  {
+    "timestamp": 1768170022.927467,
+    "category": "technology",
+    "trend_score": 64.13226435919248,
+    "connection_rate": 0.278117956125767
+  },
+  {
+    "timestamp": 1768173622.927467,
+    "category": "technology",
+    "trend_score": 76.77636848729314,
+    "connection_rate": 0.33408044638552026
+  },
+  {
+    "timestamp": 1768177222.927467,
+    "category": "technology",
+    "trend_score": 56.27669562432811,
+    "connection_rate": 0.3018370256974132
+  },
+  {
+    "timestamp": 1768180822.927467,
+    "category": "technology",
+    "trend_score": 63.67004206676311,
+    "connection_rate": 0.3675743827772645
+  },
+  {
+    "timestamp": 1768184422.927467,
+    "category": "technology",
+    "trend_score": 52.0798966086748,
+    "connection_rate": 0.19645244713802576
+  },
+  {
+    "timestamp": 1768188022.927467,
+    "category": "technology",
+    "trend_score": 67.53241199357309,
+    "connection_rate": 0.4939035489389615
+  },
+  {
+    "timestamp": 1768191622.927467,
+    "category": "technology",
+    "trend_score": 79.5455061420804,
+    "connection_rate": 0.11690501443734101
+  },
+  {
+    "timestamp": 1768195222.927467,
+    "category": "technology",
+    "trend_score": 78.7958170130753,
+    "connection_rate": 0.3868715438932685
+  },
+  {
+    "timestamp": 1768198822.927467,
+    "category": "technology",
+    "trend_score": 70.06991313490848,
+    "connection_rate": 0.18263363063472782
+  },
+  {
+    "timestamp": 1768202422.927468,
+    "category": "technology",
+    "trend_score": 71.8536201214953,
+    "connection_rate": 0.2516458593533218
+  },
+  {
+    "timestamp": 1768206022.927468,
+    "category": "technology",
+    "trend_score": 65.19521976616238,
+    "connection_rate": 0.3398335409192539
+  },
+  {
+    "timestamp": 1768209622.927468,
+    "category": "technology",
+    "trend_score": 65.16858299579754,
+    "connection_rate": 0.35065253178436573
+  },
+  {
+    "timestamp": 1768213222.927468,
+    "category": "technology",
+    "trend_score": 70.14629118679704,
+    "connection_rate": 0.24668722043296432
+  },
+  {
+    "timestamp": 1768216822.927468,
+    "category": "technology",
+    "trend_score": 76.93631521716907,
+    "connection_rate": 0.4281645428406404
+  },
+  {
+    "timestamp": 1768220422.927468,
+    "category": "technology",
+    "trend_score": 68.30172648792043,
+    "connection_rate": 0.14050479644486563
+  },
+  {
+    "timestamp": 1768224022.927468,
+    "category": "technology",
+    "trend_score": 54.26858903232996,
+    "connection_rate": 0.30322324011031854
+  },
+  {
+    "timestamp": 1768227622.927468,
+    "category": "technology",
+    "trend_score": 61.218356054115915,
+    "connection_rate": 0.2687296837471976
+  },
+  {
+    "timestamp": 1768231222.927468,
+    "category": "technology",
+    "trend_score": 52.877340917308985,
+    "connection_rate": 0.30849600458802817
+  }
+]

@@ -1,0 +1,30 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "evaluation_at": "2026-02-27T23:59:40Z",
+  "evaluation_window": {
+    "start": "2026-02-27T00:00:00Z",
+    "end": "2026-02-27T23:58:30Z"
+  },
+  "runtime_request_pipeline": {
+    "required_pipeline_coverage_pct": 100.0,
+    "observed_pipeline_coverage_pct": 100.0,
+    "required_expertise_policy_gate_coverage_pct": 100.0,
+    "observed_expertise_policy_gate_coverage_pct": 100.0,
+    "requests_evaluated": 300
+  },
+  "lineage_and_provenance": {
+    "required_lineage_coverage_pct": 100.0,
+    "observed_lineage_coverage_pct": 100.0,
+    "required_provenance_tag_coverage_pct": 100.0,
+    "observed_provenance_tag_coverage_pct": 100.0,
+    "checks_executed": 300
+  },
+  "commit_safety": {
+    "max_unverified_expert_commits": 0,
+    "observed_unverified_expert_commits": 0,
+    "required_high_impact_review_coverage_pct": 100.0,
+    "observed_high_impact_review_coverage_pct": 100.0,
+    "checks_executed": 120
+  }
+}

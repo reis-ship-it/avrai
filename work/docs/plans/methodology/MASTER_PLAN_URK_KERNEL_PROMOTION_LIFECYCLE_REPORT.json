@@ -1,0 +1,22 @@
+{
+  "errors": [],
+  "lifecycle_coverage": {
+    "checks_executed": 280,
+    "observed_approval_chain_coverage_pct": 100.0,
+    "observed_lifecycle_transition_coverage_pct": 100.0,
+    "required_approval_chain_coverage_pct": 100.0,
+    "required_lifecycle_transition_coverage_pct": 100.0,
+    "within_threshold": true
+  },
+  "promotion_safety": {
+    "checks_executed": 140,
+    "max_stage_skip_promotions": 0,
+    "max_unapproved_enforced_promotions": 0,
+    "observed_stage_skip_promotions": 0,
+    "observed_unapproved_enforced_promotions": 0,
+    "within_threshold": true
+  },
+  "source": "configs/runtime/urk_kernel_promotion_lifecycle_controls.json",
+  "verdict": "PASS",
+  "version": "v1"
+}

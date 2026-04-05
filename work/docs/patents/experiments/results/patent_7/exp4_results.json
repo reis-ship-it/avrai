@@ -1,0 +1,13 @@
+{
+  "experiment": "Multi-Source Fusion Effectiveness",
+  "avg_ai_weight": 0.30072219682634843,
+  "avg_community_weight": 0.3991954701250578,
+  "avg_temporal_weight": 0.20001982869341672,
+  "avg_location_weight": 0.10006250435517709,
+  "expected_ai_weight": 0.3,
+  "expected_community_weight": 0.4,
+  "expected_temporal_weight": 0.2,
+  "expected_location_weight": 0.1,
+  "correlation_with_ground_truth": 0.0,
+  "num_categories": 1
+}

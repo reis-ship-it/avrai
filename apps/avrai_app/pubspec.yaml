@@ -1,0 +1,205 @@
+name: avrai
+description: Offline-first social discovery app for meaningful places
+publish_to: 'none'
+version: 0.5.0-beta+6
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # State Management
+  flutter_bloc: ^9.1.1
+  
+  # 3-Prong Target Architecture Modules
+  avrai_core:
+    path: ../../shared/avrai_core
+  avrai_runtime_os:
+    path: ../../runtime/avrai_runtime_os
+  
+  # UI Components
+  cupertino_icons: ^1.0.2
+  google_fonts: ^7.0.2
+  qr_flutter: ^4.1.0
+  mobile_scanner: ^7.1.4
+  nfc_manager: ^4.1.1
+  nfc_manager_ndef: ^1.1.0
+  ndef_record: ^1.4.1
+  flutter_local_notifications: ^19.5.0
+  
+  # Map Components
+  flutter_map: ^8.2.2
+  flutter_macos_maps: ^0.1.0
+  latlong2: ^0.9.0
+  
+  # Utilities
+  equatable: ^2.0.5
+  uuid: ^4.2.1
+  geolocator: ^14.0.2
+  geocoding: ^4.0.0
+  get_it: ^9.2.0
+  injectable: ^2.3.2
+  intl: ^0.20.2
+  timezone: ^0.10.1
+  vector_math: ^2.1.4
+  
+  # Network
+  dio: ^5.4.0
+  connectivity_plus: ^7.0.0
+  wifi_scan: ^0.4.1+2
+  add_2_calendar: ^3.0.1
+  device_calendar: ^4.0.0
+  nowplaying: ^3.0.3
+  
+  # Sharing and URL launching
+  share_plus: ^12.0.1
+  url_launcher: ^6.3.1
+  
+  # OAuth
+  google_sign_in: ^7.2.0
+  flutter_appauth: ^11.0.0
+  app_links: ^6.4.1
+  
+  # AI2AI Personality
+  crypto: ^3.0.3
+  pointycastle: ^4.0.0
+  
+  # External Data
+  google_places_flutter: ^2.1.0
+  google_maps_flutter: ^2.5.0
+  http: ^1.1.0
+  
+  # OSM
+  xml: ^6.5.0
+  geoxml: ^2.0.0
+  
+  # Storage
+  get_storage: ^2.1.1
+  flutter_secure_storage_x: ^12.1.4
+  path_provider: ^2.1.1
+  
+  drift: ^2.14.0
+  sqlite3_flutter_libs: ^0.5.18
+  objectbox: ^4.0.0
+  objectbox_flutter_libs: ^4.0.0
+  
+  # Firebase
+  firebase_core: ^4.3.0
+  firebase_auth: ^6.1.3
+  firebase_messaging: ^16.0.2
+  cloud_firestore: ^6.1.1
+  firebase_storage: ^13.0.5
+  firebase_analytics: ^12.1.0
+  
+  # Supabase Backup
+  supabase_flutter: ^2.3.4
+  
+  # Health Data
+  health: ^13.2.1
+  
+  # Audio
+  audioplayers: ^6.0.0
+  
+  # Charts
+  fl_chart: ^1.1.1
+  
+  # 3D Vis
+  flutter_inappwebview: ^6.0.0
+  shimmer: ^3.0.0
+  
+  # ML
+  onnxruntime: ^1.4.1
+  
+  # Payments
+  flutter_stripe: ^12.1.1
+  
+  # PDF
+  pdf: ^3.11.0
+  printing: ^5.13.0
+  
+  # Dev tools
+  json_annotation: ^4.8.1
+  build_runner: ^2.10.5
+  json_serializable: ^6.11.2
+  injectable_generator: ^2.8.1
+  
+  # Internal modules
+  avrai_network:
+    path: ../../runtime/avrai_network
+  
+  # Routing & Permissions
+  go_router: ^17.0.1
+  permission_handler: ^12.0.1
+  
+  # Device Discovery
+  flutter_blue_plus: ^2.1.0
+  flutter_nsd: ^1.6.0
+  wifi_iot: ^0.3.19
+  
+  # Design System
+  apple_maps_flutter: ^1.4.0
+  gradient_borders: ^1.0.0
+  
+  # Primitives
+  shared_preferences: ^2.5.4
+  path: any
+  flutter_rust_bridge: 2.11.1
+  battery_plus: ^7.0.0
+  sensors_plus: ^7.0.0
+  archive: ^4.0.7
+  llama_flutter_android: ^0.1.1
+  file_picker: ^10.3.8
+  ffi: ^2.1.4
+  cryptography: ^2.9.0
+  image_picker: ^1.2.1
+  meta: any
+  spotify: ^0.13.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  drift_dev: ^2.14.0
+  bloc_test: ^10.0.0
+  mocktail: ^1.0.3
+  fake_async: ^1.3.1
+  test: ^1.25.15
+  integration_test:
+    sdk: flutter
+  mockito: ^5.6.3
+  vm_service: 15.0.0
+  faker: ^2.1.0
+
+  connectivity_plus_platform_interface: any
+  supabase: any
+  storage_client: any
+  logging: any
+  realtime_client: any
+  web_socket_channel: any
+
+flutter:
+  uses-material-design: true
+  assets:
+    - configs/runtime/kernel_registry.json
+    - configs/runtime/urk_user_runtime_observability_thresholds.json
+    - assets/models/
+    - assets/models/optimized/
+    - assets/tokenizers/
+    - assets/geo/
+    - assets/three_js/
+    - assets/three_js/lib/
+    - assets/three_js/renderers/
+    - assets/three_js/shaders/
+    - assets/map_styles/
+    - assets/fonts/
+
+  shaders:
+    - shaders/portal_world.frag
+
+dependency_overrides:
+  # Temporary for 4.x device_calendar compatibility while preserving notification timezone
+  timezone: ^0.10.1

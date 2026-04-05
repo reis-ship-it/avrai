@@ -1,0 +1,46 @@
+{
+  "click_rate": {
+    "metric_name": "Click Rate",
+    "control_mean": 0.34075,
+    "test_mean": 0.3793,
+    "improvement_percent": 11.31327953044755,
+    "t_statistic": 7.818208505570829,
+    "p_value": 8.599678016461049e-15,
+    "cohens_d": 0.3498158652959767,
+    "significant": true,
+    "large_effect": false
+  },
+  "conversion_rate": {
+    "metric_name": "Conversion Rate",
+    "control_mean": 0.07055000000000002,
+    "test_mean": 0.08650000000000001,
+    "improvement_percent": 22.60807937632883,
+    "t_statistic": 5.755225148009707,
+    "p_value": 9.9917724837841e-09,
+    "cohens_d": 0.2575102804804496,
+    "significant": true,
+    "large_effect": false
+  },
+  "avg_compatibility": {
+    "metric_name": "Average Compatibility",
+    "control_mean": 0.5996829385585635,
+    "test_mean": 0.6998797767395228,
+    "improvement_percent": 16.708302294175475,
+    "t_statistic": 35.71717264806413,
+    "p_value": 1.6778939436314056e-216,
+    "cohens_d": 1.598119779858198,
+    "significant": true,
+    "large_effect": true
+  },
+  "total_engagement": {
+    "metric_name": "Total Engagement",
+    "control_mean": 4.165274385483856,
+    "test_mean": 5.373243727215317,
+    "improvement_percent": 29.00095479763066,
+    "t_statistic": 16.58040686853873,
+    "p_value": 5.997519554784004e-58,
+    "cohens_d": 0.7418693645154645,
+    "significant": true,
+    "large_effect": false
+  }
+}

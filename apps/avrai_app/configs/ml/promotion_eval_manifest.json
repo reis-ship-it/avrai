@@ -1,0 +1,94 @@
+{
+  "manifest_version": "v2",
+  "generated_at": "2026-03-31",
+  "required_suites": [
+    "offline_replay",
+    "adversarial_robustness",
+    "contradiction_stress"
+  ],
+  "required_compression_regression_suites": [
+    "ranking_drift",
+    "calibration_drift",
+    "contradiction_detection_degradation",
+    "uncertainty_honesty_regression"
+  ],
+  "promotion_candidates": [
+    {
+      "candidate_id": "baseline-contract-candidate",
+      "model_id": "mdl-baseline-contract-v1",
+      "promotion_decision": "hold",
+      "decision_reason": "baseline_scaffold_no_live_promotion",
+      "suite_results": [
+        {
+          "suite": "offline_replay",
+          "status": "pass",
+          "artifact_uri": "artifacts/promotion_eval/offline_replay_baseline.json"
+        },
+        {
+          "suite": "adversarial_robustness",
+          "status": "pass",
+          "artifact_uri": "artifacts/promotion_eval/adversarial_baseline.json"
+        },
+        {
+          "suite": "contradiction_stress",
+          "status": "pending",
+          "artifact_uri": ""
+        }
+      ]
+    },
+    {
+      "candidate_id": "candidate-reality-v1-canary-a",
+      "model_id": "mdl-reality-policy-v1",
+      "compression_rollout_profile": "compressed_reality_model_v1",
+      "promotion_decision": "approve",
+      "decision_reason": "all_mandatory_eval_and_compression_regression_suites_passed_with_attested_artifacts",
+      "suite_results": [
+        {
+          "suite": "offline_replay",
+          "status": "pass",
+          "artifact_uri": "artifacts/promotion_eval/candidate-reality-v1-canary-a/offline_replay.json"
+        },
+        {
+          "suite": "adversarial_robustness",
+          "status": "pass",
+          "artifact_uri": "artifacts/promotion_eval/candidate-reality-v1-canary-a/adversarial_robustness.json"
+        },
+        {
+          "suite": "contradiction_stress",
+          "status": "pass",
+          "artifact_uri": "artifacts/promotion_eval/candidate-reality-v1-canary-a/contradiction_stress.json"
+        }
+      ],
+      "compression_suite_results": [
+        {
+          "suite": "ranking_drift",
+          "status": "pass",
+          "artifact_uri": "artifacts/promotion_eval/candidate-reality-v1-canary-a/ranking_drift.json",
+          "observed_regression": 0.011,
+          "max_allowed_regression": 0.02
+        },
+        {
+          "suite": "calibration_drift",
+          "status": "pass",
+          "artifact_uri": "artifacts/promotion_eval/candidate-reality-v1-canary-a/calibration_drift.json",
+          "observed_regression": 0.006,
+          "max_allowed_regression": 0.01
+        },
+        {
+          "suite": "contradiction_detection_degradation",
+          "status": "pass",
+          "artifact_uri": "artifacts/promotion_eval/candidate-reality-v1-canary-a/contradiction_detection_degradation.json",
+          "observed_regression": 0.01,
+          "max_allowed_regression": 0.015
+        },
+        {
+          "suite": "uncertainty_honesty_regression",
+          "status": "pass",
+          "artifact_uri": "artifacts/promotion_eval/candidate-reality-v1-canary-a/uncertainty_honesty_regression.json",
+          "observed_regression": 0.002,
+          "max_allowed_regression": 0.005
+        }
+      ]
+    }
+  ]
+}

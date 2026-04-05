@@ -1,0 +1,10 @@
+{
+  "budget_tracking_accuracy": 0.9999999999999993,
+  "privacy_compliance_rate": 0.99,
+  "learning_effectiveness": 0.1869954649821094,
+  "pattern_detection_accuracy": 0.5,
+  "propagation_accuracy": 1.0,
+  "final_budget_usage": 1.0000000000000007,
+  "final_convergence_error": 0.8,
+  "num_clusters": 1
+}

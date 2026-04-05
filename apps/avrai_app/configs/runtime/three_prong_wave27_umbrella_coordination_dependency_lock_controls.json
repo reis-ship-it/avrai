@@ -1,0 +1,18 @@
+{
+  "milestone_id": "M27-P10-1",
+  "scope": "3-prong wave-27 umbrella coordination and dependency lock",
+  "master_plan_refs": ["10.10.9", "10.10.10", "10.10.11", "10.10.12"],
+  "dependencies": ["M26-P10-2", "M26-P7-1", "M26-P3-1"],
+  "lane_unlock_order": ["M27-P10-2", "M27-P7-1", "M27-P3-1", "M27-P10-3"],
+  "contract_policy": {
+    "contract_first_integration": true,
+    "fail_closed_unknown_policy_fields": true,
+    "forbidden_direct_imports": [
+      "apps -> engine",
+      "engine -> runtime",
+      "engine -> apps"
+    ]
+  },
+  "status": "complete",
+  "completed_on": "2026-02-28"
+}

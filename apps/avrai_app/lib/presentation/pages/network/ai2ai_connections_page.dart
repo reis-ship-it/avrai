@@ -1,0 +1,775 @@
+/// AI2AI Connections Page
+///
+/// Provides AI2AI discovery status, device visibility, and connection controls.
+library;
+
+import 'dart:async';
+import 'dart:developer' as developer;
+
+import 'package:flutter/material.dart';
+import 'package:avrai/theme/colors.dart';
+import 'package:avrai_network/network/device_discovery.dart';
+import 'package:avrai_runtime_os/ai2ai/connection_orchestrator.dart';
+import 'package:avrai/presentation/widgets/network/discovered_devices_widget.dart';
+import 'package:avrai/presentation/widgets/network/ai2ai_connection_view_widget.dart';
+import 'package:avrai/presentation/pages/settings/discovery_settings_page.dart';
+import 'package:get_it/get_it.dart';
+import 'package:avrai/presentation/widgets/common/app_flow_scaffold.dart';
+import 'package:avrai/presentation/widgets/common/app_surface.dart';
+
+/// Comprehensive page for AI2AI networking and device discovery
+class AI2AIConnectionsPage extends StatefulWidget {
+  const AI2AIConnectionsPage({super.key});
+
+  @override
+  State<AI2AIConnectionsPage> createState() => _AI2AIConnectionsPageState();
+}
+
+class _AI2AIConnectionsPageState extends State<AI2AIConnectionsPage>
+    with SingleTickerProviderStateMixin {
+  DeviceDiscoveryService? _discoveryService;
+  VibeConnectionOrchestrator? _orchestrator;
+
+  List<DiscoveredDevice> _discoveredDevices = [];
+  bool _isScanning = false;
+  bool _isLoading = true;
+  String? _transportIssue;
+  String? _transportGuidance;
+
+  Timer? _refreshTimer;
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+    _initializeServices();
+  }
+
+  Future<void> _initializeServices() async {
+    try {
+      _discoveryService = GetIt.instance<DeviceDiscoveryService>();
+      _orchestrator = GetIt.instance<VibeConnectionOrchestrator>();
+
+      await _refreshDevices();
+      _startAutoRefresh();
+
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      developer.log('Error initializing services',
+          name: 'AI2AIConnectionsPage', error: e);
+      final issue = _mapTransportIssue(e);
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _transportIssue = issue.$1;
+          _transportGuidance = issue.$2;
+        });
+      }
+    }
+  }
+
+  void _startAutoRefresh() {
+    // Refresh every 3 seconds for real-time updates
+    _refreshTimer = Timer.periodic(const Duration(seconds: 3), (_) {
+      if (mounted) {
+        _refreshDevices();
+      }
+    });
+  }
+
+  Future<void> _refreshDevices() async {
+    if (_discoveryService == null) return;
+
+    final devices = _discoveryService!.getDiscoveredDevices();
+    if (mounted) {
+      setState(() {
+        _discoveredDevices = devices;
+      });
+    }
+  }
+
+  Future<void> _toggleDiscovery() async {
+    if (_discoveryService == null) return;
+
+    final newState = !_isScanning;
+
+    setState(() {
+      _isScanning = newState;
+    });
+
+    try {
+      if (newState) {
+        await _discoveryService!.startDiscovery();
+      } else {
+        _discoveryService!.stopDiscovery();
+      }
+      if (mounted) {
+        setState(() {
+          _transportIssue = null;
+          _transportGuidance = null;
+        });
+      }
+    } catch (e, st) {
+      developer.log(
+        'Failed toggling discovery state',
+        name: 'AI2AIConnectionsPage',
+        error: e,
+        stackTrace: st,
+      );
+      final issue = _mapTransportIssue(e);
+      if (mounted) {
+        setState(() {
+          _isScanning = false;
+          _transportIssue = issue.$1;
+          _transportGuidance = issue.$2;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(issue.$1),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
+
+    await _refreshDevices();
+  }
+
+  @override
+  void dispose() {
+    _refreshTimer?.cancel();
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const AppFlowScaffold(
+        title: 'AI2AI Network',
+        constrainBody: false,
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    return AppFlowScaffold(
+      title: 'AI2AI Network',
+      appBarBackgroundColor: AppColors.background,
+      appBarForegroundColor: AppColors.textPrimary,
+      constrainBody: false,
+      backgroundColor: AppColors.background,
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.settings),
+          onPressed: _navigateToSettings,
+          tooltip: 'Discovery Settings',
+        ),
+        IconButton(
+          icon: const Icon(Icons.refresh),
+          onPressed: _refreshDevices,
+          tooltip: 'Refresh',
+        ),
+      ],
+      materialBottom: TabBar(
+        controller: _tabController,
+        indicatorColor: AppColors.textPrimary,
+        labelColor: AppColors.textPrimary,
+        unselectedLabelColor: AppColors.textSecondary,
+        tabs: const [
+          Tab(icon: Icon(Icons.radar), text: 'Discovery'),
+          Tab(icon: Icon(Icons.devices), text: 'Devices'),
+          Tab(icon: Icon(Icons.psychology), text: 'AI Connections'),
+        ],
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          _buildDiscoveryTab(),
+          _buildDevicesTab(),
+          _buildConnectionsTab(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDiscoveryTab() {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          if (_transportIssue != null)
+            _buildTransportIssueBanner(
+              issue: _transportIssue!,
+              guidance: _transportGuidance,
+            ),
+          _buildDiscoveryStatusCard(),
+          _buildPrivacyAndConsentCard(),
+          _buildDiscoveryStatsCard(),
+          _buildQuickActionsCard(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDiscoveryStatusCard() {
+    return AppSurface(
+      margin: const EdgeInsets.all(16),
+      radius: 16,
+      color: _isScanning ? AppColors.surfaceMuted : null,
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color:
+                      _isScanning ? AppColors.surfaceMuted : AppColors.grey200,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  _isScanning ? Icons.radar : Icons.radar_outlined,
+                  color: _isScanning
+                      ? AppColors.textSecondary
+                      : AppColors.textSecondary,
+                  size: 36,
+                ),
+              ),
+              const SizedBox(width: 20),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _isScanning ? 'Discovery Active' : 'Discovery Inactive',
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      _isScanning
+                          ? 'Scanning for nearby devices...'
+                          : 'Start to discover nearby AI devices',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Semantics(
+            button: true,
+            label: _isScanning
+                ? 'Stop AI2AI device discovery'
+                : 'Start AI2AI device discovery',
+            hint:
+                'Discovery uses nearby transports and respects your privacy controls.',
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: _toggleDiscovery,
+                icon: Icon(_isScanning ? Icons.stop : Icons.play_arrow),
+                label: Text(_isScanning ? 'Stop Discovery' : 'Start Discovery'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                      _isScanning ? AppColors.error : AppColors.surfaceMuted,
+                  foregroundColor: AppColors.textPrimary,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  minimumSize: const Size(48, 48),
+                  elevation: 0,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDiscoveryStatsCard() {
+    final activeConnections = _orchestrator?.getActiveConnections() ?? [];
+
+    return AppSurface(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      radius: 12,
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Network Statistics',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildStatItem(
+                Icons.devices,
+                '${_discoveredDevices.length}',
+                'Discovered',
+                AppColors.textPrimary,
+              ),
+              _buildStatItem(
+                Icons.link,
+                '${activeConnections.length}',
+                'Connected',
+                AppColors.textPrimary,
+              ),
+              _buildStatItem(
+                Icons.psychology,
+                '${_discoveredDevices.where((d) => d.personalityData != null).length}',
+                'AI Enabled',
+                AppColors.textPrimary,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatItem(
+      IconData icon, String value, String label, Color color) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: AppColors.surfaceMuted,
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            icon,
+            color: color,
+            size: 28,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 12,
+            color: AppColors.textSecondary,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQuickActionsCard() {
+    return AppSurface(
+      margin: const EdgeInsets.all(16),
+      radius: 12,
+      padding: EdgeInsets.zero,
+      child: Column(
+        children: [
+          ListTile(
+            leading: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceMuted,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(
+                Icons.settings,
+                color: AppColors.textSecondary,
+              ),
+            ),
+            title: const Text('Discovery Settings'),
+            subtitle: const Text('Configure discovery methods and privacy'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: _navigateToSettings,
+          ),
+          const Divider(height: 1),
+          ListTile(
+            leading: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceMuted,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(
+                Icons.info_outline,
+                color: AppColors.textSecondary,
+              ),
+            ),
+            title: const Text('How Discovery Works'),
+            subtitle: const Text('Learn about AI2AI networking'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: _showDiscoveryInfoDialog,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPrivacyAndConsentCard() {
+    return AppSurface(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      radius: 12,
+      color: AppColors.surfaceMuted,
+      padding: const EdgeInsets.all(16),
+      child: Semantics(
+        label: 'AI2AI privacy and consent summary',
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Row(
+              children: [
+                Icon(Icons.privacy_tip, color: AppColors.textSecondary),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Privacy and Consent',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              'AI2AI discovery shares anonymized compatibility signals only. Message content is not shared.',
+              style: TextStyle(
+                fontSize: 13,
+                color: AppColors.textSecondary,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'You can disable discovery or adjust privacy controls anytime in Discovery Settings.',
+              style: TextStyle(
+                fontSize: 13,
+                color: AppColors.textSecondary,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton.icon(
+                onPressed: _navigateToSettings,
+                icon: const Icon(Icons.settings, size: 16),
+                label: const Text('Manage Privacy Controls'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDevicesTab() {
+    if (!_isScanning) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.radar_outlined,
+                size: 80,
+                color: AppColors.grey300,
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Discovery is off',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Start discovery to find nearby avrai devices',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton.icon(
+                onPressed: _toggleDiscovery,
+                icon: const Icon(Icons.play_arrow),
+                label: const Text('Start Discovery'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.surfaceMuted,
+                  foregroundColor: AppColors.textPrimary,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return DiscoveredDevicesWidget(
+      devices: _discoveredDevices,
+      onRefresh: _refreshDevices,
+      showConnectionButton: true,
+    );
+  }
+
+  Widget _buildConnectionsTab() {
+    return AI2AIConnectionViewWidget(
+      showHumanConnectionButton: true,
+      onEnableHumanConnection: _handleHumanConnectionEnabled,
+    );
+  }
+
+  void _navigateToSettings() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const DiscoverySettingsPage(),
+      ),
+    ).then((_) {
+      // Refresh after returning from settings
+      _refreshDevices();
+    });
+  }
+
+  void _showDiscoveryInfoDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(
+              Icons.psychology,
+              color: AppColors.textSecondary,
+            ),
+            SizedBox(width: 12),
+            Text('AI2AI Discovery'),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'How It Works:',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              const SizedBox(height: 12),
+              _buildInfoPoint(
+                '1. Your AI broadcasts anonymized personality patterns',
+              ),
+              _buildInfoPoint(
+                '2. Nearby AIs detect and analyze compatibility',
+              ),
+              _buildInfoPoint(
+                '3. Compatible AIs connect automatically',
+              ),
+              _buildInfoPoint(
+                '4. Learning exchanges happen between AI personalities',
+              ),
+              _buildInfoPoint(
+                '5. At 100% compatibility, human conversation is enabled',
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceMuted,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(
+                      Icons.verified_user,
+                      color: AppColors.textSecondary,
+                      size: 20,
+                    ),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'All exchanges are privacy-aware and limited to compatibility signals, not message content.',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Got it'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoPoint(String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(
+            Icons.check_circle,
+            size: 18,
+            color: AppColors.textSecondary,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(
+                fontSize: 14,
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _handleHumanConnectionEnabled(dynamic connection) {
+    // Handle navigation to human chat or other UI flow
+    // This is where you'd integrate with your chat/messaging system
+    developer.log(
+      'Human connection enabled for: ${connection.connectionId}',
+      name: 'AI2AIConnectionsPage',
+    );
+  }
+
+  Widget _buildTransportIssueBanner({
+    required String issue,
+    String? guidance,
+  }) {
+    return AppSurface(
+      margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      radius: 12,
+      color: AppColors.error.withValues(alpha: 0.08),
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.warning_amber_rounded, color: AppColors.error),
+              SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'AI2AI transport needs attention',
+                  style: TextStyle(
+                    color: AppColors.error,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            issue,
+            style: const TextStyle(color: AppColors.textPrimary),
+          ),
+          if (guidance != null && guidance.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Text(
+              guidance,
+              style: const TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 12,
+              ),
+            ),
+          ],
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            children: [
+              OutlinedButton.icon(
+                onPressed: _toggleDiscovery,
+                icon: const Icon(Icons.refresh, size: 16),
+                label: const Text('Retry Discovery'),
+              ),
+              TextButton.icon(
+                onPressed: _navigateToSettings,
+                icon: const Icon(Icons.settings, size: 16),
+                label: const Text('Open Settings'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  (String, String) _mapTransportIssue(Object error) {
+    final message = error.toString().toLowerCase();
+    if (message.contains('permission')) {
+      return (
+        'Required permissions are missing for AI2AI discovery.',
+        'Enable Bluetooth, Nearby Devices, and Location permissions in settings, then retry.'
+      );
+    }
+    if (message.contains('bluetooth') || message.contains('ble')) {
+      return (
+        'Bluetooth transport is unavailable right now.',
+        'Turn on Bluetooth and keep the app in foreground while discovery starts.'
+      );
+    }
+    if (message.contains('location')) {
+      return (
+        'Location services are required for nearby discovery.',
+        'Enable location services and allow precise location for reliable device detection.'
+      );
+    }
+    return (
+      'Discovery failed due to a transport error.',
+      'Retry discovery. If this persists, open Discovery Settings and verify connectivity + permissions.'
+    );
+  }
+}

@@ -1,0 +1,202 @@
+import 'dart:convert';
+import 'dart:developer' as developer;
+import 'package:avrai_core/contracts/air_gap_contract.dart';
+import 'package:avrai_core/models/air_gap/air_gap_compression_models.dart';
+import 'package:avrai_core/schemas/semantic_tuple.dart';
+import 'package:avrai_runtime_os/kernel/what/what_runtime_ingestion_service.dart';
+import 'package:avrai_runtime_os/services/intake/air_gap_compression_runtime_service.dart';
+import 'package:avrai_runtime_os/services/user/agent_id_service.dart';
+import 'package:reality_engine/memory/semantic_knowledge_store.dart';
+
+/// Raw radioactive payload containing a user's Spotify listening history.
+/// This includes sensitive track names, timestamps, and audio features.
+/// Must never be persisted to permanent storage.
+class RawSpotifyPayload extends RawDataPayload {
+  final Map<String, dynamic> _spotifyData;
+
+  const RawSpotifyPayload({
+    required super.capturedAt,
+    required Map<String, dynamic> spotifyData,
+  })  : _spotifyData = spotifyData,
+        super(sourceId: 'spotify_integration');
+
+  @override
+  String get rawContent => jsonEncode(_spotifyData);
+}
+
+/// SpotifyAirgapIntegrationService
+///
+/// Blueprint for how all 3rd-party App integrations (Social Media, Music, Health)
+/// should interact with the AVRAI ecosystem.
+///
+/// 1. Connects to the external service (Spotify).
+/// 2. Fetches raw, highly personal user data (listening history).
+/// 3. Wraps the data in a [RawDataPayload].
+/// 4. Slams it through the [AirGapContract] (TupleExtractionEngine).
+/// 5. Saves the resulting pure mathematical [SemanticTuple]s to the Knowledge Store.
+/// 6. The original raw data is destroyed.
+class SpotifyAirgapIntegrationService {
+  static const String _logName = 'SpotifyAirgapIntegrationService';
+
+  final AirGapContract _airGapEngine;
+  final SemanticKnowledgeStore _knowledgeStore;
+  final WhatRuntimeIngestionService? _whatIngestion;
+  final AgentIdService? _agentIdService;
+  final RuntimeAirGapCompressionService _compressionService;
+  final Future<Map<String, dynamic>> Function() _fetchRecentListeningHistory;
+
+  SpotifyAirgapIntegrationService({
+    required AirGapContract airGapEngine,
+    required SemanticKnowledgeStore knowledgeStore,
+    WhatRuntimeIngestionService? whatIngestion,
+    AgentIdService? agentIdService,
+    RuntimeAirGapCompressionService compressionService =
+        const RuntimeAirGapCompressionService(),
+    Future<Map<String, dynamic>> Function()? fetchRecentListeningHistory,
+  })  : _airGapEngine = airGapEngine,
+        _knowledgeStore = knowledgeStore,
+        _whatIngestion = whatIngestion,
+        _agentIdService = agentIdService,
+        _compressionService = compressionService,
+        _fetchRecentListeningHistory =
+            fetchRecentListeningHistory ?? _fetchSimulatedSpotifyData;
+
+  /// Triggered by the user connecting their Spotify account or via a background job.
+  Future<void> syncRecentListeningHistory(String userId) async {
+    developer.log('Starting Spotify sync for user $userId', name: _logName);
+
+    try {
+      // 1. Fetch raw data from Spotify (Simulated OAuth and API call)
+      final rawData = await _fetchRecentListeningHistory();
+
+      // 2. Wrap in radioactive payload
+      final payload = RawSpotifyPayload(
+        capturedAt: DateTime.now(),
+        spotifyData: rawData,
+      );
+
+      // 3. Pass through the Air Gap to extract abstract topological meaning
+      developer.log('Sending raw Spotify data through the Air Gap...',
+          name: _logName);
+      final semanticTuples = await _airGapEngine.scrubAndExtract(payload);
+
+      // 4. Save the pure mathematical abstract concepts to the local knowledge store.
+      // At this point, "Nirvana" or "Smells Like Teen Spirit" is gone.
+      // All that remains is `[Subject: User] -> [Predicate: exhibits_trait] -> [Object: High Grunge/Rebellion Topology]`
+      developer.log(
+          'Extraction complete. Saving ${semanticTuples.length} semantic tuples.',
+          name: _logName);
+      await _knowledgeStore.saveTuples(semanticTuples);
+      final compressionBundle = _compressionService.compressSemanticTuples(
+        contractId:
+            'spotify_${userId}_${payload.capturedAt.microsecondsSinceEpoch}',
+        tuples: semanticTuples,
+        environmentId: _compressionService.buildEnvironmentId(
+          surface: 'spotify_recent_listening',
+          scopeKey: userId,
+        ),
+        primaryLayer: AirGapKnowledgeLayer.personal,
+        privacyLadderTag: 'amber',
+        provenanceRefs:
+            semanticTuples.map((tuple) => tuple.id).toList(growable: false),
+        metadata: <String, dynamic>{
+          'provider': 'spotify',
+          'recentTrackCount':
+              (rawData['recently_played'] as List<dynamic>? ?? const []).length,
+        },
+      );
+      if (_whatIngestion != null && _agentIdService != null) {
+        final agentId = await _agentIdService.getUserAgentId(userId);
+        final entityRef = _spotifyEntityRef(rawData);
+        await _whatIngestion.ingestSemanticTuples(
+          source: 'spotify_airgap_integration',
+          entityRef: entityRef,
+          tuples: semanticTuples,
+          agentId: agentId,
+          lineageRef:
+              'spotify:$userId:${payload.capturedAt.microsecondsSinceEpoch}',
+        );
+        await _whatIngestion.ingestPluginSemanticObservation(
+          source: 'spotify_airgap_integration',
+          entityRef: entityRef,
+          observedAtUtc: payload.capturedAt,
+          agentId: agentId,
+          semanticTuples: semanticTuples,
+          activityContext: 'exploration',
+          structuredSignals: <String, dynamic>{
+            'provider': 'spotify',
+            'recentTrackCount':
+                (rawData['recently_played'] as List<dynamic>? ?? const [])
+                    .length,
+            'airGapCompression': compressionBundle.toStructuredSignals(),
+          },
+          confidence: 0.61,
+          lineageRef:
+              'spotify:$userId:${payload.capturedAt.microsecondsSinceEpoch}',
+        );
+      }
+
+      developer.log('Spotify sync and Air Gap digestion successful.',
+          name: _logName);
+    } catch (e, st) {
+      developer.log('Failed to sync Spotify data: $e',
+          name: _logName, error: e, stackTrace: st);
+    }
+  }
+
+  /// Simulates fetching data from the Spotify Web API.
+  static Future<Map<String, dynamic>> _fetchSimulatedSpotifyData() async {
+    // In reality, this would use an access token to call api.spotify.com/v1/me/player/recently-played
+    // and then fetch audio features for those tracks.
+    await Future.delayed(
+        const Duration(seconds: 1)); // Simulate network latency
+
+    return {
+      'recently_played': [
+        {
+          'track': 'Smells Like Teen Spirit',
+          'artist': 'Nirvana',
+          'audio_features': {
+            'danceability': 0.502,
+            'energy': 0.912,
+            'valence':
+                0.85, // Translated internally to grunge/rebellion or counter-culture
+            'acousticness': 0.0,
+            'instrumentalness': 0.0,
+          },
+          'played_at': DateTime.now()
+              .subtract(const Duration(minutes: 30))
+              .toIso8601String(),
+        },
+        {
+          'track': 'Come As You Are',
+          'artist': 'Nirvana',
+          'audio_features': {
+            'danceability': 0.5,
+            'energy': 0.82,
+            'valence': 0.54,
+            'acousticness': 0.0,
+            'instrumentalness': 0.0,
+          },
+          'played_at': DateTime.now()
+              .subtract(const Duration(hours: 1))
+              .toIso8601String(),
+        }
+      ]
+    };
+  }
+
+  String _spotifyEntityRef(Map<String, dynamic> spotifyData) {
+    final recent = spotifyData['recently_played'] as List<dynamic>? ?? const [];
+    final firstTrack = recent.isEmpty
+        ? null
+        : Map<String, dynamic>.from(recent.first as Map<dynamic, dynamic>);
+    return DefaultWhatRuntimeIngestionService.deterministicEntityRef(
+      'spotify',
+      <String, Object?>{
+        'artist': firstTrack?['artist']?.toString() ?? 'unknown_artist',
+        'track': firstTrack?['track']?.toString() ?? 'unknown_track',
+      },
+    );
+  }
+}

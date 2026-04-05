@@ -1,0 +1,3502 @@
+[
+  {
+    "user_id": "user_1",
+    "dimensions": {
+      "exploration_eagerness": 0.8212499999999998,
+      "novelty_seeking": 0.6545,
+      "openness": 0.7649999999999999,
+      "value_orientation": 0.3915,
+      "authenticity": 0.37825,
+      "social_preference": 0.894,
+      "community_orientation": 0.8647499999999999,
+      "adventure_seeking": 0.8587499999999999,
+      "trust_level": 0.5705,
+      "crowd_tolerance": 0.777,
+      "energy_preference": 0.6059999999999999,
+      "archetype": 0.9
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 4.06,
+        "conscientiousness": 1.85,
+        "extraversion": 4.81,
+        "agreeableness": 3.64,
+        "neuroticism": 3.17
+      },
+      "raw_profile": {
+        "openness": "4.06",
+        "conscientiousness": "1.85",
+        "extraversion": "4.81",
+        "agreeableness": "3.64",
+        "neuroticism": "3.17"
+      }
+    }
+  },
+  {
+    "user_id": "user_2",
+    "dimensions": {
+      "exploration_eagerness": 0.09125,
+      "novelty_seeking": 0.22050000000000003,
+      "openness": 0.08000000000000002,
+      "value_orientation": 0.8425,
+      "authenticity": 0.57175,
+      "social_preference": 0.2805,
+      "community_orientation": 0.362,
+      "adventure_seeking": 0.09875,
+      "trust_level": 0.9025000000000001,
+      "crowd_tolerance": 0.6065,
+      "energy_preference": 0.47275,
+      "archetype": 0.7
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 1.32,
+        "conscientiousness": 4.13,
+        "extraversion": 1.47,
+        "agreeableness": 4.73,
+        "neuroticism": 2.5
+      },
+      "raw_profile": {
+        "openness": "1.32",
+        "conscientiousness": "4.13",
+        "extraversion": "1.47",
+        "agreeableness": "4.73",
+        "neuroticism": "2.5"
+      }
+    }
+  },
+  {
+    "user_id": "user_3",
+    "dimensions": {
+      "exploration_eagerness": 0.70025,
+      "novelty_seeking": 0.8780000000000001,
+      "openness": 0.8525,
+      "value_orientation": 0.7,
+      "authenticity": 0.9417499999999999,
+      "social_preference": 0.33199999999999996,
+      "community_orientation": 0.32549999999999996,
+      "adventure_seeking": 0.59875,
+      "trust_level": 0.42000000000000004,
+      "crowd_tolerance": 0.306,
+      "energy_preference": 0.2995,
+      "archetype": 0.3
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 4.41,
+        "conscientiousness": 4.92,
+        "extraversion": 2.38,
+        "agreeableness": 2.12,
+        "neuroticism": 3.88
+      },
+      "raw_profile": {
+        "openness": "4.41",
+        "conscientiousness": "4.92",
+        "extraversion": "2.38",
+        "agreeableness": "2.12",
+        "neuroticism": "3.88"
+      }
+    }
+  },
+  {
+    "user_id": "user_4",
+    "dimensions": {
+      "exploration_eagerness": 0.8125,
+      "novelty_seeking": 0.7575,
+      "openness": 0.8274999999999999,
+      "value_orientation": 0.6205,
+      "authenticity": 0.5825,
+      "social_preference": 0.7890000000000001,
+      "community_orientation": 0.7947500000000001,
+      "adventure_seeking": 0.8025,
+      "trust_level": 0.7635000000000001,
+      "crowd_tolerance": 0.812,
+      "energy_preference": 0.5535,
+      "archetype": 0.9
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 4.31,
+        "conscientiousness": 2.91,
+        "extraversion": 4.11,
+        "agreeableness": 4.34,
+        "neuroticism": 3.17
+      },
+      "raw_profile": {
+        "openness": "4.31",
+        "conscientiousness": "2.91",
+        "extraversion": "4.11",
+        "agreeableness": "4.34",
+        "neuroticism": "3.17"
+      }
+    }
+  },
+  {
+    "user_id": "user_5",
+    "dimensions": {
+      "exploration_eagerness": 0.8019999999999998,
+      "novelty_seeking": 0.7085,
+      "openness": 0.7749999999999999,
+      "value_orientation": 0.35750000000000004,
+      "authenticity": 0.5422499999999999,
+      "social_preference": 0.7380000000000001,
+      "community_orientation": 0.6744999999999999,
+      "adventure_seeking": 0.82,
+      "trust_level": 0.2725,
+      "crowd_tolerance": 0.484,
+      "energy_preference": 0.466,
+      "archetype": 0.9
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 4.1,
+        "conscientiousness": 2.77,
+        "extraversion": 4.46,
+        "agreeableness": 1.92,
+        "neuroticism": 3.82
+      },
+      "raw_profile": {
+        "openness": "4.1",
+        "conscientiousness": "2.77",
+        "extraversion": "4.46",
+        "agreeableness": "1.92",
+        "neuroticism": "3.82"
+      }
+    }
+  },
+  {
+    "user_id": "user_6",
+    "dimensions": {
+      "exploration_eagerness": 0.36424999999999996,
+      "novelty_seeking": 0.3625,
+      "openness": 0.3275,
+      "value_orientation": 0.6864999999999999,
+      "authenticity": 0.44999999999999996,
+      "social_preference": 0.5525,
+      "community_orientation": 0.6037499999999999,
+      "adventure_seeking": 0.38875,
+      "trust_level": 0.8705,
+      "crowd_tolerance": 0.7574999999999998,
+      "energy_preference": 0.5864999999999999,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 2.31,
+        "conscientiousness": 3.01,
+        "extraversion": 2.8,
+        "agreeableness": 4.85,
+        "neuroticism": 2.42
+      },
+      "raw_profile": {
+        "openness": "2.31",
+        "conscientiousness": "3.01",
+        "extraversion": "2.8",
+        "agreeableness": "4.85",
+        "neuroticism": "2.42"
+      }
+    }
+  },
+  {
+    "user_id": "user_7",
+    "dimensions": {
+      "exploration_eagerness": 0.768,
+      "novelty_seeking": 0.5935,
+      "openness": 0.6825,
+      "value_orientation": 0.5275,
+      "authenticity": 0.371,
+      "social_preference": 0.9665,
+      "community_orientation": 0.966,
+      "adventure_seeking": 0.825,
+      "trust_level": 0.8175,
+      "crowd_tolerance": 0.9644999999999999,
+      "energy_preference": 0.37949999999999995,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 3.73,
+        "conscientiousness": 1.95,
+        "extraversion": 4.87,
+        "agreeableness": 4.85,
+        "neuroticism": 4.49
+      },
+      "raw_profile": {
+        "openness": "3.73",
+        "conscientiousness": "1.95",
+        "extraversion": "4.87",
+        "agreeableness": "4.85",
+        "neuroticism": "4.49"
+      }
+    }
+  },
+  {
+    "user_id": "user_8",
+    "dimensions": {
+      "exploration_eagerness": 0.4825,
+      "novelty_seeking": 0.521,
+      "openness": 0.61,
+      "value_orientation": 0.177,
+      "authenticity": 0.2985,
+      "social_preference": 0.187,
+      "community_orientation": 0.188,
+      "adventure_seeking": 0.39749999999999996,
+      "trust_level": 0.18900000000000003,
+      "crowd_tolerance": 0.191,
+      "energy_preference": 0.6084999999999999,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 3.44,
+        "conscientiousness": 1.66,
+        "extraversion": 1.74,
+        "agreeableness": 1.78,
+        "neuroticism": 1.84
+      },
+      "raw_profile": {
+        "openness": "3.44",
+        "conscientiousness": "1.66",
+        "extraversion": "1.74",
+        "agreeableness": "1.78",
+        "neuroticism": "1.84"
+      }
+    }
+  },
+  {
+    "user_id": "user_9",
+    "dimensions": {
+      "exploration_eagerness": 0.31024999999999997,
+      "novelty_seeking": 0.07900000000000001,
+      "openness": 0.08000000000000002,
+      "value_orientation": 0.21800000000000003,
+      "authenticity": 0.07650000000000001,
+      "social_preference": 0.7645,
+      "community_orientation": 0.723,
+      "adventure_seeking": 0.46375,
+      "trust_level": 0.36100000000000004,
+      "crowd_tolerance": 0.5985,
+      "energy_preference": 0.5954999999999999,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 1.32,
+        "conscientiousness": 1.3,
+        "extraversion": 4.39,
+        "agreeableness": 2.73,
+        "neuroticism": 3.05
+      },
+      "raw_profile": {
+        "openness": "1.32",
+        "conscientiousness": "1.3",
+        "extraversion": "4.39",
+        "agreeableness": "2.73",
+        "neuroticism": "3.05"
+      }
+    }
+  },
+  {
+    "user_id": "user_10",
+    "dimensions": {
+      "exploration_eagerness": 0.689,
+      "novelty_seeking": 0.7945000000000001,
+      "openness": 0.8,
+      "value_orientation": 0.6325,
+      "authenticity": 0.7807499999999999,
+      "social_preference": 0.4285000000000001,
+      "community_orientation": 0.42774999999999996,
+      "adventure_seeking": 0.615,
+      "trust_level": 0.49250000000000005,
+      "crowd_tolerance": 0.42550000000000004,
+      "energy_preference": 0.27425,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 4.2,
+        "conscientiousness": 4.09,
+        "extraversion": 2.72,
+        "agreeableness": 2.69,
+        "neuroticism": 4.17
+      },
+      "raw_profile": {
+        "openness": "4.2",
+        "conscientiousness": "4.09",
+        "extraversion": "2.72",
+        "agreeableness": "2.69",
+        "neuroticism": "4.17"
+      }
+    }
+  },
+  {
+    "user_id": "user_11",
+    "dimensions": {
+      "exploration_eagerness": 0.2475,
+      "novelty_seeking": 0.1795,
+      "openness": 0.12,
+      "value_orientation": 0.41850000000000004,
+      "authenticity": 0.32824999999999993,
+      "social_preference": 0.52,
+      "community_orientation": 0.5075000000000001,
+      "adventure_seeking": 0.3325,
+      "trust_level": 0.4195000000000001,
+      "crowd_tolerance": 0.47000000000000003,
+      "energy_preference": 0.839,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 1.48,
+        "conscientiousness": 2.67,
+        "extraversion": 3.18,
+        "agreeableness": 2.68,
+        "neuroticism": 1.14
+      },
+      "raw_profile": {
+        "openness": "1.48",
+        "conscientiousness": "2.67",
+        "extraversion": "3.18",
+        "agreeableness": "2.68",
+        "neuroticism": "1.14"
+      }
+    }
+  },
+  {
+    "user_id": "user_12",
+    "dimensions": {
+      "exploration_eagerness": 0.6189999999999999,
+      "novelty_seeking": 0.7950000000000002,
+      "openness": 0.76,
+      "value_orientation": 0.904,
+      "authenticity": 0.8825,
+      "social_preference": 0.4035,
+      "community_orientation": 0.46025,
+      "adventure_seeking": 0.525,
+      "trust_level": 0.873,
+      "crowd_tolerance": 0.6305,
+      "energy_preference": 0.71,
+      "archetype": 0.7
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 4.04,
+        "conscientiousness": 4.74,
+        "extraversion": 2.16,
+        "agreeableness": 4.43,
+        "neuroticism": 1.44
+      },
+      "raw_profile": {
+        "openness": "4.04",
+        "conscientiousness": "4.74",
+        "extraversion": "2.16",
+        "agreeableness": "4.43",
+        "neuroticism": "1.44"
+      }
+    }
+  },
+  {
+    "user_id": "user_13",
+    "dimensions": {
+      "exploration_eagerness": 0.43574999999999997,
+      "novelty_seeking": 0.5100000000000001,
+      "openness": 0.42000000000000004,
+      "value_orientation": 0.5650000000000001,
+      "authenticity": 0.735,
+      "social_preference": 0.3995000000000001,
+      "community_orientation": 0.363,
+      "adventure_seeking": 0.44625000000000004,
+      "trust_level": 0.26,
+      "crowd_tolerance": 0.2535,
+      "energy_preference": 0.4059999999999999,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 2.68,
+        "conscientiousness": 4.48,
+        "extraversion": 2.89,
+        "agreeableness": 1.43,
+        "neuroticism": 3.49
+      },
+      "raw_profile": {
+        "openness": "2.68",
+        "conscientiousness": "4.48",
+        "extraversion": "2.89",
+        "agreeableness": "1.43",
+        "neuroticism": "3.49"
+      }
+    }
+  },
+  {
+    "user_id": "user_14",
+    "dimensions": {
+      "exploration_eagerness": 0.31425,
+      "novelty_seeking": 0.29200000000000004,
+      "openness": 0.1875,
+      "value_orientation": 0.744,
+      "authenticity": 0.5532499999999999,
+      "social_preference": 0.647,
+      "community_orientation": 0.6655,
+      "adventure_seeking": 0.39875,
+      "trust_level": 0.778,
+      "crowd_tolerance": 0.7209999999999999,
+      "energy_preference": 0.3265,
+      "archetype": 0.7
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 1.75,
+        "conscientiousness": 3.84,
+        "extraversion": 3.44,
+        "agreeableness": 4.18,
+        "neuroticism": 4.18
+      },
+      "raw_profile": {
+        "openness": "1.75",
+        "conscientiousness": "3.84",
+        "extraversion": "3.44",
+        "agreeableness": "4.18",
+        "neuroticism": "4.18"
+      }
+    }
+  },
+  {
+    "user_id": "user_15",
+    "dimensions": {
+      "exploration_eagerness": 0.8712500000000001,
+      "novelty_seeking": 0.8005,
+      "openness": 0.9575,
+      "value_orientation": 0.1215,
+      "authenticity": 0.408,
+      "social_preference": 0.545,
+      "community_orientation": 0.4825,
+      "adventure_seeking": 0.81375,
+      "trust_level": 0.07049999999999998,
+      "crowd_tolerance": 0.295,
+      "energy_preference": 0.8887499999999999,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 4.83,
+        "conscientiousness": 1.69,
+        "extraversion": 3.68,
+        "agreeableness": 1.18,
+        "neuroticism": 1.07
+      },
+      "raw_profile": {
+        "openness": "4.83",
+        "conscientiousness": "1.69",
+        "extraversion": "3.68",
+        "agreeableness": "1.18",
+        "neuroticism": "1.07"
+      }
+    }
+  },
+  {
+    "user_id": "user_16",
+    "dimensions": {
+      "exploration_eagerness": 0.6535,
+      "novelty_seeking": 0.7454999999999999,
+      "openness": 0.8875,
+      "value_orientation": 0.2945,
+      "authenticity": 0.39049999999999996,
+      "social_preference": 0.18,
+      "community_orientation": 0.21624999999999997,
+      "adventure_seeking": 0.49749999999999994,
+      "trust_level": 0.4115,
+      "crowd_tolerance": 0.32499999999999996,
+      "energy_preference": 0.48899999999999993,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 4.55,
+        "conscientiousness": 1.71,
+        "extraversion": 1.43,
+        "agreeableness": 2.88,
+        "neuroticism": 2.39
+      },
+      "raw_profile": {
+        "openness": "4.55",
+        "conscientiousness": "1.71",
+        "extraversion": "1.43",
+        "agreeableness": "2.88",
+        "neuroticism": "2.39"
+      }
+    }
+  },
+  {
+    "user_id": "user_17",
+    "dimensions": {
+      "exploration_eagerness": 0.19899999999999998,
+      "novelty_seeking": 0.14150000000000001,
+      "openness": 0.11499999999999999,
+      "value_orientation": 0.5165,
+      "authenticity": 0.20775,
+      "social_preference": 0.5,
+      "community_orientation": 0.5525,
+      "adventure_seeking": 0.255,
+      "trust_level": 0.7855,
+      "crowd_tolerance": 0.71,
+      "energy_preference": 0.69425,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 1.46,
+        "conscientiousness": 1.99,
+        "extraversion": 2.58,
+        "agreeableness": 4.68,
+        "neuroticism": 1.71
+      },
+      "raw_profile": {
+        "openness": "1.46",
+        "conscientiousness": "1.99",
+        "extraversion": "2.58",
+        "agreeableness": "4.68",
+        "neuroticism": "1.71"
+      }
+    }
+  },
+  {
+    "user_id": "user_18",
+    "dimensions": {
+      "exploration_eagerness": 0.34525,
+      "novelty_seeking": 0.3950000000000001,
+      "openness": 0.43000000000000005,
+      "value_orientation": 0.43800000000000006,
+      "authenticity": 0.3075,
+      "social_preference": 0.26050000000000006,
+      "community_orientation": 0.317,
+      "adventure_seeking": 0.28875000000000006,
+      "trust_level": 0.6210000000000001,
+      "crowd_tolerance": 0.4865,
+      "energy_preference": 0.655,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 2.72,
+        "conscientiousness": 2.02,
+        "extraversion": 1.59,
+        "agreeableness": 3.85,
+        "neuroticism": 1.51
+      },
+      "raw_profile": {
+        "openness": "2.72",
+        "conscientiousness": "2.02",
+        "extraversion": "1.59",
+        "agreeableness": "3.85",
+        "neuroticism": "1.51"
+      }
+    }
+  },
+  {
+    "user_id": "user_19",
+    "dimensions": {
+      "exploration_eagerness": 0.42125,
+      "novelty_seeking": 0.526,
+      "openness": 0.5675,
+      "value_orientation": 0.609,
+      "authenticity": 0.42225,
+      "social_preference": 0.2605,
+      "community_orientation": 0.35074999999999995,
+      "adventure_seeking": 0.32375,
+      "trust_level": 0.858,
+      "crowd_tolerance": 0.6214999999999999,
+      "energy_preference": 0.654,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 3.27,
+        "conscientiousness": 2.44,
+        "extraversion": 1.32,
+        "agreeableness": 4.93,
+        "neuroticism": 1.4
+      },
+      "raw_profile": {
+        "openness": "3.27",
+        "conscientiousness": "2.44",
+        "extraversion": "1.32",
+        "agreeableness": "4.93",
+        "neuroticism": "1.4"
+      }
+    }
+  },
+  {
+    "user_id": "user_20",
+    "dimensions": {
+      "exploration_eagerness": 0.66825,
+      "novelty_seeking": 0.5780000000000001,
+      "openness": 0.6225,
+      "value_orientation": 0.375,
+      "authenticity": 0.46675,
+      "social_preference": 0.6875,
+      "community_orientation": 0.6437499999999998,
+      "adventure_seeking": 0.69875,
+      "trust_level": 0.35000000000000003,
+      "crowd_tolerance": 0.5125,
+      "energy_preference": 0.45124999999999993,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 3.49,
+        "conscientiousness": 2.6,
+        "extraversion": 4.1,
+        "agreeableness": 2.35,
+        "neuroticism": 3.75
+      },
+      "raw_profile": {
+        "openness": "3.49",
+        "conscientiousness": "2.6",
+        "extraversion": "4.1",
+        "agreeableness": "2.35",
+        "neuroticism": "3.75"
+      }
+    }
+  },
+  {
+    "user_id": "user_21",
+    "dimensions": {
+      "exploration_eagerness": 0.13575,
+      "novelty_seeking": 0.29100000000000004,
+      "openness": 0.14250000000000002,
+      "value_orientation": 0.921,
+      "authenticity": 0.6622499999999999,
+      "social_preference": 0.29100000000000004,
+      "community_orientation": 0.37650000000000006,
+      "adventure_seeking": 0.13125,
+      "trust_level": 0.9570000000000002,
+      "crowd_tolerance": 0.6330000000000001,
+      "energy_preference": 0.10424999999999993,
+      "archetype": 0.7
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 1.57,
+        "conscientiousness": 4.54,
+        "extraversion": 1.48,
+        "agreeableness": 4.9,
+        "neuroticism": 4.61
+      },
+      "raw_profile": {
+        "openness": "1.57",
+        "conscientiousness": "4.54",
+        "extraversion": "1.48",
+        "agreeableness": "4.9",
+        "neuroticism": "4.61"
+      }
+    }
+  },
+  {
+    "user_id": "user_22",
+    "dimensions": {
+      "exploration_eagerness": 0.11325,
+      "novelty_seeking": 0.192,
+      "openness": 0.1275,
+      "value_orientation": 0.305,
+      "authenticity": 0.35324999999999995,
+      "social_preference": 0.08150000000000002,
+      "community_orientation": 0.08225000000000002,
+      "adventure_seeking": 0.10375000000000001,
+      "trust_level": 0.16000000000000003,
+      "crowd_tolerance": 0.08450000000000002,
+      "energy_preference": 0.27425000000000005,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 1.51,
+        "conscientiousness": 2.8,
+        "extraversion": 1.32,
+        "agreeableness": 1.35,
+        "neuroticism": 3.57
+      },
+      "raw_profile": {
+        "openness": "1.51",
+        "conscientiousness": "2.8",
+        "extraversion": "1.32",
+        "agreeableness": "1.35",
+        "neuroticism": "3.57"
+      }
+    }
+  },
+  {
+    "user_id": "user_23",
+    "dimensions": {
+      "exploration_eagerness": 0.667,
+      "novelty_seeking": 0.8320000000000001,
+      "openness": 0.7975000000000001,
+      "value_orientation": 0.8699999999999999,
+      "authenticity": 0.91825,
+      "social_preference": 0.43400000000000005,
+      "community_orientation": 0.46975,
+      "adventure_seeking": 0.5800000000000001,
+      "trust_level": 0.77,
+      "crowd_tolerance": 0.577,
+      "energy_preference": 0.36250000000000004,
+      "archetype": 0.7
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 4.19,
+        "conscientiousness": 4.88,
+        "extraversion": 2.45,
+        "agreeableness": 3.88,
+        "neuroticism": 3.55
+      },
+      "raw_profile": {
+        "openness": "4.19",
+        "conscientiousness": "4.88",
+        "extraversion": "2.45",
+        "agreeableness": "3.88",
+        "neuroticism": "3.55"
+      }
+    }
+  },
+  {
+    "user_id": "user_24",
+    "dimensions": {
+      "exploration_eagerness": 0.15499999999999997,
+      "novelty_seeking": 0.044499999999999984,
+      "openness": 0.034999999999999976,
+      "value_orientation": 0.15950000000000003,
+      "authenticity": 0.06825,
+      "social_preference": 0.4030000000000001,
+      "community_orientation": 0.387,
+      "adventure_seeking": 0.23500000000000001,
+      "trust_level": 0.23650000000000004,
+      "crowd_tolerance": 0.3390000000000001,
+      "energy_preference": 0.39649999999999996,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 1.14,
+        "conscientiousness": 1.33,
+        "extraversion": 2.74,
+        "agreeableness": 2.1,
+        "neuroticism": 3.48
+      },
+      "raw_profile": {
+        "openness": "1.14",
+        "conscientiousness": "1.33",
+        "extraversion": "2.74",
+        "agreeableness": "2.1",
+        "neuroticism": "3.48"
+      }
+    }
+  },
+  {
+    "user_id": "user_25",
+    "dimensions": {
+      "exploration_eagerness": 0.6749999999999999,
+      "novelty_seeking": 0.6715,
+      "openness": 0.69,
+      "value_orientation": 0.5515,
+      "authenticity": 0.62525,
+      "social_preference": 0.6085,
+      "community_orientation": 0.59275,
+      "adventure_seeking": 0.665,
+      "trust_level": 0.5055000000000001,
+      "crowd_tolerance": 0.5455000000000001,
+      "energy_preference": 0.30399999999999994,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 3.76,
+        "conscientiousness": 3.39,
+        "extraversion": 3.56,
+        "agreeableness": 2.93,
+        "neuroticism": 4.36
+      },
+      "raw_profile": {
+        "openness": "3.76",
+        "conscientiousness": "3.39",
+        "extraversion": "3.56",
+        "agreeableness": "2.93",
+        "neuroticism": "4.36"
+      }
+    }
+  },
+  {
+    "user_id": "user_26",
+    "dimensions": {
+      "exploration_eagerness": 0.5399999999999999,
+      "novelty_seeking": 0.7050000000000001,
+      "openness": 0.6375,
+      "value_orientation": 0.8450000000000001,
+      "authenticity": 0.87375,
+      "social_preference": 0.38,
+      "community_orientation": 0.41375,
+      "adventure_seeking": 0.475,
+      "trust_level": 0.7150000000000001,
+      "crowd_tolerance": 0.515,
+      "energy_preference": 0.42974999999999997,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 3.55,
+        "conscientiousness": 4.9,
+        "extraversion": 2.25,
+        "agreeableness": 3.6,
+        "neuroticism": 3.08
+      },
+      "raw_profile": {
+        "openness": "3.55",
+        "conscientiousness": "4.9",
+        "extraversion": "2.25",
+        "agreeableness": "3.6",
+        "neuroticism": "3.08"
+      }
+    }
+  },
+  {
+    "user_id": "user_27",
+    "dimensions": {
+      "exploration_eagerness": 0.5107499999999999,
+      "novelty_seeking": 0.46299999999999997,
+      "openness": 0.5175,
+      "value_orientation": 0.532,
+      "authenticity": 0.32675,
+      "social_preference": 0.5885,
+      "community_orientation": 0.6352499999999999,
+      "adventure_seeking": 0.50625,
+      "trust_level": 0.8190000000000001,
+      "crowd_tolerance": 0.7754999999999999,
+      "energy_preference": 0.2902499999999999,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 3.07,
+        "conscientiousness": 1.98,
+        "extraversion": 2.98,
+        "agreeableness": 4.85,
+        "neuroticism": 4.19
+      },
+      "raw_profile": {
+        "openness": "3.07",
+        "conscientiousness": "1.98",
+        "extraversion": "2.98",
+        "agreeableness": "4.85",
+        "neuroticism": "4.19"
+      }
+    }
+  },
+  {
+    "user_id": "user_28",
+    "dimensions": {
+      "exploration_eagerness": 0.62525,
+      "novelty_seeking": 0.7760000000000001,
+      "openness": 0.8600000000000001,
+      "value_orientation": 0.382,
+      "authenticity": 0.566,
+      "social_preference": 0.12100000000000002,
+      "community_orientation": 0.14275000000000002,
+      "adventure_seeking": 0.46875000000000006,
+      "trust_level": 0.32400000000000007,
+      "crowd_tolerance": 0.20800000000000002,
+      "energy_preference": 0.20875,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 4.44,
+        "conscientiousness": 2.76,
+        "extraversion": 1.31,
+        "agreeableness": 2.18,
+        "neuroticism": 3.94
+      },
+      "raw_profile": {
+        "openness": "4.44",
+        "conscientiousness": "2.76",
+        "extraversion": "1.31",
+        "agreeableness": "2.18",
+        "neuroticism": "3.94"
+      }
+    }
+  },
+  {
+    "user_id": "user_29",
+    "dimensions": {
+      "exploration_eagerness": 0.44525,
+      "novelty_seeking": 0.5295000000000001,
+      "openness": 0.5,
+      "value_orientation": 0.6555,
+      "authenticity": 0.60325,
+      "social_preference": 0.3875,
+      "community_orientation": 0.4225,
+      "adventure_seeking": 0.40875,
+      "trust_level": 0.6635,
+      "crowd_tolerance": 0.5275,
+      "energy_preference": 0.762,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 3.0,
+        "conscientiousness": 3.59,
+        "extraversion": 2.27,
+        "agreeableness": 3.67,
+        "neuroticism": 1.19
+      },
+      "raw_profile": {
+        "openness": "3.0",
+        "conscientiousness": "3.59",
+        "extraversion": "2.27",
+        "agreeableness": "3.67",
+        "neuroticism": "1.19"
+      }
+    }
+  },
+  {
+    "user_id": "user_30",
+    "dimensions": {
+      "exploration_eagerness": 0.2602499999999999,
+      "novelty_seeking": 0.36949999999999994,
+      "openness": 0.32999999999999996,
+      "value_orientation": 0.6234999999999999,
+      "authenticity": 0.46824999999999994,
+      "social_preference": 0.2315,
+      "community_orientation": 0.2985,
+      "adventure_seeking": 0.21374999999999997,
+      "trust_level": 0.7195000000000001,
+      "crowd_tolerance": 0.4995,
+      "energy_preference": 0.60325,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 2.32,
+        "conscientiousness": 3.11,
+        "extraversion": 1.39,
+        "agreeableness": 4.07,
+        "neuroticism": 1.72
+      },
+      "raw_profile": {
+        "openness": "2.32",
+        "conscientiousness": "3.11",
+        "extraversion": "1.39",
+        "agreeableness": "4.07",
+        "neuroticism": "1.72"
+      }
+    }
+  },
+  {
+    "user_id": "user_31",
+    "dimensions": {
+      "exploration_eagerness": 0.03825000000000002,
+      "novelty_seeking": 0.04450000000000002,
+      "openness": 0.02250000000000002,
+      "value_orientation": 0.1355,
+      "authenticity": 0.0995,
+      "social_preference": 0.08800000000000002,
+      "community_orientation": 0.0945,
+      "adventure_seeking": 0.048750000000000016,
+      "trust_level": 0.1385,
+      "crowd_tolerance": 0.11400000000000002,
+      "energy_preference": 0.72075,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 1.09,
+        "conscientiousness": 1.53,
+        "extraversion": 1.3,
+        "agreeableness": 1.56,
+        "neuroticism": 1.01
+      },
+      "raw_profile": {
+        "openness": "1.09",
+        "conscientiousness": "1.53",
+        "extraversion": "1.3",
+        "agreeableness": "1.56",
+        "neuroticism": "1.01"
+      }
+    }
+  },
+  {
+    "user_id": "user_32",
+    "dimensions": {
+      "exploration_eagerness": 0.49449999999999994,
+      "novelty_seeking": 0.7035,
+      "openness": 0.6475,
+      "value_orientation": 0.6895,
+      "authenticity": 0.8434999999999999,
+      "social_preference": 0.17650000000000002,
+      "community_orientation": 0.196,
+      "adventure_seeking": 0.39249999999999996,
+      "trust_level": 0.4515,
+      "crowd_tolerance": 0.2545,
+      "energy_preference": 0.5277499999999999,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 3.59,
+        "conscientiousness": 4.71,
+        "extraversion": 1.55,
+        "agreeableness": 2.33,
+        "neuroticism": 2.22
+      },
+      "raw_profile": {
+        "openness": "3.59",
+        "conscientiousness": "4.71",
+        "extraversion": "1.55",
+        "agreeableness": "2.33",
+        "neuroticism": "2.22"
+      }
+    }
+  },
+  {
+    "user_id": "user_33",
+    "dimensions": {
+      "exploration_eagerness": 0.52225,
+      "novelty_seeking": 0.645,
+      "openness": 0.625,
+      "value_orientation": 0.823,
+      "authenticity": 0.695,
+      "social_preference": 0.42,
+      "community_orientation": 0.48874999999999996,
+      "adventure_seeking": 0.45375,
+      "trust_level": 0.921,
+      "crowd_tolerance": 0.695,
+      "energy_preference": 0.6815,
+      "archetype": 0.7
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 3.5,
+        "conscientiousness": 3.9,
+        "extraversion": 2.13,
+        "agreeableness": 4.88,
+        "neuroticism": 1.59
+      },
+      "raw_profile": {
+        "openness": "3.5",
+        "conscientiousness": "3.9",
+        "extraversion": "2.13",
+        "agreeableness": "4.88",
+        "neuroticism": "1.59"
+      }
+    }
+  },
+  {
+    "user_id": "user_34",
+    "dimensions": {
+      "exploration_eagerness": 0.7184999999999998,
+      "novelty_seeking": 0.8450000000000001,
+      "openness": 0.9824999999999999,
+      "value_orientation": 0.199,
+      "authenticity": 0.50125,
+      "social_preference": 0.09299999999999999,
+      "community_orientation": 0.08824999999999998,
+      "adventure_seeking": 0.5425,
+      "trust_level": 0.10300000000000001,
+      "crowd_tolerance": 0.07399999999999998,
+      "energy_preference": 0.38599999999999995,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 4.93,
+        "conscientiousness": 2.18,
+        "extraversion": 1.41,
+        "agreeableness": 1.22,
+        "neuroticism": 2.97
+      },
+      "raw_profile": {
+        "openness": "4.93",
+        "conscientiousness": "2.18",
+        "extraversion": "1.41",
+        "agreeableness": "1.22",
+        "neuroticism": "2.97"
+      }
+    }
+  },
+  {
+    "user_id": "user_35",
+    "dimensions": {
+      "exploration_eagerness": 0.51125,
+      "novelty_seeking": 0.591,
+      "openness": 0.5375,
+      "value_orientation": 0.798,
+      "authenticity": 0.7247499999999999,
+      "social_preference": 0.5175000000000001,
+      "community_orientation": 0.55125,
+      "adventure_seeking": 0.49374999999999997,
+      "trust_level": 0.7910000000000001,
+      "crowd_tolerance": 0.6525000000000001,
+      "energy_preference": 0.18400000000000002,
+      "archetype": 0.7
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 3.15,
+        "conscientiousness": 4.22,
+        "extraversion": 2.8,
+        "agreeableness": 4.15,
+        "neuroticism": 4.72
+      },
+      "raw_profile": {
+        "openness": "3.15",
+        "conscientiousness": "4.22",
+        "extraversion": "2.8",
+        "agreeableness": "4.15",
+        "neuroticism": "4.72"
+      }
+    }
+  },
+  {
+    "user_id": "user_36",
+    "dimensions": {
+      "exploration_eagerness": 0.254,
+      "novelty_seeking": 0.24050000000000002,
+      "openness": 0.275,
+      "value_orientation": 0.13549999999999998,
+      "authenticity": 0.15425,
+      "social_preference": 0.20100000000000004,
+      "community_orientation": 0.19899999999999998,
+      "adventure_seeking": 0.24000000000000002,
+      "trust_level": 0.16849999999999998,
+      "crowd_tolerance": 0.193,
+      "energy_preference": 0.366,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 2.1,
+        "conscientiousness": 1.41,
+        "extraversion": 1.82,
+        "agreeableness": 1.74,
+        "neuroticism": 3.26
+      },
+      "raw_profile": {
+        "openness": "2.1",
+        "conscientiousness": "1.41",
+        "extraversion": "1.82",
+        "agreeableness": "1.74",
+        "neuroticism": "3.26"
+      }
+    }
+  },
+  {
+    "user_id": "user_37",
+    "dimensions": {
+      "exploration_eagerness": 0.34900000000000003,
+      "novelty_seeking": 0.16600000000000004,
+      "openness": 0.09250000000000003,
+      "value_orientation": 0.646,
+      "authenticity": 0.34974999999999995,
+      "social_preference": 0.9430000000000001,
+      "community_orientation": 0.94075,
+      "adventure_seeking": 0.52,
+      "trust_level": 0.8320000000000001,
+      "crowd_tolerance": 0.934,
+      "energy_preference": 0.5905,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 1.37,
+        "conscientiousness": 2.84,
+        "extraversion": 4.79,
+        "agreeableness": 4.7,
+        "neuroticism": 3.25
+      },
+      "raw_profile": {
+        "openness": "1.37",
+        "conscientiousness": "2.84",
+        "extraversion": "4.79",
+        "agreeableness": "4.7",
+        "neuroticism": "3.25"
+      }
+    }
+  },
+  {
+    "user_id": "user_38",
+    "dimensions": {
+      "exploration_eagerness": 0.42925,
+      "novelty_seeking": 0.3135,
+      "openness": 0.265,
+      "value_orientation": 0.5385,
+      "authenticity": 0.43474999999999997,
+      "social_preference": 0.767,
+      "community_orientation": 0.74425,
+      "adventure_seeking": 0.5387500000000001,
+      "trust_level": 0.5695,
+      "crowd_tolerance": 0.6759999999999999,
+      "energy_preference": 0.82475,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 2.06,
+        "conscientiousness": 3.03,
+        "extraversion": 4.25,
+        "agreeableness": 3.34,
+        "neuroticism": 1.68
+      },
+      "raw_profile": {
+        "openness": "2.06",
+        "conscientiousness": "3.03",
+        "extraversion": "4.25",
+        "agreeableness": "3.34",
+        "neuroticism": "1.68"
+      }
+    }
+  },
+  {
+    "user_id": "user_39",
+    "dimensions": {
+      "exploration_eagerness": 0.6084999999999999,
+      "novelty_seeking": 0.741,
+      "openness": 0.8049999999999999,
+      "value_orientation": 0.45399999999999996,
+      "authenticity": 0.581,
+      "social_preference": 0.2015,
+      "community_orientation": 0.22725,
+      "adventure_seeking": 0.4775,
+      "trust_level": 0.42300000000000004,
+      "crowd_tolerance": 0.3045,
+      "energy_preference": 0.5105,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 4.22,
+        "conscientiousness": 2.94,
+        "extraversion": 1.6,
+        "agreeableness": 2.63,
+        "neuroticism": 2.34
+      },
+      "raw_profile": {
+        "openness": "4.22",
+        "conscientiousness": "2.94",
+        "extraversion": "1.6",
+        "agreeableness": "2.63",
+        "neuroticism": "2.34"
+      }
+    }
+  },
+  {
+    "user_id": "user_40",
+    "dimensions": {
+      "exploration_eagerness": 0.5842499999999998,
+      "novelty_seeking": 0.6990000000000001,
+      "openness": 0.7649999999999999,
+      "value_orientation": 0.366,
+      "authenticity": 0.5339999999999999,
+      "social_preference": 0.18249999999999997,
+      "community_orientation": 0.19249999999999995,
+      "adventure_seeking": 0.46374999999999994,
+      "trust_level": 0.297,
+      "crowd_tolerance": 0.22249999999999998,
+      "energy_preference": 0.40225,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 4.06,
+        "conscientiousness": 2.74,
+        "extraversion": 1.65,
+        "agreeableness": 2.05,
+        "neuroticism": 2.98
+      },
+      "raw_profile": {
+        "openness": "4.06",
+        "conscientiousness": "2.74",
+        "extraversion": "1.65",
+        "agreeableness": "2.05",
+        "neuroticism": "2.98"
+      }
+    }
+  },
+  {
+    "user_id": "user_41",
+    "dimensions": {
+      "exploration_eagerness": 0.19025,
+      "novelty_seeking": 0.17350000000000002,
+      "openness": 0.125,
+      "value_orientation": 0.2335,
+      "authenticity": 0.29475,
+      "social_preference": 0.2805,
+      "community_orientation": 0.24949999999999997,
+      "adventure_seeking": 0.23375,
+      "trust_level": 0.09949999999999999,
+      "crowd_tolerance": 0.1565,
+      "energy_preference": 0.44225,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 1.5,
+        "conscientiousness": 2.47,
+        "extraversion": 2.37,
+        "agreeableness": 1.13,
+        "neuroticism": 3.06
+      },
+      "raw_profile": {
+        "openness": "1.5",
+        "conscientiousness": "2.47",
+        "extraversion": "2.37",
+        "agreeableness": "1.13",
+        "neuroticism": "3.06"
+      }
+    }
+  },
+  {
+    "user_id": "user_42",
+    "dimensions": {
+      "exploration_eagerness": 0.5067499999999999,
+      "novelty_seeking": 0.3655,
+      "openness": 0.38749999999999996,
+      "value_orientation": 0.2035,
+      "authenticity": 0.31049999999999994,
+      "social_preference": 0.6465,
+      "community_orientation": 0.5772499999999999,
+      "adventure_seeking": 0.5862499999999999,
+      "trust_level": 0.1295,
+      "crowd_tolerance": 0.3695,
+      "energy_preference": 0.58375,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 2.55,
+        "conscientiousness": 2.11,
+        "extraversion": 4.14,
+        "agreeableness": 1.37,
+        "neuroticism": 3.01
+      },
+      "raw_profile": {
+        "openness": "2.55",
+        "conscientiousness": "2.11",
+        "extraversion": "4.14",
+        "agreeableness": "1.37",
+        "neuroticism": "3.01"
+      }
+    }
+  },
+  {
+    "user_id": "user_43",
+    "dimensions": {
+      "exploration_eagerness": 0.94275,
+      "novelty_seeking": 0.934,
+      "openness": 0.99,
+      "value_orientation": 0.5349999999999999,
+      "authenticity": 0.7939999999999999,
+      "social_preference": 0.7205,
+      "community_orientation": 0.6645,
+      "adventure_seeking": 0.91125,
+      "trust_level": 0.36,
+      "crowd_tolerance": 0.4965,
+      "energy_preference": 0.5945,
+      "archetype": 0.9
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 4.96,
+        "conscientiousness": 3.84,
+        "extraversion": 4.33,
+        "agreeableness": 2.09,
+        "neuroticism": 3.03
+      },
+      "raw_profile": {
+        "openness": "4.96",
+        "conscientiousness": "3.84",
+        "extraversion": "4.33",
+        "agreeableness": "2.09",
+        "neuroticism": "3.03"
+      }
+    }
+  },
+  {
+    "user_id": "user_44",
+    "dimensions": {
+      "exploration_eagerness": 0.57975,
+      "novelty_seeking": 0.562,
+      "openness": 0.46499999999999997,
+      "value_orientation": 0.902,
+      "authenticity": 0.8044999999999999,
+      "social_preference": 0.844,
+      "community_orientation": 0.8422499999999999,
+      "adventure_seeking": 0.65625,
+      "trust_level": 0.8540000000000001,
+      "crowd_tolerance": 0.837,
+      "energy_preference": 0.60775,
+      "archetype": 0.7
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 2.86,
+        "conscientiousness": 4.8,
+        "extraversion": 4.39,
+        "agreeableness": 4.32,
+        "neuroticism": 2.98
+      },
+      "raw_profile": {
+        "openness": "2.86",
+        "conscientiousness": "4.8",
+        "extraversion": "4.39",
+        "agreeableness": "4.32",
+        "neuroticism": "2.98"
+      }
+    }
+  },
+  {
+    "user_id": "user_45",
+    "dimensions": {
+      "exploration_eagerness": 0.483,
+      "novelty_seeking": 0.41000000000000003,
+      "openness": 0.46499999999999997,
+      "value_orientation": 0.23600000000000002,
+      "authenticity": 0.27249999999999996,
+      "social_preference": 0.48100000000000004,
+      "community_orientation": 0.459,
+      "adventure_seeking": 0.495,
+      "trust_level": 0.28200000000000003,
+      "crowd_tolerance": 0.393,
+      "energy_preference": 0.7979999999999999,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 2.86,
+        "conscientiousness": 1.76,
+        "extraversion": 3.1,
+        "agreeableness": 2.22,
+        "neuroticism": 1.34
+      },
+      "raw_profile": {
+        "openness": "2.86",
+        "conscientiousness": "1.76",
+        "extraversion": "3.1",
+        "agreeableness": "2.22",
+        "neuroticism": "1.34"
+      }
+    }
+  },
+  {
+    "user_id": "user_46",
+    "dimensions": {
+      "exploration_eagerness": 0.27474999999999994,
+      "novelty_seeking": 0.21850000000000003,
+      "openness": 0.04749999999999999,
+      "value_orientation": 0.5685,
+      "authenticity": 0.646,
+      "social_preference": 0.6575,
+      "community_orientation": 0.5837499999999999,
+      "adventure_seeking": 0.42624999999999996,
+      "trust_level": 0.23450000000000004,
+      "crowd_tolerance": 0.3625,
+      "energy_preference": 0.7052499999999999,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 1.19,
+        "conscientiousness": 4.61,
+        "extraversion": 4.22,
+        "agreeableness": 1.27,
+        "neuroticism": 2.35
+      },
+      "raw_profile": {
+        "openness": "1.19",
+        "conscientiousness": "4.61",
+        "extraversion": "4.22",
+        "agreeableness": "1.27",
+        "neuroticism": "2.35"
+      }
+    }
+  },
+  {
+    "user_id": "user_47",
+    "dimensions": {
+      "exploration_eagerness": 0.43599999999999994,
+      "novelty_seeking": 0.3455,
+      "openness": 0.21999999999999997,
+      "value_orientation": 0.7384999999999999,
+      "authenticity": 0.6592499999999999,
+      "social_preference": 0.867,
+      "community_orientation": 0.8304999999999999,
+      "adventure_seeking": 0.58,
+      "trust_level": 0.6295,
+      "crowd_tolerance": 0.721,
+      "energy_preference": 0.8472499999999998,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 1.88,
+        "conscientiousness": 4.39,
+        "extraversion": 4.76,
+        "agreeableness": 3.3,
+        "neuroticism": 1.77
+      },
+      "raw_profile": {
+        "openness": "1.88",
+        "conscientiousness": "4.39",
+        "extraversion": "4.76",
+        "agreeableness": "3.3",
+        "neuroticism": "1.77"
+      }
+    }
+  },
+  {
+    "user_id": "user_48",
+    "dimensions": {
+      "exploration_eagerness": 0.9234999999999999,
+      "novelty_seeking": 0.803,
+      "openness": 0.9924999999999999,
+      "value_orientation": 0.087,
+      "authenticity": 0.32924999999999993,
+      "social_preference": 0.64,
+      "community_orientation": 0.57875,
+      "adventure_seeking": 0.8775,
+      "trust_level": 0.12900000000000003,
+      "crowd_tolerance": 0.395,
+      "energy_preference": 0.2602499999999999,
+      "archetype": 0.9
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 4.97,
+        "conscientiousness": 1.18,
+        "extraversion": 4.05,
+        "agreeableness": 1.6,
+        "neuroticism": 4.82
+      },
+      "raw_profile": {
+        "openness": "4.97",
+        "conscientiousness": "1.18",
+        "extraversion": "4.05",
+        "agreeableness": "1.6",
+        "neuroticism": "4.82"
+      }
+    }
+  },
+  {
+    "user_id": "user_49",
+    "dimensions": {
+      "exploration_eagerness": 0.28375,
+      "novelty_seeking": 0.269,
+      "openness": 0.16749999999999998,
+      "value_orientation": 0.599,
+      "authenticity": 0.5227499999999999,
+      "social_preference": 0.541,
+      "community_orientation": 0.534,
+      "adventure_seeking": 0.36125,
+      "trust_level": 0.523,
+      "crowd_tolerance": 0.513,
+      "energy_preference": 0.48324999999999996,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 1.67,
+        "conscientiousness": 3.7,
+        "extraversion": 3.22,
+        "agreeableness": 2.94,
+        "neuroticism": 3.19
+      },
+      "raw_profile": {
+        "openness": "1.67",
+        "conscientiousness": "3.7",
+        "extraversion": "3.22",
+        "agreeableness": "2.94",
+        "neuroticism": "3.19"
+      }
+    }
+  },
+  {
+    "user_id": "user_50",
+    "dimensions": {
+      "exploration_eagerness": 0.31375,
+      "novelty_seeking": 0.21250000000000002,
+      "openness": 0.11499999999999999,
+      "value_orientation": 0.7015,
+      "authenticity": 0.45625,
+      "social_preference": 0.7920000000000001,
+      "community_orientation": 0.79925,
+      "adventure_seeking": 0.44625000000000004,
+      "trust_level": 0.8005000000000002,
+      "crowd_tolerance": 0.8210000000000001,
+      "energy_preference": 0.9297500000000001,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 1.46,
+        "conscientiousness": 3.41,
+        "extraversion": 4.11,
+        "agreeableness": 4.4,
+        "neuroticism": 1.02
+      },
+      "raw_profile": {
+        "openness": "1.46",
+        "conscientiousness": "3.41",
+        "extraversion": "4.11",
+        "agreeableness": "4.4",
+        "neuroticism": "1.02"
+      }
+    }
+  },
+  {
+    "user_id": "user_51",
+    "dimensions": {
+      "exploration_eagerness": 0.36574999999999996,
+      "novelty_seeking": 0.5125000000000001,
+      "openness": 0.4175,
+      "value_orientation": 0.9335,
+      "authenticity": 0.75,
+      "social_preference": 0.395,
+      "community_orientation": 0.47000000000000003,
+      "adventure_seeking": 0.33125,
+      "trust_level": 0.9745000000000001,
+      "crowd_tolerance": 0.6950000000000001,
+      "energy_preference": 0.59675,
+      "archetype": 0.7
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 2.67,
+        "conscientiousness": 4.57,
+        "extraversion": 1.98,
+        "agreeableness": 4.98,
+        "neuroticism": 2.01
+      },
+      "raw_profile": {
+        "openness": "2.67",
+        "conscientiousness": "4.57",
+        "extraversion": "1.98",
+        "agreeableness": "4.98",
+        "neuroticism": "2.01"
+      }
+    }
+  },
+  {
+    "user_id": "user_52",
+    "dimensions": {
+      "exploration_eagerness": 0.3825,
+      "novelty_seeking": 0.4305,
+      "openness": 0.36,
+      "value_orientation": 0.7515000000000001,
+      "authenticity": 0.60675,
+      "social_preference": 0.5100000000000001,
+      "community_orientation": 0.5475,
+      "adventure_seeking": 0.3975,
+      "trust_level": 0.7905000000000002,
+      "crowd_tolerance": 0.66,
+      "energy_preference": 0.44375,
+      "archetype": 0.7
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 2.44,
+        "conscientiousness": 3.85,
+        "extraversion": 2.74,
+        "agreeableness": 4.24,
+        "neuroticism": 3.21
+      },
+      "raw_profile": {
+        "openness": "2.44",
+        "conscientiousness": "3.85",
+        "extraversion": "2.74",
+        "agreeableness": "4.24",
+        "neuroticism": "3.21"
+      }
+    }
+  },
+  {
+    "user_id": "user_53",
+    "dimensions": {
+      "exploration_eagerness": 0.2585,
+      "novelty_seeking": 0.4015,
+      "openness": 0.26,
+      "value_orientation": 0.7355,
+      "authenticity": 0.75525,
+      "social_preference": 0.28150000000000003,
+      "community_orientation": 0.29474999999999996,
+      "adventure_seeking": 0.2575,
+      "trust_level": 0.5035000000000001,
+      "crowd_tolerance": 0.33449999999999996,
+      "energy_preference": 0.332,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 2.04,
+        "conscientiousness": 4.87,
+        "extraversion": 2.02,
+        "agreeableness": 2.55,
+        "neuroticism": 3.54
+      },
+      "raw_profile": {
+        "openness": "2.04",
+        "conscientiousness": "4.87",
+        "extraversion": "2.02",
+        "agreeableness": "2.55",
+        "neuroticism": "3.54"
+      }
+    }
+  },
+  {
+    "user_id": "user_54",
+    "dimensions": {
+      "exploration_eagerness": 0.38375,
+      "novelty_seeking": 0.3875,
+      "openness": 0.245,
+      "value_orientation": 0.6565000000000001,
+      "authenticity": 0.74375,
+      "social_preference": 0.6070000000000001,
+      "community_orientation": 0.55675,
+      "adventure_seeking": 0.47625,
+      "trust_level": 0.35550000000000004,
+      "crowd_tolerance": 0.406,
+      "energy_preference": 0.23325,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 1.98,
+        "conscientiousness": 4.83,
+        "extraversion": 3.83,
+        "agreeableness": 1.82,
+        "neuroticism": 4.88
+      },
+      "raw_profile": {
+        "openness": "1.98",
+        "conscientiousness": "4.83",
+        "extraversion": "3.83",
+        "agreeableness": "1.82",
+        "neuroticism": "4.88"
+      }
+    }
+  },
+  {
+    "user_id": "user_55",
+    "dimensions": {
+      "exploration_eagerness": 0.6357499999999999,
+      "novelty_seeking": 0.7825,
+      "openness": 0.815,
+      "value_orientation": 0.4175,
+      "authenticity": 0.7012499999999999,
+      "social_preference": 0.18700000000000006,
+      "community_orientation": 0.17174999999999999,
+      "adventure_seeking": 0.51625,
+      "trust_level": 0.1825,
+      "crowd_tolerance": 0.12600000000000003,
+      "energy_preference": 0.15800000000000003,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 4.26,
+        "conscientiousness": 3.61,
+        "extraversion": 1.87,
+        "agreeableness": 1.26,
+        "neuroticism": 4.47
+      },
+      "raw_profile": {
+        "openness": "4.26",
+        "conscientiousness": "3.61",
+        "extraversion": "1.87",
+        "agreeableness": "1.26",
+        "neuroticism": "4.47"
+      }
+    }
+  },
+  {
+    "user_id": "user_56",
+    "dimensions": {
+      "exploration_eagerness": 0.90675,
+      "novelty_seeking": 0.8515,
+      "openness": 0.9299999999999999,
+      "value_orientation": 0.39949999999999997,
+      "authenticity": 0.6552499999999999,
+      "social_preference": 0.7205,
+      "community_orientation": 0.6545,
+      "adventure_seeking": 0.89125,
+      "trust_level": 0.2615,
+      "crowd_tolerance": 0.4565,
+      "energy_preference": 0.478,
+      "archetype": 0.9
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 4.72,
+        "conscientiousness": 3.15,
+        "extraversion": 4.41,
+        "agreeableness": 1.77,
+        "neuroticism": 3.73
+      },
+      "raw_profile": {
+        "openness": "4.72",
+        "conscientiousness": "3.15",
+        "extraversion": "4.41",
+        "agreeableness": "1.77",
+        "neuroticism": "3.73"
+      }
+    }
+  },
+  {
+    "user_id": "user_57",
+    "dimensions": {
+      "exploration_eagerness": 0.50925,
+      "novelty_seeking": 0.696,
+      "openness": 0.72,
+      "value_orientation": 0.734,
+      "authenticity": 0.636,
+      "social_preference": 0.20100000000000004,
+      "community_orientation": 0.29275000000000007,
+      "adventure_seeking": 0.36875,
+      "trust_level": 0.8680000000000001,
+      "crowd_tolerance": 0.5680000000000001,
+      "energy_preference": 0.06649999999999995,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 3.88,
+        "conscientiousness": 3.4,
+        "extraversion": 1.07,
+        "agreeableness": 4.74,
+        "neuroticism": 4.65
+      },
+      "raw_profile": {
+        "openness": "3.88",
+        "conscientiousness": "3.4",
+        "extraversion": "1.07",
+        "agreeableness": "4.74",
+        "neuroticism": "4.65"
+      }
+    }
+  },
+  {
+    "user_id": "user_58",
+    "dimensions": {
+      "exploration_eagerness": 0.7702499999999999,
+      "novelty_seeking": 0.703,
+      "openness": 0.735,
+      "value_orientation": 0.659,
+      "authenticity": 0.623,
+      "social_preference": 0.8390000000000001,
+      "community_orientation": 0.8322499999999999,
+      "adventure_seeking": 0.79375,
+      "trust_level": 0.743,
+      "crowd_tolerance": 0.8119999999999999,
+      "energy_preference": 0.275,
+      "archetype": 0.9
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 3.94,
+        "conscientiousness": 3.3,
+        "extraversion": 4.41,
+        "agreeableness": 4.14,
+        "neuroticism": 4.89
+      },
+      "raw_profile": {
+        "openness": "3.94",
+        "conscientiousness": "3.3",
+        "extraversion": "4.41",
+        "agreeableness": "4.14",
+        "neuroticism": "4.89"
+      }
+    }
+  },
+  {
+    "user_id": "user_59",
+    "dimensions": {
+      "exploration_eagerness": 0.46,
+      "novelty_seeking": 0.29650000000000004,
+      "openness": 0.29500000000000004,
+      "value_orientation": 0.3635,
+      "authenticity": 0.30025,
+      "social_preference": 0.767,
+      "community_orientation": 0.7279999999999999,
+      "adventure_seeking": 0.5700000000000001,
+      "trust_level": 0.4245,
+      "crowd_tolerance": 0.611,
+      "energy_preference": 0.68925,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 2.18,
+        "conscientiousness": 2.21,
+        "extraversion": 4.38,
+        "agreeableness": 2.82,
+        "neuroticism": 2.51
+      },
+      "raw_profile": {
+        "openness": "2.18",
+        "conscientiousness": "2.21",
+        "extraversion": "4.38",
+        "agreeableness": "2.82",
+        "neuroticism": "2.51"
+      }
+    }
+  },
+  {
+    "user_id": "user_60",
+    "dimensions": {
+      "exploration_eagerness": 0.24924999999999997,
+      "novelty_seeking": 0.0955,
+      "openness": 0.11499999999999999,
+      "value_orientation": 0.4085000000000001,
+      "authenticity": 0.04675000000000001,
+      "social_preference": 0.649,
+      "community_orientation": 0.69225,
+      "adventure_seeking": 0.33875,
+      "trust_level": 0.7995000000000001,
+      "crowd_tolerance": 0.8220000000000001,
+      "energy_preference": 0.4295,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 1.46,
+        "conscientiousness": 1.07,
+        "extraversion": 3.25,
+        "agreeableness": 4.98,
+        "neuroticism": 3.51
+      },
+      "raw_profile": {
+        "openness": "1.46",
+        "conscientiousness": "1.07",
+        "extraversion": "3.25",
+        "agreeableness": "4.98",
+        "neuroticism": "3.51"
+      }
+    }
+  },
+  {
+    "user_id": "user_61",
+    "dimensions": {
+      "exploration_eagerness": 0.447,
+      "novelty_seeking": 0.296,
+      "openness": 0.36,
+      "value_orientation": 0.14400000000000002,
+      "authenticity": 0.13599999999999998,
+      "social_preference": 0.5800000000000001,
+      "community_orientation": 0.5449999999999999,
+      "adventure_seeking": 0.505,
+      "trust_level": 0.24800000000000005,
+      "crowd_tolerance": 0.44000000000000006,
+      "energy_preference": 0.6815,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 2.44,
+        "conscientiousness": 1.16,
+        "extraversion": 3.6,
+        "agreeableness": 2.2,
+        "neuroticism": 2.22
+      },
+      "raw_profile": {
+        "openness": "2.44",
+        "conscientiousness": "1.16",
+        "extraversion": "3.6",
+        "agreeableness": "2.2",
+        "neuroticism": "2.22"
+      }
+    }
+  },
+  {
+    "user_id": "user_62",
+    "dimensions": {
+      "exploration_eagerness": 0.56525,
+      "novelty_seeking": 0.5880000000000001,
+      "openness": 0.7325,
+      "value_orientation": 0.009000000000000008,
+      "authenticity": 0.22675,
+      "social_preference": 0.1415,
+      "community_orientation": 0.12474999999999999,
+      "adventure_seeking": 0.45375,
+      "trust_level": 0.008000000000000007,
+      "crowd_tolerance": 0.0745,
+      "energy_preference": 0.56175,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 3.93,
+        "conscientiousness": 1.04,
+        "extraversion": 1.7,
+        "agreeableness": 1.03,
+        "neuroticism": 2.09
+      },
+      "raw_profile": {
+        "openness": "3.93",
+        "conscientiousness": "1.04",
+        "extraversion": "1.7",
+        "agreeableness": "1.03",
+        "neuroticism": "2.09"
+      }
+    }
+  },
+  {
+    "user_id": "user_63",
+    "dimensions": {
+      "exploration_eagerness": 0.766,
+      "novelty_seeking": 0.6915,
+      "openness": 0.7525,
+      "value_orientation": 0.2795,
+      "authenticity": 0.5389999999999999,
+      "social_preference": 0.6435000000000002,
+      "community_orientation": 0.5665,
+      "adventure_seeking": 0.775,
+      "trust_level": 0.11150000000000003,
+      "crowd_tolerance": 0.3355000000000001,
+      "energy_preference": 0.78175,
+      "archetype": 0.9
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 4.01,
+        "conscientiousness": 2.79,
+        "extraversion": 4.19,
+        "agreeableness": 1.11,
+        "neuroticism": 1.9
+      },
+      "raw_profile": {
+        "openness": "4.01",
+        "conscientiousness": "2.79",
+        "extraversion": "4.19",
+        "agreeableness": "1.11",
+        "neuroticism": "1.9"
+      }
+    }
+  },
+  {
+    "user_id": "user_64",
+    "dimensions": {
+      "exploration_eagerness": 0.8867499999999999,
+      "novelty_seeking": 0.9105,
+      "openness": 0.9099999999999999,
+      "value_orientation": 0.8925000000000001,
+      "authenticity": 0.9117500000000001,
+      "social_preference": 0.8385,
+      "community_orientation": 0.8414999999999999,
+      "adventure_seeking": 0.87125,
+      "trust_level": 0.8725,
+      "crowd_tolerance": 0.8505,
+      "energy_preference": 0.41600000000000004,
+      "archetype": 0.9
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 4.64,
+        "conscientiousness": 4.65,
+        "extraversion": 4.33,
+        "agreeableness": 4.45,
+        "neuroticism": 4.05
+      },
+      "raw_profile": {
+        "openness": "4.64",
+        "conscientiousness": "4.65",
+        "extraversion": "4.33",
+        "agreeableness": "4.45",
+        "neuroticism": "4.05"
+      }
+    }
+  },
+  {
+    "user_id": "user_65",
+    "dimensions": {
+      "exploration_eagerness": 0.4165,
+      "novelty_seeking": 0.3065,
+      "openness": 0.175,
+      "value_orientation": 0.5805,
+      "authenticity": 0.63525,
+      "social_preference": 0.8245,
+      "community_orientation": 0.7467499999999999,
+      "adventure_seeking": 0.5775,
+      "trust_level": 0.3285,
+      "crowd_tolerance": 0.5135000000000001,
+      "energy_preference": 0.9624999999999999,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 1.7,
+        "conscientiousness": 4.33,
+        "extraversion": 4.92,
+        "agreeableness": 1.81,
+        "neuroticism": 1.18
+      },
+      "raw_profile": {
+        "openness": "1.7",
+        "conscientiousness": "4.33",
+        "extraversion": "4.92",
+        "agreeableness": "1.81",
+        "neuroticism": "1.18"
+      }
+    }
+  },
+  {
+    "user_id": "user_66",
+    "dimensions": {
+      "exploration_eagerness": 0.53875,
+      "novelty_seeking": 0.36250000000000004,
+      "openness": 0.4525,
+      "value_orientation": 0.3605,
+      "authenticity": 0.1375,
+      "social_preference": 0.7715,
+      "community_orientation": 0.78725,
+      "adventure_seeking": 0.59625,
+      "trust_level": 0.7184999999999999,
+      "crowd_tolerance": 0.8345,
+      "energy_preference": 0.48275,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 2.81,
+        "conscientiousness": 1.01,
+        "extraversion": 3.96,
+        "agreeableness": 4.59,
+        "neuroticism": 3.51
+      },
+      "raw_profile": {
+        "openness": "2.81",
+        "conscientiousness": "1.01",
+        "extraversion": "3.96",
+        "agreeableness": "4.59",
+        "neuroticism": "3.51"
+      }
+    }
+  },
+  {
+    "user_id": "user_67",
+    "dimensions": {
+      "exploration_eagerness": 0.5502499999999999,
+      "novelty_seeking": 0.477,
+      "openness": 0.365,
+      "value_orientation": 0.639,
+      "authenticity": 0.757,
+      "social_preference": 0.8280000000000001,
+      "community_orientation": 0.7507499999999998,
+      "adventure_seeking": 0.67375,
+      "trust_level": 0.3530000000000001,
+      "crowd_tolerance": 0.519,
+      "energy_preference": 0.4749999999999999,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 2.46,
+        "conscientiousness": 4.7,
+        "extraversion": 4.93,
+        "agreeableness": 1.84,
+        "neuroticism": 3.97
+      },
+      "raw_profile": {
+        "openness": "2.46",
+        "conscientiousness": "4.7",
+        "extraversion": "4.93",
+        "agreeableness": "1.84",
+        "neuroticism": "3.97"
+      }
+    }
+  },
+  {
+    "user_id": "user_68",
+    "dimensions": {
+      "exploration_eagerness": 0.3605,
+      "novelty_seeking": 0.41100000000000003,
+      "openness": 0.3425,
+      "value_orientation": 0.47000000000000003,
+      "authenticity": 0.5822499999999999,
+      "social_preference": 0.35150000000000003,
+      "community_orientation": 0.32599999999999996,
+      "adventure_seeking": 0.3725,
+      "trust_level": 0.255,
+      "crowd_tolerance": 0.2495,
+      "energy_preference": 0.7665,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 2.37,
+        "conscientiousness": 3.74,
+        "extraversion": 2.61,
+        "agreeableness": 1.59,
+        "neuroticism": 1.31
+      },
+      "raw_profile": {
+        "openness": "2.37",
+        "conscientiousness": "3.74",
+        "extraversion": "2.61",
+        "agreeableness": "1.59",
+        "neuroticism": "1.31"
+      }
+    }
+  },
+  {
+    "user_id": "user_69",
+    "dimensions": {
+      "exploration_eagerness": 0.1985,
+      "novelty_seeking": 0.28650000000000003,
+      "openness": 0.1325,
+      "value_orientation": 0.7055,
+      "authenticity": 0.6715,
+      "social_preference": 0.36400000000000005,
+      "community_orientation": 0.36975,
+      "adventure_seeking": 0.24250000000000002,
+      "trust_level": 0.5085000000000001,
+      "crowd_tolerance": 0.387,
+      "energy_preference": 0.23174999999999996,
+      "archetype": 0.3
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 1.53,
+        "conscientiousness": 4.61,
+        "extraversion": 2.41,
+        "agreeableness": 2.64,
+        "neuroticism": 4.28
+      },
+      "raw_profile": {
+        "openness": "1.53",
+        "conscientiousness": "4.61",
+        "extraversion": "2.41",
+        "agreeableness": "2.64",
+        "neuroticism": "4.28"
+      }
+    }
+  },
+  {
+    "user_id": "user_70",
+    "dimensions": {
+      "exploration_eagerness": 0.68575,
+      "novelty_seeking": 0.647,
+      "openness": 0.6775,
+      "value_orientation": 0.579,
+      "authenticity": 0.57075,
+      "social_preference": 0.696,
+      "community_orientation": 0.6915,
+      "adventure_seeking": 0.6912499999999999,
+      "trust_level": 0.633,
+      "crowd_tolerance": 0.6779999999999999,
+      "energy_preference": 0.6735,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 3.71,
+        "conscientiousness": 3.1,
+        "extraversion": 3.82,
+        "agreeableness": 3.64,
+        "neuroticism": 2.36
+      },
+      "raw_profile": {
+        "openness": "3.71",
+        "conscientiousness": "3.1",
+        "extraversion": "3.82",
+        "agreeableness": "3.64",
+        "neuroticism": "2.36"
+      }
+    }
+  },
+  {
+    "user_id": "user_71",
+    "dimensions": {
+      "exploration_eagerness": 0.36474999999999996,
+      "novelty_seeking": 0.4895000000000001,
+      "openness": 0.41500000000000004,
+      "value_orientation": 0.5875,
+      "authenticity": 0.6757500000000001,
+      "social_preference": 0.2555,
+      "community_orientation": 0.25949999999999995,
+      "adventure_seeking": 0.33125000000000004,
+      "trust_level": 0.3875,
+      "crowd_tolerance": 0.27149999999999996,
+      "energy_preference": 0.4225,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 2.66,
+        "conscientiousness": 4.15,
+        "extraversion": 1.99,
+        "agreeableness": 2.15,
+        "neuroticism": 3.01
+      },
+      "raw_profile": {
+        "openness": "2.66",
+        "conscientiousness": "4.15",
+        "extraversion": "1.99",
+        "agreeableness": "2.15",
+        "neuroticism": "3.01"
+      }
+    }
+  },
+  {
+    "user_id": "user_72",
+    "dimensions": {
+      "exploration_eagerness": 0.34275,
+      "novelty_seeking": 0.25850000000000006,
+      "openness": 0.21750000000000003,
+      "value_orientation": 0.3545,
+      "authenticity": 0.361,
+      "social_preference": 0.5585,
+      "community_orientation": 0.5202499999999999,
+      "adventure_seeking": 0.42625,
+      "trust_level": 0.2865,
+      "crowd_tolerance": 0.40549999999999997,
+      "energy_preference": 0.5825,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 1.87,
+        "conscientiousness": 2.69,
+        "extraversion": 3.54,
+        "agreeableness": 2.01,
+        "neuroticism": 2.76
+      },
+      "raw_profile": {
+        "openness": "1.87",
+        "conscientiousness": "2.69",
+        "extraversion": "3.54",
+        "agreeableness": "2.01",
+        "neuroticism": "2.76"
+      }
+    }
+  },
+  {
+    "user_id": "user_73",
+    "dimensions": {
+      "exploration_eagerness": 0.742,
+      "novelty_seeking": 0.7975000000000001,
+      "openness": 0.79,
+      "value_orientation": 0.7134999999999999,
+      "authenticity": 0.8162499999999999,
+      "social_preference": 0.6125,
+      "community_orientation": 0.6037499999999999,
+      "adventure_seeking": 0.71,
+      "trust_level": 0.5994999999999999,
+      "crowd_tolerance": 0.5774999999999999,
+      "energy_preference": 0.7542499999999999,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 4.16,
+        "conscientiousness": 4.31,
+        "extraversion": 3.52,
+        "agreeableness": 3.17,
+        "neuroticism": 1.77
+      },
+      "raw_profile": {
+        "openness": "4.16",
+        "conscientiousness": "4.31",
+        "extraversion": "3.52",
+        "agreeableness": "3.17",
+        "neuroticism": "1.77"
+      }
+    }
+  },
+  {
+    "user_id": "user_74",
+    "dimensions": {
+      "exploration_eagerness": 0.5602499999999999,
+      "novelty_seeking": 0.558,
+      "openness": 0.48,
+      "value_orientation": 0.853,
+      "authenticity": 0.753,
+      "social_preference": 0.7635000000000001,
+      "community_orientation": 0.7715,
+      "adventure_seeking": 0.61375,
+      "trust_level": 0.836,
+      "crowd_tolerance": 0.7955,
+      "energy_preference": 0.27325000000000005,
+      "archetype": 0.7
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 2.92,
+        "conscientiousness": 4.48,
+        "extraversion": 3.99,
+        "agreeableness": 4.31,
+        "neuroticism": 4.72
+      },
+      "raw_profile": {
+        "openness": "2.92",
+        "conscientiousness": "4.48",
+        "extraversion": "3.99",
+        "agreeableness": "4.31",
+        "neuroticism": "4.72"
+      }
+    }
+  },
+  {
+    "user_id": "user_75",
+    "dimensions": {
+      "exploration_eagerness": 0.7949999999999999,
+      "novelty_seeking": 0.7635000000000001,
+      "openness": 0.7575000000000001,
+      "value_orientation": 0.5335000000000001,
+      "authenticity": 0.7785,
+      "social_preference": 0.7365,
+      "community_orientation": 0.6635,
+      "adventure_seeking": 0.8200000000000001,
+      "trust_level": 0.2795000000000001,
+      "crowd_tolerance": 0.44450000000000006,
+      "energy_preference": 0.40299999999999997,
+      "archetype": 0.9
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 4.03,
+        "conscientiousness": 4.15,
+        "extraversion": 4.53,
+        "agreeableness": 1.61,
+        "neuroticism": 4.21
+      },
+      "raw_profile": {
+        "openness": "4.03",
+        "conscientiousness": "4.15",
+        "extraversion": "4.53",
+        "agreeableness": "1.61",
+        "neuroticism": "4.21"
+      }
+    }
+  },
+  {
+    "user_id": "user_76",
+    "dimensions": {
+      "exploration_eagerness": 0.65675,
+      "novelty_seeking": 0.649,
+      "openness": 0.7175,
+      "value_orientation": 0.27399999999999997,
+      "authenticity": 0.47774999999999995,
+      "social_preference": 0.43650000000000005,
+      "community_orientation": 0.39725,
+      "adventure_seeking": 0.61625,
+      "trust_level": 0.17300000000000001,
+      "crowd_tolerance": 0.2795,
+      "energy_preference": 0.7739999999999999,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 3.87,
+        "conscientiousness": 2.5,
+        "extraversion": 3.06,
+        "agreeableness": 1.49,
+        "neuroticism": 1.46
+      },
+      "raw_profile": {
+        "openness": "3.87",
+        "conscientiousness": "2.5",
+        "extraversion": "3.06",
+        "agreeableness": "1.49",
+        "neuroticism": "1.46"
+      }
+    }
+  },
+  {
+    "user_id": "user_77",
+    "dimensions": {
+      "exploration_eagerness": 0.7455,
+      "novelty_seeking": 0.7540000000000001,
+      "openness": 0.9225000000000001,
+      "value_orientation": 0.061,
+      "authenticity": 0.33275,
+      "social_preference": 0.2725,
+      "community_orientation": 0.24249999999999997,
+      "adventure_seeking": 0.6275000000000001,
+      "trust_level": 0.04199999999999998,
+      "crowd_tolerance": 0.1525,
+      "energy_preference": 0.36050000000000004,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 4.69,
+        "conscientiousness": 1.32,
+        "extraversion": 2.33,
+        "agreeableness": 1.13,
+        "neuroticism": 3.51
+      },
+      "raw_profile": {
+        "openness": "4.69",
+        "conscientiousness": "1.32",
+        "extraversion": "2.33",
+        "agreeableness": "1.13",
+        "neuroticism": "3.51"
+      }
+    }
+  },
+  {
+    "user_id": "user_78",
+    "dimensions": {
+      "exploration_eagerness": 0.7595,
+      "novelty_seeking": 0.7635000000000001,
+      "openness": 0.905,
+      "value_orientation": 0.4645,
+      "authenticity": 0.40975,
+      "social_preference": 0.5090000000000001,
+      "community_orientation": 0.5535,
+      "adventure_seeking": 0.6625000000000001,
+      "trust_level": 0.7315,
+      "crowd_tolerance": 0.687,
+      "energy_preference": 0.27299999999999996,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 4.62,
+        "conscientiousness": 1.79,
+        "extraversion": 2.68,
+        "agreeableness": 4.46,
+        "neuroticism": 4.16
+      },
+      "raw_profile": {
+        "openness": "4.62",
+        "conscientiousness": "1.79",
+        "extraversion": "2.68",
+        "agreeableness": "4.46",
+        "neuroticism": "4.16"
+      }
+    }
+  },
+  {
+    "user_id": "user_79",
+    "dimensions": {
+      "exploration_eagerness": 0.91125,
+      "novelty_seeking": 0.863,
+      "openness": 0.9375,
+      "value_orientation": 0.43399999999999994,
+      "authenticity": 0.67675,
+      "social_preference": 0.7275000000000001,
+      "community_orientation": 0.66625,
+      "adventure_seeking": 0.89375,
+      "trust_level": 0.303,
+      "crowd_tolerance": 0.48250000000000004,
+      "energy_preference": 0.829,
+      "archetype": 0.9
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 4.75,
+        "conscientiousness": 3.26,
+        "extraversion": 4.4,
+        "agreeableness": 1.95,
+        "neuroticism": 1.72
+      },
+      "raw_profile": {
+        "openness": "4.75",
+        "conscientiousness": "3.26",
+        "extraversion": "4.4",
+        "agreeableness": "1.95",
+        "neuroticism": "1.72"
+      }
+    }
+  },
+  {
+    "user_id": "user_80",
+    "dimensions": {
+      "exploration_eagerness": 0.24774999999999997,
+      "novelty_seeking": 0.249,
+      "openness": 0.10749999999999998,
+      "value_orientation": 0.6759999999999999,
+      "authenticity": 0.6027499999999999,
+      "social_preference": 0.5535,
+      "community_orientation": 0.54275,
+      "adventure_seeking": 0.34124999999999994,
+      "trust_level": 0.537,
+      "crowd_tolerance": 0.5105,
+      "energy_preference": 0.8025,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 1.43,
+        "conscientiousness": 4.26,
+        "extraversion": 3.3,
+        "agreeableness": 2.87,
+        "neuroticism": 1.4
+      },
+      "raw_profile": {
+        "openness": "1.43",
+        "conscientiousness": "4.26",
+        "extraversion": "3.3",
+        "agreeableness": "2.87",
+        "neuroticism": "1.4"
+      }
+    }
+  },
+  {
+    "user_id": "user_81",
+    "dimensions": {
+      "exploration_eagerness": 0.71475,
+      "novelty_seeking": 0.796,
+      "openness": 0.9375,
+      "value_orientation": 0.16299999999999998,
+      "authenticity": 0.44225,
+      "social_preference": 0.16850000000000004,
+      "community_orientation": 0.15524999999999997,
+      "adventure_seeking": 0.56625,
+      "trust_level": 0.096,
+      "crowd_tolerance": 0.11550000000000002,
+      "energy_preference": 0.34374999999999994,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 4.75,
+        "conscientiousness": 1.92,
+        "extraversion": 1.78,
+        "agreeableness": 1.25,
+        "neuroticism": 3.37
+      },
+      "raw_profile": {
+        "openness": "4.75",
+        "conscientiousness": "1.92",
+        "extraversion": "1.78",
+        "agreeableness": "1.25",
+        "neuroticism": "3.37"
+      }
+    }
+  },
+  {
+    "user_id": "user_82",
+    "dimensions": {
+      "exploration_eagerness": 0.8462499999999998,
+      "novelty_seeking": 0.808,
+      "openness": 0.9624999999999999,
+      "value_orientation": 0.208,
+      "authenticity": 0.42174999999999996,
+      "social_preference": 0.507,
+      "community_orientation": 0.473,
+      "adventure_seeking": 0.7687499999999999,
+      "trust_level": 0.226,
+      "crowd_tolerance": 0.371,
+      "energy_preference": 0.20224999999999999,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 4.85,
+        "conscientiousness": 1.76,
+        "extraversion": 3.3,
+        "agreeableness": 1.94,
+        "neuroticism": 4.83
+      },
+      "raw_profile": {
+        "openness": "4.85",
+        "conscientiousness": "1.76",
+        "extraversion": "3.3",
+        "agreeableness": "1.94",
+        "neuroticism": "4.83"
+      }
+    }
+  },
+  {
+    "user_id": "user_83",
+    "dimensions": {
+      "exploration_eagerness": 0.36124999999999996,
+      "novelty_seeking": 0.45949999999999996,
+      "openness": 0.5075,
+      "value_orientation": 0.5185,
+      "authenticity": 0.3394999999999999,
+      "social_preference": 0.19500000000000003,
+      "community_orientation": 0.28250000000000003,
+      "adventure_seeking": 0.26375,
+      "trust_level": 0.7695000000000001,
+      "crowd_tolerance": 0.545,
+      "energy_preference": 0.02525000000000006,
+      "archetype": 0.3
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 3.03,
+        "conscientiousness": 2.07,
+        "extraversion": 1.08,
+        "agreeableness": 4.58,
+        "neuroticism": 4.89
+      },
+      "raw_profile": {
+        "openness": "3.03",
+        "conscientiousness": "2.07",
+        "extraversion": "1.08",
+        "agreeableness": "4.58",
+        "neuroticism": "4.89"
+      }
+    }
+  },
+  {
+    "user_id": "user_84",
+    "dimensions": {
+      "exploration_eagerness": 0.32075,
+      "novelty_seeking": 0.2805,
+      "openness": 0.275,
+      "value_orientation": 0.37850000000000006,
+      "authenticity": 0.29425,
+      "social_preference": 0.44050000000000006,
+      "community_orientation": 0.44699999999999995,
+      "adventure_seeking": 0.35125,
+      "trust_level": 0.45450000000000007,
+      "crowd_tolerance": 0.4665,
+      "energy_preference": 0.50975,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 2.1,
+        "conscientiousness": 2.21,
+        "extraversion": 2.71,
+        "agreeableness": 2.97,
+        "neuroticism": 2.82
+      },
+      "raw_profile": {
+        "openness": "2.1",
+        "conscientiousness": "2.21",
+        "extraversion": "2.71",
+        "agreeableness": "2.97",
+        "neuroticism": "2.82"
+      }
+    }
+  },
+  {
+    "user_id": "user_85",
+    "dimensions": {
+      "exploration_eagerness": 0.269,
+      "novelty_seeking": 0.4045,
+      "openness": 0.26,
+      "value_orientation": 0.7725,
+      "authenticity": 0.7657499999999998,
+      "social_preference": 0.32350000000000007,
+      "community_orientation": 0.34025000000000005,
+      "adventure_seeking": 0.275,
+      "trust_level": 0.5625,
+      "crowd_tolerance": 0.39050000000000007,
+      "energy_preference": 0.3845,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 2.04,
+        "conscientiousness": 4.93,
+        "extraversion": 2.16,
+        "agreeableness": 2.83,
+        "neuroticism": 3.3
+      },
+      "raw_profile": {
+        "openness": "2.04",
+        "conscientiousness": "4.93",
+        "extraversion": "2.16",
+        "agreeableness": "2.83",
+        "neuroticism": "3.3"
+      }
+    }
+  },
+  {
+    "user_id": "user_86",
+    "dimensions": {
+      "exploration_eagerness": 0.2495,
+      "novelty_seeking": 0.287,
+      "openness": 0.1775,
+      "value_orientation": 0.601,
+      "authenticity": 0.56075,
+      "social_preference": 0.41700000000000004,
+      "community_orientation": 0.41674999999999995,
+      "adventure_seeking": 0.2975,
+      "trust_level": 0.4770000000000001,
+      "crowd_tolerance": 0.41600000000000004,
+      "energy_preference": 0.57675,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 1.71,
+        "conscientiousness": 3.9,
+        "extraversion": 2.67,
+        "agreeableness": 2.66,
+        "neuroticism": 2.42
+      },
+      "raw_profile": {
+        "openness": "1.71",
+        "conscientiousness": "3.9",
+        "extraversion": "2.67",
+        "agreeableness": "2.66",
+        "neuroticism": "2.42"
+      }
+    }
+  },
+  {
+    "user_id": "user_87",
+    "dimensions": {
+      "exploration_eagerness": 0.37199999999999994,
+      "novelty_seeking": 0.37849999999999995,
+      "openness": 0.31499999999999995,
+      "value_orientation": 0.48149999999999993,
+      "authenticity": 0.5372499999999999,
+      "social_preference": 0.455,
+      "community_orientation": 0.43,
+      "adventure_seeking": 0.41,
+      "trust_level": 0.3305,
+      "crowd_tolerance": 0.355,
+      "energy_preference": 0.20925,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 2.26,
+        "conscientiousness": 3.53,
+        "extraversion": 3.02,
+        "agreeableness": 2.02,
+        "neuroticism": 4.67
+      },
+      "raw_profile": {
+        "openness": "2.26",
+        "conscientiousness": "3.53",
+        "extraversion": "3.02",
+        "agreeableness": "2.02",
+        "neuroticism": "4.67"
+      }
+    }
+  },
+  {
+    "user_id": "user_88",
+    "dimensions": {
+      "exploration_eagerness": 0.71975,
+      "novelty_seeking": 0.9005000000000001,
+      "openness": 0.9650000000000001,
+      "value_orientation": 0.5854999999999999,
+      "authenticity": 0.73925,
+      "social_preference": 0.21800000000000003,
+      "community_orientation": 0.25325,
+      "adventure_seeking": 0.55625,
+      "trust_level": 0.5285,
+      "crowd_tolerance": 0.359,
+      "energy_preference": 0.21925,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 4.86,
+        "conscientiousness": 3.57,
+        "extraversion": 1.59,
+        "agreeableness": 3.0,
+        "neuroticism": 4.0
+      },
+      "raw_profile": {
+        "openness": "4.86",
+        "conscientiousness": "3.57",
+        "extraversion": "1.59",
+        "agreeableness": "3.0",
+        "neuroticism": "4.0"
+      }
+    }
+  },
+  {
+    "user_id": "user_89",
+    "dimensions": {
+      "exploration_eagerness": 0.8607499999999999,
+      "novelty_seeking": 0.7160000000000001,
+      "openness": 0.875,
+      "value_orientation": 0.16200000000000003,
+      "authenticity": 0.3185,
+      "social_preference": 0.719,
+      "community_orientation": 0.66475,
+      "adventure_seeking": 0.85125,
+      "trust_level": 0.24400000000000005,
+      "crowd_tolerance": 0.502,
+      "energy_preference": 0.32525000000000004,
+      "archetype": 0.9
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 4.5,
+        "conscientiousness": 1.32,
+        "extraversion": 4.31,
+        "agreeableness": 2.14,
+        "neuroticism": 4.56
+      },
+      "raw_profile": {
+        "openness": "4.5",
+        "conscientiousness": "1.32",
+        "extraversion": "4.31",
+        "agreeableness": "2.14",
+        "neuroticism": "4.56"
+      }
+    }
+  },
+  {
+    "user_id": "user_90",
+    "dimensions": {
+      "exploration_eagerness": 0.3692499999999999,
+      "novelty_seeking": 0.4425,
+      "openness": 0.37749999999999995,
+      "value_orientation": 0.8175,
+      "authenticity": 0.605,
+      "social_preference": 0.478,
+      "community_orientation": 0.5419999999999999,
+      "adventure_seeking": 0.36374999999999996,
+      "trust_level": 0.9325000000000001,
+      "crowd_tolerance": 0.734,
+      "energy_preference": 0.25550000000000006,
+      "archetype": 0.7
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 2.51,
+        "conscientiousness": 3.81,
+        "extraversion": 2.4,
+        "agreeableness": 4.96,
+        "neuroticism": 4.14
+      },
+      "raw_profile": {
+        "openness": "2.51",
+        "conscientiousness": "3.81",
+        "extraversion": "2.4",
+        "agreeableness": "4.96",
+        "neuroticism": "4.14"
+      }
+    }
+  },
+  {
+    "user_id": "user_91",
+    "dimensions": {
+      "exploration_eagerness": 0.26475,
+      "novelty_seeking": 0.0975,
+      "openness": 0.12,
+      "value_orientation": 0.0505,
+      "authenticity": 0.04125,
+      "social_preference": 0.505,
+      "community_orientation": 0.45625,
+      "adventure_seeking": 0.36125,
+      "trust_level": 0.0935,
+      "crowd_tolerance": 0.31,
+      "energy_preference": 0.585,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 1.48,
+        "conscientiousness": 1.03,
+        "extraversion": 3.41,
+        "agreeableness": 1.46,
+        "neuroticism": 2.69
+      },
+      "raw_profile": {
+        "openness": "1.48",
+        "conscientiousness": "1.03",
+        "extraversion": "3.41",
+        "agreeableness": "1.46",
+        "neuroticism": "2.69"
+      }
+    }
+  },
+  {
+    "user_id": "user_92",
+    "dimensions": {
+      "exploration_eagerness": 0.227,
+      "novelty_seeking": 0.392,
+      "openness": 0.26,
+      "value_orientation": 0.582,
+      "authenticity": 0.7219999999999999,
+      "social_preference": 0.13500000000000004,
+      "community_orientation": 0.1275,
+      "adventure_seeking": 0.20500000000000002,
+      "trust_level": 0.244,
+      "crowd_tolerance": 0.10500000000000001,
+      "energy_preference": 0.48075,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 2.04,
+        "conscientiousness": 4.68,
+        "extraversion": 1.6,
+        "agreeableness": 1.3,
+        "neuroticism": 2.51
+      },
+      "raw_profile": {
+        "openness": "2.04",
+        "conscientiousness": "4.68",
+        "extraversion": "1.6",
+        "agreeableness": "1.3",
+        "neuroticism": "2.51"
+      }
+    }
+  },
+  {
+    "user_id": "user_93",
+    "dimensions": {
+      "exploration_eagerness": 0.65775,
+      "novelty_seeking": 0.646,
+      "openness": 0.6825,
+      "value_orientation": 0.48,
+      "authenticity": 0.55475,
+      "social_preference": 0.57,
+      "community_orientation": 0.5549999999999999,
+      "adventure_seeking": 0.64125,
+      "trust_level": 0.45999999999999996,
+      "crowd_tolerance": 0.51,
+      "energy_preference": 0.3655,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 3.73,
+        "conscientiousness": 3.0,
+        "extraversion": 3.4,
+        "agreeableness": 2.8,
+        "neuroticism": 3.94
+      },
+      "raw_profile": {
+        "openness": "3.73",
+        "conscientiousness": "3.0",
+        "extraversion": "3.4",
+        "agreeableness": "2.8",
+        "neuroticism": "3.94"
+      }
+    }
+  },
+  {
+    "user_id": "user_94",
+    "dimensions": {
+      "exploration_eagerness": 0.93625,
+      "novelty_seeking": 0.79,
+      "openness": 0.9475,
+      "value_orientation": 0.484,
+      "authenticity": 0.39625,
+      "social_preference": 0.9219999999999999,
+      "community_orientation": 0.9279999999999999,
+      "adventure_seeking": 0.92875,
+      "trust_level": 0.808,
+      "crowd_tolerance": 0.946,
+      "energy_preference": 0.5039999999999999,
+      "archetype": 0.9
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 4.79,
+        "conscientiousness": 1.64,
+        "extraversion": 4.64,
+        "agreeableness": 4.88,
+        "neuroticism": 3.68
+      },
+      "raw_profile": {
+        "openness": "4.79",
+        "conscientiousness": "1.64",
+        "extraversion": "4.64",
+        "agreeableness": "4.88",
+        "neuroticism": "3.68"
+      }
+    }
+  },
+  {
+    "user_id": "user_95",
+    "dimensions": {
+      "exploration_eagerness": 0.449,
+      "novelty_seeking": 0.4085,
+      "openness": 0.365,
+      "value_orientation": 0.5515,
+      "authenticity": 0.51725,
+      "social_preference": 0.617,
+      "community_orientation": 0.603,
+      "adventure_seeking": 0.505,
+      "trust_level": 0.5205000000000001,
+      "crowd_tolerance": 0.5609999999999999,
+      "energy_preference": 0.69225,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 2.46,
+        "conscientiousness": 3.33,
+        "extraversion": 3.58,
+        "agreeableness": 3.02,
+        "neuroticism": 2.15
+      },
+      "raw_profile": {
+        "openness": "2.46",
+        "conscientiousness": "3.33",
+        "extraversion": "3.58",
+        "agreeableness": "3.02",
+        "neuroticism": "2.15"
+      }
+    }
+  },
+  {
+    "user_id": "user_96",
+    "dimensions": {
+      "exploration_eagerness": 0.55,
+      "novelty_seeking": 0.44100000000000006,
+      "openness": 0.41500000000000004,
+      "value_orientation": 0.387,
+      "authenticity": 0.506,
+      "social_preference": 0.7220000000000001,
+      "community_orientation": 0.6505,
+      "adventure_seeking": 0.64,
+      "trust_level": 0.22900000000000004,
+      "crowd_tolerance": 0.43600000000000005,
+      "energy_preference": 0.35574999999999996,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 2.66,
+        "conscientiousness": 3.18,
+        "extraversion": 4.46,
+        "agreeableness": 1.6,
+        "neuroticism": 4.45
+      },
+      "raw_profile": {
+        "openness": "2.66",
+        "conscientiousness": "3.18",
+        "extraversion": "4.46",
+        "agreeableness": "1.6",
+        "neuroticism": "4.45"
+      }
+    }
+  },
+  {
+    "user_id": "user_97",
+    "dimensions": {
+      "exploration_eagerness": 0.501,
+      "novelty_seeking": 0.45449999999999996,
+      "openness": 0.5025,
+      "value_orientation": 0.16849999999999998,
+      "authenticity": 0.3344999999999999,
+      "social_preference": 0.4035000000000001,
+      "community_orientation": 0.35650000000000004,
+      "adventure_seeking": 0.5,
+      "trust_level": 0.07450000000000001,
+      "crowd_tolerance": 0.21550000000000005,
+      "energy_preference": 0.21925000000000008,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 3.01,
+        "conscientiousness": 2.05,
+        "extraversion": 2.99,
+        "agreeableness": 1.11,
+        "neuroticism": 4.6
+      },
+      "raw_profile": {
+        "openness": "3.01",
+        "conscientiousness": "2.05",
+        "extraversion": "2.99",
+        "agreeableness": "1.11",
+        "neuroticism": "4.6"
+      }
+    }
+  },
+  {
+    "user_id": "user_98",
+    "dimensions": {
+      "exploration_eagerness": 0.26275,
+      "novelty_seeking": 0.2495,
+      "openness": 0.08500000000000002,
+      "value_orientation": 0.6675,
+      "authenticity": 0.66075,
+      "social_preference": 0.6035,
+      "community_orientation": 0.5665,
+      "adventure_seeking": 0.38125,
+      "trust_level": 0.4275,
+      "crowd_tolerance": 0.4555,
+      "energy_preference": 0.7264999999999999,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 1.34,
+        "conscientiousness": 4.63,
+        "extraversion": 3.71,
+        "agreeableness": 2.23,
+        "neuroticism": 2.01
+      },
+      "raw_profile": {
+        "openness": "1.34",
+        "conscientiousness": "4.63",
+        "extraversion": "3.71",
+        "agreeableness": "2.23",
+        "neuroticism": "2.01"
+      }
+    }
+  },
+  {
+    "user_id": "user_99",
+    "dimensions": {
+      "exploration_eagerness": 0.6174999999999999,
+      "novelty_seeking": 0.8400000000000001,
+      "openness": 0.835,
+      "value_orientation": 0.802,
+      "authenticity": 0.8525,
+      "social_preference": 0.23099999999999998,
+      "community_orientation": 0.2915,
+      "adventure_seeking": 0.4725,
+      "trust_level": 0.744,
+      "crowd_tolerance": 0.473,
+      "energy_preference": 0.43374999999999997,
+      "archetype": 0.7
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 4.34,
+        "conscientiousness": 4.44,
+        "extraversion": 1.44,
+        "agreeableness": 3.86,
+        "neuroticism": 2.71
+      },
+      "raw_profile": {
+        "openness": "4.34",
+        "conscientiousness": "4.44",
+        "extraversion": "1.44",
+        "agreeableness": "3.86",
+        "neuroticism": "2.71"
+      }
+    }
+  },
+  {
+    "user_id": "user_100",
+    "dimensions": {
+      "exploration_eagerness": 0.7035,
+      "novelty_seeking": 0.5355000000000001,
+      "openness": 0.5925,
+      "value_orientation": 0.4455,
+      "authenticity": 0.393,
+      "social_preference": 0.9005000000000001,
+      "community_orientation": 0.8694999999999998,
+      "adventure_seeking": 0.7775,
+      "trust_level": 0.5835,
+      "crowd_tolerance": 0.7765,
+      "energy_preference": 0.57575,
+      "archetype": 0.5
+    },
+    "created_at": null,
+    "source": "big_five_conversion",
+    "original_data": {
+      "big_five": {
+        "openness": 3.37,
+        "conscientiousness": 2.23,
+        "extraversion": 4.85,
+        "agreeableness": 3.61,
+        "neuroticism": 3.36
+      },
+      "raw_profile": {
+        "openness": "3.37",
+        "conscientiousness": "2.23",
+        "extraversion": "4.85",
+        "agreeableness": "3.61",
+        "neuroticism": "3.36"
+      }
+    }
+  }
+]

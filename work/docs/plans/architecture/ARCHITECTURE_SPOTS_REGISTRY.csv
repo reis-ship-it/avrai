@@ -1,0 +1,71 @@
+spot_key,file_count,primary_domain,phase_refs,status,notes
+apps/admin_app,232,admin-app-prong,"10.9.22,10.9.23,10.9.24,10.9.25,10.10.12",active,current admin app package root
+apps/admin_app/configs/runtime,1,apps-prong,"10.10.3,10.10.9,10.10.12",active,runtime control packs and app-prong configuration surfaces
+apps/avrai_app,1742,apps-prong,"10.10.9,10.10.11,10.10.12",active,current primary AVRAI app package root
+apps/avrai_app/configs/experiments,1,apps-prong,"10.10.9,10.10.12",active,app-prong configuration surface
+apps/avrai_app/configs/ml,7,apps-prong,"10.10.9,10.10.12",active,app-prong configuration surface
+apps/avrai_app/configs/replay_city_packs,12,apps-prong,"10.10.9,10.10.12",active,app-prong configuration surface
+apps/avrai_app/configs/runtime,142,apps-prong,"10.10.3,10.10.9,10.10.12",active,runtime control packs and app-prong configuration surfaces
+design/contracts,2,design-system,"10.3,methodology",active,design contracts and token artifacts
+design/tokens,1,design-system,"10.3,methodology",active,design contracts and token artifacts
+docs,3378,docs,methodology,active,documentation root spot
+docs/plans/architecture,104,architecture-docs,"10.10,12,methodology",active,architecture authority and execution companion docs
+engine/avrai_ai,3,ai-engine,"6,10.10",active,current AI-engine package root
+engine/avrai_knot,116,knot-engine,"10.10,11.4",active,current knot-engine package root
+engine/avrai_ml,1,ml-engine,"4,5,10.10",active,current ML-engine package root
+engine/avrai_quantum,7,quantum-engine,"10.10,11.4",active,current quantum-engine package root
+engine/reality_engine,53,reality-engine,"1,3,4,5,12.4,12.4B",active,current reality-engine package root
+engine/spots_knot,4,legacy-knot-engine,"10.10,11.4",active,legacy knot engine package still present in the repository during migration
+examples/supabase,5,examples,methodology,active,reference and example implementation spot
+infrastructure/admin_private_control_plane,19,infra-ops,"10.9,methodology",active,supporting infrastructure and control-plane operations spot
+integration_test/_root,7,integration-test,"10.2,methodology",active,integration test harness spot
+lib/_root,0,legacy-monolith-root,"10.10,10.2",active,legacy alias retained for historical execution-board compatibility after 3-prong migration
+lib/core/ai,0,legacy-world-model-core,"1,3,6",active,legacy alias retained for historical execution-board compatibility after 3-prong migration
+lib/core/ai2ai,0,legacy-ai2ai-core,"3.7,8",active,legacy alias retained for historical execution-board compatibility after 3-prong migration
+lib/core/cloud,0,legacy-cloud-integration,"11,9.2.6",active,legacy alias retained for historical execution-board compatibility after 3-prong migration
+lib/core/controllers,0,legacy-workflow-controllers,"7,10.1",active,legacy alias retained for historical execution-board compatibility after 3-prong migration
+lib/core/ml,0,legacy-ml-transition,"4,5,10.8.1",active,legacy alias retained for historical execution-board compatibility after 3-prong migration
+lib/core/models,0,legacy-core-models,"3.1,3.4",active,legacy alias retained for historical execution-board compatibility after 3-prong migration
+lib/core/services,0,legacy-core-services,"1,2,7,9,10",active,legacy alias retained for historical execution-board compatibility after 3-prong migration
+lib/core/services/admin,0,legacy-admin-services,"10.9.22,10.9.25",active,legacy alias retained for historical execution-board compatibility after 3-prong migration
+lib/core/services/business,0,legacy-business-services,"9,10.1",active,legacy alias retained for historical execution-board compatibility after 3-prong migration
+lib/core/services/expertise,0,legacy-expertise-services,"4.3,9",active,legacy alias retained for historical execution-board compatibility after 3-prong migration
+lib/core/services/locality_agents,0,legacy-locality-services,"3.5,8.9",active,legacy alias retained for historical execution-board compatibility after 3-prong migration
+lib/core/services/quantum,0,legacy-quantum-services,"5,8,11.4",active,legacy alias retained for historical execution-board compatibility after 3-prong migration
+lib/core/services/security,0,legacy-security-services,"2.1,2.5",active,legacy alias retained for historical execution-board compatibility after 3-prong migration
+lib/core/services/user,0,legacy-user-services,"1.2,10.1",active,legacy alias retained for historical execution-board compatibility after 3-prong migration
+lib/presentation,0,legacy-presentation,"10.1,10.3,10.4",active,legacy alias retained for historical execution-board compatibility after 3-prong migration
+release_artifacts/macos,132,release-artifacts,methodology,active,generated or checked-in release artifact spot
+runtime/avrai_data,1,data-runtime,"1.1,1.2,9,10.10",active,current data-runtime package root
+runtime/avrai_network,12296,runtime-network-prong,"3.7,8,11,10.10",active,current network/backends package root
+runtime/avrai_runtime_os,1845,runtime-os-prong,"1,2,6,7,8,9,10.10",active,current runtime OS package root
+scripts/_root,153,tooling-ops,"10.2,methodology",active,tooling and validation scripts spot
+scripts/autopilot,15,tooling-ops,"10.2,methodology",active,tooling and validation scripts spot
+scripts/ci,20,tooling-ops,"10.2,methodology",active,tooling and validation scripts spot
+scripts/data_collection,3,tooling-ops,"10.2,methodology",active,tooling and validation scripts spot
+scripts/deploy,11,tooling-ops,"10.2,methodology",active,tooling and validation scripts spot
+scripts/ecommerce_experiments,37,tooling-ops,"10.2,methodology",active,tooling and validation scripts spot
+scripts/experiments,1,tooling-ops,"10.2,methodology",active,tooling and validation scripts spot
+scripts/geo,2,tooling-ops,"10.2,methodology",active,tooling and validation scripts spot
+scripts/git,1,tooling-ops,"10.2,methodology",active,tooling and validation scripts spot
+scripts/knot_validation,18,tooling-ops,"10.2,methodology",active,tooling and validation scripts spot
+scripts/ml,21,tooling-ops,"10.2,methodology",active,tooling and validation scripts spot
+scripts/patent_visuals,1,tooling-ops,"10.2,methodology",active,tooling and validation scripts spot
+scripts/patents,4,tooling-ops,"10.2,methodology",active,tooling and validation scripts spot
+scripts/perf,4,tooling-ops,"10.2,methodology",active,tooling and validation scripts spot
+scripts/personality_data,30,tooling-ops,"10.2,methodology",active,tooling and validation scripts spot
+scripts/proof_run,3,tooling-ops,"10.2,methodology",active,tooling and validation scripts spot
+scripts/runtime,44,tooling-ops,"10.2,methodology",active,tooling and validation scripts spot
+scripts/security,1,tooling-ops,"10.2,methodology",active,tooling and validation scripts spot
+scripts/security_validation,4,tooling-ops,"10.2,methodology",active,tooling and validation scripts spot
+scripts/setup,2,tooling-ops,"10.2,methodology",active,tooling and validation scripts spot
+scripts/smoke,1,tooling-ops,"10.2,methodology",active,tooling and validation scripts spot
+scripts/supabase,14,tooling-ops,"10.2,methodology",active,tooling and validation scripts spot
+shared/avrai_core,338,shared-core,"10.10.9,10.10.11,10.10.12,12",active,"shared contracts, schemas, and primitive types package root"
+supabase/_root,2,supabase-infra,"1.1,2.1,8.1,9",active,Supabase infrastructure and migration spot
+supabase/functions,30,supabase-infra,"1.1,2.1,8.1,9",active,Supabase infrastructure and migration spot
+supabase/manual,3,supabase-infra,"1.1,2.1,8.1,9",active,Supabase infrastructure and migration spot
+supabase/migrations,124,supabase-infra,"1.1,2.1,8.1,9",active,Supabase infrastructure and migration spot
+supabase/sql,6,data-platform-sql,"1.1,2.1,8.1,9.2.6",active,Supabase SQL schema and data-platform spot
+tool/_root,47,tooling-dev,methodology,active,developer tooling spot
+tool/squarespace-mcp,1,tooling-dev,methodology,active,developer tooling spot

@@ -1,0 +1,27 @@
+{
+  "milestone_id": "M31-P10-8",
+  "ui_label": "World Simulation Lab",
+  "scope": "first-class admin simulation lab with supervisor-daemon learning from all accepted and denied lab outcomes after M31-P10-7",
+  "master_plan_refs": [
+    "10.9.12",
+    "10.9.22",
+    "10.9.23",
+    "10.9.24",
+    "10.9.25"
+  ],
+  "dependencies": [
+    "M31-P10-7"
+  ],
+  "guardrails": {
+    "starts_only_after_m31_p10_7_closeout": true,
+    "admin_remains_non_authoritative_command_surface": true,
+    "supervisor_daemon_learns_from_accepted_and_denied_lab_outcomes": true,
+    "denied_outcomes_require_preserved_disposition_tags_and_rationale": true,
+    "denied_outcomes_cannot_self_promote_training_or_downstream_propagation": true,
+    "only_accepted_outcomes_may_generate_learning_candidates": true,
+    "environment_identity_and_structural_refs_must_preserve_lineage": true
+  },
+  "daemon_learning_mode": "all_lab_outcomes_with_disposition_tags",
+  "status": "queued_follow_on",
+  "opened_on": "2026-04-01"
+}

@@ -1,0 +1,44 @@
+{
+  "matching_score": {
+    "metric_name": "Matching Score",
+    "control_mean": 0.5707732239008186,
+    "test_mean": 0.6153722152899285,
+    "improvement_percent": 7.813784796054072,
+    "t_statistic": 235.10475351476666,
+    "p_value": 0.0,
+    "cohens_d": 3.325049566624517,
+    "significant": true,
+    "large_effect": true
+  },
+  "satisfaction": {
+    "metric_name": "User Satisfaction",
+    "control_mean": 0.15196176082284238,
+    "test_mean": 0.17729916805579998,
+    "improvement_percent": 16.67354148554257,
+    "t_statistic": 8.665191184318456,
+    "p_value": 4.844879876740404e-18,
+    "cohens_d": 0.12255043660921558,
+    "significant": true,
+    "large_effect": false
+  },
+  "connection_probability": {
+    "metric_name": "Connection Probability",
+    "control_mean": 0.38538661195040935,
+    "test_mean": 0.40768610764496427,
+    "improvement_percent": 5.786266311042575,
+    "t_statistic": 235.10475351476666,
+    "p_value": 0.0,
+    "cohens_d": 3.325049566624517,
+    "significant": true,
+    "large_effect": true
+  },
+  "connection_rate": {
+    "metric_name": "Connection Rate",
+    "control_mean": 0.3808,
+    "test_mean": 0.41,
+    "improvement_percent": 7.6680672268907415,
+    "chi2_statistic": 17.711329980518602,
+    "p_value": 2.570907564948577e-05,
+    "significant": true
+  }
+}

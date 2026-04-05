@@ -1,0 +1,18 @@
+{
+  "network_patterns": {
+    "pattern_1": {
+      "strength": 0.8962317673338311,
+      "confidence": 0.6115092464989214
+    },
+    "pattern_2": {
+      "strength": 0.9880640814520398,
+      "confidence": 0.6941942501595028
+    },
+    "pattern_3": {
+      "strength": 0.725488345724822,
+      "confidence": 0.6993271838713817
+    }
+  },
+  "insight_count": 696,
+  "network_health": 0.90528012584277
+}

@@ -1,0 +1,51 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "evaluation_at": "2026-02-27T17:00:00Z",
+  "policy": {
+    "required_stages": [
+      "shadow",
+      "canary"
+    ],
+    "promotion_requires_all_cohorts_pass": true
+  },
+  "canary": {
+    "traffic_pct": 5,
+    "minimum_samples_per_cohort": 50,
+    "max_regression_pct": 2.0
+  },
+  "cohorts": [
+    {
+      "cohort_id": "device_tier_high",
+      "stage": "canary",
+      "samples": 120,
+      "regression_pct": 0.4,
+      "promotion_blocked": false,
+      "notes": "Within budget"
+    },
+    {
+      "cohort_id": "device_tier_mid",
+      "stage": "canary",
+      "samples": 98,
+      "regression_pct": 0.7,
+      "promotion_blocked": false,
+      "notes": "Within budget"
+    },
+    {
+      "cohort_id": "locality_urban",
+      "stage": "shadow",
+      "samples": 140,
+      "regression_pct": 0.5,
+      "promotion_blocked": false,
+      "notes": "Shadow vs baseline stable"
+    },
+    {
+      "cohort_id": "locality_suburban",
+      "stage": "shadow",
+      "samples": 88,
+      "regression_pct": 0.9,
+      "promotion_blocked": false,
+      "notes": "Shadow vs baseline stable"
+    }
+  ]
+}

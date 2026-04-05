@@ -1,0 +1,31 @@
+{
+  "target_homogenization": 34.56,
+  "optimal_threshold": 15.0,
+  "optimal_homogenization": 67.41302747338196,
+  "current_threshold": 18.36,
+  "current_homogenization": 71.21001133920602,
+  "is_healthy": false,
+  "is_optimal": false,
+  "thresholds_tested": [
+    15.0,
+    16.0,
+    17.0,
+    18.0,
+    18.360000000000003,
+    19.0,
+    20.0,
+    25.0,
+    30.0
+  ],
+  "homogenization_rates": [
+    67.41302747338196,
+    69.2631046366164,
+    70.39086605318212,
+    70.75962407601352,
+    71.21001133920602,
+    71.3996360764031,
+    71.91844503955681,
+    72.33140945456832,
+    72.19847621144581
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "calibration": {
+    "calibration_samples": 2100,
+    "max_confidence_accuracy_gap_pct": 4.0,
+    "max_expected_calibration_error": 0.08,
+    "observed_confidence_accuracy_gap_pct": 1.4,
+    "observed_expected_calibration_error": 0.032,
+    "within_threshold": true
+  },
+  "divergence_gate": {
+    "auto_throttle_triggered": false,
+    "confidence_accuracy_divergence_detected": false,
+    "verification_prompt_escalation_triggered": false,
+    "within_threshold": true
+  },
+  "errors": [],
+  "generated_at": "2026-02-27T20:05:00Z",
+  "residual_drift": {
+    "drift_event_triggered": false,
+    "max_ema_ratio": 2.0,
+    "observed_ema_ratio": 1.31,
+    "residual_samples": 2100,
+    "within_threshold": true
+  },
+  "source": "configs/runtime/transition_predictor_drift_calibration_controls.json",
+  "verdict": "PASS",
+  "version": "v1"
+}

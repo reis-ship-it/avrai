@@ -1,0 +1,2 @@
+experiment_id,synchronization_accuracy,entanglement_sync_accuracy,network_consistency,performance_overhead_ms,timezone_operation_accuracy
+network_sync,0.04919488888888889,0.7826804987523857,0.7638366325272944,1.4895233506365952,0.0

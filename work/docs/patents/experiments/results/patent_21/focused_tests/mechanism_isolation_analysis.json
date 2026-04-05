@@ -1,0 +1,24 @@
+{
+  "baseline_accuracy_preservation": 100.0,
+  "all_together_accuracy_preservation": 68.51580871032759,
+  "combined_improvement": -31.48419128967241,
+  "individual_results": [
+    {
+      "name": "Quantum-Aware Privacy Alone",
+      "accuracy_preservation": 68.13032717958765
+    },
+    {
+      "name": "Classical Privacy Alone (No Normalization)",
+      "accuracy_preservation": 8.865330305290453
+    },
+    {
+      "name": "Quantum State Preservation Alone",
+      "accuracy_preservation": 99.99999999999999
+    }
+  ],
+  "best_individual_accuracy": 99.99999999999999,
+  "best_individual_name": "Quantum State Preservation Alone",
+  "combination_vs_best": -31.484191289672395,
+  "synergistic_effect_proven": false,
+  "combination_better_than_best": false
+}

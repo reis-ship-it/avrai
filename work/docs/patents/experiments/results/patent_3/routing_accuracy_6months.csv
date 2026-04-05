@@ -1,0 +1,5 @@
+scenario,routing_accuracy,correct_count,total_count,blocking_rate,blocked_count,false_positives,false_negatives
+authentic_transformation,1.0,50.0,50.0,,,,
+contextual_change,1.0,50.0,50.0,,,,
+surface_drift,,,50.0,1.0,50.0,,
+overall,1.0,,,,,0.0,0.0

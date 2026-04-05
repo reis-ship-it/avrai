@@ -1,0 +1,3002 @@
+[
+  {
+    "connection_id": "conn_0000",
+    "device_a_id": "device_0078",
+    "device_b_id": "device_0118",
+    "distance": 13.25039634573541
+  },
+  {
+    "connection_id": "conn_0001",
+    "device_a_id": "device_0030",
+    "device_b_id": "device_0023",
+    "distance": 7.880768853275811
+  },
+  {
+    "connection_id": "conn_0002",
+    "device_a_id": "device_0175",
+    "device_b_id": "device_0077",
+    "distance": 41.31933439698249
+  },
+  {
+    "connection_id": "conn_0003",
+    "device_a_id": "device_0178",
+    "device_b_id": "device_0154",
+    "distance": 2.016490405433169
+  },
+  {
+    "connection_id": "conn_0004",
+    "device_a_id": "device_0083",
+    "device_b_id": "device_0037",
+    "distance": 4.56064518956743
+  },
+  {
+    "connection_id": "conn_0005",
+    "device_a_id": "device_0063",
+    "device_b_id": "device_0091",
+    "distance": 19.812223133988553
+  },
+  {
+    "connection_id": "conn_0006",
+    "device_a_id": "device_0012",
+    "device_b_id": "device_0173",
+    "distance": 14.942035548451088
+  },
+  {
+    "connection_id": "conn_0007",
+    "device_a_id": "device_0044",
+    "device_b_id": "device_0007",
+    "distance": 47.604830341187196
+  },
+  {
+    "connection_id": "conn_0008",
+    "device_a_id": "device_0115",
+    "device_b_id": "device_0142",
+    "distance": 37.40392236043546
+  },
+  {
+    "connection_id": "conn_0009",
+    "device_a_id": "device_0063",
+    "device_b_id": "device_0024",
+    "distance": 23.102162443811945
+  },
+  {
+    "connection_id": "conn_0010",
+    "device_a_id": "device_0035",
+    "device_b_id": "device_0031",
+    "distance": 0.5978461584706496
+  },
+  {
+    "connection_id": "conn_0011",
+    "device_a_id": "device_0199",
+    "device_b_id": "device_0056",
+    "distance": 6.5357618771988975
+  },
+  {
+    "connection_id": "conn_0012",
+    "device_a_id": "device_0102",
+    "device_b_id": "device_0095",
+    "distance": 34.31426310177801
+  },
+  {
+    "connection_id": "conn_0013",
+    "device_a_id": "device_0165",
+    "device_b_id": "device_0021",
+    "distance": 29.11619007070316
+  },
+  {
+    "connection_id": "conn_0014",
+    "device_a_id": "device_0066",
+    "device_b_id": "device_0019",
+    "distance": 1.0900091369306364
+  },
+  {
+    "connection_id": "conn_0015",
+    "device_a_id": "device_0016",
+    "device_b_id": "device_0050",
+    "distance": 45.12480409666407
+  },
+  {
+    "connection_id": "conn_0016",
+    "device_a_id": "device_0113",
+    "device_b_id": "device_0032",
+    "distance": 4.598931932850913
+  },
+  {
+    "connection_id": "conn_0017",
+    "device_a_id": "device_0084",
+    "device_b_id": "device_0031",
+    "distance": 2.1348159545215406
+  },
+  {
+    "connection_id": "conn_0018",
+    "device_a_id": "device_0118",
+    "device_b_id": "device_0012",
+    "distance": 8.399460436452822
+  },
+  {
+    "connection_id": "conn_0019",
+    "device_a_id": "device_0146",
+    "device_b_id": "device_0110",
+    "distance": 41.08427007661419
+  },
+  {
+    "connection_id": "conn_0020",
+    "device_a_id": "device_0101",
+    "device_b_id": "device_0127",
+    "distance": 1.474114650014574
+  },
+  {
+    "connection_id": "conn_0021",
+    "device_a_id": "device_0174",
+    "device_b_id": "device_0109",
+    "distance": 8.640360591539459
+  },
+  {
+    "connection_id": "conn_0022",
+    "device_a_id": "device_0054",
+    "device_b_id": "device_0047",
+    "distance": 13.749088451212105
+  },
+  {
+    "connection_id": "conn_0023",
+    "device_a_id": "device_0114",
+    "device_b_id": "device_0038",
+    "distance": 1.7324721865752957
+  },
+  {
+    "connection_id": "conn_0024",
+    "device_a_id": "device_0158",
+    "device_b_id": "device_0157",
+    "distance": 12.289238962262273
+  },
+  {
+    "connection_id": "conn_0025",
+    "device_a_id": "device_0075",
+    "device_b_id": "device_0127",
+    "distance": 20.599610314808253
+  },
+  {
+    "connection_id": "conn_0026",
+    "device_a_id": "device_0140",
+    "device_b_id": "device_0122",
+    "distance": 3.0489534466421384
+  },
+  {
+    "connection_id": "conn_0027",
+    "device_a_id": "device_0071",
+    "device_b_id": "device_0098",
+    "distance": 6.86180085660324
+  },
+  {
+    "connection_id": "conn_0028",
+    "device_a_id": "device_0051",
+    "device_b_id": "device_0164",
+    "distance": 44.23262581124825
+  },
+  {
+    "connection_id": "conn_0029",
+    "device_a_id": "device_0134",
+    "device_b_id": "device_0063",
+    "distance": 31.537719441237773
+  },
+  {
+    "connection_id": "conn_0030",
+    "device_a_id": "device_0139",
+    "device_b_id": "device_0004",
+    "distance": 49.470180788076696
+  },
+  {
+    "connection_id": "conn_0031",
+    "device_a_id": "device_0182",
+    "device_b_id": "device_0091",
+    "distance": 23.98422194440581
+  },
+  {
+    "connection_id": "conn_0032",
+    "device_a_id": "device_0124",
+    "device_b_id": "device_0088",
+    "distance": 45.63385082991835
+  },
+  {
+    "connection_id": "conn_0033",
+    "device_a_id": "device_0128",
+    "device_b_id": "device_0082",
+    "distance": 19.41906372846502
+  },
+  {
+    "connection_id": "conn_0034",
+    "device_a_id": "device_0046",
+    "device_b_id": "device_0006",
+    "distance": 15.943878366468978
+  },
+  {
+    "connection_id": "conn_0035",
+    "device_a_id": "device_0056",
+    "device_b_id": "device_0007",
+    "distance": 44.788239080715684
+  },
+  {
+    "connection_id": "conn_0036",
+    "device_a_id": "device_0199",
+    "device_b_id": "device_0071",
+    "distance": 2.9295615139059263
+  },
+  {
+    "connection_id": "conn_0037",
+    "device_a_id": "device_0120",
+    "device_b_id": "device_0135",
+    "distance": 17.871644633577077
+  },
+  {
+    "connection_id": "conn_0038",
+    "device_a_id": "device_0149",
+    "device_b_id": "device_0059",
+    "distance": 48.69899308667511
+  },
+  {
+    "connection_id": "conn_0039",
+    "device_a_id": "device_0025",
+    "device_b_id": "device_0063",
+    "distance": 32.843221068811715
+  },
+  {
+    "connection_id": "conn_0040",
+    "device_a_id": "device_0068",
+    "device_b_id": "device_0136",
+    "distance": 40.81425808043674
+  },
+  {
+    "connection_id": "conn_0041",
+    "device_a_id": "device_0188",
+    "device_b_id": "device_0014",
+    "distance": 38.20248618587555
+  },
+  {
+    "connection_id": "conn_0042",
+    "device_a_id": "device_0056",
+    "device_b_id": "device_0147",
+    "distance": 42.32525452325665
+  },
+  {
+    "connection_id": "conn_0043",
+    "device_a_id": "device_0099",
+    "device_b_id": "device_0090",
+    "distance": 46.76030160457724
+  },
+  {
+    "connection_id": "conn_0044",
+    "device_a_id": "device_0044",
+    "device_b_id": "device_0045",
+    "distance": 11.827556637123044
+  },
+  {
+    "connection_id": "conn_0045",
+    "device_a_id": "device_0081",
+    "device_b_id": "device_0188",
+    "distance": 34.881328179979
+  },
+  {
+    "connection_id": "conn_0046",
+    "device_a_id": "device_0151",
+    "device_b_id": "device_0007",
+    "distance": 35.172644145995676
+  },
+  {
+    "connection_id": "conn_0047",
+    "device_a_id": "device_0090",
+    "device_b_id": "device_0145",
+    "distance": 28.180324339159686
+  },
+  {
+    "connection_id": "conn_0048",
+    "device_a_id": "device_0144",
+    "device_b_id": "device_0048",
+    "distance": 41.8348420366668
+  },
+  {
+    "connection_id": "conn_0049",
+    "device_a_id": "device_0126",
+    "device_b_id": "device_0138",
+    "distance": 15.452653607560979
+  },
+  {
+    "connection_id": "conn_0050",
+    "device_a_id": "device_0125",
+    "device_b_id": "device_0009",
+    "distance": 4.512868842545142
+  },
+  {
+    "connection_id": "conn_0051",
+    "device_a_id": "device_0059",
+    "device_b_id": "device_0154",
+    "distance": 10.940447084578864
+  },
+  {
+    "connection_id": "conn_0052",
+    "device_a_id": "device_0134",
+    "device_b_id": "device_0122",
+    "distance": 0.03417481919154031
+  },
+  {
+    "connection_id": "conn_0053",
+    "device_a_id": "device_0157",
+    "device_b_id": "device_0051",
+    "distance": 40.32227066550014
+  },
+  {
+    "connection_id": "conn_0054",
+    "device_a_id": "device_0087",
+    "device_b_id": "device_0183",
+    "distance": 8.872993632696858
+  },
+  {
+    "connection_id": "conn_0055",
+    "device_a_id": "device_0082",
+    "device_b_id": "device_0015",
+    "distance": 1.0956448121786144
+  },
+  {
+    "connection_id": "conn_0056",
+    "device_a_id": "device_0150",
+    "device_b_id": "device_0180",
+    "distance": 45.86120737405593
+  },
+  {
+    "connection_id": "conn_0057",
+    "device_a_id": "device_0198",
+    "device_b_id": "device_0028",
+    "distance": 42.324044378956735
+  },
+  {
+    "connection_id": "conn_0058",
+    "device_a_id": "device_0093",
+    "device_b_id": "device_0018",
+    "distance": 18.67953900416866
+  },
+  {
+    "connection_id": "conn_0059",
+    "device_a_id": "device_0169",
+    "device_b_id": "device_0101",
+    "distance": 29.300833158579533
+  },
+  {
+    "connection_id": "conn_0060",
+    "device_a_id": "device_0086",
+    "device_b_id": "device_0077",
+    "distance": 16.130160218645507
+  },
+  {
+    "connection_id": "conn_0061",
+    "device_a_id": "device_0040",
+    "device_b_id": "device_0187",
+    "distance": 47.43467660131617
+  },
+  {
+    "connection_id": "conn_0062",
+    "device_a_id": "device_0163",
+    "device_b_id": "device_0124",
+    "distance": 32.459013282240704
+  },
+  {
+    "connection_id": "conn_0063",
+    "device_a_id": "device_0044",
+    "device_b_id": "device_0181",
+    "distance": 48.43714481665838
+  },
+  {
+    "connection_id": "conn_0064",
+    "device_a_id": "device_0177",
+    "device_b_id": "device_0157",
+    "distance": 39.34958962977884
+  },
+  {
+    "connection_id": "conn_0065",
+    "device_a_id": "device_0057",
+    "device_b_id": "device_0170",
+    "distance": 29.447507789155182
+  },
+  {
+    "connection_id": "conn_0066",
+    "device_a_id": "device_0044",
+    "device_b_id": "device_0096",
+    "distance": 15.341161464897901
+  },
+  {
+    "connection_id": "conn_0067",
+    "device_a_id": "device_0176",
+    "device_b_id": "device_0075",
+    "distance": 6.367418236176775
+  },
+  {
+    "connection_id": "conn_0068",
+    "device_a_id": "device_0186",
+    "device_b_id": "device_0000",
+    "distance": 47.43940521106438
+  },
+  {
+    "connection_id": "conn_0069",
+    "device_a_id": "device_0146",
+    "device_b_id": "device_0100",
+    "distance": 42.53784827675042
+  },
+  {
+    "connection_id": "conn_0070",
+    "device_a_id": "device_0197",
+    "device_b_id": "device_0145",
+    "distance": 1.6191371463543713
+  },
+  {
+    "connection_id": "conn_0071",
+    "device_a_id": "device_0154",
+    "device_b_id": "device_0081",
+    "distance": 46.05191082090397
+  },
+  {
+    "connection_id": "conn_0072",
+    "device_a_id": "device_0156",
+    "device_b_id": "device_0056",
+    "distance": 31.982338639181197
+  },
+  {
+    "connection_id": "conn_0073",
+    "device_a_id": "device_0026",
+    "device_b_id": "device_0127",
+    "distance": 7.0321684074284185
+  },
+  {
+    "connection_id": "conn_0074",
+    "device_a_id": "device_0190",
+    "device_b_id": "device_0019",
+    "distance": 11.899796257469847
+  },
+  {
+    "connection_id": "conn_0075",
+    "device_a_id": "device_0081",
+    "device_b_id": "device_0042",
+    "distance": 31.809338512018414
+  },
+  {
+    "connection_id": "conn_0076",
+    "device_a_id": "device_0022",
+    "device_b_id": "device_0181",
+    "distance": 33.501228555702674
+  },
+  {
+    "connection_id": "conn_0077",
+    "device_a_id": "device_0186",
+    "device_b_id": "device_0085",
+    "distance": 22.33149670488969
+  },
+  {
+    "connection_id": "conn_0078",
+    "device_a_id": "device_0067",
+    "device_b_id": "device_0053",
+    "distance": 12.477043156763939
+  },
+  {
+    "connection_id": "conn_0079",
+    "device_a_id": "device_0017",
+    "device_b_id": "device_0089",
+    "distance": 12.83289707713574
+  },
+  {
+    "connection_id": "conn_0080",
+    "device_a_id": "device_0027",
+    "device_b_id": "device_0184",
+    "distance": 0.06405787473449664
+  },
+  {
+    "connection_id": "conn_0081",
+    "device_a_id": "device_0098",
+    "device_b_id": "device_0112",
+    "distance": 36.62922472493843
+  },
+  {
+    "connection_id": "conn_0082",
+    "device_a_id": "device_0042",
+    "device_b_id": "device_0105",
+    "distance": 24.654099673692382
+  },
+  {
+    "connection_id": "conn_0083",
+    "device_a_id": "device_0096",
+    "device_b_id": "device_0089",
+    "distance": 27.301198383922713
+  },
+  {
+    "connection_id": "conn_0084",
+    "device_a_id": "device_0025",
+    "device_b_id": "device_0122",
+    "distance": 39.43649972381097
+  },
+  {
+    "connection_id": "conn_0085",
+    "device_a_id": "device_0147",
+    "device_b_id": "device_0166",
+    "distance": 37.91217717795089
+  },
+  {
+    "connection_id": "conn_0086",
+    "device_a_id": "device_0057",
+    "device_b_id": "device_0041",
+    "distance": 22.56437095765374
+  },
+  {
+    "connection_id": "conn_0087",
+    "device_a_id": "device_0008",
+    "device_b_id": "device_0075",
+    "distance": 1.0038999165285
+  },
+  {
+    "connection_id": "conn_0088",
+    "device_a_id": "device_0066",
+    "device_b_id": "device_0026",
+    "distance": 3.710020088332966
+  },
+  {
+    "connection_id": "conn_0089",
+    "device_a_id": "device_0043",
+    "device_b_id": "device_0096",
+    "distance": 8.045224745566054
+  },
+  {
+    "connection_id": "conn_0090",
+    "device_a_id": "device_0019",
+    "device_b_id": "device_0140",
+    "distance": 47.09170717676139
+  },
+  {
+    "connection_id": "conn_0091",
+    "device_a_id": "device_0023",
+    "device_b_id": "device_0086",
+    "distance": 29.701527202604744
+  },
+  {
+    "connection_id": "conn_0092",
+    "device_a_id": "device_0157",
+    "device_b_id": "device_0123",
+    "distance": 35.22523232958957
+  },
+  {
+    "connection_id": "conn_0093",
+    "device_a_id": "device_0110",
+    "device_b_id": "device_0167",
+    "distance": 8.249859738095704
+  },
+  {
+    "connection_id": "conn_0094",
+    "device_a_id": "device_0111",
+    "device_b_id": "device_0040",
+    "distance": 2.6777871330297742
+  },
+  {
+    "connection_id": "conn_0095",
+    "device_a_id": "device_0084",
+    "device_b_id": "device_0052",
+    "distance": 48.71992103382358
+  },
+  {
+    "connection_id": "conn_0096",
+    "device_a_id": "device_0104",
+    "device_b_id": "device_0178",
+    "distance": 27.70562161581147
+  },
+  {
+    "connection_id": "conn_0097",
+    "device_a_id": "device_0186",
+    "device_b_id": "device_0138",
+    "distance": 13.263238467498828
+  },
+  {
+    "connection_id": "conn_0098",
+    "device_a_id": "device_0072",
+    "device_b_id": "device_0076",
+    "distance": 11.877414247362283
+  },
+  {
+    "connection_id": "conn_0099",
+    "device_a_id": "device_0012",
+    "device_b_id": "device_0100",
+    "distance": 28.588490392887078
+  },
+  {
+    "connection_id": "conn_0100",
+    "device_a_id": "device_0125",
+    "device_b_id": "device_0039",
+    "distance": 2.725242585252569
+  },
+  {
+    "connection_id": "conn_0101",
+    "device_a_id": "device_0000",
+    "device_b_id": "device_0109",
+    "distance": 4.3814179653486
+  },
+  {
+    "connection_id": "conn_0102",
+    "device_a_id": "device_0169",
+    "device_b_id": "device_0160",
+    "distance": 30.01077640068844
+  },
+  {
+    "connection_id": "conn_0103",
+    "device_a_id": "device_0051",
+    "device_b_id": "device_0024",
+    "distance": 1.2867846365842872
+  },
+  {
+    "connection_id": "conn_0104",
+    "device_a_id": "device_0043",
+    "device_b_id": "device_0163",
+    "distance": 14.590573302305376
+  },
+  {
+    "connection_id": "conn_0105",
+    "device_a_id": "device_0020",
+    "device_b_id": "device_0121",
+    "distance": 42.18845371734683
+  },
+  {
+    "connection_id": "conn_0106",
+    "device_a_id": "device_0078",
+    "device_b_id": "device_0101",
+    "distance": 23.547222647479476
+  },
+  {
+    "connection_id": "conn_0107",
+    "device_a_id": "device_0169",
+    "device_b_id": "device_0067",
+    "distance": 4.556843877533962
+  },
+  {
+    "connection_id": "conn_0108",
+    "device_a_id": "device_0139",
+    "device_b_id": "device_0099",
+    "distance": 9.244061027102363
+  },
+  {
+    "connection_id": "conn_0109",
+    "device_a_id": "device_0097",
+    "device_b_id": "device_0094",
+    "distance": 9.32914705789658
+  },
+  {
+    "connection_id": "conn_0110",
+    "device_a_id": "device_0011",
+    "device_b_id": "device_0067",
+    "distance": 21.987021142638458
+  },
+  {
+    "connection_id": "conn_0111",
+    "device_a_id": "device_0067",
+    "device_b_id": "device_0057",
+    "distance": 41.85393760672286
+  },
+  {
+    "connection_id": "conn_0112",
+    "device_a_id": "device_0144",
+    "device_b_id": "device_0015",
+    "distance": 7.556533721176955
+  },
+  {
+    "connection_id": "conn_0113",
+    "device_a_id": "device_0178",
+    "device_b_id": "device_0170",
+    "distance": 4.8351310512823265
+  },
+  {
+    "connection_id": "conn_0114",
+    "device_a_id": "device_0171",
+    "device_b_id": "device_0088",
+    "distance": 40.40900787020065
+  },
+  {
+    "connection_id": "conn_0115",
+    "device_a_id": "device_0105",
+    "device_b_id": "device_0193",
+    "distance": 29.486322115180176
+  },
+  {
+    "connection_id": "conn_0116",
+    "device_a_id": "device_0141",
+    "device_b_id": "device_0015",
+    "distance": 42.039858321512526
+  },
+  {
+    "connection_id": "conn_0117",
+    "device_a_id": "device_0133",
+    "device_b_id": "device_0107",
+    "distance": 48.28138520401507
+  },
+  {
+    "connection_id": "conn_0118",
+    "device_a_id": "device_0175",
+    "device_b_id": "device_0121",
+    "distance": 28.635714531560936
+  },
+  {
+    "connection_id": "conn_0119",
+    "device_a_id": "device_0060",
+    "device_b_id": "device_0121",
+    "distance": 14.94260545036012
+  },
+  {
+    "connection_id": "conn_0120",
+    "device_a_id": "device_0101",
+    "device_b_id": "device_0182",
+    "distance": 1.7364246778568126
+  },
+  {
+    "connection_id": "conn_0121",
+    "device_a_id": "device_0146",
+    "device_b_id": "device_0132",
+    "distance": 40.022516836034285
+  },
+  {
+    "connection_id": "conn_0122",
+    "device_a_id": "device_0173",
+    "device_b_id": "device_0158",
+    "distance": 7.372382700548269
+  },
+  {
+    "connection_id": "conn_0123",
+    "device_a_id": "device_0193",
+    "device_b_id": "device_0114",
+    "distance": 8.643948640324723
+  },
+  {
+    "connection_id": "conn_0124",
+    "device_a_id": "device_0042",
+    "device_b_id": "device_0054",
+    "distance": 40.423036065968155
+  },
+  {
+    "connection_id": "conn_0125",
+    "device_a_id": "device_0032",
+    "device_b_id": "device_0010",
+    "distance": 21.168744965779972
+  },
+  {
+    "connection_id": "conn_0126",
+    "device_a_id": "device_0174",
+    "device_b_id": "device_0111",
+    "distance": 10.095963998611722
+  },
+  {
+    "connection_id": "conn_0127",
+    "device_a_id": "device_0160",
+    "device_b_id": "device_0037",
+    "distance": 41.70540593380021
+  },
+  {
+    "connection_id": "conn_0128",
+    "device_a_id": "device_0066",
+    "device_b_id": "device_0081",
+    "distance": 45.540224286579715
+  },
+  {
+    "connection_id": "conn_0129",
+    "device_a_id": "device_0017",
+    "device_b_id": "device_0022",
+    "distance": 19.404957650737536
+  },
+  {
+    "connection_id": "conn_0130",
+    "device_a_id": "device_0101",
+    "device_b_id": "device_0141",
+    "distance": 16.306340268486803
+  },
+  {
+    "connection_id": "conn_0131",
+    "device_a_id": "device_0070",
+    "device_b_id": "device_0133",
+    "distance": 22.907859056130757
+  },
+  {
+    "connection_id": "conn_0132",
+    "device_a_id": "device_0003",
+    "device_b_id": "device_0179",
+    "distance": 31.152896429440407
+  },
+  {
+    "connection_id": "conn_0133",
+    "device_a_id": "device_0133",
+    "device_b_id": "device_0107",
+    "distance": 5.625942131296691
+  },
+  {
+    "connection_id": "conn_0134",
+    "device_a_id": "device_0038",
+    "device_b_id": "device_0037",
+    "distance": 28.329696352755324
+  },
+  {
+    "connection_id": "conn_0135",
+    "device_a_id": "device_0149",
+    "device_b_id": "device_0194",
+    "distance": 48.241583235431456
+  },
+  {
+    "connection_id": "conn_0136",
+    "device_a_id": "device_0025",
+    "device_b_id": "device_0027",
+    "distance": 28.134187973866126
+  },
+  {
+    "connection_id": "conn_0137",
+    "device_a_id": "device_0025",
+    "device_b_id": "device_0073",
+    "distance": 43.373763388258766
+  },
+  {
+    "connection_id": "conn_0138",
+    "device_a_id": "device_0088",
+    "device_b_id": "device_0105",
+    "distance": 13.206831508518558
+  },
+  {
+    "connection_id": "conn_0139",
+    "device_a_id": "device_0167",
+    "device_b_id": "device_0124",
+    "distance": 28.60116198992809
+  },
+  {
+    "connection_id": "conn_0140",
+    "device_a_id": "device_0121",
+    "device_b_id": "device_0009",
+    "distance": 8.609986407836578
+  },
+  {
+    "connection_id": "conn_0141",
+    "device_a_id": "device_0103",
+    "device_b_id": "device_0036",
+    "distance": 30.912224430089914
+  },
+  {
+    "connection_id": "conn_0142",
+    "device_a_id": "device_0174",
+    "device_b_id": "device_0177",
+    "distance": 20.085994913720533
+  },
+  {
+    "connection_id": "conn_0143",
+    "device_a_id": "device_0101",
+    "device_b_id": "device_0084",
+    "distance": 34.525687708548936
+  },
+  {
+    "connection_id": "conn_0144",
+    "device_a_id": "device_0012",
+    "device_b_id": "device_0190",
+    "distance": 23.76090955765358
+  },
+  {
+    "connection_id": "conn_0145",
+    "device_a_id": "device_0068",
+    "device_b_id": "device_0095",
+    "distance": 1.011644429663594
+  },
+  {
+    "connection_id": "conn_0146",
+    "device_a_id": "device_0077",
+    "device_b_id": "device_0079",
+    "distance": 14.017332659232078
+  },
+  {
+    "connection_id": "conn_0147",
+    "device_a_id": "device_0125",
+    "device_b_id": "device_0178",
+    "distance": 34.242601356736344
+  },
+  {
+    "connection_id": "conn_0148",
+    "device_a_id": "device_0058",
+    "device_b_id": "device_0034",
+    "distance": 15.024022375874003
+  },
+  {
+    "connection_id": "conn_0149",
+    "device_a_id": "device_0190",
+    "device_b_id": "device_0113",
+    "distance": 38.70154500969623
+  },
+  {
+    "connection_id": "conn_0150",
+    "device_a_id": "device_0082",
+    "device_b_id": "device_0068",
+    "distance": 36.43997066347775
+  },
+  {
+    "connection_id": "conn_0151",
+    "device_a_id": "device_0154",
+    "device_b_id": "device_0165",
+    "distance": 4.464342515146614
+  },
+  {
+    "connection_id": "conn_0152",
+    "device_a_id": "device_0113",
+    "device_b_id": "device_0054",
+    "distance": 45.67164027093702
+  },
+  {
+    "connection_id": "conn_0153",
+    "device_a_id": "device_0104",
+    "device_b_id": "device_0189",
+    "distance": 24.2230164853831
+  },
+  {
+    "connection_id": "conn_0154",
+    "device_a_id": "device_0132",
+    "device_b_id": "device_0095",
+    "distance": 41.05086961992301
+  },
+  {
+    "connection_id": "conn_0155",
+    "device_a_id": "device_0131",
+    "device_b_id": "device_0040",
+    "distance": 3.280848380596596
+  },
+  {
+    "connection_id": "conn_0156",
+    "device_a_id": "device_0181",
+    "device_b_id": "device_0129",
+    "distance": 20.169257050622186
+  },
+  {
+    "connection_id": "conn_0157",
+    "device_a_id": "device_0199",
+    "device_b_id": "device_0134",
+    "distance": 43.9666295679928
+  },
+  {
+    "connection_id": "conn_0158",
+    "device_a_id": "device_0007",
+    "device_b_id": "device_0044",
+    "distance": 9.63817234157791
+  },
+  {
+    "connection_id": "conn_0159",
+    "device_a_id": "device_0051",
+    "device_b_id": "device_0014",
+    "distance": 12.474513066213966
+  },
+  {
+    "connection_id": "conn_0160",
+    "device_a_id": "device_0116",
+    "device_b_id": "device_0012",
+    "distance": 45.90155346705581
+  },
+  {
+    "connection_id": "conn_0161",
+    "device_a_id": "device_0180",
+    "device_b_id": "device_0050",
+    "distance": 13.698874923717947
+  },
+  {
+    "connection_id": "conn_0162",
+    "device_a_id": "device_0118",
+    "device_b_id": "device_0129",
+    "distance": 19.847113875824885
+  },
+  {
+    "connection_id": "conn_0163",
+    "device_a_id": "device_0031",
+    "device_b_id": "device_0174",
+    "distance": 1.5281596190996782
+  },
+  {
+    "connection_id": "conn_0164",
+    "device_a_id": "device_0095",
+    "device_b_id": "device_0125",
+    "distance": 29.702179672607564
+  },
+  {
+    "connection_id": "conn_0165",
+    "device_a_id": "device_0045",
+    "device_b_id": "device_0121",
+    "distance": 29.34401242112134
+  },
+  {
+    "connection_id": "conn_0166",
+    "device_a_id": "device_0089",
+    "device_b_id": "device_0088",
+    "distance": 8.175680725892542
+  },
+  {
+    "connection_id": "conn_0167",
+    "device_a_id": "device_0066",
+    "device_b_id": "device_0191",
+    "distance": 41.54351006777977
+  },
+  {
+    "connection_id": "conn_0168",
+    "device_a_id": "device_0023",
+    "device_b_id": "device_0072",
+    "distance": 1.3725244948885107
+  },
+  {
+    "connection_id": "conn_0169",
+    "device_a_id": "device_0012",
+    "device_b_id": "device_0041",
+    "distance": 42.69106632927733
+  },
+  {
+    "connection_id": "conn_0170",
+    "device_a_id": "device_0199",
+    "device_b_id": "device_0054",
+    "distance": 42.85555937191511
+  },
+  {
+    "connection_id": "conn_0171",
+    "device_a_id": "device_0165",
+    "device_b_id": "device_0057",
+    "distance": 33.88476230454854
+  },
+  {
+    "connection_id": "conn_0172",
+    "device_a_id": "device_0068",
+    "device_b_id": "device_0166",
+    "distance": 20.475359824777108
+  },
+  {
+    "connection_id": "conn_0173",
+    "device_a_id": "device_0005",
+    "device_b_id": "device_0199",
+    "distance": 48.35691778643903
+  },
+  {
+    "connection_id": "conn_0174",
+    "device_a_id": "device_0174",
+    "device_b_id": "device_0002",
+    "distance": 23.70486032646724
+  },
+  {
+    "connection_id": "conn_0175",
+    "device_a_id": "device_0033",
+    "device_b_id": "device_0165",
+    "distance": 8.660032824107239
+  },
+  {
+    "connection_id": "conn_0176",
+    "device_a_id": "device_0002",
+    "device_b_id": "device_0057",
+    "distance": 12.619522068032573
+  },
+  {
+    "connection_id": "conn_0177",
+    "device_a_id": "device_0078",
+    "device_b_id": "device_0182",
+    "distance": 48.351222168418836
+  },
+  {
+    "connection_id": "conn_0178",
+    "device_a_id": "device_0164",
+    "device_b_id": "device_0070",
+    "distance": 21.190340032980952
+  },
+  {
+    "connection_id": "conn_0179",
+    "device_a_id": "device_0096",
+    "device_b_id": "device_0089",
+    "distance": 22.949900944530484
+  },
+  {
+    "connection_id": "conn_0180",
+    "device_a_id": "device_0055",
+    "device_b_id": "device_0119",
+    "distance": 15.107254563717598
+  },
+  {
+    "connection_id": "conn_0181",
+    "device_a_id": "device_0133",
+    "device_b_id": "device_0159",
+    "distance": 19.85762699860601
+  },
+  {
+    "connection_id": "conn_0182",
+    "device_a_id": "device_0026",
+    "device_b_id": "device_0001",
+    "distance": 25.57568587341509
+  },
+  {
+    "connection_id": "conn_0183",
+    "device_a_id": "device_0169",
+    "device_b_id": "device_0095",
+    "distance": 28.07285586273004
+  },
+  {
+    "connection_id": "conn_0184",
+    "device_a_id": "device_0152",
+    "device_b_id": "device_0155",
+    "distance": 14.13384389075485
+  },
+  {
+    "connection_id": "conn_0185",
+    "device_a_id": "device_0175",
+    "device_b_id": "device_0027",
+    "distance": 24.086920940815304
+  },
+  {
+    "connection_id": "conn_0186",
+    "device_a_id": "device_0086",
+    "device_b_id": "device_0070",
+    "distance": 32.02973728073279
+  },
+  {
+    "connection_id": "conn_0187",
+    "device_a_id": "device_0070",
+    "device_b_id": "device_0066",
+    "distance": 32.805980261822704
+  },
+  {
+    "connection_id": "conn_0188",
+    "device_a_id": "device_0166",
+    "device_b_id": "device_0076",
+    "distance": 9.418004062000396
+  },
+  {
+    "connection_id": "conn_0189",
+    "device_a_id": "device_0132",
+    "device_b_id": "device_0195",
+    "distance": 12.015103883924722
+  },
+  {
+    "connection_id": "conn_0190",
+    "device_a_id": "device_0014",
+    "device_b_id": "device_0153",
+    "distance": 20.204921312827732
+  },
+  {
+    "connection_id": "conn_0191",
+    "device_a_id": "device_0081",
+    "device_b_id": "device_0174",
+    "distance": 6.9964754288208475
+  },
+  {
+    "connection_id": "conn_0192",
+    "device_a_id": "device_0006",
+    "device_b_id": "device_0167",
+    "distance": 24.86864142025601
+  },
+  {
+    "connection_id": "conn_0193",
+    "device_a_id": "device_0075",
+    "device_b_id": "device_0066",
+    "distance": 45.345578126075
+  },
+  {
+    "connection_id": "conn_0194",
+    "device_a_id": "device_0103",
+    "device_b_id": "device_0099",
+    "distance": 36.836604787155615
+  },
+  {
+    "connection_id": "conn_0195",
+    "device_a_id": "device_0149",
+    "device_b_id": "device_0181",
+    "distance": 49.737686504439424
+  },
+  {
+    "connection_id": "conn_0196",
+    "device_a_id": "device_0048",
+    "device_b_id": "device_0087",
+    "distance": 36.327493829045174
+  },
+  {
+    "connection_id": "conn_0197",
+    "device_a_id": "device_0056",
+    "device_b_id": "device_0175",
+    "distance": 26.731755077210657
+  },
+  {
+    "connection_id": "conn_0198",
+    "device_a_id": "device_0121",
+    "device_b_id": "device_0171",
+    "distance": 17.92485658351885
+  },
+  {
+    "connection_id": "conn_0199",
+    "device_a_id": "device_0076",
+    "device_b_id": "device_0043",
+    "distance": 42.031934729819994
+  },
+  {
+    "connection_id": "conn_0200",
+    "device_a_id": "device_0142",
+    "device_b_id": "device_0046",
+    "distance": 14.68920264303798
+  },
+  {
+    "connection_id": "conn_0201",
+    "device_a_id": "device_0120",
+    "device_b_id": "device_0032",
+    "distance": 37.045944578443404
+  },
+  {
+    "connection_id": "conn_0202",
+    "device_a_id": "device_0185",
+    "device_b_id": "device_0143",
+    "distance": 38.145910915965125
+  },
+  {
+    "connection_id": "conn_0203",
+    "device_a_id": "device_0046",
+    "device_b_id": "device_0174",
+    "distance": 44.97955789254325
+  },
+  {
+    "connection_id": "conn_0204",
+    "device_a_id": "device_0167",
+    "device_b_id": "device_0022",
+    "distance": 11.112675575645042
+  },
+  {
+    "connection_id": "conn_0205",
+    "device_a_id": "device_0057",
+    "device_b_id": "device_0190",
+    "distance": 43.57161160822409
+  },
+  {
+    "connection_id": "conn_0206",
+    "device_a_id": "device_0107",
+    "device_b_id": "device_0084",
+    "distance": 18.584121488243056
+  },
+  {
+    "connection_id": "conn_0207",
+    "device_a_id": "device_0149",
+    "device_b_id": "device_0075",
+    "distance": 23.188031409387992
+  },
+  {
+    "connection_id": "conn_0208",
+    "device_a_id": "device_0030",
+    "device_b_id": "device_0120",
+    "distance": 2.6838477203225186
+  },
+  {
+    "connection_id": "conn_0209",
+    "device_a_id": "device_0162",
+    "device_b_id": "device_0149",
+    "distance": 29.015655422322816
+  },
+  {
+    "connection_id": "conn_0210",
+    "device_a_id": "device_0158",
+    "device_b_id": "device_0018",
+    "distance": 23.610984120304156
+  },
+  {
+    "connection_id": "conn_0211",
+    "device_a_id": "device_0049",
+    "device_b_id": "device_0128",
+    "distance": 5.990796859375291
+  },
+  {
+    "connection_id": "conn_0212",
+    "device_a_id": "device_0174",
+    "device_b_id": "device_0097",
+    "distance": 26.491925231499874
+  },
+  {
+    "connection_id": "conn_0213",
+    "device_a_id": "device_0105",
+    "device_b_id": "device_0013",
+    "distance": 43.54245731765023
+  },
+  {
+    "connection_id": "conn_0214",
+    "device_a_id": "device_0038",
+    "device_b_id": "device_0035",
+    "distance": 49.61739264439664
+  },
+  {
+    "connection_id": "conn_0215",
+    "device_a_id": "device_0087",
+    "device_b_id": "device_0104",
+    "distance": 49.359579968975325
+  },
+  {
+    "connection_id": "conn_0216",
+    "device_a_id": "device_0117",
+    "device_b_id": "device_0036",
+    "distance": 15.819172882435446
+  },
+  {
+    "connection_id": "conn_0217",
+    "device_a_id": "device_0183",
+    "device_b_id": "device_0046",
+    "distance": 38.94705887169073
+  },
+  {
+    "connection_id": "conn_0218",
+    "device_a_id": "device_0124",
+    "device_b_id": "device_0085",
+    "distance": 31.55163861313476
+  },
+  {
+    "connection_id": "conn_0219",
+    "device_a_id": "device_0045",
+    "device_b_id": "device_0080",
+    "distance": 31.724948457633552
+  },
+  {
+    "connection_id": "conn_0220",
+    "device_a_id": "device_0001",
+    "device_b_id": "device_0115",
+    "distance": 13.67639311007498
+  },
+  {
+    "connection_id": "conn_0221",
+    "device_a_id": "device_0194",
+    "device_b_id": "device_0198",
+    "distance": 8.430287829145383
+  },
+  {
+    "connection_id": "conn_0222",
+    "device_a_id": "device_0195",
+    "device_b_id": "device_0040",
+    "distance": 24.478854531500822
+  },
+  {
+    "connection_id": "conn_0223",
+    "device_a_id": "device_0195",
+    "device_b_id": "device_0199",
+    "distance": 4.40206718795223
+  },
+  {
+    "connection_id": "conn_0224",
+    "device_a_id": "device_0157",
+    "device_b_id": "device_0111",
+    "distance": 31.67437703512971
+  },
+  {
+    "connection_id": "conn_0225",
+    "device_a_id": "device_0103",
+    "device_b_id": "device_0109",
+    "distance": 48.266392006501654
+  },
+  {
+    "connection_id": "conn_0226",
+    "device_a_id": "device_0098",
+    "device_b_id": "device_0001",
+    "distance": 1.8862659237468993
+  },
+  {
+    "connection_id": "conn_0227",
+    "device_a_id": "device_0051",
+    "device_b_id": "device_0187",
+    "distance": 18.65507027136855
+  },
+  {
+    "connection_id": "conn_0228",
+    "device_a_id": "device_0003",
+    "device_b_id": "device_0082",
+    "distance": 37.84238689885611
+  },
+  {
+    "connection_id": "conn_0229",
+    "device_a_id": "device_0135",
+    "device_b_id": "device_0048",
+    "distance": 0.8958062815473011
+  },
+  {
+    "connection_id": "conn_0230",
+    "device_a_id": "device_0001",
+    "device_b_id": "device_0160",
+    "distance": 36.68016204566625
+  },
+  {
+    "connection_id": "conn_0231",
+    "device_a_id": "device_0057",
+    "device_b_id": "device_0177",
+    "distance": 43.8492567629925
+  },
+  {
+    "connection_id": "conn_0232",
+    "device_a_id": "device_0079",
+    "device_b_id": "device_0033",
+    "distance": 5.135411166977311
+  },
+  {
+    "connection_id": "conn_0233",
+    "device_a_id": "device_0128",
+    "device_b_id": "device_0150",
+    "distance": 15.305754604570637
+  },
+  {
+    "connection_id": "conn_0234",
+    "device_a_id": "device_0016",
+    "device_b_id": "device_0011",
+    "distance": 14.910112674706937
+  },
+  {
+    "connection_id": "conn_0235",
+    "device_a_id": "device_0074",
+    "device_b_id": "device_0116",
+    "distance": 36.39159557234064
+  },
+  {
+    "connection_id": "conn_0236",
+    "device_a_id": "device_0152",
+    "device_b_id": "device_0134",
+    "distance": 16.89175756039665
+  },
+  {
+    "connection_id": "conn_0237",
+    "device_a_id": "device_0175",
+    "device_b_id": "device_0034",
+    "distance": 17.136641962877995
+  },
+  {
+    "connection_id": "conn_0238",
+    "device_a_id": "device_0125",
+    "device_b_id": "device_0091",
+    "distance": 37.50577911303417
+  },
+  {
+    "connection_id": "conn_0239",
+    "device_a_id": "device_0042",
+    "device_b_id": "device_0103",
+    "distance": 0.9562366561659708
+  },
+  {
+    "connection_id": "conn_0240",
+    "device_a_id": "device_0057",
+    "device_b_id": "device_0186",
+    "distance": 49.24397622466302
+  },
+  {
+    "connection_id": "conn_0241",
+    "device_a_id": "device_0054",
+    "device_b_id": "device_0187",
+    "distance": 1.0956636032807943
+  },
+  {
+    "connection_id": "conn_0242",
+    "device_a_id": "device_0129",
+    "device_b_id": "device_0043",
+    "distance": 6.158099087548047
+  },
+  {
+    "connection_id": "conn_0243",
+    "device_a_id": "device_0182",
+    "device_b_id": "device_0166",
+    "distance": 39.60635775229463
+  },
+  {
+    "connection_id": "conn_0244",
+    "device_a_id": "device_0096",
+    "device_b_id": "device_0163",
+    "distance": 12.789458696264644
+  },
+  {
+    "connection_id": "conn_0245",
+    "device_a_id": "device_0136",
+    "device_b_id": "device_0159",
+    "distance": 2.4293480790868625
+  },
+  {
+    "connection_id": "conn_0246",
+    "device_a_id": "device_0012",
+    "device_b_id": "device_0169",
+    "distance": 5.405672510552262
+  },
+  {
+    "connection_id": "conn_0247",
+    "device_a_id": "device_0005",
+    "device_b_id": "device_0012",
+    "distance": 34.487487418871304
+  },
+  {
+    "connection_id": "conn_0248",
+    "device_a_id": "device_0106",
+    "device_b_id": "device_0113",
+    "distance": 19.01268814638073
+  },
+  {
+    "connection_id": "conn_0249",
+    "device_a_id": "device_0140",
+    "device_b_id": "device_0064",
+    "distance": 23.71981691638686
+  },
+  {
+    "connection_id": "conn_0250",
+    "device_a_id": "device_0039",
+    "device_b_id": "device_0052",
+    "distance": 34.759601461045456
+  },
+  {
+    "connection_id": "conn_0251",
+    "device_a_id": "device_0161",
+    "device_b_id": "device_0002",
+    "distance": 15.055822737839614
+  },
+  {
+    "connection_id": "conn_0252",
+    "device_a_id": "device_0169",
+    "device_b_id": "device_0025",
+    "distance": 33.124148294444836
+  },
+  {
+    "connection_id": "conn_0253",
+    "device_a_id": "device_0069",
+    "device_b_id": "device_0159",
+    "distance": 30.281716846200208
+  },
+  {
+    "connection_id": "conn_0254",
+    "device_a_id": "device_0035",
+    "device_b_id": "device_0107",
+    "distance": 41.53263602354449
+  },
+  {
+    "connection_id": "conn_0255",
+    "device_a_id": "device_0026",
+    "device_b_id": "device_0130",
+    "distance": 35.93831122580839
+  },
+  {
+    "connection_id": "conn_0256",
+    "device_a_id": "device_0030",
+    "device_b_id": "device_0072",
+    "distance": 5.700627634212396
+  },
+  {
+    "connection_id": "conn_0257",
+    "device_a_id": "device_0027",
+    "device_b_id": "device_0127",
+    "distance": 9.93233308531411
+  },
+  {
+    "connection_id": "conn_0258",
+    "device_a_id": "device_0051",
+    "device_b_id": "device_0199",
+    "distance": 13.149695780686594
+  },
+  {
+    "connection_id": "conn_0259",
+    "device_a_id": "device_0133",
+    "device_b_id": "device_0051",
+    "distance": 17.896091827540378
+  },
+  {
+    "connection_id": "conn_0260",
+    "device_a_id": "device_0104",
+    "device_b_id": "device_0075",
+    "distance": 8.018679931538442
+  },
+  {
+    "connection_id": "conn_0261",
+    "device_a_id": "device_0140",
+    "device_b_id": "device_0127",
+    "distance": 45.51783137310072
+  },
+  {
+    "connection_id": "conn_0262",
+    "device_a_id": "device_0176",
+    "device_b_id": "device_0123",
+    "distance": 16.53018080983507
+  },
+  {
+    "connection_id": "conn_0263",
+    "device_a_id": "device_0000",
+    "device_b_id": "device_0003",
+    "distance": 33.581656623260244
+  },
+  {
+    "connection_id": "conn_0264",
+    "device_a_id": "device_0028",
+    "device_b_id": "device_0146",
+    "distance": 33.451096525082
+  },
+  {
+    "connection_id": "conn_0265",
+    "device_a_id": "device_0038",
+    "device_b_id": "device_0023",
+    "distance": 38.97631112922182
+  },
+  {
+    "connection_id": "conn_0266",
+    "device_a_id": "device_0019",
+    "device_b_id": "device_0185",
+    "distance": 36.17881242233905
+  },
+  {
+    "connection_id": "conn_0267",
+    "device_a_id": "device_0065",
+    "device_b_id": "device_0164",
+    "distance": 11.558014324587296
+  },
+  {
+    "connection_id": "conn_0268",
+    "device_a_id": "device_0075",
+    "device_b_id": "device_0067",
+    "distance": 23.21386786180742
+  },
+  {
+    "connection_id": "conn_0269",
+    "device_a_id": "device_0025",
+    "device_b_id": "device_0044",
+    "distance": 43.70702245810796
+  },
+  {
+    "connection_id": "conn_0270",
+    "device_a_id": "device_0074",
+    "device_b_id": "device_0092",
+    "distance": 40.07980513452237
+  },
+  {
+    "connection_id": "conn_0271",
+    "device_a_id": "device_0080",
+    "device_b_id": "device_0109",
+    "distance": 36.92700978960881
+  },
+  {
+    "connection_id": "conn_0272",
+    "device_a_id": "device_0024",
+    "device_b_id": "device_0194",
+    "distance": 44.514600577164096
+  },
+  {
+    "connection_id": "conn_0273",
+    "device_a_id": "device_0002",
+    "device_b_id": "device_0035",
+    "distance": 33.1677513745422
+  },
+  {
+    "connection_id": "conn_0274",
+    "device_a_id": "device_0043",
+    "device_b_id": "device_0084",
+    "distance": 17.876370211887217
+  },
+  {
+    "connection_id": "conn_0275",
+    "device_a_id": "device_0112",
+    "device_b_id": "device_0159",
+    "distance": 13.415469929008012
+  },
+  {
+    "connection_id": "conn_0276",
+    "device_a_id": "device_0187",
+    "device_b_id": "device_0023",
+    "distance": 18.63110766372244
+  },
+  {
+    "connection_id": "conn_0277",
+    "device_a_id": "device_0087",
+    "device_b_id": "device_0046",
+    "distance": 5.691599995187485
+  },
+  {
+    "connection_id": "conn_0278",
+    "device_a_id": "device_0102",
+    "device_b_id": "device_0116",
+    "distance": 13.591654537509507
+  },
+  {
+    "connection_id": "conn_0279",
+    "device_a_id": "device_0098",
+    "device_b_id": "device_0176",
+    "distance": 42.5335789018292
+  },
+  {
+    "connection_id": "conn_0280",
+    "device_a_id": "device_0107",
+    "device_b_id": "device_0166",
+    "distance": 44.306194334070966
+  },
+  {
+    "connection_id": "conn_0281",
+    "device_a_id": "device_0042",
+    "device_b_id": "device_0028",
+    "distance": 6.625578811827998
+  },
+  {
+    "connection_id": "conn_0282",
+    "device_a_id": "device_0185",
+    "device_b_id": "device_0015",
+    "distance": 49.07845852615944
+  },
+  {
+    "connection_id": "conn_0283",
+    "device_a_id": "device_0040",
+    "device_b_id": "device_0026",
+    "distance": 20.801385831544827
+  },
+  {
+    "connection_id": "conn_0284",
+    "device_a_id": "device_0151",
+    "device_b_id": "device_0123",
+    "distance": 40.113239202254796
+  },
+  {
+    "connection_id": "conn_0285",
+    "device_a_id": "device_0173",
+    "device_b_id": "device_0112",
+    "distance": 9.063028026865105
+  },
+  {
+    "connection_id": "conn_0286",
+    "device_a_id": "device_0097",
+    "device_b_id": "device_0199",
+    "distance": 17.92994574135483
+  },
+  {
+    "connection_id": "conn_0287",
+    "device_a_id": "device_0007",
+    "device_b_id": "device_0175",
+    "distance": 43.99751232509929
+  },
+  {
+    "connection_id": "conn_0288",
+    "device_a_id": "device_0186",
+    "device_b_id": "device_0033",
+    "distance": 24.153982818274937
+  },
+  {
+    "connection_id": "conn_0289",
+    "device_a_id": "device_0124",
+    "device_b_id": "device_0028",
+    "distance": 44.37969640317718
+  },
+  {
+    "connection_id": "conn_0290",
+    "device_a_id": "device_0112",
+    "device_b_id": "device_0011",
+    "distance": 3.1668023249554866
+  },
+  {
+    "connection_id": "conn_0291",
+    "device_a_id": "device_0167",
+    "device_b_id": "device_0080",
+    "distance": 0.6180106492967019
+  },
+  {
+    "connection_id": "conn_0292",
+    "device_a_id": "device_0173",
+    "device_b_id": "device_0134",
+    "distance": 38.37643591449552
+  },
+  {
+    "connection_id": "conn_0293",
+    "device_a_id": "device_0147",
+    "device_b_id": "device_0185",
+    "distance": 28.25061128436957
+  },
+  {
+    "connection_id": "conn_0294",
+    "device_a_id": "device_0171",
+    "device_b_id": "device_0086",
+    "distance": 25.954983950817272
+  },
+  {
+    "connection_id": "conn_0295",
+    "device_a_id": "device_0176",
+    "device_b_id": "device_0179",
+    "distance": 30.91195080252071
+  },
+  {
+    "connection_id": "conn_0296",
+    "device_a_id": "device_0110",
+    "device_b_id": "device_0169",
+    "distance": 36.332598421192536
+  },
+  {
+    "connection_id": "conn_0297",
+    "device_a_id": "device_0123",
+    "device_b_id": "device_0088",
+    "distance": 33.185532195976215
+  },
+  {
+    "connection_id": "conn_0298",
+    "device_a_id": "device_0164",
+    "device_b_id": "device_0098",
+    "distance": 7.432722612855214
+  },
+  {
+    "connection_id": "conn_0299",
+    "device_a_id": "device_0142",
+    "device_b_id": "device_0156",
+    "distance": 2.728305761383792
+  },
+  {
+    "connection_id": "conn_0300",
+    "device_a_id": "device_0164",
+    "device_b_id": "device_0040",
+    "distance": 25.27837859423666
+  },
+  {
+    "connection_id": "conn_0301",
+    "device_a_id": "device_0120",
+    "device_b_id": "device_0126",
+    "distance": 43.4707817306384
+  },
+  {
+    "connection_id": "conn_0302",
+    "device_a_id": "device_0019",
+    "device_b_id": "device_0192",
+    "distance": 24.58239805722006
+  },
+  {
+    "connection_id": "conn_0303",
+    "device_a_id": "device_0061",
+    "device_b_id": "device_0084",
+    "distance": 48.50725243917001
+  },
+  {
+    "connection_id": "conn_0304",
+    "device_a_id": "device_0012",
+    "device_b_id": "device_0129",
+    "distance": 11.135326158439952
+  },
+  {
+    "connection_id": "conn_0305",
+    "device_a_id": "device_0164",
+    "device_b_id": "device_0096",
+    "distance": 20.163849673086144
+  },
+  {
+    "connection_id": "conn_0306",
+    "device_a_id": "device_0060",
+    "device_b_id": "device_0020",
+    "distance": 22.95472973741176
+  },
+  {
+    "connection_id": "conn_0307",
+    "device_a_id": "device_0146",
+    "device_b_id": "device_0114",
+    "distance": 4.4009930851270305
+  },
+  {
+    "connection_id": "conn_0308",
+    "device_a_id": "device_0127",
+    "device_b_id": "device_0114",
+    "distance": 15.80307637106882
+  },
+  {
+    "connection_id": "conn_0309",
+    "device_a_id": "device_0127",
+    "device_b_id": "device_0190",
+    "distance": 32.66865015691859
+  },
+  {
+    "connection_id": "conn_0310",
+    "device_a_id": "device_0026",
+    "device_b_id": "device_0103",
+    "distance": 20.616927383777472
+  },
+  {
+    "connection_id": "conn_0311",
+    "device_a_id": "device_0142",
+    "device_b_id": "device_0140",
+    "distance": 0.008485773916822037
+  },
+  {
+    "connection_id": "conn_0312",
+    "device_a_id": "device_0023",
+    "device_b_id": "device_0154",
+    "distance": 48.15856241400024
+  },
+  {
+    "connection_id": "conn_0313",
+    "device_a_id": "device_0163",
+    "device_b_id": "device_0077",
+    "distance": 44.50554494125312
+  },
+  {
+    "connection_id": "conn_0314",
+    "device_a_id": "device_0143",
+    "device_b_id": "device_0052",
+    "distance": 32.72979917804687
+  },
+  {
+    "connection_id": "conn_0315",
+    "device_a_id": "device_0116",
+    "device_b_id": "device_0087",
+    "distance": 18.16712387849055
+  },
+  {
+    "connection_id": "conn_0316",
+    "device_a_id": "device_0013",
+    "device_b_id": "device_0057",
+    "distance": 42.21587198021262
+  },
+  {
+    "connection_id": "conn_0317",
+    "device_a_id": "device_0084",
+    "device_b_id": "device_0143",
+    "distance": 38.37081999322696
+  },
+  {
+    "connection_id": "conn_0318",
+    "device_a_id": "device_0153",
+    "device_b_id": "device_0121",
+    "distance": 35.8329034064588
+  },
+  {
+    "connection_id": "conn_0319",
+    "device_a_id": "device_0093",
+    "device_b_id": "device_0183",
+    "distance": 22.626622808733345
+  },
+  {
+    "connection_id": "conn_0320",
+    "device_a_id": "device_0024",
+    "device_b_id": "device_0194",
+    "distance": 32.9455126903009
+  },
+  {
+    "connection_id": "conn_0321",
+    "device_a_id": "device_0000",
+    "device_b_id": "device_0087",
+    "distance": 17.75694892923678
+  },
+  {
+    "connection_id": "conn_0322",
+    "device_a_id": "device_0162",
+    "device_b_id": "device_0074",
+    "distance": 27.38452908470671
+  },
+  {
+    "connection_id": "conn_0323",
+    "device_a_id": "device_0095",
+    "device_b_id": "device_0179",
+    "distance": 5.3161114624806105
+  },
+  {
+    "connection_id": "conn_0324",
+    "device_a_id": "device_0042",
+    "device_b_id": "device_0126",
+    "distance": 7.022459366112443
+  },
+  {
+    "connection_id": "conn_0325",
+    "device_a_id": "device_0183",
+    "device_b_id": "device_0190",
+    "distance": 36.077954772565796
+  },
+  {
+    "connection_id": "conn_0326",
+    "device_a_id": "device_0027",
+    "device_b_id": "device_0065",
+    "distance": 30.54258830693419
+  },
+  {
+    "connection_id": "conn_0327",
+    "device_a_id": "device_0048",
+    "device_b_id": "device_0030",
+    "distance": 46.510812957657265
+  },
+  {
+    "connection_id": "conn_0328",
+    "device_a_id": "device_0100",
+    "device_b_id": "device_0055",
+    "distance": 22.852300414649445
+  },
+  {
+    "connection_id": "conn_0329",
+    "device_a_id": "device_0048",
+    "device_b_id": "device_0183",
+    "distance": 16.896677429886807
+  },
+  {
+    "connection_id": "conn_0330",
+    "device_a_id": "device_0193",
+    "device_b_id": "device_0106",
+    "distance": 2.325018095458492
+  },
+  {
+    "connection_id": "conn_0331",
+    "device_a_id": "device_0162",
+    "device_b_id": "device_0172",
+    "distance": 29.440555394895068
+  },
+  {
+    "connection_id": "conn_0332",
+    "device_a_id": "device_0197",
+    "device_b_id": "device_0115",
+    "distance": 22.86939384730782
+  },
+  {
+    "connection_id": "conn_0333",
+    "device_a_id": "device_0150",
+    "device_b_id": "device_0129",
+    "distance": 6.731800721531639
+  },
+  {
+    "connection_id": "conn_0334",
+    "device_a_id": "device_0127",
+    "device_b_id": "device_0001",
+    "distance": 26.51821737595421
+  },
+  {
+    "connection_id": "conn_0335",
+    "device_a_id": "device_0012",
+    "device_b_id": "device_0141",
+    "distance": 46.76541404158263
+  },
+  {
+    "connection_id": "conn_0336",
+    "device_a_id": "device_0149",
+    "device_b_id": "device_0123",
+    "distance": 46.21854368907694
+  },
+  {
+    "connection_id": "conn_0337",
+    "device_a_id": "device_0199",
+    "device_b_id": "device_0045",
+    "distance": 34.59088563120156
+  },
+  {
+    "connection_id": "conn_0338",
+    "device_a_id": "device_0044",
+    "device_b_id": "device_0187",
+    "distance": 40.762207704924705
+  },
+  {
+    "connection_id": "conn_0339",
+    "device_a_id": "device_0026",
+    "device_b_id": "device_0099",
+    "distance": 32.87609055658654
+  },
+  {
+    "connection_id": "conn_0340",
+    "device_a_id": "device_0155",
+    "device_b_id": "device_0082",
+    "distance": 25.20550596765822
+  },
+  {
+    "connection_id": "conn_0341",
+    "device_a_id": "device_0098",
+    "device_b_id": "device_0107",
+    "distance": 48.97503801025215
+  },
+  {
+    "connection_id": "conn_0342",
+    "device_a_id": "device_0177",
+    "device_b_id": "device_0195",
+    "distance": 12.411939454673181
+  },
+  {
+    "connection_id": "conn_0343",
+    "device_a_id": "device_0101",
+    "device_b_id": "device_0087",
+    "distance": 48.52458249560503
+  },
+  {
+    "connection_id": "conn_0344",
+    "device_a_id": "device_0115",
+    "device_b_id": "device_0034",
+    "distance": 6.9090002822672805
+  },
+  {
+    "connection_id": "conn_0345",
+    "device_a_id": "device_0154",
+    "device_b_id": "device_0179",
+    "distance": 44.32184277043747
+  },
+  {
+    "connection_id": "conn_0346",
+    "device_a_id": "device_0131",
+    "device_b_id": "device_0076",
+    "distance": 42.15372156407472
+  },
+  {
+    "connection_id": "conn_0347",
+    "device_a_id": "device_0140",
+    "device_b_id": "device_0080",
+    "distance": 35.59371781975725
+  },
+  {
+    "connection_id": "conn_0348",
+    "device_a_id": "device_0141",
+    "device_b_id": "device_0161",
+    "distance": 10.86712785098295
+  },
+  {
+    "connection_id": "conn_0349",
+    "device_a_id": "device_0053",
+    "device_b_id": "device_0159",
+    "distance": 35.719226781494726
+  },
+  {
+    "connection_id": "conn_0350",
+    "device_a_id": "device_0175",
+    "device_b_id": "device_0088",
+    "distance": 46.05958822085474
+  },
+  {
+    "connection_id": "conn_0351",
+    "device_a_id": "device_0033",
+    "device_b_id": "device_0181",
+    "distance": 32.5043193903489
+  },
+  {
+    "connection_id": "conn_0352",
+    "device_a_id": "device_0045",
+    "device_b_id": "device_0128",
+    "distance": 27.124573921528444
+  },
+  {
+    "connection_id": "conn_0353",
+    "device_a_id": "device_0163",
+    "device_b_id": "device_0082",
+    "distance": 35.51763635702627
+  },
+  {
+    "connection_id": "conn_0354",
+    "device_a_id": "device_0194",
+    "device_b_id": "device_0090",
+    "distance": 28.114010572571274
+  },
+  {
+    "connection_id": "conn_0355",
+    "device_a_id": "device_0149",
+    "device_b_id": "device_0146",
+    "distance": 47.13368254421548
+  },
+  {
+    "connection_id": "conn_0356",
+    "device_a_id": "device_0181",
+    "device_b_id": "device_0106",
+    "distance": 33.71217427695867
+  },
+  {
+    "connection_id": "conn_0357",
+    "device_a_id": "device_0136",
+    "device_b_id": "device_0073",
+    "distance": 43.87386174771975
+  },
+  {
+    "connection_id": "conn_0358",
+    "device_a_id": "device_0108",
+    "device_b_id": "device_0003",
+    "distance": 26.136499310460117
+  },
+  {
+    "connection_id": "conn_0359",
+    "device_a_id": "device_0006",
+    "device_b_id": "device_0097",
+    "distance": 7.266335581639777
+  },
+  {
+    "connection_id": "conn_0360",
+    "device_a_id": "device_0171",
+    "device_b_id": "device_0014",
+    "distance": 9.99512086323584
+  },
+  {
+    "connection_id": "conn_0361",
+    "device_a_id": "device_0192",
+    "device_b_id": "device_0041",
+    "distance": 49.176619681200215
+  },
+  {
+    "connection_id": "conn_0362",
+    "device_a_id": "device_0174",
+    "device_b_id": "device_0064",
+    "distance": 7.321419507034799
+  },
+  {
+    "connection_id": "conn_0363",
+    "device_a_id": "device_0015",
+    "device_b_id": "device_0176",
+    "distance": 39.21787004736832
+  },
+  {
+    "connection_id": "conn_0364",
+    "device_a_id": "device_0052",
+    "device_b_id": "device_0192",
+    "distance": 27.058604371661833
+  },
+  {
+    "connection_id": "conn_0365",
+    "device_a_id": "device_0091",
+    "device_b_id": "device_0115",
+    "distance": 5.12400031689883
+  },
+  {
+    "connection_id": "conn_0366",
+    "device_a_id": "device_0172",
+    "device_b_id": "device_0189",
+    "distance": 28.094249168351844
+  },
+  {
+    "connection_id": "conn_0367",
+    "device_a_id": "device_0057",
+    "device_b_id": "device_0190",
+    "distance": 32.35597221600657
+  },
+  {
+    "connection_id": "conn_0368",
+    "device_a_id": "device_0099",
+    "device_b_id": "device_0060",
+    "distance": 25.54611518394469
+  },
+  {
+    "connection_id": "conn_0369",
+    "device_a_id": "device_0178",
+    "device_b_id": "device_0073",
+    "distance": 34.64680376071243
+  },
+  {
+    "connection_id": "conn_0370",
+    "device_a_id": "device_0012",
+    "device_b_id": "device_0097",
+    "distance": 19.377732432099513
+  },
+  {
+    "connection_id": "conn_0371",
+    "device_a_id": "device_0175",
+    "device_b_id": "device_0080",
+    "distance": 48.291660678433104
+  },
+  {
+    "connection_id": "conn_0372",
+    "device_a_id": "device_0013",
+    "device_b_id": "device_0003",
+    "distance": 37.18349831228745
+  },
+  {
+    "connection_id": "conn_0373",
+    "device_a_id": "device_0051",
+    "device_b_id": "device_0158",
+    "distance": 43.4424980658758
+  },
+  {
+    "connection_id": "conn_0374",
+    "device_a_id": "device_0113",
+    "device_b_id": "device_0057",
+    "distance": 45.57431885368693
+  },
+  {
+    "connection_id": "conn_0375",
+    "device_a_id": "device_0180",
+    "device_b_id": "device_0181",
+    "distance": 32.38161927750003
+  },
+  {
+    "connection_id": "conn_0376",
+    "device_a_id": "device_0193",
+    "device_b_id": "device_0150",
+    "distance": 27.330756835062065
+  },
+  {
+    "connection_id": "conn_0377",
+    "device_a_id": "device_0154",
+    "device_b_id": "device_0050",
+    "distance": 38.80733725611661
+  },
+  {
+    "connection_id": "conn_0378",
+    "device_a_id": "device_0049",
+    "device_b_id": "device_0075",
+    "distance": 22.4407461201496
+  },
+  {
+    "connection_id": "conn_0379",
+    "device_a_id": "device_0174",
+    "device_b_id": "device_0019",
+    "distance": 9.348829076616184
+  },
+  {
+    "connection_id": "conn_0380",
+    "device_a_id": "device_0044",
+    "device_b_id": "device_0188",
+    "distance": 25.692342638728693
+  },
+  {
+    "connection_id": "conn_0381",
+    "device_a_id": "device_0096",
+    "device_b_id": "device_0010",
+    "distance": 21.425390720036713
+  },
+  {
+    "connection_id": "conn_0382",
+    "device_a_id": "device_0142",
+    "device_b_id": "device_0067",
+    "distance": 6.503326505768614
+  },
+  {
+    "connection_id": "conn_0383",
+    "device_a_id": "device_0149",
+    "device_b_id": "device_0065",
+    "distance": 0.28225680089100647
+  },
+  {
+    "connection_id": "conn_0384",
+    "device_a_id": "device_0119",
+    "device_b_id": "device_0181",
+    "distance": 46.87472252354238
+  },
+  {
+    "connection_id": "conn_0385",
+    "device_a_id": "device_0010",
+    "device_b_id": "device_0039",
+    "distance": 46.43141192295776
+  },
+  {
+    "connection_id": "conn_0386",
+    "device_a_id": "device_0152",
+    "device_b_id": "device_0013",
+    "distance": 38.6830474929444
+  },
+  {
+    "connection_id": "conn_0387",
+    "device_a_id": "device_0160",
+    "device_b_id": "device_0157",
+    "distance": 42.15699905972563
+  },
+  {
+    "connection_id": "conn_0388",
+    "device_a_id": "device_0077",
+    "device_b_id": "device_0125",
+    "distance": 39.49540912087149
+  },
+  {
+    "connection_id": "conn_0389",
+    "device_a_id": "device_0140",
+    "device_b_id": "device_0091",
+    "distance": 3.644039773952751
+  },
+  {
+    "connection_id": "conn_0390",
+    "device_a_id": "device_0181",
+    "device_b_id": "device_0081",
+    "distance": 26.26975335924402
+  },
+  {
+    "connection_id": "conn_0391",
+    "device_a_id": "device_0047",
+    "device_b_id": "device_0133",
+    "distance": 3.4088234552212935
+  },
+  {
+    "connection_id": "conn_0392",
+    "device_a_id": "device_0129",
+    "device_b_id": "device_0040",
+    "distance": 20.796562188521083
+  },
+  {
+    "connection_id": "conn_0393",
+    "device_a_id": "device_0137",
+    "device_b_id": "device_0103",
+    "distance": 4.597277696953323
+  },
+  {
+    "connection_id": "conn_0394",
+    "device_a_id": "device_0056",
+    "device_b_id": "device_0054",
+    "distance": 33.16672382201385
+  },
+  {
+    "connection_id": "conn_0395",
+    "device_a_id": "device_0084",
+    "device_b_id": "device_0092",
+    "distance": 14.678717858510193
+  },
+  {
+    "connection_id": "conn_0396",
+    "device_a_id": "device_0192",
+    "device_b_id": "device_0158",
+    "distance": 26.52494478034123
+  },
+  {
+    "connection_id": "conn_0397",
+    "device_a_id": "device_0143",
+    "device_b_id": "device_0192",
+    "distance": 49.056659880764826
+  },
+  {
+    "connection_id": "conn_0398",
+    "device_a_id": "device_0002",
+    "device_b_id": "device_0029",
+    "distance": 33.44692339971933
+  },
+  {
+    "connection_id": "conn_0399",
+    "device_a_id": "device_0114",
+    "device_b_id": "device_0061",
+    "distance": 45.224822924384604
+  },
+  {
+    "connection_id": "conn_0400",
+    "device_a_id": "device_0157",
+    "device_b_id": "device_0159",
+    "distance": 12.191358193344183
+  },
+  {
+    "connection_id": "conn_0401",
+    "device_a_id": "device_0010",
+    "device_b_id": "device_0174",
+    "distance": 44.283007949939744
+  },
+  {
+    "connection_id": "conn_0402",
+    "device_a_id": "device_0097",
+    "device_b_id": "device_0029",
+    "distance": 19.293796739202197
+  },
+  {
+    "connection_id": "conn_0403",
+    "device_a_id": "device_0138",
+    "device_b_id": "device_0185",
+    "distance": 14.141449713969873
+  },
+  {
+    "connection_id": "conn_0404",
+    "device_a_id": "device_0132",
+    "device_b_id": "device_0197",
+    "distance": 18.747902108098955
+  },
+  {
+    "connection_id": "conn_0405",
+    "device_a_id": "device_0130",
+    "device_b_id": "device_0114",
+    "distance": 24.34023545825916
+  },
+  {
+    "connection_id": "conn_0406",
+    "device_a_id": "device_0075",
+    "device_b_id": "device_0166",
+    "distance": 9.625619396683854
+  },
+  {
+    "connection_id": "conn_0407",
+    "device_a_id": "device_0131",
+    "device_b_id": "device_0021",
+    "distance": 47.4105909824209
+  },
+  {
+    "connection_id": "conn_0408",
+    "device_a_id": "device_0042",
+    "device_b_id": "device_0197",
+    "distance": 26.898741548212552
+  },
+  {
+    "connection_id": "conn_0409",
+    "device_a_id": "device_0001",
+    "device_b_id": "device_0160",
+    "distance": 3.2735911051859965
+  },
+  {
+    "connection_id": "conn_0410",
+    "device_a_id": "device_0171",
+    "device_b_id": "device_0161",
+    "distance": 38.679113318463834
+  },
+  {
+    "connection_id": "conn_0411",
+    "device_a_id": "device_0175",
+    "device_b_id": "device_0108",
+    "distance": 41.78325388726846
+  },
+  {
+    "connection_id": "conn_0412",
+    "device_a_id": "device_0052",
+    "device_b_id": "device_0137",
+    "distance": 41.43743354929345
+  },
+  {
+    "connection_id": "conn_0413",
+    "device_a_id": "device_0189",
+    "device_b_id": "device_0198",
+    "distance": 21.761888133943508
+  },
+  {
+    "connection_id": "conn_0414",
+    "device_a_id": "device_0018",
+    "device_b_id": "device_0191",
+    "distance": 34.30217696493662
+  },
+  {
+    "connection_id": "conn_0415",
+    "device_a_id": "device_0006",
+    "device_b_id": "device_0117",
+    "distance": 35.84341419179565
+  },
+  {
+    "connection_id": "conn_0416",
+    "device_a_id": "device_0009",
+    "device_b_id": "device_0022",
+    "distance": 3.662401457975828
+  },
+  {
+    "connection_id": "conn_0417",
+    "device_a_id": "device_0045",
+    "device_b_id": "device_0064",
+    "distance": 27.90421026589054
+  },
+  {
+    "connection_id": "conn_0418",
+    "device_a_id": "device_0147",
+    "device_b_id": "device_0058",
+    "distance": 45.54932872155605
+  },
+  {
+    "connection_id": "conn_0419",
+    "device_a_id": "device_0104",
+    "device_b_id": "device_0099",
+    "distance": 22.556283187202087
+  },
+  {
+    "connection_id": "conn_0420",
+    "device_a_id": "device_0103",
+    "device_b_id": "device_0110",
+    "distance": 15.820212295983344
+  },
+  {
+    "connection_id": "conn_0421",
+    "device_a_id": "device_0099",
+    "device_b_id": "device_0172",
+    "distance": 5.915288081330944
+  },
+  {
+    "connection_id": "conn_0422",
+    "device_a_id": "device_0001",
+    "device_b_id": "device_0164",
+    "distance": 36.014284051339835
+  },
+  {
+    "connection_id": "conn_0423",
+    "device_a_id": "device_0016",
+    "device_b_id": "device_0193",
+    "distance": 37.29755155206025
+  },
+  {
+    "connection_id": "conn_0424",
+    "device_a_id": "device_0011",
+    "device_b_id": "device_0179",
+    "distance": 42.41256195030713
+  },
+  {
+    "connection_id": "conn_0425",
+    "device_a_id": "device_0091",
+    "device_b_id": "device_0128",
+    "distance": 5.306777093498627
+  },
+  {
+    "connection_id": "conn_0426",
+    "device_a_id": "device_0175",
+    "device_b_id": "device_0077",
+    "distance": 30.32829205934153
+  },
+  {
+    "connection_id": "conn_0427",
+    "device_a_id": "device_0072",
+    "device_b_id": "device_0195",
+    "distance": 46.33454398724293
+  },
+  {
+    "connection_id": "conn_0428",
+    "device_a_id": "device_0097",
+    "device_b_id": "device_0101",
+    "distance": 41.10611850795268
+  },
+  {
+    "connection_id": "conn_0429",
+    "device_a_id": "device_0007",
+    "device_b_id": "device_0121",
+    "distance": 7.816173707495539
+  },
+  {
+    "connection_id": "conn_0430",
+    "device_a_id": "device_0056",
+    "device_b_id": "device_0034",
+    "distance": 37.337695580345596
+  },
+  {
+    "connection_id": "conn_0431",
+    "device_a_id": "device_0139",
+    "device_b_id": "device_0075",
+    "distance": 48.006713254021726
+  },
+  {
+    "connection_id": "conn_0432",
+    "device_a_id": "device_0036",
+    "device_b_id": "device_0076",
+    "distance": 33.86445227525313
+  },
+  {
+    "connection_id": "conn_0433",
+    "device_a_id": "device_0186",
+    "device_b_id": "device_0165",
+    "distance": 18.6565257450162
+  },
+  {
+    "connection_id": "conn_0434",
+    "device_a_id": "device_0002",
+    "device_b_id": "device_0141",
+    "distance": 43.73834638113892
+  },
+  {
+    "connection_id": "conn_0435",
+    "device_a_id": "device_0036",
+    "device_b_id": "device_0031",
+    "distance": 2.0886570233962787
+  },
+  {
+    "connection_id": "conn_0436",
+    "device_a_id": "device_0146",
+    "device_b_id": "device_0152",
+    "distance": 19.704085043501866
+  },
+  {
+    "connection_id": "conn_0437",
+    "device_a_id": "device_0140",
+    "device_b_id": "device_0021",
+    "distance": 15.234557617475419
+  },
+  {
+    "connection_id": "conn_0438",
+    "device_a_id": "device_0191",
+    "device_b_id": "device_0189",
+    "distance": 45.17731879872729
+  },
+  {
+    "connection_id": "conn_0439",
+    "device_a_id": "device_0088",
+    "device_b_id": "device_0054",
+    "distance": 20.632724801312396
+  },
+  {
+    "connection_id": "conn_0440",
+    "device_a_id": "device_0165",
+    "device_b_id": "device_0131",
+    "distance": 7.1227558556774095
+  },
+  {
+    "connection_id": "conn_0441",
+    "device_a_id": "device_0047",
+    "device_b_id": "device_0056",
+    "distance": 30.84424616200788
+  },
+  {
+    "connection_id": "conn_0442",
+    "device_a_id": "device_0064",
+    "device_b_id": "device_0049",
+    "distance": 5.731127106159173
+  },
+  {
+    "connection_id": "conn_0443",
+    "device_a_id": "device_0171",
+    "device_b_id": "device_0145",
+    "distance": 42.61255638837378
+  },
+  {
+    "connection_id": "conn_0444",
+    "device_a_id": "device_0192",
+    "device_b_id": "device_0140",
+    "distance": 23.063260184479695
+  },
+  {
+    "connection_id": "conn_0445",
+    "device_a_id": "device_0140",
+    "device_b_id": "device_0018",
+    "distance": 14.532633376004267
+  },
+  {
+    "connection_id": "conn_0446",
+    "device_a_id": "device_0017",
+    "device_b_id": "device_0064",
+    "distance": 4.910120069018598
+  },
+  {
+    "connection_id": "conn_0447",
+    "device_a_id": "device_0185",
+    "device_b_id": "device_0148",
+    "distance": 24.359520506687428
+  },
+  {
+    "connection_id": "conn_0448",
+    "device_a_id": "device_0084",
+    "device_b_id": "device_0091",
+    "distance": 6.410757329797578
+  },
+  {
+    "connection_id": "conn_0449",
+    "device_a_id": "device_0167",
+    "device_b_id": "device_0060",
+    "distance": 5.002252863771145
+  },
+  {
+    "connection_id": "conn_0450",
+    "device_a_id": "device_0158",
+    "device_b_id": "device_0017",
+    "distance": 45.00592954214609
+  },
+  {
+    "connection_id": "conn_0451",
+    "device_a_id": "device_0081",
+    "device_b_id": "device_0124",
+    "distance": 22.53229891074675
+  },
+  {
+    "connection_id": "conn_0452",
+    "device_a_id": "device_0157",
+    "device_b_id": "device_0168",
+    "distance": 15.283774470336036
+  },
+  {
+    "connection_id": "conn_0453",
+    "device_a_id": "device_0149",
+    "device_b_id": "device_0039",
+    "distance": 28.277600395255494
+  },
+  {
+    "connection_id": "conn_0454",
+    "device_a_id": "device_0093",
+    "device_b_id": "device_0080",
+    "distance": 47.93294609647519
+  },
+  {
+    "connection_id": "conn_0455",
+    "device_a_id": "device_0043",
+    "device_b_id": "device_0001",
+    "distance": 15.660739036714705
+  },
+  {
+    "connection_id": "conn_0456",
+    "device_a_id": "device_0056",
+    "device_b_id": "device_0182",
+    "distance": 36.99081079693084
+  },
+  {
+    "connection_id": "conn_0457",
+    "device_a_id": "device_0111",
+    "device_b_id": "device_0070",
+    "distance": 42.005502939032766
+  },
+  {
+    "connection_id": "conn_0458",
+    "device_a_id": "device_0034",
+    "device_b_id": "device_0173",
+    "distance": 36.64863978757074
+  },
+  {
+    "connection_id": "conn_0459",
+    "device_a_id": "device_0122",
+    "device_b_id": "device_0118",
+    "distance": 22.26789867831081
+  },
+  {
+    "connection_id": "conn_0460",
+    "device_a_id": "device_0198",
+    "device_b_id": "device_0078",
+    "distance": 24.34856912183457
+  },
+  {
+    "connection_id": "conn_0461",
+    "device_a_id": "device_0027",
+    "device_b_id": "device_0044",
+    "distance": 32.27758020409482
+  },
+  {
+    "connection_id": "conn_0462",
+    "device_a_id": "device_0020",
+    "device_b_id": "device_0071",
+    "distance": 42.93568276853996
+  },
+  {
+    "connection_id": "conn_0463",
+    "device_a_id": "device_0035",
+    "device_b_id": "device_0137",
+    "distance": 9.821596467209847
+  },
+  {
+    "connection_id": "conn_0464",
+    "device_a_id": "device_0187",
+    "device_b_id": "device_0160",
+    "distance": 3.823118927860769
+  },
+  {
+    "connection_id": "conn_0465",
+    "device_a_id": "device_0019",
+    "device_b_id": "device_0004",
+    "distance": 42.47936364530709
+  },
+  {
+    "connection_id": "conn_0466",
+    "device_a_id": "device_0161",
+    "device_b_id": "device_0007",
+    "distance": 40.63211999158952
+  },
+  {
+    "connection_id": "conn_0467",
+    "device_a_id": "device_0148",
+    "device_b_id": "device_0103",
+    "distance": 38.4600127451257
+  },
+  {
+    "connection_id": "conn_0468",
+    "device_a_id": "device_0054",
+    "device_b_id": "device_0009",
+    "distance": 27.579699926307917
+  },
+  {
+    "connection_id": "conn_0469",
+    "device_a_id": "device_0139",
+    "device_b_id": "device_0138",
+    "distance": 23.605197539146296
+  },
+  {
+    "connection_id": "conn_0470",
+    "device_a_id": "device_0198",
+    "device_b_id": "device_0038",
+    "distance": 18.290931505150475
+  },
+  {
+    "connection_id": "conn_0471",
+    "device_a_id": "device_0057",
+    "device_b_id": "device_0197",
+    "distance": 29.480037738839844
+  },
+  {
+    "connection_id": "conn_0472",
+    "device_a_id": "device_0074",
+    "device_b_id": "device_0034",
+    "distance": 23.23505710852264
+  },
+  {
+    "connection_id": "conn_0473",
+    "device_a_id": "device_0130",
+    "device_b_id": "device_0023",
+    "distance": 19.839257882485374
+  },
+  {
+    "connection_id": "conn_0474",
+    "device_a_id": "device_0128",
+    "device_b_id": "device_0002",
+    "distance": 33.133924468934836
+  },
+  {
+    "connection_id": "conn_0475",
+    "device_a_id": "device_0157",
+    "device_b_id": "device_0175",
+    "distance": 8.292177601607914
+  },
+  {
+    "connection_id": "conn_0476",
+    "device_a_id": "device_0131",
+    "device_b_id": "device_0035",
+    "distance": 22.311022191950087
+  },
+  {
+    "connection_id": "conn_0477",
+    "device_a_id": "device_0045",
+    "device_b_id": "device_0144",
+    "distance": 47.43559158064892
+  },
+  {
+    "connection_id": "conn_0478",
+    "device_a_id": "device_0168",
+    "device_b_id": "device_0037",
+    "distance": 36.795990441741225
+  },
+  {
+    "connection_id": "conn_0479",
+    "device_a_id": "device_0123",
+    "device_b_id": "device_0091",
+    "distance": 2.020991302586761
+  },
+  {
+    "connection_id": "conn_0480",
+    "device_a_id": "device_0194",
+    "device_b_id": "device_0124",
+    "distance": 11.58749538021578
+  },
+  {
+    "connection_id": "conn_0481",
+    "device_a_id": "device_0067",
+    "device_b_id": "device_0094",
+    "distance": 11.700933442565958
+  },
+  {
+    "connection_id": "conn_0482",
+    "device_a_id": "device_0171",
+    "device_b_id": "device_0052",
+    "distance": 25.894261489706516
+  },
+  {
+    "connection_id": "conn_0483",
+    "device_a_id": "device_0092",
+    "device_b_id": "device_0099",
+    "distance": 23.483711450510448
+  },
+  {
+    "connection_id": "conn_0484",
+    "device_a_id": "device_0116",
+    "device_b_id": "device_0011",
+    "distance": 1.9952349292448823
+  },
+  {
+    "connection_id": "conn_0485",
+    "device_a_id": "device_0166",
+    "device_b_id": "device_0082",
+    "distance": 5.161250644824
+  },
+  {
+    "connection_id": "conn_0486",
+    "device_a_id": "device_0133",
+    "device_b_id": "device_0162",
+    "distance": 41.48235778268251
+  },
+  {
+    "connection_id": "conn_0487",
+    "device_a_id": "device_0189",
+    "device_b_id": "device_0067",
+    "distance": 28.931571746002906
+  },
+  {
+    "connection_id": "conn_0488",
+    "device_a_id": "device_0145",
+    "device_b_id": "device_0044",
+    "distance": 18.832978477208055
+  },
+  {
+    "connection_id": "conn_0489",
+    "device_a_id": "device_0096",
+    "device_b_id": "device_0093",
+    "distance": 29.38394123812636
+  },
+  {
+    "connection_id": "conn_0490",
+    "device_a_id": "device_0019",
+    "device_b_id": "device_0132",
+    "distance": 12.57932051134436
+  },
+  {
+    "connection_id": "conn_0491",
+    "device_a_id": "device_0057",
+    "device_b_id": "device_0132",
+    "distance": 20.29211012754515
+  },
+  {
+    "connection_id": "conn_0492",
+    "device_a_id": "device_0088",
+    "device_b_id": "device_0124",
+    "distance": 39.63287267167497
+  },
+  {
+    "connection_id": "conn_0493",
+    "device_a_id": "device_0154",
+    "device_b_id": "device_0001",
+    "distance": 25.09184922353709
+  },
+  {
+    "connection_id": "conn_0494",
+    "device_a_id": "device_0035",
+    "device_b_id": "device_0112",
+    "distance": 8.280291121449606
+  },
+  {
+    "connection_id": "conn_0495",
+    "device_a_id": "device_0019",
+    "device_b_id": "device_0131",
+    "distance": 32.173850119415484
+  },
+  {
+    "connection_id": "conn_0496",
+    "device_a_id": "device_0054",
+    "device_b_id": "device_0038",
+    "distance": 9.34528379043838
+  },
+  {
+    "connection_id": "conn_0497",
+    "device_a_id": "device_0092",
+    "device_b_id": "device_0154",
+    "distance": 35.86513542270477
+  },
+  {
+    "connection_id": "conn_0498",
+    "device_a_id": "device_0030",
+    "device_b_id": "device_0169",
+    "distance": 11.51731662996623
+  },
+  {
+    "connection_id": "conn_0499",
+    "device_a_id": "device_0084",
+    "device_b_id": "device_0184",
+    "distance": 5.666934878199043
+  }
+]

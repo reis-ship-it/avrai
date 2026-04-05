@@ -1,0 +1,380 @@
+[
+  {
+    "event_id": "event_0002",
+    "partnership_id": "partnership_0028",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0004",
+    "partnership_id": "partnership_0006",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0010",
+    "partnership_id": "partnership_0028",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0021",
+    "partnership_id": "partnership_0049",
+    "severity": "HIGH",
+    "reason": "Category exclusivity violation"
+  },
+  {
+    "event_id": "event_0022",
+    "partnership_id": "partnership_0034",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0027",
+    "partnership_id": "partnership_0043",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0034",
+    "partnership_id": "partnership_0032",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0038",
+    "partnership_id": "partnership_0015",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0047",
+    "partnership_id": "partnership_0017",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0049",
+    "partnership_id": "partnership_0005",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0053",
+    "partnership_id": "partnership_0036",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0055",
+    "partnership_id": "partnership_0034",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0057",
+    "partnership_id": "partnership_0042",
+    "severity": "HIGH",
+    "reason": "Category exclusivity violation"
+  },
+  {
+    "event_id": "event_0058",
+    "partnership_id": "partnership_0039",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0063",
+    "partnership_id": "partnership_0034",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0067",
+    "partnership_id": "partnership_0049",
+    "severity": "HIGH",
+    "reason": "Category exclusivity violation"
+  },
+  {
+    "event_id": "event_0069",
+    "partnership_id": "partnership_0006",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0074",
+    "partnership_id": "partnership_0041",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0076",
+    "partnership_id": "partnership_0045",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0077",
+    "partnership_id": "partnership_0017",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0079",
+    "partnership_id": "partnership_0015",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0080",
+    "partnership_id": "partnership_0029",
+    "severity": "HIGH",
+    "reason": "Category exclusivity violation"
+  },
+  {
+    "event_id": "event_0086",
+    "partnership_id": "partnership_0014",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0094",
+    "partnership_id": "partnership_0034",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0099",
+    "partnership_id": "partnership_0003",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0103",
+    "partnership_id": "partnership_0036",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0107",
+    "partnership_id": "partnership_0014",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0112",
+    "partnership_id": "partnership_0028",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0113",
+    "partnership_id": "partnership_0017",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0117",
+    "partnership_id": "partnership_0036",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0118",
+    "partnership_id": "partnership_0041",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0119",
+    "partnership_id": "partnership_0027",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0125",
+    "partnership_id": "partnership_0023",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0126",
+    "partnership_id": "partnership_0003",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0127",
+    "partnership_id": "partnership_0028",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0128",
+    "partnership_id": "partnership_0015",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0129",
+    "partnership_id": "partnership_0005",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0131",
+    "partnership_id": "partnership_0045",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0132",
+    "partnership_id": "partnership_0015",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0133",
+    "partnership_id": "partnership_0032",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0136",
+    "partnership_id": "partnership_0028",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0137",
+    "partnership_id": "partnership_0034",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0142",
+    "partnership_id": "partnership_0006",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0145",
+    "partnership_id": "partnership_0043",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0147",
+    "partnership_id": "partnership_0015",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0148",
+    "partnership_id": "partnership_0006",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0150",
+    "partnership_id": "partnership_0027",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0151",
+    "partnership_id": "partnership_0011",
+    "severity": "MEDIUM",
+    "reason": "Product exclusivity violation"
+  },
+  {
+    "event_id": "event_0152",
+    "partnership_id": "partnership_0039",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0154",
+    "partnership_id": "partnership_0018",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0159",
+    "partnership_id": "partnership_0017",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0160",
+    "partnership_id": "partnership_0003",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0162",
+    "partnership_id": "partnership_0012",
+    "severity": "MEDIUM",
+    "reason": "Product exclusivity violation"
+  },
+  {
+    "event_id": "event_0172",
+    "partnership_id": "partnership_0023",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0173",
+    "partnership_id": "partnership_0006",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0177",
+    "partnership_id": "partnership_0034",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0181",
+    "partnership_id": "partnership_0023",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0185",
+    "partnership_id": "partnership_0036",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0188",
+    "partnership_id": "partnership_0008",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0192",
+    "partnership_id": "partnership_0028",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0193",
+    "partnership_id": "partnership_0014",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0196",
+    "partnership_id": "partnership_0028",
+    "severity": "CRITICAL",
+    "reason": "Full exclusivity violation"
+  },
+  {
+    "event_id": "event_0199",
+    "partnership_id": "partnership_0029",
+    "severity": "HIGH",
+    "reason": "Category exclusivity violation"
+  }
+]

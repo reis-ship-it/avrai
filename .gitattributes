@@ -1,0 +1,8 @@
+*.onnx filter=lfs diff=lfs merge=lfs -text
+work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham[[:space:]]simulation/45_BHAM_SINGLE_YEAR_REPLAY_PASS_2023.json filter=lfs diff=lfs merge=lfs -text
+work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham[[:space:]]simulation/50_BHAM_REPLAY_POPULATION_PROFILE_2023.json filter=lfs diff=lfs merge=lfs -text
+work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham[[:space:]]simulation/56_BHAM_REPLAY_DAILY_BEHAVIOR_2023.json filter=lfs diff=lfs merge=lfs -text
+work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham[[:space:]]simulation/59_BHAM_REPLAY_ACTOR_KERNEL_COVERAGE_2023.json filter=lfs diff=lfs merge=lfs -text
+work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham[[:space:]]simulation/60_BHAM_REPLAY_CONNECTIVITY_PROFILES_2023.json filter=lfs diff=lfs merge=lfs -text
+work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham[[:space:]]simulation/67_BHAM_REPLAY_PHYSICAL_MOVEMENT_2023.json filter=lfs diff=lfs merge=lfs -text
+work/docs/plans/beta_launch/AVRAI_BHAM_BETA_LAUNCH_PACK/Bham[[:space:]]simulation/68_BHAM_REPLAY_TRAINING_SIGNALS_2023.json filter=lfs diff=lfs merge=lfs -text

@@ -1,0 +1,364 @@
+{
+  "baseline": {
+    "test_loss": 0.0267,
+    "val_loss": 0.0286,
+    "version": "v1.0-hybrid"
+  },
+  "variants": [
+    {
+      "config": {
+        "name": "v1_0_baseline",
+        "learning_rate": 0.001,
+        "batch_size": 32,
+        "hidden_sizes": [
+          128,
+          64
+        ],
+        "dropout": 0.2,
+        "epochs": 100,
+        "description": "Baseline v1.0-hybrid configuration"
+      },
+      "test_loss": 0.0268,
+      "val_loss": 0.0291,
+      "train_loss": Infinity,
+      "best_epoch": 28,
+      "training_time": 6.459942102432251,
+      "model_size_kb": 9.9931640625,
+      "params_count": 13248,
+      "success": true,
+      "error": ""
+    },
+    {
+      "config": {
+        "name": "v1_1_lr_0.0001",
+        "learning_rate": 0.0001,
+        "batch_size": 32,
+        "hidden_sizes": [
+          128,
+          64
+        ],
+        "dropout": 0.2,
+        "epochs": 100,
+        "description": "Learning rate: 0.0001"
+      },
+      "test_loss": 0.0268,
+      "val_loss": 0.0295,
+      "train_loss": Infinity,
+      "best_epoch": 84,
+      "training_time": 13.967235088348389,
+      "model_size_kb": 9.99609375,
+      "params_count": 13248,
+      "success": true,
+      "error": ""
+    },
+    {
+      "config": {
+        "name": "v1_1_lr_0.0005",
+        "learning_rate": 0.0005,
+        "batch_size": 32,
+        "hidden_sizes": [
+          128,
+          64
+        ],
+        "dropout": 0.2,
+        "epochs": 100,
+        "description": "Learning rate: 0.0005"
+      },
+      "test_loss": 0.0262,
+      "val_loss": 0.0283,
+      "train_loss": Infinity,
+      "best_epoch": 56,
+      "training_time": 9.87738299369812,
+      "model_size_kb": 9.99609375,
+      "params_count": 13248,
+      "success": true,
+      "error": ""
+    },
+    {
+      "config": {
+        "name": "v1_1_lr_0.002",
+        "learning_rate": 0.002,
+        "batch_size": 32,
+        "hidden_sizes": [
+          128,
+          64
+        ],
+        "dropout": 0.2,
+        "epochs": 100,
+        "description": "Learning rate: 0.002"
+      },
+      "test_loss": 0.0276,
+      "val_loss": 0.0272,
+      "train_loss": Infinity,
+      "best_epoch": 30,
+      "training_time": 6.441905975341797,
+      "model_size_kb": 9.9931640625,
+      "params_count": 13248,
+      "success": true,
+      "error": ""
+    },
+    {
+      "config": {
+        "name": "v1_1_lr_0.005",
+        "learning_rate": 0.005,
+        "batch_size": 32,
+        "hidden_sizes": [
+          128,
+          64
+        ],
+        "dropout": 0.2,
+        "epochs": 100,
+        "description": "Learning rate: 0.005"
+      },
+      "test_loss": 0.0276,
+      "val_loss": 0.0295,
+      "train_loss": Infinity,
+      "best_epoch": 36,
+      "training_time": 7.314444065093994,
+      "model_size_kb": 9.9931640625,
+      "params_count": 13248,
+      "success": true,
+      "error": ""
+    },
+    {
+      "config": {
+        "name": "v1_1_batch_16",
+        "learning_rate": 0.001,
+        "batch_size": 16,
+        "hidden_sizes": [
+          128,
+          64
+        ],
+        "dropout": 0.2,
+        "epochs": 100,
+        "description": "Batch size: 16"
+      },
+      "test_loss": 0.0264,
+      "val_loss": 0.0293,
+      "train_loss": Infinity,
+      "best_epoch": 36,
+      "training_time": 11.518448829650879,
+      "model_size_kb": 9.9931640625,
+      "params_count": 13248,
+      "success": true,
+      "error": ""
+    },
+    {
+      "config": {
+        "name": "v1_1_batch_64",
+        "learning_rate": 0.001,
+        "batch_size": 64,
+        "hidden_sizes": [
+          128,
+          64
+        ],
+        "dropout": 0.2,
+        "epochs": 100,
+        "description": "Batch size: 64"
+      },
+      "test_loss": 0.0261,
+      "val_loss": 0.0278,
+      "train_loss": Infinity,
+      "best_epoch": 38,
+      "training_time": 5.400212049484253,
+      "model_size_kb": 9.9931640625,
+      "params_count": 13248,
+      "success": true,
+      "error": ""
+    },
+    {
+      "config": {
+        "name": "v1_1_batch_128",
+        "learning_rate": 0.001,
+        "batch_size": 128,
+        "hidden_sizes": [
+          128,
+          64
+        ],
+        "dropout": 0.2,
+        "epochs": 100,
+        "description": "Batch size: 128"
+      },
+      "test_loss": 0.0257,
+      "val_loss": 0.0279,
+      "train_loss": Infinity,
+      "best_epoch": 54,
+      "training_time": 5.441167116165161,
+      "model_size_kb": 9.99609375,
+      "params_count": 13248,
+      "success": true,
+      "error": ""
+    },
+    {
+      "config": {
+        "name": "v1_1_arch_wider",
+        "learning_rate": 0.001,
+        "batch_size": 32,
+        "hidden_sizes": [
+          256,
+          128
+        ],
+        "dropout": 0.2,
+        "epochs": 100,
+        "description": "Architecture: [256, 128]"
+      },
+      "test_loss": 0.0265,
+      "val_loss": 0.029,
+      "train_loss": Infinity,
+      "best_epoch": 25,
+      "training_time": 5.964942216873169,
+      "model_size_kb": 9.9990234375,
+      "params_count": 42880,
+      "success": true,
+      "error": ""
+    },
+    {
+      "config": {
+        "name": "v1_1_arch_deeper",
+        "learning_rate": 0.001,
+        "batch_size": 32,
+        "hidden_sizes": [
+          128,
+          64,
+          32
+        ],
+        "dropout": 0.2,
+        "epochs": 100,
+        "description": "Architecture: [128, 64, 32]"
+      },
+      "test_loss": 0.0266,
+      "val_loss": 0.0293,
+      "train_loss": Infinity,
+      "best_epoch": 26,
+      "training_time": 6.053938865661621,
+      "model_size_kb": 10.001953125,
+      "params_count": 15264,
+      "success": true,
+      "error": ""
+    },
+    {
+      "config": {
+        "name": "v1_1_arch_smaller",
+        "learning_rate": 0.001,
+        "batch_size": 32,
+        "hidden_sizes": [
+          96,
+          48
+        ],
+        "dropout": 0.2,
+        "epochs": 100,
+        "description": "Architecture: [96, 48]"
+      },
+      "test_loss": 0.0264,
+      "val_loss": 0.0288,
+      "train_loss": Infinity,
+      "best_epoch": 42,
+      "training_time": 8.474892854690552,
+      "model_size_kb": 10.0048828125,
+      "params_count": 8400,
+      "success": true,
+      "error": ""
+    },
+    {
+      "config": {
+        "name": "v1_1_arch_wide_deep",
+        "learning_rate": 0.001,
+        "batch_size": 32,
+        "hidden_sizes": [
+          256,
+          128,
+          64
+        ],
+        "dropout": 0.2,
+        "epochs": 100,
+        "description": "Architecture: [256, 128, 64]"
+      },
+      "test_loss": 0.0274,
+      "val_loss": 0.0276,
+      "train_loss": Infinity,
+      "best_epoch": 40,
+      "training_time": 7.6980390548706055,
+      "model_size_kb": 10.0107421875,
+      "params_count": 51008,
+      "success": true,
+      "error": ""
+    },
+    {
+      "config": {
+        "name": "v1_1_dropout_0.1",
+        "learning_rate": 0.001,
+        "batch_size": 32,
+        "hidden_sizes": [
+          128,
+          64
+        ],
+        "dropout": 0.1,
+        "epochs": 100,
+        "description": "Dropout: 0.1"
+      },
+      "test_loss": 0.0269,
+      "val_loss": 0.0272,
+      "train_loss": Infinity,
+      "best_epoch": 46,
+      "training_time": 8.465288877487183,
+      "model_size_kb": 10.001953125,
+      "params_count": 13248,
+      "success": true,
+      "error": ""
+    },
+    {
+      "config": {
+        "name": "v1_1_dropout_0.3",
+        "learning_rate": 0.001,
+        "batch_size": 32,
+        "hidden_sizes": [
+          128,
+          64
+        ],
+        "dropout": 0.3,
+        "epochs": 100,
+        "description": "Dropout: 0.3"
+      },
+      "test_loss": 0.027,
+      "val_loss": 0.0277,
+      "train_loss": Infinity,
+      "best_epoch": 41,
+      "training_time": 7.789935827255249,
+      "model_size_kb": 10.001953125,
+      "params_count": 13248,
+      "success": true,
+      "error": ""
+    },
+    {
+      "config": {
+        "name": "v1_1_dropout_0.4",
+        "learning_rate": 0.001,
+        "batch_size": 32,
+        "hidden_sizes": [
+          128,
+          64
+        ],
+        "dropout": 0.4,
+        "epochs": 100,
+        "description": "Dropout: 0.4"
+      },
+      "test_loss": 0.0267,
+      "val_loss": 0.0286,
+      "train_loss": Infinity,
+      "best_epoch": 35,
+      "training_time": 7.044175148010254,
+      "model_size_kb": 10.001953125,
+      "params_count": 13248,
+      "success": true,
+      "error": ""
+    }
+  ],
+  "summary": {
+    "total_variants": 15,
+    "successful": 15,
+    "failed": 0,
+    "best_test_loss": 0.0257,
+    "best_variant": "v1_1_batch_128",
+    "improvement_over_baseline": 3.745318352059928
+  }
+}

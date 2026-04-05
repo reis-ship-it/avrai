@@ -1,0 +1,657 @@
+import 'package:avrai_core/utils/vibe_constants.dart';
+import 'package:avrai_core/models/contextual_personality.dart';
+import 'package:avrai_core/models/personality_knot.dart';
+
+/// OUR_GUTS.md: "AI personality that evolves and learns while preserving privacy"
+/// Represents a complete AI personality profile with 12 core dimensions and evolution tracking
+/// Phase 2: Expanded from 8 to 12 dimensions for more precise matching
+/// Phase 3: Added contextual personality system (core + contexts + timeline)
+/// Phase 8.3: Migrated to use agentId for privacy protection
+class PersonalityProfile {
+  final String agentId; // Privacy-protected identifier (primary key)
+  final String? userId; // Optional, for backward compatibility during migration
+  final Map<String, double> dimensions; // Current active dimensions
+  final Map<String, double> dimensionConfidence;
+  final String archetype;
+  final double authenticity;
+  final DateTime createdAt;
+  final DateTime lastUpdated;
+  final int evolutionGeneration;
+  final Map<String, dynamic> learningHistory;
+
+  // NEW: Phase 3 - Contextual Personality System
+  final Map<String, double> corePersonality; // Stable baseline (resists drift)
+  final Map<String, ContextualPersonality>
+      contexts; // Context-specific adaptations
+  final List<LifePhase> evolutionTimeline; // Preserved life phases
+  final String? currentPhaseId; // Current life phase
+  final bool isInTransition; // Currently transitioning phases?
+  final TransitionMetrics? activeTransition; // Active transition metrics
+
+  // NEW: Phase 1 - Knot Theory Integration (Patent #31)
+  final PersonalityKnot? personalityKnot; // Topological knot representation
+  final List<KnotSnapshot>? knotEvolutionHistory; // Knot evolution tracking
+
+  // NEW: v0.4.1 - Ecosystem Acceleration Flag
+  final bool
+      isAccelerated; // True if user bypassed 14-day observation via ecosystem integrations (e.g. Spotify)
+
+  PersonalityProfile({
+    required this.agentId,
+    this.userId, // Optional for backward compatibility
+    required this.dimensions,
+    required this.dimensionConfidence,
+    required this.archetype,
+    required this.authenticity,
+    required this.createdAt,
+    required this.lastUpdated,
+    required this.evolutionGeneration,
+    required this.learningHistory,
+    // Phase 3: Contextual personality (backward compatible)
+    Map<String, double>? corePersonality,
+    this.contexts = const {},
+    this.evolutionTimeline = const [],
+    this.currentPhaseId,
+    this.isInTransition = false,
+    this.activeTransition,
+    // Phase 1: Knot theory integration (backward compatible)
+    this.personalityKnot,
+    this.knotEvolutionHistory,
+    this.isAccelerated = false,
+  }) : corePersonality = corePersonality ??
+            dimensions; // Default to dimensions for backward compat
+
+  /// Create initial personality profile with default values
+  /// Phase 3: Now includes core personality and initial life phase
+  /// Phase 8.3: Uses agentId for privacy protection
+  factory PersonalityProfile.initial(String agentId, {String? userId}) {
+    final initialDimensions = <String, double>{};
+    final initialConfidence = <String, double>{};
+
+    for (final dimension in VibeConstants.coreDimensions) {
+      initialDimensions[dimension] = VibeConstants.defaultDimensionValue;
+      initialConfidence[dimension] = 0.0; // No confidence initially
+    }
+
+    // Create initial life phase (uses agentId for privacy)
+    final initialPhase = LifePhase.initial(
+      userId: agentId, // Use agentId for privacy
+      initialPersonality: Map<String, double>.from(initialDimensions),
+    );
+
+    return PersonalityProfile(
+      agentId: agentId,
+      userId: userId, // Optional for backward compatibility
+      dimensions: initialDimensions,
+      dimensionConfidence: initialConfidence,
+      archetype: 'developing', // Not yet classified
+      authenticity: 0.5, // Starting authenticity
+      createdAt: DateTime.now(),
+      lastUpdated: DateTime.now(),
+      evolutionGeneration: 1,
+      learningHistory: {
+        'total_interactions': 0,
+        'successful_ai2ai_connections': 0,
+        'learning_sources': <String>[],
+        'evolution_milestones': <DateTime>[],
+      },
+      // Phase 3: Contextual personality
+      corePersonality: Map<String, double>.from(initialDimensions),
+      contexts: {},
+      evolutionTimeline: [initialPhase],
+      currentPhaseId: initialPhase.phaseId,
+      isInTransition: false,
+      activeTransition: null,
+      // Phase 1: Knot theory (no knot initially, will be generated on demand)
+      personalityKnot: null,
+      knotEvolutionHistory: null,
+      isAccelerated: false,
+    );
+  }
+
+  /// Create a minimal profile from 12D dimensions (e.g. attraction 12D for
+  /// business/event/place). Used to generate knots from dimension vectors
+  /// without full profile data.
+  factory PersonalityProfile.fromDimensions(
+    String agentId,
+    Map<String, double> dimensions,
+  ) {
+    final dims = <String, double>{};
+    final confidence = <String, double>{};
+    for (final d in VibeConstants.coreDimensions) {
+      dims[d] = (dimensions[d] ?? VibeConstants.defaultDimensionValue).clamp(
+        0.0,
+        1.0,
+      );
+      confidence[d] = 0.5;
+    }
+    final now = DateTime.now();
+    final initialPhase = LifePhase.initial(
+      userId: agentId,
+      initialPersonality: Map<String, double>.from(dims),
+    );
+    return PersonalityProfile(
+      agentId: agentId,
+      userId: null,
+      dimensions: dims,
+      dimensionConfidence: confidence,
+      archetype: 'synthetic',
+      authenticity: 0.5,
+      createdAt: now,
+      lastUpdated: now,
+      evolutionGeneration: 0,
+      learningHistory: const {},
+      corePersonality: Map<String, double>.from(dims),
+      contexts: const {},
+      evolutionTimeline: [initialPhase],
+      currentPhaseId: initialPhase.phaseId,
+      isInTransition: false,
+      activeTransition: null,
+      personalityKnot: null,
+      knotEvolutionHistory: null,
+      isAccelerated: false,
+    );
+  }
+
+  /// Maximum allowed drift from core personality (30%)
+  /// Patent #3: Contextual Personality System with Drift Resistance
+  /// Core personality is stable - contextual adaptations are limited to 30% drift
+  static const double maxDriftFromCore = 0.30;
+
+  /// Create evolved personality with updated dimensions
+  ///
+  /// **Patent #3 Drift Limit:** Enforces 30% maximum drift from core personality.
+  /// This prevents personality homogenization while allowing meaningful learning.
+  PersonalityProfile evolve({
+    Map<String, double>? newDimensions,
+    Map<String, double>? newConfidence,
+    String? newArchetype,
+    double? newAuthenticity,
+    Map<String, dynamic>? additionalLearning,
+  }) {
+    final updatedDimensions = Map<String, double>.from(dimensions);
+    final updatedConfidence = Map<String, double>.from(dimensionConfidence);
+    final updatedLearning = Map<String, dynamic>.from(learningHistory);
+
+    // Apply new dimensions with bounds checking AND drift limit enforcement
+    // Patent #3: Core personality is stable - limit drift to 30%
+    newDimensions?.forEach((dimension, value) {
+      // Get core personality value for this dimension
+      final coreValue = corePersonality[dimension] ?? value;
+
+      // Calculate drift from core
+      final proposedValue = value.clamp(
+        VibeConstants.minDimensionValue,
+        VibeConstants.maxDimensionValue,
+      );
+      final drift = proposedValue - coreValue;
+
+      // Enforce 30% drift limit
+      // If drift exceeds limit, clamp to maximum allowed drift
+      if (drift.abs() > maxDriftFromCore) {
+        final clampedDrift = drift.sign * maxDriftFromCore;
+        updatedDimensions[dimension] = (coreValue + clampedDrift).clamp(
+          VibeConstants.minDimensionValue,
+          VibeConstants.maxDimensionValue,
+        );
+      } else {
+        updatedDimensions[dimension] = proposedValue;
+      }
+    });
+
+    // Apply new confidence levels
+    newConfidence?.forEach((dimension, confidence) {
+      updatedConfidence[dimension] = confidence.clamp(0.0, 1.0);
+    });
+
+    // Merge additional learning data
+    if (additionalLearning != null) {
+      additionalLearning.forEach((key, value) {
+        if (updatedLearning.containsKey(key) && value is List) {
+          // Append to existing lists
+          (updatedLearning[key] as List).addAll(value);
+        } else if (updatedLearning.containsKey(key) && value is num) {
+          // Increment numeric values
+          updatedLearning[key] = (updatedLearning[key] as num) + value;
+        } else {
+          // Replace or add new values
+          updatedLearning[key] = value;
+        }
+      });
+    }
+
+    // Add evolution milestone
+    (updatedLearning['evolution_milestones'] as List<DateTime>).add(
+      DateTime.now(),
+    );
+
+    return PersonalityProfile(
+      agentId: agentId,
+      userId: userId, // Preserve userId if provided
+      dimensions: updatedDimensions,
+      dimensionConfidence: updatedConfidence,
+      archetype: newArchetype ?? _determineArchetype(updatedDimensions),
+      authenticity: newAuthenticity ?? authenticity,
+      createdAt: createdAt,
+      lastUpdated: DateTime.now(),
+      evolutionGeneration: evolutionGeneration + 1,
+      learningHistory: updatedLearning,
+      // Phase 3: Preserve contextual personality state
+      corePersonality: corePersonality,
+      contexts: contexts,
+      evolutionTimeline: evolutionTimeline,
+      currentPhaseId: currentPhaseId,
+      isInTransition: isInTransition,
+      activeTransition: activeTransition,
+      // Phase 1: Preserve knot-related fields
+      personalityKnot: personalityKnot,
+      knotEvolutionHistory: knotEvolutionHistory,
+      isAccelerated: isAccelerated,
+    );
+  }
+
+  // ========================================================================
+  // PHASE 3: CONTEXTUAL PERSONALITY METHODS
+  // Philosophy: "Your doors stay yours" while allowing contextual adaptation
+  // ========================================================================
+
+  /// Get effective personality for a given context
+  /// Blends core personality with contextual adaptations
+  Map<String, double> getEffectivePersonality([String? contextId]) {
+    if (contextId == null || !contexts.containsKey(contextId)) {
+      return Map<String, double>.from(corePersonality);
+    }
+
+    final context = contexts[contextId]!;
+    return _blendPersonalities(
+      corePersonality,
+      context.adaptedDimensions,
+      context.adaptationWeight,
+    );
+  }
+
+  /// Blend core personality with contextual adaptations
+  Map<String, double> _blendPersonalities(
+    Map<String, double> core,
+    Map<String, double> adaptation,
+    double weight,
+  ) {
+    final blended = Map<String, double>.from(core);
+
+    adaptation.forEach((dimension, adaptedValue) {
+      final coreValue = core[dimension] ?? 0.5;
+      // Blend: core * (1-weight) + adapted * weight
+      blended[dimension] =
+          (coreValue * (1 - weight) + adaptedValue * weight).clamp(0.0, 1.0);
+    });
+
+    return blended;
+  }
+
+  /// Get historical personality from a specific life phase
+  Map<String, double>? getHistoricalPersonality(String phaseId) {
+    try {
+      final phase = evolutionTimeline.firstWhere((p) => p.phaseId == phaseId);
+      return Map<String, double>.from(phase.corePersonality);
+    } catch (e) {
+      return null; // Phase not found
+    }
+  }
+
+  /// Get current life phase
+  LifePhase? getCurrentPhase() {
+    if (currentPhaseId == null) return null;
+    try {
+      return evolutionTimeline.firstWhere((p) => p.phaseId == currentPhaseId);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Update context-specific personality
+  PersonalityProfile updateContext({
+    required String contextId,
+    required PersonalityContextType contextType,
+    required Map<String, double> adaptations,
+    double? adaptationWeight,
+  }) {
+    final updatedContexts = Map<String, ContextualPersonality>.from(contexts);
+
+    if (updatedContexts.containsKey(contextId)) {
+      // Update existing context
+      updatedContexts[contextId] = updatedContexts[contextId]!.adapt(
+        newAdaptations: adaptations,
+        newWeight: adaptationWeight,
+      );
+    } else {
+      // Create new context
+      updatedContexts[contextId] = ContextualPersonality(
+        contextId: contextId,
+        contextType: contextType,
+        adaptedDimensions: adaptations,
+        adaptationWeight: adaptationWeight ?? 0.3,
+        lastUpdated: DateTime.now(),
+        updateCount: 1,
+      );
+    }
+
+    return PersonalityProfile(
+      agentId: agentId,
+      userId: userId, // Preserve userId if provided
+      dimensions: dimensions,
+      dimensionConfidence: dimensionConfidence,
+      archetype: archetype,
+      authenticity: authenticity,
+      createdAt: createdAt,
+      lastUpdated: DateTime.now(),
+      evolutionGeneration: evolutionGeneration,
+      learningHistory: learningHistory,
+      corePersonality: corePersonality,
+      contexts: updatedContexts,
+      evolutionTimeline: evolutionTimeline,
+      currentPhaseId: currentPhaseId,
+      isInTransition: isInTransition,
+      activeTransition: activeTransition,
+      // Phase 1: Preserve knot-related fields
+      personalityKnot: personalityKnot,
+      knotEvolutionHistory: knotEvolutionHistory,
+      isAccelerated: isAccelerated,
+    );
+  }
+
+  /// Calculate compatibility score with another personality (0.0 to 1.0)
+  double calculateCompatibility(PersonalityProfile other) {
+    // Self-compatibility should always be perfect, regardless of confidence calibration.
+    if (identical(this, other)) return 1.0;
+
+    double totalSimilarity = 0.0;
+    int validDimensions = 0;
+
+    for (final dimension in VibeConstants.coreDimensions) {
+      final myValue = dimensions[dimension];
+      final otherValue = other.dimensions[dimension];
+      final myConfidence = dimensionConfidence[dimension] ?? 0.0;
+      final otherConfidence = other.dimensionConfidence[dimension] ?? 0.0;
+
+      if (myValue != null &&
+          otherValue != null &&
+          myConfidence >= VibeConstants.personalityConfidenceThreshold &&
+          otherConfidence >= VibeConstants.personalityConfidenceThreshold) {
+        // Calculate similarity (1.0 - absolute difference)
+        final similarity = 1.0 - (myValue - otherValue).abs();
+
+        // Weight by average confidence
+        final weight = (myConfidence + otherConfidence) / 2.0;
+        totalSimilarity += similarity * weight;
+        validDimensions++;
+      }
+    }
+
+    if (validDimensions == 0) return 0.0;
+
+    return (totalSimilarity / validDimensions).clamp(0.0, 1.0);
+  }
+
+  /// Get dominant personality traits (top 3 dimensions)
+  List<String> getDominantTraits() {
+    final sortedDimensions = dimensions.entries
+        .where(
+          (entry) =>
+              (dimensionConfidence[entry.key] ?? 0.0) >=
+              VibeConstants.personalityConfidenceThreshold,
+        )
+        .toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    return sortedDimensions.take(3).map((entry) => entry.key).toList();
+  }
+
+  /// Calculate learning potential with another AI
+  double calculateLearningPotential(PersonalityProfile other) {
+    final compatibility = calculateCompatibility(other);
+
+    // High compatibility AIs can learn deeply from each other
+    if (compatibility >= VibeConstants.highCompatibilityThreshold) {
+      return 0.9;
+    }
+
+    // Medium compatibility allows moderate learning
+    if (compatibility >= VibeConstants.mediumCompatibilityThreshold) {
+      return 0.6;
+    }
+
+    // Low compatibility still allows some learning (inclusive network)
+    if (compatibility >= VibeConstants.lowCompatibilityThreshold) {
+      return 0.3;
+    }
+
+    // Even very different AIs can provide minimal learning
+    return 0.1;
+  }
+
+  /// Check if personality has enough data for reliable analysis
+  bool get isWellDeveloped {
+    final confidenceSum = dimensionConfidence.values.fold(
+      0.0,
+      (sum, confidence) => sum + confidence,
+    );
+    final avgConfidence = confidenceSum / VibeConstants.coreDimensions.length;
+
+    return avgConfidence >= VibeConstants.personalityConfidenceThreshold &&
+        (learningHistory['total_interactions'] as int) >=
+            VibeConstants.minActionsForAnalysis;
+  }
+
+  /// Get personality summary for debugging/monitoring
+  Map<String, dynamic> getSummary() {
+    return {
+      'archetype': archetype,
+      'authenticity': authenticity,
+      'generation': evolutionGeneration,
+      'dominant_traits': getDominantTraits(),
+      'avg_confidence': dimensionConfidence.values.isNotEmpty
+          ? dimensionConfidence.values.reduce((a, b) => a + b) /
+              dimensionConfidence.length
+          : 0.0,
+      'well_developed': isWellDeveloped,
+      'total_interactions': learningHistory['total_interactions'],
+      'ai2ai_connections': learningHistory['successful_ai2ai_connections'],
+    };
+  }
+
+  /// Determine personality archetype based on dimension values
+  String _determineArchetype(Map<String, double> dims) {
+    double bestMatch = 0.0;
+    String bestArchetype = 'balanced';
+
+    for (final archetype in VibeConstants.personalityArchetypes.entries) {
+      double match = 0.0;
+      int validDimensions = 0;
+
+      for (final dimension in archetype.value.entries) {
+        final myValue = dims[dimension.key];
+        if (myValue != null) {
+          // Calculate how closely this dimension matches the archetype
+          final similarity = 1.0 - (myValue - dimension.value).abs();
+          match += similarity;
+          validDimensions++;
+        }
+      }
+
+      if (validDimensions > 0) {
+        final avgMatch = match / validDimensions;
+        if (avgMatch > bestMatch) {
+          bestMatch = avgMatch;
+          bestArchetype = archetype.key;
+        }
+      }
+    }
+
+    // Require a high-confidence match for archetype classification.
+    // Otherwise, fall back to 'balanced' for unclear/neutral patterns.
+    return bestMatch >= 0.85 ? bestArchetype : 'balanced';
+  }
+
+  /// Convert to JSON for storage (privacy-preserving)
+  Map<String, dynamic> toJson() {
+    // Serialize learning_history, handling DateTime objects
+    final serializedLearningHistory = <String, dynamic>{};
+    learningHistory.forEach((key, value) {
+      if (value is List<DateTime>) {
+        // Serialize DateTime list to ISO8601 strings
+        serializedLearningHistory[key] =
+            value.map((dt) => dt.toIso8601String()).toList();
+      } else {
+        serializedLearningHistory[key] = value;
+      }
+    });
+
+    final json = {
+      'agent_id': agentId,
+      'user_id': userId, // Keep for backward compatibility
+      'dimensions': dimensions,
+      'dimension_confidence': dimensionConfidence,
+      'archetype': archetype,
+      'authenticity': authenticity,
+      'created_at': createdAt.toIso8601String(),
+      'last_updated': lastUpdated.toIso8601String(),
+      'evolution_generation': evolutionGeneration,
+      'learning_history': serializedLearningHistory,
+      'is_accelerated': isAccelerated,
+    };
+
+    // Phase 1: Knot theory integration (optional, backward compatible)
+    if (personalityKnot != null) {
+      json['personality_knot'] = personalityKnot!.toJson();
+    }
+    if (knotEvolutionHistory != null && knotEvolutionHistory!.isNotEmpty) {
+      json['knot_evolution_history'] =
+          knotEvolutionHistory!.map((snapshot) => snapshot.toJson()).toList();
+    }
+
+    return json;
+  }
+
+  /// Create from JSON storage
+  factory PersonalityProfile.fromJson(Map<String, dynamic> json) {
+    // Deserialize learning_history, handling DateTime lists
+    final rawLearningHistory = Map<String, dynamic>.from(
+      json['learning_history'] ?? {},
+    );
+    final deserializedLearningHistory = <String, dynamic>{};
+
+    rawLearningHistory.forEach((key, value) {
+      if (key == 'evolution_milestones' && value is List) {
+        // Deserialize DateTime list from ISO8601 strings
+        deserializedLearningHistory[key] =
+            value.map((item) => DateTime.parse(item as String)).toList();
+      } else {
+        deserializedLearningHistory[key] = value;
+      }
+    });
+
+    // Support both agentId (new) and userId (legacy) for migration
+    final agentId = json['agent_id'] as String? ?? json['user_id'] as String;
+    final userId = json['user_id'] as String?;
+
+    // Phase 1: Knot theory integration (optional, backward compatible)
+    PersonalityKnot? personalityKnot;
+    if (json['personality_knot'] != null) {
+      try {
+        personalityKnot = PersonalityKnot.fromJson(
+          json['personality_knot'] as Map<String, dynamic>,
+        );
+      } catch (e) {
+        // If knot deserialization fails, continue without it (backward compatible)
+        personalityKnot = null;
+      }
+    }
+
+    List<KnotSnapshot>? knotEvolutionHistory;
+    if (json['knot_evolution_history'] != null) {
+      try {
+        final historyList = json['knot_evolution_history'] as List<dynamic>;
+        knotEvolutionHistory = historyList
+            .map((item) => KnotSnapshot.fromJson(item as Map<String, dynamic>))
+            .toList();
+      } catch (e) {
+        // If history deserialization fails, continue without it (backward compatible)
+        knotEvolutionHistory = null;
+      }
+    }
+
+    return PersonalityProfile(
+      agentId: agentId,
+      userId: userId,
+      dimensions: Map<String, double>.from(json['dimensions']),
+      dimensionConfidence: Map<String, double>.from(
+        json['dimension_confidence'],
+      ),
+      archetype: json['archetype'] as String,
+      authenticity: (json['authenticity'] as num).toDouble(),
+      createdAt: DateTime.parse(json['created_at'] as String),
+      lastUpdated: DateTime.parse(json['last_updated'] as String),
+      evolutionGeneration: json['evolution_generation'] as int,
+      learningHistory: deserializedLearningHistory,
+      personalityKnot: personalityKnot,
+      knotEvolutionHistory: knotEvolutionHistory,
+      isAccelerated: json['is_accelerated'] as bool? ?? false,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PersonalityProfile &&
+          runtimeType == other.runtimeType &&
+          agentId == other.agentId &&
+          evolutionGeneration == other.evolutionGeneration;
+
+  @override
+  int get hashCode => agentId.hashCode ^ evolutionGeneration.hashCode;
+
+  @override
+  String toString() {
+    final agentIdPreview =
+        agentId.length <= 10 ? agentId : agentId.substring(0, 10);
+    return 'PersonalityProfile(agentId: $agentIdPreview..., archetype: $archetype, '
+        'generation: $evolutionGeneration, authenticity: ${authenticity.toStringAsFixed(2)})';
+  }
+}
+
+/// Represents a discovered AI personality
+class DiscoveredPersonality {
+  final String nodeId;
+  final Map<String, double> vibe;
+  final double compatibility;
+  final double trustScore;
+
+  DiscoveredPersonality({
+    required this.nodeId,
+    required this.vibe,
+    required this.compatibility,
+    required this.trustScore,
+  });
+}
+
+/// User personality representation
+class UserPersonality {
+  final String userId;
+  final PersonalityProfile profile;
+  final Map<String, dynamic> metadata;
+  final double communityAlignment = 0.5;
+
+  UserPersonality({
+    required this.userId,
+    required this.profile,
+    this.metadata = const {},
+  });
+  static UserPersonality defaultPersonality() {
+    // Phase 8.3: Use agentId for privacy protection
+    final profile = PersonalityProfile.initial(
+      'agent_user_default',
+      userId: 'user_default',
+    );
+    return UserPersonality(userId: 'user_default', profile: profile);
+  }
+}

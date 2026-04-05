@@ -1,0 +1,127 @@
+name: Admin App CI/CD
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'apps/admin_app/**'
+      - 'lib/main_admin.dart'
+      - 'lib/apps/admin_app/**'
+      - 'lib/presentation/pages/admin/**'
+      - 'lib/presentation/pages/auth/**'
+      - 'lib/presentation/widgets/admin/**'
+      - 'lib/core/services/admin/**'
+      - 'lib/core/services/ai_infrastructure/**'
+      - 'scripts/ci/check_admin_desktop_only.py'
+      - 'scripts/ci/check_admin_ideal_architecture_alignment.py'
+      - 'configs/runtime/admin_private_server_security_*_controls.json'
+      - 'docs/plans/architecture/ADMIN_COMMAND_CENTER_*'
+      - 'docs/plans/architecture/ADMIN_PRIVATE_SERVER_SECURITY_IMPLEMENTATION_CHECKLIST_2026-02-28.md'
+      - 'packages/**'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+      - 'melos.yaml'
+      - '.github/workflows/admin-app-ci-cd.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'apps/admin_app/**'
+      - 'lib/main_admin.dart'
+      - 'lib/apps/admin_app/**'
+      - 'lib/presentation/pages/admin/**'
+      - 'lib/presentation/pages/auth/**'
+      - 'lib/presentation/widgets/admin/**'
+      - 'lib/core/services/admin/**'
+      - 'lib/core/services/ai_infrastructure/**'
+      - 'scripts/ci/check_admin_desktop_only.py'
+      - 'scripts/ci/check_admin_ideal_architecture_alignment.py'
+      - 'configs/runtime/admin_private_server_security_*_controls.json'
+      - 'docs/plans/architecture/ADMIN_COMMAND_CENTER_*'
+      - 'docs/plans/architecture/ADMIN_PRIVATE_SERVER_SECURITY_IMPLEMENTATION_CHECKLIST_2026-02-28.md'
+      - 'packages/**'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+      - 'melos.yaml'
+      - '.github/workflows/admin-app-ci-cd.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: admin-app-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Admin Quality
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/admin_app
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.32.6
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Enforce desktop-only + ideal architecture alignment
+        working-directory: .
+        run: |
+          python3 scripts/ci/check_admin_desktop_only.py
+          python3 scripts/ci/check_admin_ideal_architecture_alignment.py
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Run tests
+        run: flutter test
+
+  build-desktop:
+    name: Admin Desktop Build (${{ matrix.target }})
+    runs-on: ${{ matrix.os }}
+    needs: quality
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: linux
+            artifact_name: admin-app-linux
+            artifact_path: apps/admin_app/build/linux/x64/release/bundle
+          - os: windows-latest
+            target: windows
+            artifact_name: admin-app-windows
+            artifact_path: apps/admin_app/build/windows/x64/runner/Release
+          - os: macos-latest
+            target: macos
+            artifact_name: admin-app-macos
+            artifact_path: apps/admin_app/build/macos/Build/Products/Release
+    defaults:
+      run:
+        working-directory: apps/admin_app
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.32.6
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Build Desktop
+        run: flutter build ${{ matrix.target }} --release
+
+      - name: Upload Desktop artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.artifact_path }}

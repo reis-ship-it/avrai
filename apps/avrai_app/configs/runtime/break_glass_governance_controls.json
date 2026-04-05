@@ -1,0 +1,37 @@
+{
+  "control_pack_id": "break_glass_governance_controls",
+  "scope": "signed emergency governance actions for quarantine, rollback, inspection, and feature disable",
+  "master_plan_refs": ["12.3.9", "12.3.10", "12.6.9"],
+  "related_milestones": ["M31-P7-2"],
+  "break_glass_policy": {
+    "separate_governance_channel_required": true,
+    "learning_or_inference_path_tunneling_allowed": false,
+    "allowed_actions": [
+      "feature_disable",
+      "rollback_to_safe_version",
+      "trust_anchor_rotation",
+      "quarantine_runtime_or_cluster",
+      "high_detail_diagnostic_capture"
+    ],
+    "forbidden_actions": [
+      "silent_arbitrary_remote_mutation",
+      "undocumented_global_backdoor",
+      "unaudited_research_access"
+    ]
+  },
+  "authorization_requirements": {
+    "signed_directive_required": true,
+    "reason_code_required": true,
+    "expiry_required": true,
+    "dual_approval_required_for_highest_impact": true,
+    "immutable_audit_record_required": true
+  },
+  "rollback_requirements": {
+    "rollback_path_required": true,
+    "safe_state_version_reference_required": true,
+    "post_incident_review_required": true
+  },
+  "status": "starter",
+  "last_updated": "2026-03-06",
+  "notes": "Starter break-glass policy pack aligned to explicit governance powers and fail-closed intervention."
+}

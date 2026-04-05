@@ -1,0 +1,28 @@
+---
+description: Rules for UI and presentation layer code
+globs: "**/presentation/**"
+---
+
+# Presentation Layer Rules
+
+## Design Tokens (Non-negotiable)
+- ALWAYS use `AppColors` or `AppTheme` for colors
+- NEVER use direct `Colors.*` (will be flagged)
+
+## Logging
+- NEVER use `print()` or `debugPrint()` in production code
+- ALWAYS use `developer.log()` from `dart:developer`
+
+## State Management
+- Use BLoC pattern (`Bloc<Event, State>`)
+- Use `emit()` instead of `yield`
+- Never mutate state directly -- always emit new state
+- Check `mounted` before `setState()` in async callbacks
+
+## Async
+- Always use `async`/`await`, never `.then()` chains
+- Always handle errors in async operations with try-catch
+
+## Philosophy
+- "Doors, not badges" -- authentic contributions, not gamification
+- Technology enhances real-world experience, doesn't replace it

@@ -1,0 +1,35 @@
+{
+  "control_pack_id": "admin_private_server_security_audit_incident_recovery",
+  "scope": "phase-g governance, observability, incident response, and recovery controls",
+  "master_plan_refs": ["10.9.23", "10.9.24", "10.9.25"],
+  "related_milestones": ["M26-P10-3", "M26-P7-1"],
+  "audit_and_logging": {
+    "immutable_audit_log_required": true,
+    "event_classes": [
+      "auth_attempt",
+      "policy_decision",
+      "admin_action",
+      "break_glass_event",
+      "cert_rotation_event",
+      "open_web_approval",
+      "evidence_pack_download"
+    ],
+    "retention_days_minimum": 90,
+    "integrity_verification_required": true
+  },
+  "monitoring_and_alerting": {
+    "siem_routing_required": true,
+    "anomaly_alerts_required": true,
+    "ai2ai_mesh_health_correlation_required": true,
+    "alert_on_unknown_device_or_network": true
+  },
+  "incident_recovery": {
+    "break_glass_dual_approval_required": true,
+    "restore_drill_frequency_days": 30,
+    "security_drill_frequency_days": 90,
+    "rollback_playbook_required": true
+  },
+  "status": "enforced",
+  "last_updated": "2026-03-14",
+  "notes": "Immutable audit and recovery controls are enforced for the private admin control plane."
+}

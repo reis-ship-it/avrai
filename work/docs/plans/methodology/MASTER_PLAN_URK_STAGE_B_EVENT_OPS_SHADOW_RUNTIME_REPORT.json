@@ -1,0 +1,35 @@
+{
+  "errors": [],
+  "evaluation_window": {
+    "end": "2026-02-27T23:50:00Z",
+    "start": "2026-02-27T00:00:00Z"
+  },
+  "generated_at": "2026-02-27T23:58:00Z",
+  "high_impact_commit_guard": {
+    "guard_checks_executed": 160,
+    "max_high_impact_autocommits": 0,
+    "observed_high_impact_autocommits": 0,
+    "observed_shadow_block_coverage_pct": 100.0,
+    "required_shadow_block_coverage_pct": 100.0,
+    "within_threshold": true
+  },
+  "lineage_integrity": {
+    "lineage_checks_executed": 420,
+    "max_orphan_action_states": 0,
+    "observed_lineage_completeness_pct": 100.0,
+    "observed_orphan_action_states": 0,
+    "required_lineage_completeness_pct": 100.0,
+    "within_threshold": true
+  },
+  "pipeline_shadow": {
+    "observed_decision_envelope_coverage_pct": 100.0,
+    "observed_pipeline_coverage_pct": 100.0,
+    "required_decision_envelope_coverage_pct": 100.0,
+    "required_pipeline_coverage_pct": 100.0,
+    "shadow_requests_evaluated": 420,
+    "within_threshold": true
+  },
+  "source": "configs/runtime/urk_stage_b_event_ops_shadow_runtime_controls.json",
+  "verdict": "PASS",
+  "version": "v1"
+}

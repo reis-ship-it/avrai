@@ -1,0 +1,24 @@
+{
+  "dispatch_coverage": {
+    "checks_executed": 420,
+    "observed_receipt_persistence_coverage_pct": 100.0,
+    "observed_runtime_path_coverage_pct": 100.0,
+    "observed_trigger_mapping_coverage_pct": 100.0,
+    "required_receipt_persistence_coverage_pct": 100.0,
+    "required_runtime_path_coverage_pct": 100.0,
+    "required_trigger_mapping_coverage_pct": 100.0,
+    "within_threshold": true
+  },
+  "dispatch_safety": {
+    "checks_executed": 180,
+    "max_trigger_mapping_collisions": 0,
+    "max_untracked_activation_events": 0,
+    "observed_trigger_mapping_collisions": 0,
+    "observed_untracked_activation_events": 0,
+    "within_threshold": true
+  },
+  "errors": [],
+  "source": "configs/runtime/urk_runtime_activation_receipt_dispatch_controls.json",
+  "verdict": "PASS",
+  "version": "v1"
+}

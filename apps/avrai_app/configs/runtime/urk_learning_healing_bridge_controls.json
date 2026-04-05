@@ -1,0 +1,19 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "evaluation_at": "2026-02-27T23:59:59Z",
+  "bridge_coverage": {
+    "required_incident_to_learning_linkage_coverage_pct": 100.0,
+    "observed_incident_to_learning_linkage_coverage_pct": 100.0,
+    "required_lineage_reference_coverage_pct": 100.0,
+    "observed_lineage_reference_coverage_pct": 100.0,
+    "checks_executed": 420
+  },
+  "bridge_safety": {
+    "max_orphan_incident_learning_records": 0,
+    "observed_orphan_incident_learning_records": 0,
+    "max_missing_recovery_linkbacks": 0,
+    "observed_missing_recovery_linkbacks": 0,
+    "checks_executed": 160
+  }
+}

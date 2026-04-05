@@ -1,0 +1,16 @@
+{
+  "os": "web",
+  "coexisting_runtime_os": true,
+  "contract_version": "1.0.0",
+  "degradation_tier": "minimal",
+  "capabilities": {
+    "ble": false,
+    "wifi_direct": false,
+    "p2p_mesh": false,
+    "background_execution": "restricted",
+    "local_model_inference": true,
+    "secure_storage": false,
+    "notifications": true,
+    "deep_linking": true
+  }
+}

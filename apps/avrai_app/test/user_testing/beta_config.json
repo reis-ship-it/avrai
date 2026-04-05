@@ -1,0 +1,29 @@
+{
+  "beta_testing": {
+    "ios": {
+      "testflight_enabled": true,
+      "build_number": "20250806",
+      "version": "1.0.0-beta",
+      "testers_limit": 100
+    },
+    "android": {
+      "play_console_enabled": true,
+      "version_code": 20250806,
+      "version_name": "1.0.0-beta",
+      "testers_limit": 100
+    }
+  },
+  "feedback_collection": {
+    "in_app_feedback": true,
+    "crash_reporting": true,
+    "analytics": true,
+    "session_recording": false
+  },
+  "test_scenarios": [
+    "onboarding",
+    "list_creation",
+    "social_features",
+    "map_navigation",
+    "performance_testing"
+  ]
+}

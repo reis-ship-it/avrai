@@ -1,0 +1,187 @@
+{
+  "packId": "bham-eventbrite-meetup-historicalized-2023",
+  "replayYear": 2023,
+  "generatedAtUtc": "2026-03-12T16:13:23.892294Z",
+  "datasets": [
+    {
+      "sourceName": "Eventbrite / Meetup",
+      "records": [
+        {
+          "record_id": "evtmeet-hist-1",
+          "entity_type": "community",
+          "entity_id": "community:birmingham-net-meetup-birmingham-al-1242-members",
+          "title": "Birmingham .NET Meetup Birmingham, AL • 1242 members",
+          "name": "Birmingham .NET Meetup Birmingham, AL • 1242 members",
+          "community_name": "Birmingham .NET Meetup Birmingham, AL • 1242 members",
+          "locality": "bham_metro_regional",
+          "observed_at": "2023-01-01T00:00:00.000Z",
+          "published_at": "2023-01-01T00:00:00.000Z",
+          "valid_from": "2023-01-01T00:00:00.000Z",
+          "valid_to": "2023-12-31T23:59:59.000Z",
+          "last_verified_at": "2026-03-12T23:45:00Z",
+          "category": "recurring_social_group_anchor",
+          "historical_admissibility": "governed_group_anchor_reconstruction",
+          "historical_capture_method": "persistent_meetup_group_listing",
+          "historical_validation_note": "Birmingham .NET Meetup Birmingham, AL • 1242 members was promoted as a persistent Birmingham social-group anchor from a Meetup group listing; it is treated as recurring community or club structure, not a dated 2023 event row.",
+          "historical_source_url": "https://www.meetup.com/Birmingham-NET-Meetup/?eventOrigin=city_popular_groups",
+          "source_host": "meetup.com",
+          "source_page_title": "Birmingham .NET Meetup Birmingham, AL • 1242 members",
+          "source_row_basis": [
+            "evt-55"
+          ],
+          "confidence": 0.64,
+          "uncertainty_minutes": 10080
+        },
+        {
+          "record_id": "evtmeet-hist-2",
+          "entity_type": "community",
+          "entity_id": "community:bham-language-exchange-birmingham-al-941-members",
+          "title": "Bham Language Exchange Birmingham, AL • 941 members",
+          "name": "Bham Language Exchange Birmingham, AL • 941 members",
+          "community_name": "Bham Language Exchange Birmingham, AL • 941 members",
+          "locality": "bham_metro_regional",
+          "observed_at": "2023-01-01T00:00:00.000Z",
+          "published_at": "2023-01-01T00:00:00.000Z",
+          "valid_from": "2023-01-01T00:00:00.000Z",
+          "valid_to": "2023-12-31T23:59:59.000Z",
+          "last_verified_at": "2026-03-12T23:45:00Z",
+          "category": "recurring_social_group_anchor",
+          "historical_admissibility": "governed_group_anchor_reconstruction",
+          "historical_capture_method": "persistent_meetup_group_listing",
+          "historical_validation_note": "Bham Language Exchange Birmingham, AL • 941 members was promoted as a persistent Birmingham social-group anchor from a Meetup group listing; it is treated as recurring community or club structure, not a dated 2023 event row.",
+          "historical_source_url": "https://www.meetup.com/bhamlangexchange/?eventOrigin=city_popular_groups",
+          "source_host": "meetup.com",
+          "source_page_title": "Bham Language Exchange Birmingham, AL • 941 members",
+          "source_row_basis": [
+            "evt-56"
+          ],
+          "confidence": 0.64,
+          "uncertainty_minutes": 10080
+        },
+        {
+          "record_id": "evtmeet-hist-3",
+          "entity_type": "community",
+          "entity_id": "community:birmingham-dining-experience-group-birmingham-al-559-members",
+          "title": "Birmingham Dining Experience Group Birmingham, AL • 559 members",
+          "name": "Birmingham Dining Experience Group Birmingham, AL • 559 members",
+          "community_name": "Birmingham Dining Experience Group Birmingham, AL • 559 members",
+          "locality": "bham_metro_regional",
+          "observed_at": "2023-01-01T00:00:00.000Z",
+          "published_at": "2023-01-01T00:00:00.000Z",
+          "valid_from": "2023-01-01T00:00:00.000Z",
+          "valid_to": "2023-12-31T23:59:59.000Z",
+          "last_verified_at": "2026-03-12T23:45:00Z",
+          "category": "recurring_social_group_anchor",
+          "historical_admissibility": "governed_group_anchor_reconstruction",
+          "historical_capture_method": "persistent_meetup_group_listing",
+          "historical_validation_note": "Birmingham Dining Experience Group Birmingham, AL • 559 members was promoted as a persistent Birmingham social-group anchor from a Meetup group listing; it is treated as recurring community or club structure, not a dated 2023 event row.",
+          "historical_source_url": "https://www.meetup.com/birmingham-dining-experience-group/?eventOrigin=city_popular_groups",
+          "source_host": "meetup.com",
+          "source_page_title": "Birmingham Dining Experience Group Birmingham, AL • 559 members",
+          "source_row_basis": [
+            "evt-57"
+          ],
+          "confidence": 0.64,
+          "uncertainty_minutes": 10080
+        },
+        {
+          "record_id": "evtmeet-hist-4",
+          "entity_type": "community",
+          "entity_id": "community:mocha-girls-read-birmingham-birmingham-al-549-members",
+          "title": "Mocha Girls Read - Birmingham Birmingham, AL • 549 members",
+          "name": "Mocha Girls Read - Birmingham Birmingham, AL • 549 members",
+          "community_name": "Mocha Girls Read - Birmingham Birmingham, AL • 549 members",
+          "locality": "bham_metro_regional",
+          "observed_at": "2023-01-01T00:00:00.000Z",
+          "published_at": "2023-01-01T00:00:00.000Z",
+          "valid_from": "2023-01-01T00:00:00.000Z",
+          "valid_to": "2023-12-31T23:59:59.000Z",
+          "last_verified_at": "2026-03-12T23:45:00Z",
+          "category": "recurring_social_group_anchor",
+          "historical_admissibility": "governed_group_anchor_reconstruction",
+          "historical_capture_method": "persistent_meetup_group_listing",
+          "historical_validation_note": "Mocha Girls Read - Birmingham Birmingham, AL • 549 members was promoted as a persistent Birmingham social-group anchor from a Meetup group listing; it is treated as recurring community or club structure, not a dated 2023 event row.",
+          "historical_source_url": "https://www.meetup.com/mocha-girls-read-birmingham/?eventOrigin=city_popular_groups",
+          "source_host": "meetup.com",
+          "source_page_title": "Mocha Girls Read - Birmingham Birmingham, AL • 549 members",
+          "source_row_basis": [
+            "evt-58"
+          ],
+          "confidence": 0.64,
+          "uncertainty_minutes": 10080
+        },
+        {
+          "record_id": "evtmeet-hist-5",
+          "entity_type": "community",
+          "entity_id": "community:cloud-security-alliance-alabama-chapter-birmingham-al-479-members",
+          "title": "Cloud Security Alliance Alabama Chapter Birmingham, AL • 479 members",
+          "name": "Cloud Security Alliance Alabama Chapter Birmingham, AL • 479 members",
+          "community_name": "Cloud Security Alliance Alabama Chapter Birmingham, AL • 479 members",
+          "locality": "bham_metro_regional",
+          "observed_at": "2023-01-01T00:00:00.000Z",
+          "published_at": "2023-01-01T00:00:00.000Z",
+          "valid_from": "2023-01-01T00:00:00.000Z",
+          "valid_to": "2023-12-31T23:59:59.000Z",
+          "last_verified_at": "2026-03-12T23:45:00Z",
+          "category": "recurring_social_group_anchor",
+          "historical_admissibility": "governed_group_anchor_reconstruction",
+          "historical_capture_method": "persistent_meetup_group_listing",
+          "historical_validation_note": "Cloud Security Alliance Alabama Chapter Birmingham, AL • 479 members was promoted as a persistent Birmingham social-group anchor from a Meetup group listing; it is treated as recurring community or club structure, not a dated 2023 event row.",
+          "historical_source_url": "https://www.meetup.com/cloud-security-alliance-alabama-chapter/?eventOrigin=city_popular_groups",
+          "source_host": "meetup.com",
+          "source_page_title": "Cloud Security Alliance Alabama Chapter Birmingham, AL • 479 members",
+          "source_row_basis": [
+            "evt-59"
+          ],
+          "confidence": 0.64,
+          "uncertainty_minutes": 10080
+        },
+        {
+          "record_id": "evtmeet-hist-6",
+          "entity_type": "community",
+          "entity_id": "community:gurdjieff-found-of-ala-red-mtn-study-grp-birmingham-al-301-members",
+          "title": "Gurdjieff Found. of Ala./Red Mtn. Study Grp. Birmingham, AL • 301 members",
+          "name": "Gurdjieff Found. of Ala./Red Mtn. Study Grp. Birmingham, AL • 301 members",
+          "community_name": "Gurdjieff Found. of Ala./Red Mtn. Study Grp. Birmingham, AL • 301 members",
+          "locality": "bham_metro_regional",
+          "observed_at": "2023-01-01T00:00:00.000Z",
+          "published_at": "2023-01-01T00:00:00.000Z",
+          "valid_from": "2023-01-01T00:00:00.000Z",
+          "valid_to": "2023-12-31T23:59:59.000Z",
+          "last_verified_at": "2026-03-12T23:45:00Z",
+          "category": "recurring_social_group_anchor",
+          "historical_admissibility": "governed_group_anchor_reconstruction",
+          "historical_capture_method": "persistent_meetup_group_listing",
+          "historical_validation_note": "Gurdjieff Found. of Ala./Red Mtn. Study Grp. Birmingham, AL • 301 members was promoted as a persistent Birmingham social-group anchor from a Meetup group listing; it is treated as recurring community or club structure, not a dated 2023 event row.",
+          "historical_source_url": "https://www.meetup.com/Gurdjieff-Found-Ala/?eventOrigin=city_popular_groups",
+          "source_host": "meetup.com",
+          "source_page_title": "Gurdjieff Found. of Ala./Red Mtn. Study Grp. Birmingham, AL • 301 members",
+          "source_row_basis": [
+            "evt-60"
+          ],
+          "confidence": 0.64,
+          "uncertainty_minutes": 10080
+        }
+      ],
+      "metadata": {
+        "status": "historicalized_partial",
+        "historicalPromotionPolicy": "persistent_group_pages_only",
+        "normalizationTargets": [
+          "community",
+          "club"
+        ]
+      }
+    }
+  ],
+  "notes": [
+    "This pack promotes only persistent Birmingham Meetup group pages, not dated event rows.",
+    "Rows are recurring social-group anchors for 2023 replay truth and remain unsuitable as exact 2023 event-instance truth."
+  ],
+  "metadata": {
+    "sourceBasis": "eventbrite_meetup_automated_pack",
+    "excludedRowClasses": [
+      "future_dated_events",
+      "generic_navigation"
+    ]
+  }
+}

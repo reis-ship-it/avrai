@@ -1,0 +1,22 @@
+{
+  "errors": [],
+  "source": "configs/runtime/urk_reality_temporal_truth_controls.json",
+  "temporal_alignment": {
+    "checks_executed": 540,
+    "observed_atomic_semantic_alignment_pct": 100.0,
+    "observed_timezone_normalization_coverage_pct": 100.0,
+    "required_atomic_semantic_alignment_pct": 100.0,
+    "required_timezone_normalization_coverage_pct": 100.0,
+    "within_threshold": true
+  },
+  "timeline_safety": {
+    "checks_executed": 220,
+    "max_clock_regression_events": 0,
+    "max_temporal_contradiction_events": 0,
+    "observed_clock_regression_events": 0,
+    "observed_temporal_contradiction_events": 0,
+    "within_threshold": true
+  },
+  "verdict": "PASS",
+  "version": "v1"
+}

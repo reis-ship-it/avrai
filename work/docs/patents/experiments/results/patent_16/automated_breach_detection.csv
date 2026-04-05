@@ -1,0 +1,201 @@
+event_id,is_breach,severity,blocking_partnership,reason
+event_0000,False,NONE,,
+event_0001,False,NONE,,
+event_0002,True,CRITICAL,partnership_0028,Full exclusivity violation
+event_0003,False,NONE,,
+event_0004,True,CRITICAL,partnership_0006,Full exclusivity violation
+event_0005,False,NONE,,
+event_0006,False,NONE,,
+event_0007,False,NONE,,
+event_0008,False,NONE,,
+event_0009,False,NONE,,
+event_0010,True,CRITICAL,partnership_0028,Full exclusivity violation
+event_0011,False,NONE,,
+event_0012,False,NONE,,
+event_0013,False,NONE,,
+event_0014,False,NONE,,
+event_0015,False,NONE,,
+event_0016,False,NONE,,
+event_0017,False,NONE,,
+event_0018,False,NONE,,
+event_0019,False,NONE,,
+event_0020,False,NONE,,
+event_0021,True,HIGH,partnership_0049,Category exclusivity violation
+event_0022,True,CRITICAL,partnership_0034,Full exclusivity violation
+event_0023,False,NONE,,
+event_0024,False,NONE,,
+event_0025,False,NONE,,
+event_0026,False,NONE,,
+event_0027,True,CRITICAL,partnership_0043,Full exclusivity violation
+event_0028,False,NONE,,
+event_0029,False,NONE,,
+event_0030,False,NONE,,
+event_0031,False,NONE,,
+event_0032,False,NONE,,
+event_0033,False,NONE,,
+event_0034,True,CRITICAL,partnership_0032,Full exclusivity violation
+event_0035,False,NONE,,
+event_0036,False,NONE,,
+event_0037,False,NONE,,
+event_0038,True,CRITICAL,partnership_0015,Full exclusivity violation
+event_0039,False,NONE,,
+event_0040,False,NONE,,
+event_0041,False,NONE,,
+event_0042,False,NONE,,
+event_0043,False,NONE,,
+event_0044,False,NONE,,
+event_0045,False,NONE,,
+event_0046,False,NONE,,
+event_0047,True,CRITICAL,partnership_0017,Full exclusivity violation
+event_0048,False,NONE,,
+event_0049,True,CRITICAL,partnership_0005,Full exclusivity violation
+event_0050,False,NONE,,
+event_0051,False,NONE,,
+event_0052,False,NONE,,
+event_0053,True,CRITICAL,partnership_0036,Full exclusivity violation
+event_0054,False,NONE,,
+event_0055,True,CRITICAL,partnership_0034,Full exclusivity violation
+event_0056,False,NONE,,
+event_0057,True,HIGH,partnership_0042,Category exclusivity violation
+event_0058,True,CRITICAL,partnership_0039,Full exclusivity violation
+event_0059,False,NONE,,
+event_0060,False,NONE,,
+event_0061,False,NONE,,
+event_0062,False,NONE,,
+event_0063,True,CRITICAL,partnership_0034,Full exclusivity violation
+event_0064,False,NONE,,
+event_0065,False,NONE,,
+event_0066,False,NONE,,
+event_0067,True,HIGH,partnership_0049,Category exclusivity violation
+event_0068,False,NONE,,
+event_0069,True,CRITICAL,partnership_0006,Full exclusivity violation
+event_0070,False,NONE,,
+event_0071,False,NONE,,
+event_0072,False,NONE,,
+event_0073,False,NONE,,
+event_0074,True,CRITICAL,partnership_0041,Full exclusivity violation
+event_0075,False,NONE,,
+event_0076,True,CRITICAL,partnership_0045,Full exclusivity violation
+event_0077,True,CRITICAL,partnership_0017,Full exclusivity violation
+event_0078,False,NONE,,
+event_0079,True,CRITICAL,partnership_0015,Full exclusivity violation
+event_0080,True,HIGH,partnership_0029,Category exclusivity violation
+event_0081,False,NONE,,
+event_0082,False,NONE,,
+event_0083,False,NONE,,
+event_0084,False,NONE,,
+event_0085,False,NONE,,
+event_0086,True,CRITICAL,partnership_0014,Full exclusivity violation
+event_0087,False,NONE,,
+event_0088,False,NONE,,
+event_0089,False,NONE,,
+event_0090,False,NONE,,
+event_0091,False,NONE,,
+event_0092,False,NONE,,
+event_0093,False,NONE,,
+event_0094,True,CRITICAL,partnership_0034,Full exclusivity violation
+event_0095,False,NONE,,
+event_0096,False,NONE,,
+event_0097,False,NONE,,
+event_0098,False,NONE,,
+event_0099,True,CRITICAL,partnership_0003,Full exclusivity violation
+event_0100,False,NONE,,
+event_0101,False,NONE,,
+event_0102,False,NONE,,
+event_0103,True,CRITICAL,partnership_0036,Full exclusivity violation
+event_0104,False,NONE,,
+event_0105,False,NONE,,
+event_0106,False,NONE,,
+event_0107,True,CRITICAL,partnership_0014,Full exclusivity violation
+event_0108,False,NONE,,
+event_0109,False,NONE,,
+event_0110,False,NONE,,
+event_0111,False,NONE,,
+event_0112,True,CRITICAL,partnership_0028,Full exclusivity violation
+event_0113,True,CRITICAL,partnership_0017,Full exclusivity violation
+event_0114,False,NONE,,
+event_0115,False,NONE,,
+event_0116,False,NONE,,
+event_0117,True,CRITICAL,partnership_0036,Full exclusivity violation
+event_0118,True,CRITICAL,partnership_0041,Full exclusivity violation
+event_0119,True,CRITICAL,partnership_0027,Full exclusivity violation
+event_0120,False,NONE,,
+event_0121,False,NONE,,
+event_0122,False,NONE,,
+event_0123,False,NONE,,
+event_0124,False,NONE,,
+event_0125,True,CRITICAL,partnership_0023,Full exclusivity violation
+event_0126,True,CRITICAL,partnership_0003,Full exclusivity violation
+event_0127,True,CRITICAL,partnership_0028,Full exclusivity violation
+event_0128,True,CRITICAL,partnership_0015,Full exclusivity violation
+event_0129,True,CRITICAL,partnership_0005,Full exclusivity violation
+event_0130,False,NONE,,
+event_0131,True,CRITICAL,partnership_0045,Full exclusivity violation
+event_0132,True,CRITICAL,partnership_0015,Full exclusivity violation
+event_0133,True,CRITICAL,partnership_0032,Full exclusivity violation
+event_0134,False,NONE,,
+event_0135,False,NONE,,
+event_0136,True,CRITICAL,partnership_0028,Full exclusivity violation
+event_0137,True,CRITICAL,partnership_0034,Full exclusivity violation
+event_0138,False,NONE,,
+event_0139,False,NONE,,
+event_0140,False,NONE,,
+event_0141,False,NONE,,
+event_0142,True,CRITICAL,partnership_0006,Full exclusivity violation
+event_0143,False,NONE,,
+event_0144,False,NONE,,
+event_0145,True,CRITICAL,partnership_0043,Full exclusivity violation
+event_0146,False,NONE,,
+event_0147,True,CRITICAL,partnership_0015,Full exclusivity violation
+event_0148,True,CRITICAL,partnership_0006,Full exclusivity violation
+event_0149,False,NONE,,
+event_0150,True,CRITICAL,partnership_0027,Full exclusivity violation
+event_0151,True,MEDIUM,partnership_0011,Product exclusivity violation
+event_0152,True,CRITICAL,partnership_0039,Full exclusivity violation
+event_0153,False,NONE,,
+event_0154,True,CRITICAL,partnership_0018,Full exclusivity violation
+event_0155,False,NONE,,
+event_0156,False,NONE,,
+event_0157,False,NONE,,
+event_0158,False,NONE,,
+event_0159,True,CRITICAL,partnership_0017,Full exclusivity violation
+event_0160,True,CRITICAL,partnership_0003,Full exclusivity violation
+event_0161,False,NONE,,
+event_0162,True,MEDIUM,partnership_0012,Product exclusivity violation
+event_0163,False,NONE,,
+event_0164,False,NONE,,
+event_0165,False,NONE,,
+event_0166,False,NONE,,
+event_0167,False,NONE,,
+event_0168,False,NONE,,
+event_0169,False,NONE,,
+event_0170,False,NONE,,
+event_0171,False,NONE,,
+event_0172,True,CRITICAL,partnership_0023,Full exclusivity violation
+event_0173,True,CRITICAL,partnership_0006,Full exclusivity violation
+event_0174,False,NONE,,
+event_0175,False,NONE,,
+event_0176,False,NONE,,
+event_0177,True,CRITICAL,partnership_0034,Full exclusivity violation
+event_0178,False,NONE,,
+event_0179,False,NONE,,
+event_0180,False,NONE,,
+event_0181,True,CRITICAL,partnership_0023,Full exclusivity violation
+event_0182,False,NONE,,
+event_0183,False,NONE,,
+event_0184,False,NONE,,
+event_0185,True,CRITICAL,partnership_0036,Full exclusivity violation
+event_0186,False,NONE,,
+event_0187,False,NONE,,
+event_0188,True,CRITICAL,partnership_0008,Full exclusivity violation
+event_0189,False,NONE,,
+event_0190,False,NONE,,
+event_0191,False,NONE,,
+event_0192,True,CRITICAL,partnership_0028,Full exclusivity violation
+event_0193,True,CRITICAL,partnership_0014,Full exclusivity violation
+event_0194,False,NONE,,
+event_0195,False,NONE,,
+event_0196,True,CRITICAL,partnership_0028,Full exclusivity violation
+event_0197,False,NONE,,
+event_0198,False,NONE,,
+event_0199,True,HIGH,partnership_0029,Category exclusivity violation

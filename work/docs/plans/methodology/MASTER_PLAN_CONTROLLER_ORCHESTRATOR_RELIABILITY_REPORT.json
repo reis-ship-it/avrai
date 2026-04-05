@@ -1,0 +1,16 @@
+{
+  "controllers_checked": 5,
+  "dead_path_check_passed": true,
+  "dead_paths_detected": 0,
+  "error_budget": {
+    "max_error_rate_pct": 1.5,
+    "observed_error_rate_pct": 0.4,
+    "sample_size": 420,
+    "within_budget": true
+  },
+  "errors": [],
+  "generated_at": "2026-02-27T16:30:00Z",
+  "source": "configs/runtime/controller_orchestrator_reliability_canary.json",
+  "verdict": "PASS",
+  "version": "v1"
+}

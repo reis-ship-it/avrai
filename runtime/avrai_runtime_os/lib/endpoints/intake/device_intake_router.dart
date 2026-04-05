@@ -1,0 +1,129 @@
+import 'package:avrai_core/contracts/air_gap_contract.dart';
+import 'package:avrai_core/models/air_gap/air_gap_compression_models.dart';
+import 'package:avrai_core/schemas/semantic_tuple.dart';
+import 'package:avrai_runtime_os/kernel/what/what_runtime_ingestion_service.dart';
+import 'package:avrai_runtime_os/services/intake/air_gap_compression_runtime_service.dart';
+import 'dart:developer' as developer;
+
+class DeviceNotificationPayload extends RawDataPayload {
+  final String _content;
+
+  const DeviceNotificationPayload({
+    required super.capturedAt,
+    required super.sourceId,
+    required String content,
+  }) : _content = content;
+
+  @override
+  String get rawContent => _content;
+}
+
+/// The Device Intake Router listens for OS-level events (e.g. Calendar, Notifications).
+///
+/// It immediately packages the raw OS data into a [RawDataPayload] and passes it
+/// entirely off to the [AirGapContract] for semantic extraction.
+/// The Router deliberately does NOT return or keep the raw data.
+class DeviceIntakeRouter {
+  final AirGapContract _airGap;
+  final WhatRuntimeIngestionService? _whatIngestion;
+  final RuntimeAirGapCompressionService _compressionService;
+
+  DeviceIntakeRouter(
+    this._airGap, {
+    WhatRuntimeIngestionService? whatIngestion,
+    RuntimeAirGapCompressionService compressionService =
+        const RuntimeAirGapCompressionService(),
+  })  : _whatIngestion = whatIngestion,
+        _compressionService = compressionService;
+
+  /// Simulates catching an OS notification and immediately burning it in the Air Gap.
+  Future<void> onNotificationReceived(String osNotificationText) async {
+    developer.log('DeviceIntakeRouter: Caught incoming OS notification.',
+        name: 'IntakeRouter');
+
+    // 1. Wrap the highly sensitive string in a Payload.
+    final payload = DeviceNotificationPayload(
+      capturedAt: DateTime.now(),
+      sourceId: 'os_notification_listener',
+      content: osNotificationText,
+    );
+
+    try {
+      // 2. Pass it over the boundary. The Air Gap takes custody of the raw string.
+      developer.log(
+          'DeviceIntakeRouter: Passing raw payload to Air Gap scrubber...',
+          name: 'IntakeRouter');
+      final List<SemanticTuple> tuples = await _airGap.scrubAndExtract(payload);
+      final compressionBundle = _compressionService.compressSemanticTuples(
+        contractId:
+            'device_notification_${payload.capturedAt.microsecondsSinceEpoch}',
+        tuples: tuples,
+        environmentId: _compressionService.buildEnvironmentId(
+          surface: 'device_notification',
+          scopeKey: payload.sourceId,
+        ),
+        primaryLayer: AirGapKnowledgeLayer.personal,
+        privacyLadderTag: 'amber',
+        provenanceRefs: tuples.map((tuple) => tuple.id).toList(growable: false),
+        metadata: <String, dynamic>{
+          'sourceId': payload.sourceId,
+          'notificationLength': osNotificationText.length,
+        },
+      );
+
+      // 3. The raw string is gone. We only have tuplified knowledge.
+      developer.log(
+          'DeviceIntakeRouter: Successfully received ${tuples.length} abstract semantic tuples from Air Gap.',
+          name: 'IntakeRouter');
+      if (_whatIngestion != null && tuples.isNotEmpty) {
+        await _whatIngestion.ingestSemanticTuples(
+          source: 'device_intake_router',
+          entityRef: DefaultWhatRuntimeIngestionService.deterministicEntityRef(
+            'device_intake',
+            <String, Object?>{
+              'sourceId': payload.sourceId,
+              'capturedAt': payload.capturedAt.toIso8601String(),
+              'size': osNotificationText.length,
+            },
+          ),
+          tuples: tuples,
+          lineageRef:
+              'device_notification:${payload.sourceId}:${payload.capturedAt.microsecondsSinceEpoch}',
+        );
+        await _whatIngestion.ingestPluginSemanticObservation(
+          source: 'device_intake_router',
+          entityRef: DefaultWhatRuntimeIngestionService.deterministicEntityRef(
+            'device_intake',
+            <String, Object?>{
+              'sourceId': payload.sourceId,
+              'capturedAt': payload.capturedAt.toIso8601String(),
+              'size': osNotificationText.length,
+            },
+          ),
+          observedAtUtc: payload.capturedAt,
+          semanticTuples: const <SemanticTuple>[],
+          structuredSignals: <String, dynamic>{
+            'sourceId': payload.sourceId,
+            'notificationLength': osNotificationText.length,
+            'airGapCompression': compressionBundle.toStructuredSignals(),
+          },
+          activityContext: 'device_notification',
+          confidence: 0.57,
+          lineageRef:
+              'device_notification:${payload.sourceId}:${payload.capturedAt.microsecondsSinceEpoch}',
+        );
+      }
+
+      // In a full implementation, the Router would merely confirm ingestion to the OS,
+      // and the Engine would have stored the tuples.
+    } on PrivacyBreachException catch (e) {
+      developer.log(
+          'DeviceIntakeRouter: Air Gap aborted the intake! Reason: $e',
+          name: 'IntakeRouter');
+    } catch (e) {
+      developer.log(
+          'DeviceIntakeRouter: Unknown failure during air gap crossing: $e',
+          name: 'IntakeRouter');
+    }
+  }
+}

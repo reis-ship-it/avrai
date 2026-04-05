@@ -1,0 +1,23 @@
+---
+description: Rules for CI/CD workflow files
+globs: .github/workflows/**
+---
+
+# CI Workflow Rules
+
+## Path References
+- Scripts live at `work/scripts/` (symlinked as `scripts/` at root)
+- Tools live at `work/tools/`
+- App code is at `apps/avrai_app/lib/` and `apps/avrai_app/test/` (NOT root `lib/` or `test/`)
+- Packages are at `shared/avrai_core`, `runtime/avrai_network` (NOT `packages/`)
+
+## Working Directory
+- Steps that run `flutter test`, `flutter build`, or reference `lib/`/`test/` must use `working-directory: apps/avrai_app`
+- Steps that run repo-level scripts (`dart run scripts/...`, `python3 scripts/...`) should run from repo root
+
+## Package Name
+- The package name is `avrai`, NOT `spots`. Use `package:avrai/...` in all references.
+
+## Path Triggers
+- Use `apps/avrai_app/lib/**` and `apps/avrai_app/test/**` in path triggers
+- Include `engine/**`, `runtime/**`, `shared/**` for monorepo coverage

@@ -1,0 +1,20 @@
+{
+  "source_input": "runtime_exports/conviction_gate_shadow_decisions.json",
+  "has_data": false,
+  "reason": "Input file does not exist.",
+  "total_decisions": 0,
+  "shadow_bypass_decisions": 0,
+  "shadow_bypass_rate": 0.0,
+  "enforce_decisions": 0,
+  "enforce_blocked_decisions": 0,
+  "enforce_block_rate": 0.0,
+  "high_impact_enforce_decisions": 0,
+  "high_impact_enforce_blocked_decisions": 0,
+  "high_impact_enforce_block_rate": 0.0,
+  "window_start": null,
+  "window_end": null,
+  "by_controller": {},
+  "by_mode": {},
+  "by_reason": {},
+  "recent_decisions": []
+}

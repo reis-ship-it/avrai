@@ -1,0 +1,14 @@
+{
+  "baseline_compatibility": 0.5811883857960571,
+  "all_together_compatibility": 0.6310646405155114,
+  "combined_improvement": 0.04987625471945423,
+  "individual_improvements": {
+    "n_way": -0.021839601622091975,
+    "decoherence": 0.0,
+    "meaningful_connections": 0.0,
+    "timing_flexibility": 0.0
+  },
+  "sum_of_individuals": -0.021839601622091975,
+  "synergistic_effect": 0.0717158563415462,
+  "synergistic_effect_proven": true
+}

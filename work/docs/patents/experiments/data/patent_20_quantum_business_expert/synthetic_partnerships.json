@@ -1,0 +1,502 @@
+[
+  {
+    "partnership_id": "partnership_0000",
+    "expert_id": "expert_0072",
+    "business_id": "business_0092",
+    "start_date": 1764108471.5620117,
+    "end_date": 1785830111.8465722,
+    "is_active": true,
+    "exclusivity_type": "Product",
+    "minimum_events": 20
+  },
+  {
+    "partnership_id": "partnership_0001",
+    "expert_id": "expert_0038",
+    "business_id": "business_0057",
+    "start_date": 1762242039.2776165,
+    "end_date": 1778218184.1322424,
+    "is_active": true,
+    "exclusivity_type": "Product",
+    "minimum_events": 17
+  },
+  {
+    "partnership_id": "partnership_0002",
+    "expert_id": "expert_0116",
+    "business_id": "business_0041",
+    "start_date": 1759668019.1610167,
+    "end_date": 1790747224.4014792,
+    "is_active": true,
+    "exclusivity_type": "Full",
+    "minimum_events": 17
+  },
+  {
+    "partnership_id": "partnership_0003",
+    "expert_id": "expert_0059",
+    "business_id": "business_0099",
+    "start_date": 1763235854.7068546,
+    "end_date": 1778571724.2419298,
+    "is_active": true,
+    "exclusivity_type": "Category",
+    "minimum_events": 17
+  },
+  {
+    "partnership_id": "partnership_0004",
+    "expert_id": "expert_0098",
+    "business_id": "business_0084",
+    "start_date": 1760268388.7442474,
+    "end_date": 1783536360.2175257,
+    "is_active": true,
+    "exclusivity_type": "Full",
+    "minimum_events": 20
+  },
+  {
+    "partnership_id": "partnership_0005",
+    "expert_id": "expert_0009",
+    "business_id": "business_0016",
+    "start_date": 1762524225.866418,
+    "end_date": 1784322912.8668132,
+    "is_active": true,
+    "exclusivity_type": "Full",
+    "minimum_events": 19
+  },
+  {
+    "partnership_id": "partnership_0006",
+    "expert_id": "expert_0025",
+    "business_id": "business_0067",
+    "start_date": 1759350447.3640862,
+    "end_date": 1767491106.2905529,
+    "is_active": true,
+    "exclusivity_type": "Full",
+    "minimum_events": 18
+  },
+  {
+    "partnership_id": "partnership_0007",
+    "expert_id": "expert_0167",
+    "business_id": "business_0019",
+    "start_date": 1765848177.391512,
+    "end_date": 1792193218.312159,
+    "is_active": true,
+    "exclusivity_type": "Category",
+    "minimum_events": 15
+  },
+  {
+    "partnership_id": "partnership_0008",
+    "expert_id": "expert_0159",
+    "business_id": "business_0088",
+    "start_date": 1763339211.5233214,
+    "end_date": 1773023503.5402892,
+    "is_active": true,
+    "exclusivity_type": "Category",
+    "minimum_events": 17
+  },
+  {
+    "partnership_id": "partnership_0009",
+    "expert_id": "expert_0081",
+    "business_id": "business_0080",
+    "start_date": 1760841295.151325,
+    "end_date": 1786660682.1411095,
+    "is_active": true,
+    "exclusivity_type": "Product",
+    "minimum_events": 6
+  },
+  {
+    "partnership_id": "partnership_0010",
+    "expert_id": "expert_0158",
+    "business_id": "business_0008",
+    "start_date": 1764604468.439499,
+    "end_date": 1788641802.3273835,
+    "is_active": true,
+    "exclusivity_type": "Category",
+    "minimum_events": 12
+  },
+  {
+    "partnership_id": "partnership_0011",
+    "expert_id": "expert_0191",
+    "business_id": "business_0011",
+    "start_date": 1763055479.6841877,
+    "end_date": 1773170488.3670523,
+    "is_active": true,
+    "exclusivity_type": "Product",
+    "minimum_events": 8
+  },
+  {
+    "partnership_id": "partnership_0012",
+    "expert_id": "expert_0113",
+    "business_id": "business_0021",
+    "start_date": 1761033488.8079839,
+    "end_date": 1790274844.5223033,
+    "is_active": true,
+    "exclusivity_type": "Full",
+    "minimum_events": 15
+  },
+  {
+    "partnership_id": "partnership_0013",
+    "expert_id": "expert_0014",
+    "business_id": "business_0037",
+    "start_date": 1763642630.9001374,
+    "end_date": 1781651748.9795818,
+    "is_active": true,
+    "exclusivity_type": "Full",
+    "minimum_events": 18
+  },
+  {
+    "partnership_id": "partnership_0014",
+    "expert_id": "expert_0144",
+    "business_id": "business_0087",
+    "start_date": 1760267410.4209688,
+    "end_date": 1772082221.9228268,
+    "is_active": true,
+    "exclusivity_type": "Full",
+    "minimum_events": 17
+  },
+  {
+    "partnership_id": "partnership_0015",
+    "expert_id": "expert_0158",
+    "business_id": "business_0087",
+    "start_date": 1764557349.3883934,
+    "end_date": 1794022166.809113,
+    "is_active": true,
+    "exclusivity_type": "Full",
+    "minimum_events": 12
+  },
+  {
+    "partnership_id": "partnership_0016",
+    "expert_id": "expert_0118",
+    "business_id": "business_0081",
+    "start_date": 1764455114.0585902,
+    "end_date": 1778297676.6444516,
+    "is_active": true,
+    "exclusivity_type": "Full",
+    "minimum_events": 19
+  },
+  {
+    "partnership_id": "partnership_0017",
+    "expert_id": "expert_0073",
+    "business_id": "business_0086",
+    "start_date": 1762179694.7318778,
+    "end_date": 1771710653.4825988,
+    "is_active": true,
+    "exclusivity_type": "Category",
+    "minimum_events": 14
+  },
+  {
+    "partnership_id": "partnership_0018",
+    "expert_id": "expert_0163",
+    "business_id": "business_0054",
+    "start_date": 1761062163.9769828,
+    "end_date": 1779692582.8859694,
+    "is_active": true,
+    "exclusivity_type": "Category",
+    "minimum_events": 11
+  },
+  {
+    "partnership_id": "partnership_0019",
+    "expert_id": "expert_0098",
+    "business_id": "business_0061",
+    "start_date": 1765600706.0423987,
+    "end_date": 1782437921.754744,
+    "is_active": true,
+    "exclusivity_type": "Category",
+    "minimum_events": 14
+  },
+  {
+    "partnership_id": "partnership_0020",
+    "expert_id": "expert_0179",
+    "business_id": "business_0037",
+    "start_date": 1766259439.5369198,
+    "end_date": 1793757131.99799,
+    "is_active": true,
+    "exclusivity_type": "Category",
+    "minimum_events": 13
+  },
+  {
+    "partnership_id": "partnership_0021",
+    "expert_id": "expert_0002",
+    "business_id": "business_0072",
+    "start_date": 1759703277.7653842,
+    "end_date": 1785971961.7560813,
+    "is_active": true,
+    "exclusivity_type": "Full",
+    "minimum_events": 20
+  },
+  {
+    "partnership_id": "partnership_0022",
+    "expert_id": "expert_0073",
+    "business_id": "business_0099",
+    "start_date": 1760218105.5605888,
+    "end_date": 1782417969.9169717,
+    "is_active": true,
+    "exclusivity_type": "Category",
+    "minimum_events": 12
+  },
+  {
+    "partnership_id": "partnership_0023",
+    "expert_id": "expert_0162",
+    "business_id": "business_0024",
+    "start_date": 1761601992.16538,
+    "end_date": 1785481675.702271,
+    "is_active": true,
+    "exclusivity_type": "Product",
+    "minimum_events": 9
+  },
+  {
+    "partnership_id": "partnership_0024",
+    "expert_id": "expert_0160",
+    "business_id": "business_0012",
+    "start_date": 1759405174.6470115,
+    "end_date": 1782538227.5142503,
+    "is_active": true,
+    "exclusivity_type": "Category",
+    "minimum_events": 19
+  },
+  {
+    "partnership_id": "partnership_0025",
+    "expert_id": "expert_0008",
+    "business_id": "business_0074",
+    "start_date": 1763592880.9018545,
+    "end_date": 1774491225.4224052,
+    "is_active": true,
+    "exclusivity_type": "Category",
+    "minimum_events": 15
+  },
+  {
+    "partnership_id": "partnership_0026",
+    "expert_id": "expert_0191",
+    "business_id": "business_0053",
+    "start_date": 1765064264.662111,
+    "end_date": 1775980381.4565747,
+    "is_active": true,
+    "exclusivity_type": "Product",
+    "minimum_events": 16
+  },
+  {
+    "partnership_id": "partnership_0027",
+    "expert_id": "expert_0135",
+    "business_id": "business_0064",
+    "start_date": 1759326767.1363184,
+    "end_date": 1786834796.5772398,
+    "is_active": true,
+    "exclusivity_type": "Category",
+    "minimum_events": 20
+  },
+  {
+    "partnership_id": "partnership_0028",
+    "expert_id": "expert_0075",
+    "business_id": "business_0095",
+    "start_date": 1759661835.0941775,
+    "end_date": 1786546400.2114208,
+    "is_active": true,
+    "exclusivity_type": "Category",
+    "minimum_events": 7
+  },
+  {
+    "partnership_id": "partnership_0029",
+    "expert_id": "expert_0036",
+    "business_id": "business_0096",
+    "start_date": 1758914536.221109,
+    "end_date": 1787127476.8034248,
+    "is_active": true,
+    "exclusivity_type": "Product",
+    "minimum_events": 17
+  },
+  {
+    "partnership_id": "partnership_0030",
+    "expert_id": "expert_0142",
+    "business_id": "business_0046",
+    "start_date": 1765727846.6894717,
+    "end_date": 1782878938.242882,
+    "is_active": true,
+    "exclusivity_type": "Category",
+    "minimum_events": 8
+  },
+  {
+    "partnership_id": "partnership_0031",
+    "expert_id": "expert_0116",
+    "business_id": "business_0047",
+    "start_date": 1761198128.3524435,
+    "end_date": 1784948945.6975036,
+    "is_active": true,
+    "exclusivity_type": "Product",
+    "minimum_events": 17
+  },
+  {
+    "partnership_id": "partnership_0032",
+    "expert_id": "expert_0163",
+    "business_id": "business_0047",
+    "start_date": 1765587542.5591948,
+    "end_date": 1778919150.9557421,
+    "is_active": true,
+    "exclusivity_type": "Full",
+    "minimum_events": 15
+  },
+  {
+    "partnership_id": "partnership_0033",
+    "expert_id": "expert_0156",
+    "business_id": "business_0028",
+    "start_date": 1761393896.9380457,
+    "end_date": 1784267094.1337457,
+    "is_active": true,
+    "exclusivity_type": "Category",
+    "minimum_events": 14
+  },
+  {
+    "partnership_id": "partnership_0034",
+    "expert_id": "expert_0166",
+    "business_id": "business_0052",
+    "start_date": 1765522769.7659094,
+    "end_date": 1774376209.9955873,
+    "is_active": true,
+    "exclusivity_type": "Full",
+    "minimum_events": 14
+  },
+  {
+    "partnership_id": "partnership_0035",
+    "expert_id": "expert_0126",
+    "business_id": "business_0014",
+    "start_date": 1765674276.8686178,
+    "end_date": 1794531558.039255,
+    "is_active": true,
+    "exclusivity_type": "Full",
+    "minimum_events": 17
+  },
+  {
+    "partnership_id": "partnership_0036",
+    "expert_id": "expert_0116",
+    "business_id": "business_0047",
+    "start_date": 1761216341.012123,
+    "end_date": 1786649350.2995136,
+    "is_active": true,
+    "exclusivity_type": "Product",
+    "minimum_events": 18
+  },
+  {
+    "partnership_id": "partnership_0037",
+    "expert_id": "expert_0150",
+    "business_id": "business_0095",
+    "start_date": 1760780006.855171,
+    "end_date": 1789593438.360625,
+    "is_active": true,
+    "exclusivity_type": "Product",
+    "minimum_events": 8
+  },
+  {
+    "partnership_id": "partnership_0038",
+    "expert_id": "expert_0125",
+    "business_id": "business_0078",
+    "start_date": 1763256532.7227197,
+    "end_date": 1793640684.1657736,
+    "is_active": true,
+    "exclusivity_type": "Full",
+    "minimum_events": 16
+  },
+  {
+    "partnership_id": "partnership_0039",
+    "expert_id": "expert_0055",
+    "business_id": "business_0056",
+    "start_date": 1762972086.8442647,
+    "end_date": 1776358123.1286333,
+    "is_active": true,
+    "exclusivity_type": "Category",
+    "minimum_events": 8
+  },
+  {
+    "partnership_id": "partnership_0040",
+    "expert_id": "expert_0175",
+    "business_id": "business_0047",
+    "start_date": 1762196275.3110228,
+    "end_date": 1793205813.8108034,
+    "is_active": true,
+    "exclusivity_type": "Category",
+    "minimum_events": 6
+  },
+  {
+    "partnership_id": "partnership_0041",
+    "expert_id": "expert_0101",
+    "business_id": "business_0035",
+    "start_date": 1764954090.4705455,
+    "end_date": 1775632605.3960588,
+    "is_active": true,
+    "exclusivity_type": "Category",
+    "minimum_events": 7
+  },
+  {
+    "partnership_id": "partnership_0042",
+    "expert_id": "expert_0169",
+    "business_id": "business_0027",
+    "start_date": 1761440147.9127066,
+    "end_date": 1783404335.910891,
+    "is_active": true,
+    "exclusivity_type": "Full",
+    "minimum_events": 6
+  },
+  {
+    "partnership_id": "partnership_0043",
+    "expert_id": "expert_0085",
+    "business_id": "business_0031",
+    "start_date": 1758740970.5008645,
+    "end_date": 1785215570.1563017,
+    "is_active": true,
+    "exclusivity_type": "Full",
+    "minimum_events": 7
+  },
+  {
+    "partnership_id": "partnership_0044",
+    "expert_id": "expert_0195",
+    "business_id": "business_0070",
+    "start_date": 1764819186.1380992,
+    "end_date": 1777726190.259687,
+    "is_active": true,
+    "exclusivity_type": "Full",
+    "minimum_events": 15
+  },
+  {
+    "partnership_id": "partnership_0045",
+    "expert_id": "expert_0198",
+    "business_id": "business_0018",
+    "start_date": 1760297548.0166533,
+    "end_date": 1782234071.6683974,
+    "is_active": true,
+    "exclusivity_type": "Category",
+    "minimum_events": 9
+  },
+  {
+    "partnership_id": "partnership_0046",
+    "expert_id": "expert_0033",
+    "business_id": "business_0069",
+    "start_date": 1764480954.81616,
+    "end_date": 1776403006.408777,
+    "is_active": true,
+    "exclusivity_type": "Product",
+    "minimum_events": 5
+  },
+  {
+    "partnership_id": "partnership_0047",
+    "expert_id": "expert_0033",
+    "business_id": "business_0001",
+    "start_date": 1763644349.8867314,
+    "end_date": 1790153483.1453516,
+    "is_active": true,
+    "exclusivity_type": "Product",
+    "minimum_events": 15
+  },
+  {
+    "partnership_id": "partnership_0048",
+    "expert_id": "expert_0004",
+    "business_id": "business_0022",
+    "start_date": 1764366544.105186,
+    "end_date": 1775154327.1038017,
+    "is_active": true,
+    "exclusivity_type": "Category",
+    "minimum_events": 8
+  },
+  {
+    "partnership_id": "partnership_0049",
+    "expert_id": "expert_0190",
+    "business_id": "business_0008",
+    "start_date": 1762726753.2227907,
+    "end_date": 1788988438.0768962,
+    "is_active": true,
+    "exclusivity_type": "Product",
+    "minimum_events": 8
+  }
+]

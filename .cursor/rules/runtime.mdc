@@ -1,0 +1,20 @@
+---
+description: Rules for runtime layer code (runtime/**)
+globs: runtime/**
+---
+
+# Runtime Layer Rules
+
+The runtime layer handles networking, data persistence, and OS-level services. It sits between engine and app layers.
+
+## Import Restrictions
+- NEVER import from `apps/` or `presentation/`
+- OK to import from `engine/` packages
+- OK to import from `shared/avrai_core`
+
+## Standards
+- Use `developer.log()` from `dart:developer`, never `print()`
+- All mesh communication must use `AnonymousCommunicationProtocol` (not `AdvancedAICommunication`)
+- Never share raw personality data over mesh -- only anonymized gradients (DP-protected)
+- Never access message content from chat services for ML features -- only metadata
+- Use `AtomicClockService` timestamps for time-sensitive data

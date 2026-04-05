@@ -1,0 +1,37 @@
+{
+  "control_pack_id": "admin_private_server_security_privacy_redaction",
+  "scope": "phase-e privacy-safe response and redaction controls for admin surfaces",
+  "master_plan_refs": ["10.9.22", "10.9.24", "10.9.25"],
+  "related_milestones": ["M26-P10-3"],
+  "response_contracts": {
+    "agent_identity_only_rendering": true,
+    "direct_user_pii_fields_allowed": false,
+    "forbidden_fields": [
+      "name",
+      "email",
+      "phone",
+      "home_address",
+      "personal_address",
+      "ssn",
+      "government_id",
+      "user_id",
+      "location_history",
+      "raw_payload",
+      "external_payload"
+    ]
+  },
+  "redaction_pipeline": {
+    "server_side_redaction_middleware_required": true,
+    "schema_level_pii_blocking_required": true,
+    "tokenization_for_traceability_allowed": true,
+    "fail_closed_on_redaction_failure": true
+  },
+  "quality_gates": {
+    "privacy_contract_tests_required": true,
+    "pii_leakage_gate_blocks_release": true,
+    "privacy_breach_alerting_required": true
+  },
+  "status": "enforced",
+  "last_updated": "2026-03-14",
+  "notes": "Server-side redaction is authoritative for admin/autoresearch responses and evidence packs."
+}

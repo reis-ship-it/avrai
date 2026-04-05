@@ -1,0 +1,35 @@
+{
+  "control": {
+    "synchronization_accuracy": 0.04919488888888889,
+    "entanglement_sync_accuracy": 0.7826804987523857,
+    "network_consistency": 0.7638366325272944,
+    "performance_overhead_ms": 1.4895233506365952,
+    "timezone_operation_accuracy": 0.0
+  },
+  "test": {
+    "synchronization_accuracy": 0.9990000000000003,
+    "entanglement_sync_accuracy": 1.0,
+    "network_consistency": 0.9985944049435057,
+    "performance_overhead_ms": 0.7095697592416518,
+    "timezone_operation_accuracy": 1.0
+  },
+  "improvements": {
+    "synchronization_accuracy": {
+      "percentage": 1930.6987627440978,
+      "multiplier": 20.30698762744098
+    },
+    "entanglement_sync_accuracy": {
+      "percentage": 27.766055445871928,
+      "multiplier": 1.2776605544587192
+    },
+    "network_consistency": {
+      "percentage": 30.734029034385525,
+      "multiplier": 1.3073402903438553
+    },
+    "performance_overhead_ms": {
+      "percentage": -52.3626293647297,
+      "multiplier": 0.47637370635270304
+    }
+  },
+  "statistical_tests": {}
+}

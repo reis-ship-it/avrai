@@ -1,0 +1,41 @@
+[package]
+name = "knot_math"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# === Core Math Libraries ===
+nalgebra = "0.32"         # Primary type system (vectors, matrices)
+num = "0.4"               # Complex number support
+rug = "1.22"              # Arbitrary precision arithmetic (for polynomials)
+
+# === Physics & Scientific Computing ===
+russell = "0.4"           # Scientific computing foundation
+russell_ode = "0.4"       # ODE solvers (for knot dynamics)
+russell_tensor = "0.4"    # Tensor calculus (gradients, curvature)
+
+# === Numerical Methods ===
+quadrature = "0.5"        # Numerical integration (for energy calculations)
+statrs = "0.16"           # Statistical functions (Boltzmann, entropy)
+
+# === Serialization ===
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# === Error Handling ===
+anyhow = "1.0"
+thiserror = "1.0"
+
+# === FFI for Flutter ===
+flutter_rust_bridge = "2.0"
+
+[build-dependencies]
+flutter_rust_bridge_codegen = "2.0"
+
+[dev-dependencies]
+# Testing
+criterion = "0.5"
+
+[[bench]]
+name = "knot_energy_benchmark"
+harness = false

@@ -1,0 +1,19 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-27",
+  "evaluation_at": "2026-02-27T23:59:55Z",
+  "lifecycle_coverage": {
+    "required_lifecycle_transition_coverage_pct": 100.0,
+    "observed_lifecycle_transition_coverage_pct": 100.0,
+    "required_approval_chain_coverage_pct": 100.0,
+    "observed_approval_chain_coverage_pct": 100.0,
+    "checks_executed": 280
+  },
+  "promotion_safety": {
+    "max_unapproved_enforced_promotions": 0,
+    "observed_unapproved_enforced_promotions": 0,
+    "max_stage_skip_promotions": 0,
+    "observed_stage_skip_promotions": 0,
+    "checks_executed": 140
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "technology": {
+    "growth_rate": -0.07212323106385583,
+    "acceleration": 0.007142203950198108,
+    "is_emerging": "False",
+    "avg_activity": 64.60857843944291
+  },
+  "science": {
+    "growth_rate": 0.005721630491270953,
+    "acceleration": 0.013271268000638851,
+    "is_emerging": "False",
+    "avg_activity": 30.549659446196397
+  },
+  "art": {
+    "growth_rate": 0.2405116228300625,
+    "acceleration": -0.011737111581435688,
+    "is_emerging": "False",
+    "avg_activity": 95.42599443775649
+  },
+  "philosophy": {
+    "growth_rate": 0.20098437679605666,
+    "acceleration": -0.011412767789113288,
+    "is_emerging": "False",
+    "avg_activity": 61.95834775028384
+  },
+  "business": {
+    "growth_rate": 0.03256145423160135,
+    "acceleration": 0.003241305972242085,
+    "is_emerging": "False",
+    "avg_activity": 43.984448373420385
+  },
+  "health": {
+    "growth_rate": 0.2502097827262192,
+    "acceleration": 0.013454719062238581,
+    "is_emerging": "False",
+    "avg_activity": 67.69369627258736
+  },
+  "education": {
+    "growth_rate": 0.14409375379697675,
+    "acceleration": 0.01918343855270177,
+    "is_emerging": "False",
+    "avg_activity": 86.54326785988509
+  },
+  "sports": {
+    "growth_rate": 0.05075879142621119,
+    "acceleration": 0.024743618711038102,
+    "is_emerging": "False",
+    "avg_activity": 84.13089725500136
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "milestone_id": "M31-P10-7",
+  "scope": "reality-model environment and city-pack structural-ref parity with runtime artifact-boundary hardening after M31-P10-6",
+  "master_plan_refs": [
+    "10.9.22",
+    "10.9.23",
+    "10.9.24",
+    "10.9.25"
+  ],
+  "dependencies": [
+    "M31-P10-6"
+  ],
+  "guardrails": {
+    "starts_only_after_m31_p10_6_closeout": true,
+    "runtime_artifacts_remain_authoritative_for_environment_identity": true,
+    "city_pack_semantics_and_structural_refs_must_survive_boundary_hops": true,
+    "promotion_rejection_rollback_gates_remain_fail_closed": true,
+    "admin_remains_non_authoritative_consumer": true
+  },
+  "status": "queued_follow_on",
+  "opened_on": "2026-03-31"
+}

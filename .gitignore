@@ -1,0 +1,164 @@
+# Dart/Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+*.dill  
+
+
+# Python
+__pycache__/
+*.pyc
+
+# Tokenizers
+assets/tokenizers/**
+
+# Large model files
+assets/models/*.onnx
+assets/models/**
+models/macos/*.zip
+models/macos/*.mlmodel
+models/macos/*.mlmodelc
+*.dylib
+*.onnx
+cmdline-tools.zip
+
+# Python virtual environments (all)
+venv*/
+.venv/
+
+# Native compiled binaries & build artifacts
+native/signal_ffi/android/**/*.so
+native/signal_ffi/wrapper_rust/target/
+runtime/avrai_network/native/signal_ffi/android/**/*.so
+runtime/avrai_network/native/**/target/
+runtime/avrai_network/native/signal_ffi/tmp_ios_build/
+runtime/avrai_network/native/signal_ffi/wrapper/build/
+runtime/avrai_network/native/signal_ffi/wrapper_platform/build/
+work/docs/plans/architecture/generated/codebase_master_plan_mapping_*.csv
+native/knot_math/ios/*.a
+*.so
+*.a
+
+# Large data files (generated/downloaded, not source)
+data/calling_score_training_data.json
+data/calling_score_training_data_v1_hybrid.json
+
+# Experiment data & results (large generated outputs)
+docs/patents/experiments/data/
+docs/patents/experiments/results/
+
+# iOS
+ios/Pods/
+ios/Flutter/
+*.xcworkspace/
+*.xcodeproj/
+*.framework/
+*.xcframework/  
+ios/Runner/Assets.xcassets/
+ios/Runner/Assets.xcassets/**
+
+
+# Android
+android/.gradle/
+android/app/build/
+android/build/
+android/gradle/
+android/local.properties
+android/app/src/main/assets/models/
+
+
+# IDE
+.idea/
+.vscode/
+*.iml
+.cursor/debug.log
+.cursor/*.log
+.codeql-databases/
+
+# Rename backup directories (created during package rename operations)
+.avrai_rename_backup_*/
+.avra_rename_backup_*/
+
+# Misc
+.DS_Store
+*.log
+logs/
+tmp/
+temp/
+runtime_exports/
+Pods/
+coverage/
+*.lock
+test.db
+
+# Generated files
+*.g.dart
+*.freezed.dart
+*.mocks.dart
+*.config.dart
+
+# Test results
+test_results/
+
+# Coverage
+coverage/
+
+# Build artifacts
+build/
+
+# Quarantine (cleanup staging area)
+# NOTE: Intentionally NOT gitignored. We use this folder to move/retain
+# potentially-deletable content for review before permanent deletion.
+
+# Config files with API keys (use environment variables or .env files instead)
+lib/google_places_config.dart
+lib/supabase_config.dart
+lib/weather_config.dart
+examples/supabase/supabase_config.dart
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
+.env.staging
+
+# Symphony local sandbox
+.symphony-workspaces/
+.symphony-logs/
+.symphony-workspaces-smoke*/
+.symphony-workspaces-smoke2*/
+.symphony-workspaces-smoke3*/
+
+# Secrets
+secrets.dart
+api_keys.dart
+config/secrets.dart
+lib/config/secrets.dart
+lib/core/config/secrets.dart
+lib/core/constants/api_keys.dart
+lib/core/constants/secrets.dart
+
+# Firebase config
+google-services.json
+GoogleService-Info.plist
+firebase_options.dart
+lib/firebase_options.dart
+
+# Certificates
+*.p12
+*.pem
+*.key
+*.crt
+*.cer
+*.der   
+
+# Network configuration
+.netrc
+.npmrc
+.yarnrc
+
+
+ios/Flutter/Secrets.xcconfig

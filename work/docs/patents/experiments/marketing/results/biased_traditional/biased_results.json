@@ -1,0 +1,690 @@
+[
+  {
+    "scenario_id": "biased_high_budget_10k",
+    "scenario_name": "Very High Budget ($10,000 per Event) - Traditional Advantage",
+    "scenario_type": "high_budget",
+    "status": "success",
+    "execution_time": 0.08868288993835449,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.15,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 7500.0,
+        "net_profit_per_event": -3600.0,
+        "total_gross_revenue": 3750000.0,
+        "total_net_profit": -1800000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": -0.6056133333333333,
+          "improvement_x": 0.3943866666666667
+        },
+        "conversion_rate": {
+          "improvement": 131.99575049931943,
+          "improvement_x": 132.99575049931943
+        },
+        "gross_revenue_per_event": {
+          "improvement": -0.6056133333333333,
+          "improvement_x": 0.39438666666666666
+        }
+      }
+    },
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/biased_traditional/high_budget_10k"
+  },
+  {
+    "scenario_id": "biased_high_budget_20k",
+    "scenario_name": "Extremely High Budget ($20,000 per Event) - Traditional Advantage",
+    "scenario_type": "high_budget",
+    "status": "success",
+    "execution_time": 0.08540487289428711,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.3,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 15000.0,
+        "net_profit_per_event": -7200.0,
+        "total_gross_revenue": 7500000.0,
+        "total_net_profit": -3600000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": -0.8028066666666667,
+          "improvement_x": 0.19719333333333336
+        },
+        "conversion_rate": {
+          "improvement": 131.99575049931943,
+          "improvement_x": 132.99575049931943
+        },
+        "gross_revenue_per_event": {
+          "improvement": -0.8028066666666667,
+          "improvement_x": 0.19719333333333333
+        }
+      }
+    },
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/biased_traditional/high_budget_20k"
+  },
+  {
+    "scenario_id": "biased_mainstream_only",
+    "scenario_name": "Mainstream Events Only - Traditional Broad Reach Advantage",
+    "scenario_type": "mainstream_favored",
+    "status": "success",
+    "execution_time": 0.08410191535949707,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 750000.0,
+        "total_net_profit": -360000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333335
+        },
+        "conversion_rate": {
+          "improvement": 131.99575049931943,
+          "improvement_x": 132.99575049931943
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333333
+        }
+      }
+    },
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/biased_traditional/mainstream_only"
+  },
+  {
+    "scenario_id": "biased_popular_categories",
+    "scenario_name": "Popular Categories Only (Food, Entertainment) - Traditional Advantage",
+    "scenario_type": "mainstream_favored",
+    "status": "success",
+    "execution_time": 0.09971404075622559,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 750000.0,
+        "total_net_profit": -360000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059194,
+        "conversion_rate": 0.20118106713897346,
+        "gross_revenue_per_event": 2959.7,
+        "net_profit_per_event": 2277.646890488818,
+        "total_gross_revenue": 1479850.0,
+        "total_net_profit": 1138823.445244409,
+        "roi": 3.4406958795173743
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9731333333333333,
+          "improvement_x": 1.9731333333333332
+        },
+        "conversion_rate": {
+          "improvement": 133.1207114259823,
+          "improvement_x": 134.1207114259823
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9731333333333332,
+          "improvement_x": 1.9731333333333332
+        }
+      }
+    },
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/biased_traditional/popular_categories"
+  },
+  {
+    "scenario_id": "biased_established_brands_only",
+    "scenario_name": "Established Brands Only - Reputation Advantage",
+    "scenario_type": "established_brands",
+    "status": "success",
+    "execution_time": 0.08240818977355957,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 750000.0,
+        "total_net_profit": -360000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333335
+        },
+        "conversion_rate": {
+          "improvement": 131.99575049931943,
+          "improvement_x": 132.99575049931943
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333333
+        }
+      }
+    },
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/biased_traditional/established_brands"
+  },
+  {
+    "scenario_id": "biased_high_reputation",
+    "scenario_name": "High Reputation Hosts (4.5+ stars, 1000+ events) - Traditional Advantage",
+    "scenario_type": "established_brands",
+    "status": "success",
+    "execution_time": 0.08269596099853516,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 750000.0,
+        "total_net_profit": -360000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333335
+        },
+        "conversion_rate": {
+          "improvement": 131.99575049931943,
+          "improvement_x": 132.99575049931943
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333333
+        }
+      }
+    },
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/biased_traditional/high_reputation"
+  },
+  {
+    "scenario_id": "biased_long_lead_time_90_days",
+    "scenario_name": "Very Long Lead Time (90 days) - Traditional Campaign Building",
+    "scenario_type": "long_lead_time",
+    "status": "success",
+    "execution_time": 0.08251786231994629,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 750000.0,
+        "total_net_profit": -360000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333335
+        },
+        "conversion_rate": {
+          "improvement": 131.99575049931943,
+          "improvement_x": 132.99575049931943
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333333
+        }
+      }
+    },
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/biased_traditional/long_lead_90_days"
+  },
+  {
+    "scenario_id": "biased_extended_campaigns",
+    "scenario_name": "Extended Campaign Duration (12 weeks) - Traditional Advantage",
+    "scenario_type": "long_lead_time",
+    "status": "success",
+    "execution_time": 0.08305907249450684,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 750000.0,
+        "total_net_profit": -360000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333335
+        },
+        "conversion_rate": {
+          "improvement": 131.99575049931943,
+          "improvement_x": 132.99575049931943
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333333
+        }
+      }
+    },
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/biased_traditional/extended_campaigns"
+  },
+  {
+    "scenario_id": "biased_large_market_50k",
+    "scenario_name": "Very Large Market (50,000 Users) - Traditional Scale Advantage",
+    "scenario_type": "large_market",
+    "status": "success",
+    "execution_time": 5.03485894203186,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.0006,
+        "conversion_rate": 0.0015000000000000002,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 3000000.0,
+        "total_net_profit": -1440000.0,
+        "roi": -0.3243243243243245
+      },
+      "test": {
+        "attendance_rate": 0.05981266,
+        "conversion_rate": 0.19913514669861382,
+        "gross_revenue_per_event": 149531.65,
+        "net_profit_per_event": 115000.06002765727,
+        "total_gross_revenue": 299063300.0,
+        "total_net_profit": 230000120.05531454,
+        "roi": 3.430187136481302
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 98.68776666666666,
+          "improvement_x": 99.68776666666668
+        },
+        "conversion_rate": {
+          "improvement": 131.75676446574252,
+          "improvement_x": 132.75676446574252
+        },
+        "gross_revenue_per_event": {
+          "improvement": 98.68776666666666,
+          "improvement_x": 99.68776666666666
+        }
+      }
+    },
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/biased_traditional/large_market_50k"
+  },
+  {
+    "scenario_id": "biased_mega_market_100k",
+    "scenario_name": "Mega Market (100,000 Users) - Traditional Mass Reach",
+    "scenario_type": "large_market",
+    "status": "success",
+    "execution_time": 18.50478196144104,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.0003,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 7500000.0,
+        "total_net_profit": -3600000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059878688,
+        "conversion_rate": 0.19945591230556592,
+        "gross_revenue_per_event": 299393.44,
+        "net_profit_per_event": 230430.17310445322,
+        "total_gross_revenue": 1496967200.0,
+        "total_net_profit": 1152150865.5222661,
+        "roi": 3.44816893541882
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 198.59562666666667,
+          "improvement_x": 199.59562666666667
+        },
+        "conversion_rate": {
+          "improvement": 131.9706082037106,
+          "improvement_x": 132.9706082037106
+        },
+        "gross_revenue_per_event": {
+          "improvement": 198.59562666666667,
+          "improvement_x": 199.59562666666667
+        }
+      }
+    },
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/biased_traditional/mega_market_100k"
+  },
+  {
+    "scenario_id": "biased_simple_demographics",
+    "scenario_name": "Simple Demographics (Age, Location) - Traditional Targeting",
+    "scenario_type": "demographic_targeting",
+    "status": "success",
+    "execution_time": 0.0811922550201416,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 750000.0,
+        "total_net_profit": -360000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059194,
+        "conversion_rate": 0.20118106713897346,
+        "gross_revenue_per_event": 2959.7,
+        "net_profit_per_event": 2277.646890488818,
+        "total_gross_revenue": 1479850.0,
+        "total_net_profit": 1138823.445244409,
+        "roi": 3.4406958795173743
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9731333333333333,
+          "improvement_x": 1.9731333333333332
+        },
+        "conversion_rate": {
+          "improvement": 133.1207114259823,
+          "improvement_x": 134.1207114259823
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9731333333333332,
+          "improvement_x": 1.9731333333333332
+        }
+      }
+    },
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/biased_traditional/simple_demographics"
+  },
+  {
+    "scenario_id": "biased_broad_appeal",
+    "scenario_name": "Broad Appeal Events (General Interest) - Traditional Advantage",
+    "scenario_type": "demographic_targeting",
+    "status": "success",
+    "execution_time": 0.08372688293457031,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 750000.0,
+        "total_net_profit": -360000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059194,
+        "conversion_rate": 0.20118106713897346,
+        "gross_revenue_per_event": 2959.7,
+        "net_profit_per_event": 2277.646890488818,
+        "total_gross_revenue": 1479850.0,
+        "total_net_profit": 1138823.445244409,
+        "roi": 3.4406958795173743
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9731333333333333,
+          "improvement_x": 1.9731333333333332
+        },
+        "conversion_rate": {
+          "improvement": 133.1207114259823,
+          "improvement_x": 134.1207114259823
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9731333333333332,
+          "improvement_x": 1.9731333333333332
+        }
+      }
+    },
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/biased_traditional/broad_appeal"
+  },
+  {
+    "scenario_id": "biased_traditional_outspend",
+    "scenario_name": "Traditional Outspends (3x Budget) - Spending Advantage",
+    "scenario_type": "outspend_competition",
+    "status": "success",
+    "execution_time": 0.08284807205200195,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.09,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 4500.0,
+        "net_profit_per_event": -2160.0,
+        "total_gross_revenue": 2250000.0,
+        "total_net_profit": -1080000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": -0.3426888888888888,
+          "improvement_x": 0.6573111111111112
+        },
+        "conversion_rate": {
+          "improvement": 131.99575049931943,
+          "improvement_x": 132.99575049931943
+        },
+        "gross_revenue_per_event": {
+          "improvement": -0.3426888888888889,
+          "improvement_x": 0.6573111111111112
+        }
+      }
+    },
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/biased_traditional/outspend_3x"
+  },
+  {
+    "scenario_id": "biased_traditional_outspend_5x",
+    "scenario_name": "Traditional Outspends (5x Budget) - Massive Spending Advantage",
+    "scenario_type": "outspend_competition",
+    "status": "success",
+    "execution_time": 0.08152318000793457,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.15,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 7500.0,
+        "net_profit_per_event": -3600.0,
+        "total_gross_revenue": 3750000.0,
+        "total_net_profit": -1800000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.05819,
+        "conversion_rate": 0.19951719603401102,
+        "gross_revenue_per_event": 2909.5,
+        "net_profit_per_event": 531.265,
+        "total_gross_revenue": 1454750.0,
+        "total_net_profit": 265632.5,
+        "roi": 0.21403942579568014
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": -0.6120666666666668,
+          "improvement_x": 0.38793333333333335
+        },
+        "conversion_rate": {
+          "improvement": 132.011464022674,
+          "improvement_x": 133.011464022674
+        },
+        "gross_revenue_per_event": {
+          "improvement": -0.6120666666666666,
+          "improvement_x": 0.38793333333333335
+        }
+      }
+    },
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/biased_traditional/outspend_5x"
+  },
+  {
+    "scenario_id": "biased_perfect_storm",
+    "scenario_name": "Perfect Storm for Traditional (High Budget + Mainstream + Established + Long Lead)",
+    "scenario_type": "high_budget",
+    "status": "success",
+    "execution_time": 0.08176612854003906,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.225,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 11250.0,
+        "net_profit_per_event": -5400.0,
+        "total_gross_revenue": 5625000.0,
+        "total_net_profit": -2700000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": -0.7370755555555555,
+          "improvement_x": 0.26292444444444446
+        },
+        "conversion_rate": {
+          "improvement": 131.99575049931943,
+          "improvement_x": 132.99575049931943
+        },
+        "gross_revenue_per_event": {
+          "improvement": -0.7370755555555556,
+          "improvement_x": 0.26292444444444446
+        }
+      }
+    },
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/biased_traditional/perfect_storm"
+  },
+  {
+    "scenario_id": "biased_traditional_optimal",
+    "scenario_name": "Traditional Optimal Conditions (All Advantages)",
+    "scenario_type": "high_budget",
+    "status": "success",
+    "execution_time": 3.6375489234924316,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.006,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 15000.0,
+        "net_profit_per_event": -7200.0,
+        "total_gross_revenue": 7500000.0,
+        "total_net_profit": -3600000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.06012508,
+        "conversion_rate": 0.2007853226441058,
+        "gross_revenue_per_event": 150312.7,
+        "net_profit_per_event": 115611.4014056211,
+        "total_gross_revenue": 75156350.0,
+        "total_net_profit": 57805700.70281055,
+        "roi": 3.4357392720626327
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 9.020846666666666,
+          "improvement_x": 10.020846666666666
+        },
+        "conversion_rate": {
+          "improvement": 132.8568817627372,
+          "improvement_x": 133.8568817627372
+        },
+        "gross_revenue_per_event": {
+          "improvement": 9.020846666666667,
+          "improvement_x": 10.020846666666667
+        }
+      }
+    },
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/biased_traditional/optimal_conditions"
+  }
+]

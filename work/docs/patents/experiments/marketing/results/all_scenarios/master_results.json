@@ -1,0 +1,1390 @@
+[
+  {
+    "scenario_id": "price_low_25",
+    "scenario_name": "Low-Ticket Events ($25)",
+    "scenario_type": "price_variation",
+    "status": "success",
+    "execution_time": 0.08367514610290527,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 750.0,
+        "net_profit_per_event": -1410.0,
+        "total_gross_revenue": 375000.0,
+        "total_net_profit": -705000.0,
+        "roi": -0.6527777777777778
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 1478.95,
+        "net_profit_per_event": 987.4793643472162,
+        "total_gross_revenue": 739475.0,
+        "total_net_profit": 493739.6821736081,
+        "roi": 2.1425027587728795
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333335
+        },
+        "conversion_rate": {
+          "improvement": 131.99575049931943,
+          "improvement_x": 132.99575049931943
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333333
+        }
+      }
+    },
+    "test2_results": null,
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/price_variations/low_ticket_25"
+  },
+  {
+    "scenario_id": "price_high_100",
+    "scenario_name": "High-Ticket Events ($100)",
+    "scenario_type": "price_variation",
+    "status": "success",
+    "execution_time": 0.08170127868652344,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 3000.0,
+        "net_profit_per_event": 660.0,
+        "total_gross_revenue": 1500000.0,
+        "total_net_profit": 330000.0,
+        "roi": 0.282051282051282
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 5915.8,
+        "net_profit_per_event": 4847.538864347216,
+        "total_gross_revenue": 2957900.0,
+        "total_net_profit": 2423769.432173608,
+        "roi": 4.583797067858988
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333335
+        },
+        "conversion_rate": {
+          "improvement": 131.99575049931943,
+          "improvement_x": 132.99575049931943
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333333
+        },
+        "net_profit_per_event": {
+          "improvement": 6.34475585507154,
+          "improvement_x": 7.34475585507154
+        },
+        "total_net_profit": {
+          "improvement": 6.344755855071539,
+          "improvement_x": 7.344755855071539
+        },
+        "roi": {
+          "improvement": 15.251644149681871,
+          "improvement_x": 16.25164414968187
+        }
+      }
+    },
+    "test2_results": null,
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/price_variations/high_ticket_100"
+  },
+  {
+    "scenario_id": "price_high_200",
+    "scenario_name": "High-Ticket Events ($200)",
+    "scenario_type": "price_variation",
+    "status": "success",
+    "execution_time": 0.08079409599304199,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 6000.0,
+        "net_profit_per_event": 3420.0,
+        "total_gross_revenue": 3000000.0,
+        "total_net_profit": 1710000.0,
+        "roi": 1.3255813953488373
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 11831.6,
+        "net_profit_per_event": 9994.284864347215,
+        "total_gross_revenue": 5915800.0,
+        "total_net_profit": 4997142.432173608,
+        "roi": 5.456251936820085
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333335
+        },
+        "conversion_rate": {
+          "improvement": 131.99575049931943,
+          "improvement_x": 132.99575049931943
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333333
+        },
+        "net_profit_per_event": {
+          "improvement": 1.9223055158909985,
+          "improvement_x": 2.9223055158909985
+        },
+        "total_net_profit": {
+          "improvement": 1.9223055158909987,
+          "improvement_x": 2.922305515890999
+        },
+        "roi": {
+          "improvement": 3.1161198821625193,
+          "improvement_x": 4.116119882162519
+        }
+      }
+    },
+    "test2_results": null,
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/price_variations/high_ticket_200"
+  },
+  {
+    "scenario_id": "price_free_addons",
+    "scenario_name": "Free Events with Add-ons",
+    "scenario_type": "price_variation",
+    "status": "success",
+    "execution_time": 0.09657979011535645,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 139.65292991587228,
+        "net_profit_per_event": -1971.5193044773973,
+        "total_gross_revenue": 69826.46495793614,
+        "total_net_profit": -985759.6522386987,
+        "roi": -0.9339144822600903
+      },
+      "test": {
+        "attendance_rate": 0.05983,
+        "conversion_rate": 0.19908970929355768,
+        "gross_revenue_per_event": 801.1829711946449,
+        "net_profit_per_event": 398.90364493655716,
+        "total_gross_revenue": 400591.48559732246,
+        "total_net_profit": 199451.82246827858,
+        "roi": 1.054356913792088
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9943333333333334,
+          "improvement_x": 1.9943333333333335
+        },
+        "conversion_rate": {
+          "improvement": 131.7264728623718,
+          "improvement_x": 132.7264728623718
+        },
+        "gross_revenue_per_event": {
+          "improvement": 4.736957840249267,
+          "improvement_x": 5.736957840249267
+        }
+      }
+    },
+    "test2_results": null,
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/price_variations/free_with_addons"
+  },
+  {
+    "scenario_id": "category_food",
+    "scenario_name": "Food Events Only",
+    "scenario_type": "category_performance",
+    "status": "success",
+    "execution_time": 0.08099699020385742,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 750000.0,
+        "total_net_profit": -360000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059194,
+        "conversion_rate": 0.20118106713897346,
+        "gross_revenue_per_event": 2959.7,
+        "net_profit_per_event": 2277.646890488818,
+        "total_gross_revenue": 1479850.0,
+        "total_net_profit": 1138823.445244409,
+        "roi": 3.4406958795173743
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9731333333333333,
+          "improvement_x": 1.9731333333333332
+        },
+        "conversion_rate": {
+          "improvement": 133.1207114259823,
+          "improvement_x": 134.1207114259823
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9731333333333332,
+          "improvement_x": 1.9731333333333332
+        }
+      }
+    },
+    "test2_results": null,
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/category_performance/food"
+  },
+  {
+    "scenario_id": "category_entertainment",
+    "scenario_name": "Entertainment Events Only",
+    "scenario_type": "category_performance",
+    "status": "success",
+    "execution_time": 0.08139586448669434,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 750000.0,
+        "total_net_profit": -360000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059194,
+        "conversion_rate": 0.20118106713897346,
+        "gross_revenue_per_event": 2959.7,
+        "net_profit_per_event": 2277.646890488818,
+        "total_gross_revenue": 1479850.0,
+        "total_net_profit": 1138823.445244409,
+        "roi": 3.4406958795173743
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9731333333333333,
+          "improvement_x": 1.9731333333333332
+        },
+        "conversion_rate": {
+          "improvement": 133.1207114259823,
+          "improvement_x": 134.1207114259823
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9731333333333332,
+          "improvement_x": 1.9731333333333332
+        }
+      }
+    },
+    "test2_results": null,
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/category_performance/entertainment"
+  },
+  {
+    "scenario_id": "category_culture",
+    "scenario_name": "Culture Events Only",
+    "scenario_type": "category_performance",
+    "status": "success",
+    "execution_time": 0.08088517189025879,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 750000.0,
+        "total_net_profit": -360000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059194,
+        "conversion_rate": 0.20118106713897346,
+        "gross_revenue_per_event": 2959.7,
+        "net_profit_per_event": 2277.646890488818,
+        "total_gross_revenue": 1479850.0,
+        "total_net_profit": 1138823.445244409,
+        "roi": 3.4406958795173743
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9731333333333333,
+          "improvement_x": 1.9731333333333332
+        },
+        "conversion_rate": {
+          "improvement": 133.1207114259823,
+          "improvement_x": 134.1207114259823
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9731333333333332,
+          "improvement_x": 1.9731333333333332
+        }
+      }
+    },
+    "test2_results": null,
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/category_performance/culture"
+  },
+  {
+    "scenario_id": "category_outdoor",
+    "scenario_name": "Outdoor Events Only",
+    "scenario_type": "category_performance",
+    "status": "success",
+    "execution_time": 0.08354902267456055,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 750000.0,
+        "total_net_profit": -360000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059194,
+        "conversion_rate": 0.20118106713897346,
+        "gross_revenue_per_event": 2959.7,
+        "net_profit_per_event": 2277.646890488818,
+        "total_gross_revenue": 1479850.0,
+        "total_net_profit": 1138823.445244409,
+        "roi": 3.4406958795173743
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9731333333333333,
+          "improvement_x": 1.9731333333333332
+        },
+        "conversion_rate": {
+          "improvement": 133.1207114259823,
+          "improvement_x": 134.1207114259823
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9731333333333332,
+          "improvement_x": 1.9731333333333332
+        }
+      }
+    },
+    "test2_results": null,
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/category_performance/outdoor"
+  },
+  {
+    "scenario_id": "category_health",
+    "scenario_name": "Health Events Only",
+    "scenario_type": "category_performance",
+    "status": "success",
+    "execution_time": 0.08174896240234375,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 750000.0,
+        "total_net_profit": -360000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059194,
+        "conversion_rate": 0.20118106713897346,
+        "gross_revenue_per_event": 2959.7,
+        "net_profit_per_event": 2277.646890488818,
+        "total_gross_revenue": 1479850.0,
+        "total_net_profit": 1138823.445244409,
+        "roi": 3.4406958795173743
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9731333333333333,
+          "improvement_x": 1.9731333333333332
+        },
+        "conversion_rate": {
+          "improvement": 133.1207114259823,
+          "improvement_x": 134.1207114259823
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9731333333333332,
+          "improvement_x": 1.9731333333333332
+        }
+      }
+    },
+    "test2_results": null,
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/category_performance/health"
+  },
+  {
+    "scenario_id": "category_education",
+    "scenario_name": "Education Events Only",
+    "scenario_type": "category_performance",
+    "status": "success",
+    "execution_time": 0.0819101333618164,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 750000.0,
+        "total_net_profit": -360000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059194,
+        "conversion_rate": 0.20118106713897346,
+        "gross_revenue_per_event": 2959.7,
+        "net_profit_per_event": 2277.646890488818,
+        "total_gross_revenue": 1479850.0,
+        "total_net_profit": 1138823.445244409,
+        "roi": 3.4406958795173743
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9731333333333333,
+          "improvement_x": 1.9731333333333332
+        },
+        "conversion_rate": {
+          "improvement": 133.1207114259823,
+          "improvement_x": 134.1207114259823
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9731333333333332,
+          "improvement_x": 1.9731333333333332
+        }
+      }
+    },
+    "test2_results": null,
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/category_performance/education"
+  },
+  {
+    "scenario_id": "category_niche",
+    "scenario_name": "Niche Events Only",
+    "scenario_type": "category_performance",
+    "status": "success",
+    "execution_time": 0.08140015602111816,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 750000.0,
+        "total_net_profit": -360000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333335
+        },
+        "conversion_rate": {
+          "improvement": 131.99575049931943,
+          "improvement_x": 132.99575049931943
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333333
+        }
+      }
+    },
+    "test2_results": null,
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/category_performance/niche"
+  },
+  {
+    "scenario_id": "category_mainstream",
+    "scenario_name": "Mainstream Events Only",
+    "scenario_type": "category_performance",
+    "status": "success",
+    "execution_time": 0.08129692077636719,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 750000.0,
+        "total_net_profit": -360000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333335
+        },
+        "conversion_rate": {
+          "improvement": 131.99575049931943,
+          "improvement_x": 132.99575049931943
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333333
+        }
+      }
+    },
+    "test2_results": null,
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/category_performance/mainstream"
+  },
+  {
+    "scenario_id": "scale_small_100",
+    "scenario_name": "Small Market (100 Users)",
+    "scenario_type": "user_scale",
+    "status": "success",
+    "execution_time": 0.00943899154663086,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.3,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 75000.0,
+        "total_net_profit": -36000.0,
+        "roi": -0.32432432432432434
+      },
+      "test": {
+        "attendance_rate": 0.052,
+        "conversion_rate": 0.2014645452796758,
+        "gross_revenue_per_event": 260.0,
+        "net_profit_per_event": 198.75334447344926,
+        "total_gross_revenue": 13000.0,
+        "total_net_profit": 9937.667223672463,
+        "roi": 3.370203051919333
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": -0.8266666666666667,
+          "improvement_x": 0.17333333333333334
+        },
+        "conversion_rate": {
+          "improvement": 133.3096968531172,
+          "improvement_x": 134.3096968531172
+        },
+        "gross_revenue_per_event": {
+          "improvement": -0.8266666666666667,
+          "improvement_x": 0.17333333333333334
+        }
+      }
+    },
+    "test2_results": null,
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/user_scale/small_100"
+  },
+  {
+    "scenario_id": "scale_large_10000",
+    "scenario_name": "Large Market (10,000 Users)",
+    "scenario_type": "user_scale",
+    "status": "success",
+    "execution_time": 0.7963919639587402,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.003,
+        "conversion_rate": 0.0015000000000000002,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 1500000.0,
+        "total_net_profit": -720000.0,
+        "roi": -0.3243243243243245
+      },
+      "test": {
+        "attendance_rate": 0.0596952,
+        "conversion_rate": 0.19891527173564036,
+        "gross_revenue_per_event": 29847.6,
+        "net_profit_per_event": 23031.743413515367,
+        "total_gross_revenue": 29847600.0,
+        "total_net_profit": 23031743.413515367,
+        "roi": 3.477775489209851
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 18.8984,
+          "improvement_x": 19.8984
+        },
+        "conversion_rate": {
+          "improvement": 131.61018115709356,
+          "improvement_x": 132.61018115709356
+        },
+        "gross_revenue_per_event": {
+          "improvement": 18.8984,
+          "improvement_x": 19.8984
+        }
+      }
+    },
+    "test2_results": null,
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/user_scale/large_10000"
+  },
+  {
+    "scenario_id": "scale_network_effects",
+    "scenario_name": "Network Effects (Growing User Base)",
+    "scenario_type": "user_scale",
+    "status": "success",
+    "execution_time": 0.08136296272277832,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 750000.0,
+        "total_net_profit": -360000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333335
+        },
+        "conversion_rate": {
+          "improvement": 131.99575049931943,
+          "improvement_x": 132.99575049931943
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333333
+        }
+      }
+    },
+    "test2_results": null,
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/user_scale/network_effects"
+  },
+  {
+    "scenario_id": "timing_last_minute",
+    "scenario_name": "Last-Minute Events (24-48 Hours)",
+    "scenario_type": "timing_urgency",
+    "status": "success",
+    "execution_time": 0.0810849666595459,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.003,
+        "conversion_rate": 0.00015,
+        "gross_revenue_per_event": 150.0,
+        "net_profit_per_event": -1962.0,
+        "total_gross_revenue": 75000.0,
+        "total_net_profit": -981000.0,
+        "roi": -0.9289772727272728
+      },
+      "test": {
+        "attendance_rate": 0.041282,
+        "conversion_rate": 0.13964553802428542,
+        "gross_revenue_per_event": 2064.1,
+        "net_profit_per_event": 1586.9551791980523,
+        "total_gross_revenue": 1032050.0,
+        "total_net_profit": 793477.5895990261,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 12.760666666666665,
+          "improvement_x": 13.760666666666665
+        },
+        "conversion_rate": {
+          "improvement": 929.9702534952362,
+          "improvement_x": 930.9702534952362
+        },
+        "gross_revenue_per_event": {
+          "improvement": 12.760666666666665,
+          "improvement_x": 13.760666666666665
+        }
+      }
+    },
+    "test2_results": null,
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/timing/last_minute"
+  },
+  {
+    "scenario_id": "budget_low_500",
+    "scenario_name": "Low Budget ($500 per Event)",
+    "scenario_type": "budget_variation",
+    "status": "success",
+    "execution_time": 0.08326005935668945,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.007,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 350.0,
+        "net_profit_per_event": -203.0,
+        "total_gross_revenue": 175000.0,
+        "total_net_profit": -101500.0,
+        "roi": -0.3670886075949368
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 7.451142857142857,
+          "improvement_x": 8.451142857142857
+        },
+        "conversion_rate": {
+          "improvement": 131.99575049931943,
+          "improvement_x": 132.99575049931943
+        },
+        "gross_revenue_per_event": {
+          "improvement": 7.451142857142857,
+          "improvement_x": 8.451142857142857
+        }
+      }
+    },
+    "test2_results": null,
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/budget_variations/low_500"
+  },
+  {
+    "scenario_id": "budget_high_5000",
+    "scenario_name": "High Budget ($5,000 per Event)",
+    "scenario_type": "budget_variation",
+    "status": "success",
+    "execution_time": 0.08424186706542969,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.075,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 3750.0,
+        "net_profit_per_event": -1800.0,
+        "total_gross_revenue": 1875000.0,
+        "total_net_profit": -900000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": -0.21122666666666662,
+          "improvement_x": 0.7887733333333334
+        },
+        "conversion_rate": {
+          "improvement": 131.99575049931943,
+          "improvement_x": 132.99575049931943
+        },
+        "gross_revenue_per_event": {
+          "improvement": -0.21122666666666665,
+          "improvement_x": 0.7887733333333333
+        }
+      }
+    },
+    "test2_results": null,
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/budget_variations/high_5000"
+  },
+  {
+    "scenario_id": "quality_new_hosts",
+    "scenario_name": "New Hosts (No Reputation)",
+    "scenario_type": "event_quality",
+    "status": "success",
+    "execution_time": 0.10162782669067383,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 750000.0,
+        "total_net_profit": -360000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333335
+        },
+        "conversion_rate": {
+          "improvement": 131.99575049931943,
+          "improvement_x": 132.99575049931943
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333333
+        }
+      }
+    },
+    "test2_results": null,
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/event_quality/new_hosts"
+  },
+  {
+    "scenario_id": "quality_established_hosts",
+    "scenario_name": "Established Hosts (High Reputation)",
+    "scenario_type": "event_quality",
+    "status": "success",
+    "execution_time": 0.0839841365814209,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 750000.0,
+        "total_net_profit": -360000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333335
+        },
+        "conversion_rate": {
+          "improvement": 131.99575049931943,
+          "improvement_x": 132.99575049931943
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333333
+        }
+      }
+    },
+    "test2_results": null,
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/event_quality/established_hosts"
+  },
+  {
+    "scenario_id": "competitive_multiple_events",
+    "scenario_name": "Multiple Competing Events (10 on Same Day)",
+    "scenario_type": "competitive",
+    "status": "success",
+    "execution_time": 0.08403801918029785,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 750000.0,
+        "total_net_profit": -360000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333335
+        },
+        "conversion_rate": {
+          "improvement": 131.99575049931943,
+          "improvement_x": 132.99575049931943
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333333
+        }
+      }
+    },
+    "test2_results": null,
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/competitive/multiple_events"
+  },
+  {
+    "scenario_id": "repeat_attendance",
+    "scenario_name": "Repeat Attendance Tracking",
+    "scenario_type": "repeat_attendance",
+    "status": "success",
+    "execution_time": 0.06930208206176758,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 150000.0,
+        "total_net_profit": -72000.0,
+        "roi": -0.32432432432432434
+      },
+      "test": {
+        "attendance_rate": 0.06085,
+        "conversion_rate": 0.2032110445709777,
+        "gross_revenue_per_event": 3042.5,
+        "net_profit_per_event": 2334.26333788804,
+        "total_gross_revenue": 304250.0,
+        "total_net_profit": 233426.333788804,
+        "roi": 3.4046248575003797
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 1.0283333333333335,
+          "improvement_x": 2.0283333333333333
+        },
+        "conversion_rate": {
+          "improvement": 134.47402971398512,
+          "improvement_x": 135.47402971398512
+        },
+        "gross_revenue_per_event": {
+          "improvement": 1.0283333333333333,
+          "improvement_x": 2.0283333333333333
+        }
+      }
+    },
+    "test2_results": null,
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/repeat_attendance/tracking"
+  },
+  {
+    "scenario_id": "geo_urban",
+    "scenario_name": "Urban Market",
+    "scenario_type": "geographic",
+    "status": "success",
+    "execution_time": 0.08367109298706055,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 750000.0,
+        "total_net_profit": -360000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333335
+        },
+        "conversion_rate": {
+          "improvement": 131.99575049931943,
+          "improvement_x": 132.99575049931943
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333333
+        }
+      }
+    },
+    "test2_results": null,
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/geographic/urban"
+  },
+  {
+    "scenario_id": "geo_suburban",
+    "scenario_name": "Suburban Market",
+    "scenario_type": "geographic",
+    "status": "success",
+    "execution_time": 0.08243417739868164,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 750000.0,
+        "total_net_profit": -360000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333335
+        },
+        "conversion_rate": {
+          "improvement": 131.99575049931943,
+          "improvement_x": 132.99575049931943
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333333
+        }
+      }
+    },
+    "test2_results": null,
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/geographic/suburban"
+  },
+  {
+    "scenario_id": "word_of_mouth",
+    "scenario_name": "Word-of-Mouth & Referrals",
+    "scenario_type": "word_of_mouth",
+    "status": "success",
+    "execution_time": 0.08416390419006348,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 750000.0,
+        "total_net_profit": -360000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.058754,
+        "conversion_rate": 0.19854970505672243,
+        "gross_revenue_per_event": 2937.7,
+        "net_profit_per_event": 2258.2472403553047,
+        "total_gross_revenue": 1468850.0,
+        "total_net_profit": 1129123.6201776525,
+        "roi": 3.412013370315396
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9584666666666668,
+          "improvement_x": 1.9584666666666668
+        },
+        "conversion_rate": {
+          "improvement": 131.36647003781493,
+          "improvement_x": 132.36647003781493
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9584666666666666,
+          "improvement_x": 1.9584666666666666
+        }
+      }
+    },
+    "test2_results": null,
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/word_of_mouth/tracking"
+  },
+  {
+    "scenario_id": "event_type_tour",
+    "scenario_name": "Tour Events Only",
+    "scenario_type": "event_type",
+    "status": "success",
+    "execution_time": 0.08012700080871582,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 750000.0,
+        "total_net_profit": -360000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059194,
+        "conversion_rate": 0.20118106713897346,
+        "gross_revenue_per_event": 2959.7,
+        "net_profit_per_event": 2277.646890488818,
+        "total_gross_revenue": 1479850.0,
+        "total_net_profit": 1138823.445244409,
+        "roi": 3.4406958795173743
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9731333333333333,
+          "improvement_x": 1.9731333333333332
+        },
+        "conversion_rate": {
+          "improvement": 133.1207114259823,
+          "improvement_x": 134.1207114259823
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9731333333333332,
+          "improvement_x": 1.9731333333333332
+        }
+      }
+    },
+    "test2_results": null,
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/event_types/tour"
+  },
+  {
+    "scenario_id": "event_type_workshop",
+    "scenario_name": "Workshop Events Only",
+    "scenario_type": "event_type",
+    "status": "success",
+    "execution_time": 0.08045005798339844,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 750000.0,
+        "total_net_profit": -360000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059194,
+        "conversion_rate": 0.20118106713897346,
+        "gross_revenue_per_event": 2959.7,
+        "net_profit_per_event": 2277.646890488818,
+        "total_gross_revenue": 1479850.0,
+        "total_net_profit": 1138823.445244409,
+        "roi": 3.4406958795173743
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9731333333333333,
+          "improvement_x": 1.9731333333333332
+        },
+        "conversion_rate": {
+          "improvement": 133.1207114259823,
+          "improvement_x": 134.1207114259823
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9731333333333332,
+          "improvement_x": 1.9731333333333332
+        }
+      }
+    },
+    "test2_results": null,
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/event_types/workshop"
+  },
+  {
+    "scenario_id": "event_type_meetup",
+    "scenario_name": "Meetup Events Only",
+    "scenario_type": "event_type",
+    "status": "success",
+    "execution_time": 0.0815587043762207,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 750000.0,
+        "total_net_profit": -360000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059194,
+        "conversion_rate": 0.20118106713897346,
+        "gross_revenue_per_event": 2959.7,
+        "net_profit_per_event": 2277.646890488818,
+        "total_gross_revenue": 1479850.0,
+        "total_net_profit": 1138823.445244409,
+        "roi": 3.4406958795173743
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9731333333333333,
+          "improvement_x": 1.9731333333333332
+        },
+        "conversion_rate": {
+          "improvement": 133.1207114259823,
+          "improvement_x": 134.1207114259823
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9731333333333332,
+          "improvement_x": 1.9731333333333332
+        }
+      }
+    },
+    "test2_results": null,
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/event_types/meetup"
+  },
+  {
+    "scenario_id": "event_type_tasting",
+    "scenario_name": "Tasting Events Only",
+    "scenario_type": "event_type",
+    "status": "success",
+    "execution_time": 0.08099222183227539,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 750000.0,
+        "total_net_profit": -360000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059194,
+        "conversion_rate": 0.20118106713897346,
+        "gross_revenue_per_event": 2959.7,
+        "net_profit_per_event": 2277.646890488818,
+        "total_gross_revenue": 1479850.0,
+        "total_net_profit": 1138823.445244409,
+        "roi": 3.4406958795173743
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9731333333333333,
+          "improvement_x": 1.9731333333333332
+        },
+        "conversion_rate": {
+          "improvement": 133.1207114259823,
+          "improvement_x": 134.1207114259823
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9731333333333332,
+          "improvement_x": 1.9731333333333332
+        }
+      }
+    },
+    "test2_results": null,
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/event_types/tasting"
+  },
+  {
+    "scenario_id": "event_type_lecture",
+    "scenario_name": "Lecture Events Only",
+    "scenario_type": "event_type",
+    "status": "success",
+    "execution_time": 0.09597110748291016,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 750000.0,
+        "total_net_profit": -360000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059194,
+        "conversion_rate": 0.20118106713897346,
+        "gross_revenue_per_event": 2959.7,
+        "net_profit_per_event": 2277.646890488818,
+        "total_gross_revenue": 1479850.0,
+        "total_net_profit": 1138823.445244409,
+        "roi": 3.4406958795173743
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9731333333333333,
+          "improvement_x": 1.9731333333333332
+        },
+        "conversion_rate": {
+          "improvement": 133.1207114259823,
+          "improvement_x": 134.1207114259823
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9731333333333332,
+          "improvement_x": 1.9731333333333332
+        }
+      }
+    },
+    "test2_results": null,
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/event_types/lecture"
+  },
+  {
+    "scenario_id": "long_term_12_months",
+    "scenario_name": "12-Month Long-Term Simulation",
+    "scenario_type": "long_term",
+    "status": "success",
+    "execution_time": 0.08270478248596191,
+    "test1_results": {
+      "control": {
+        "attendance_rate": 0.03,
+        "conversion_rate": 0.0015,
+        "gross_revenue_per_event": 1500.0,
+        "net_profit_per_event": -720.0,
+        "total_gross_revenue": 750000.0,
+        "total_net_profit": -360000.0,
+        "roi": -0.3243243243243244
+      },
+      "test": {
+        "attendance_rate": 0.059158,
+        "conversion_rate": 0.19949362574897916,
+        "gross_revenue_per_event": 2957.9,
+        "net_profit_per_event": 2274.165864347216,
+        "total_gross_revenue": 1478950.0,
+        "total_net_profit": 1137082.932173608,
+        "roi": 3.4193071934175343
+      },
+      "improvements": {
+        "attendance_rate": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333335
+        },
+        "conversion_rate": {
+          "improvement": 131.99575049931943,
+          "improvement_x": 132.99575049931943
+        },
+        "gross_revenue_per_event": {
+          "improvement": 0.9719333333333334,
+          "improvement_x": 1.9719333333333333
+        }
+      }
+    },
+    "test2_results": null,
+    "error": null,
+    "results_dir": "/Users/reisgordon/SPOTS/docs/patents/experiments/marketing/results/long_term/12_months"
+  }
+]

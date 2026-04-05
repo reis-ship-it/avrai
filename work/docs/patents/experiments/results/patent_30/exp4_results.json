@@ -1,0 +1,12 @@
+{
+  "experiment": "Privacy Validation",
+  "total_leaks": 0,
+  "leak_rate": 0.0,
+  "privacy_score": 1.0,
+  "leak_by_type": {
+    "agent": 0.0,
+    "collective_intelligence": 0.0,
+    "communication": 0.0
+  },
+  "num_samples": 701
+}

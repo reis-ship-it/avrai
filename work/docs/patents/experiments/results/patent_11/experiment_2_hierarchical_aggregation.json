@@ -1,0 +1,27 @@
+{
+  "user_ais": 100,
+  "area_ais": 10,
+  "regional_ais": 5,
+  "universal_ai": {
+    "connectionQuality": 0.4973223499026885,
+    "learningEffectiveness": 0.49929376415477644,
+    "privacyMetrics": 0.544205560501036,
+    "stabilityMetrics": 0.5386289080451785,
+    "aiPleasure": 0.5062715962652696
+  },
+  "ground_truth_universal": {
+    "connectionQuality": 0.4973223499026885,
+    "learningEffectiveness": 0.4992937641547767,
+    "privacyMetrics": 0.5442055605010361,
+    "stabilityMetrics": 0.5386289080451785,
+    "aiPleasure": 0.5062715962652696
+  },
+  "information_preservation": {
+    "connectionQuality": 1.0,
+    "learningEffectiveness": 0.9999999999999994,
+    "privacyMetrics": 0.9999999999999998,
+    "stabilityMetrics": 1.0,
+    "aiPleasure": 1.0
+  },
+  "average_preservation": 0.9999999999999998
+}

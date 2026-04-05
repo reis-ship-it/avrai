@@ -1,0 +1,13 @@
+{
+  "duplicated_commands": [],
+  "generated_at": "2026-02-27T21:45:00Z",
+  "missing_commands": [
+    "dart run tool/update_execution_board.dart --check",
+    "dart run tool/update_three_prong_reviews.dart --check"
+  ],
+  "required_command_count": 12,
+  "source": "configs/runtime/split_pass_ci_guard_contract_hardening_controls.json",
+  "verdict": "FAIL",
+  "version": "v1",
+  "workflow_path": ".github/workflows/execution-board-guard.yml"
+}

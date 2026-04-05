@@ -1,0 +1,9 @@
+{
+  "experiment": "Connection Success Learning Accuracy",
+  "mae": 0.0,
+  "mse": 0.0,
+  "correlation": 1.0,
+  "p_value": 0.0,
+  "success_prediction_accuracy": 0.53,
+  "num_samples": 500
+}

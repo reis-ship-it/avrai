@@ -1,0 +1,9 @@
+{
+  "experiment": "Network Pattern Recognition Effectiveness",
+  "mae_no_privacy": 0.5232370383418472,
+  "mae_with_privacy": 0.46999354586983827,
+  "correlation_no_privacy": NaN,
+  "correlation_with_privacy": -1.0,
+  "privacy_overhead_percent": -10.17578813624109,
+  "num_patterns": 2
+}

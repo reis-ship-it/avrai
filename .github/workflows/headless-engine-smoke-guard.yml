@@ -1,0 +1,31 @@
+name: Headless Engine Smoke Guard
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  headless-engine-smoke:
+    name: headless-engine-smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Headless engine smoke tests
+        run: |
+          chmod +x scripts/ci/run_headless_engine_smoke.sh
+          bash scripts/ci/run_headless_engine_smoke.sh

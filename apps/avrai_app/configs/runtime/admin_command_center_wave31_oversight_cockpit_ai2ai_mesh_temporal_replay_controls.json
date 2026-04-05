@@ -1,0 +1,27 @@
+{
+  "milestone_id": "M31-P10-3",
+  "scope": "admin command center wave-31 oversight cockpit, ai2ai mesh health, temporal replay, needs-attention queue, bounded actions, and deep-link handoff context",
+  "master_plan_refs": [
+    "10.9.22",
+    "10.9.23",
+    "10.9.24",
+    "10.9.25"
+  ],
+  "dependencies": [
+    "M30-P10-2",
+    "M30-P7-1",
+    "M30-P3-1",
+    "M31-P10-5"
+  ],
+  "guardrails": {
+    "agent_identity_only_rendering": true,
+    "user_pii_redacted_or_omitted": true,
+    "policy_lineage_linked_intervention_controls": true,
+    "temporal_replay_timestamped_and_auditable": true,
+    "ai2ai_mesh_health_fail_closed_unknown_fields": true,
+    "bounded_command_center_actions_only": true,
+    "deep_links_carry_context_without_bypassing_governance": true
+  },
+  "status": "complete",
+  "completed_on": "2026-03-31"
+}

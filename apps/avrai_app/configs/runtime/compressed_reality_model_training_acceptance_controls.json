@@ -1,0 +1,30 @@
+{
+  "milestone": "M31-P12-3",
+  "phase": "12",
+  "master_plan_refs": ["12.4B.6"],
+  "manifest_version": "v2",
+  "compression_rollout_profile": "compressed_reality_model_v1",
+  "required_base_suites": [
+    "offline_replay",
+    "adversarial_robustness",
+    "contradiction_stress"
+  ],
+  "required_compression_regression_suites": [
+    "ranking_drift",
+    "calibration_drift",
+    "contradiction_detection_degradation",
+    "uncertainty_honesty_regression"
+  ],
+  "regression_budgets": {
+    "ranking_drift": 0.02,
+    "calibration_drift": 0.01,
+    "contradiction_detection_degradation": 0.015,
+    "uncertainty_honesty_regression": 0.005
+  },
+  "fail_closed_rules": [
+    "compression rollout approval requires all base suites to pass with artifacts",
+    "compression rollout approval requires all compression regression suites to pass with artifacts",
+    "compression rollout approval is invalid when observed regression exceeds declared budget",
+    "compression rollout approval is invalid when manifest schema and summary drift"
+  ]
+}

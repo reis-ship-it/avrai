@@ -1,0 +1,20 @@
+{
+  "version": "v1",
+  "updated_at": "2026-02-28",
+  "learning_intake_coverage": {
+    "required_signal_capture_coverage_pct": 100.0,
+    "observed_signal_capture_coverage_pct": 100.0,
+    "required_pseudonymous_actor_coverage_pct": 100.0,
+    "observed_pseudonymous_actor_coverage_pct": 100.0,
+    "required_on_device_first_processing_pct": 100.0,
+    "observed_on_device_first_processing_pct": 100.0,
+    "checks_executed": 144
+  },
+  "learning_intake_safety": {
+    "max_raw_user_identifier_egress_events": 0,
+    "observed_raw_user_identifier_egress_events": 0,
+    "max_missing_consent_events": 0,
+    "observed_missing_consent_events": 0,
+    "checks_executed": 144
+  }
+}

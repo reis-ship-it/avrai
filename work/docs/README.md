@@ -1,0 +1,63 @@
+## Documentation Index
+
+### **Core Documentation**
+- **Product Requirements (PRD):** `PRD.md` - Canonical requirement IDs and drift-prevention acceptance criteria
+- **Master Plan:** `MASTER_PLAN.md` - Single source of truth for implementation order
+- **Master Plan Tracker:** `MASTER_PLAN_TRACKER.md` - Master registry of all plans
+- **Execution Board (CSV source):** `EXECUTION_BOARD.csv` - Canonical milestone/phase execution state (Phase 1-N)
+- **Execution Board (rendered):** `EXECUTION_BOARD.md` - Human-readable board synced from CSV
+- **Weekly Status Log:** `STATUS_WEEKLY.md` - Weekly deltas, blockers, and gate decisions
+- **GitHub Enforcement Setup:** `GITHUB_ENFORCEMENT_SETUP.md` - Branch protection + required checks configuration
+- **File Classification:** `file_classification.md` - File classification guide
+
+Execution board commands:
+- Sync board: `dart run tool/update_execution_board.dart`
+- Validate board: `dart run tool/update_execution_board.dart --check`
+
+GitHub automation:
+- Workflow: `.github/workflows/execution-board-guard.yml` (runs board sync/coverage + architecture placement validation on PRs)
+- Workflow: `.github/workflows/prd-traceability-guard.yml` (requires PRD IDs + exactly one execution milestone ID + `X.Y.Z` refs, and validates commit boundary metadata)
+
+### **Organized Documentation**
+
+- **Architecture**
+  - 📚 **Start here:** `plans/architecture/ARCHITECTURE_INDEX.md` - Central index for all architecture docs
+  - 3-prong umbrella authority: `plans/architecture/MASTER_PLAN_3_PRONG_TARGET_END_STATE.md` - One overarching execution authority with boundary + concurrency rules
+  - Apps prong plan: `plans/architecture/PRONG_APPS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md` - Isolated product-surface lane execution plan
+  - Runtime OS prong plan: `plans/architecture/PRONG_RUNTIME_OS_CONCURRENT_EXECUTION_PLAN_2026-02-28.md` - Isolated runtime/orchestration/policy lane execution plan
+  - Reality Model prong plan: `plans/architecture/PRONG_REALITY_MODEL_CONCURRENT_EXECUTION_PLAN_2026-02-28.md` - Isolated model-truth/learning/planning lane execution plan
+  - Target structure enforcement: `plans/architecture/TARGET_CODEBASE_STRUCTURE_ENFORCEMENT_2026-02-27.md` - Default placement rule for all new code (`apps -> runtime -> engine -> shared`)
+  - Refactor fast-lane playbook: `plans/architecture/REFACTOR_FASTLANE_PLAYBOOK_2026-02-27.md` - Practical slice-by-slice migration workflow + PR checklist
+  - Online/Offline Strategy: `plans/architecture/ONLINE_OFFLINE_STRATEGY.md` - Feature-by-feature strategy (83% offline-first)
+  - Offline Cloud AI: `plans/architecture/OFFLINE_CLOUD_AI_ARCHITECTURE.md` - AI/LLM offline architecture
+  - ai2ai, ML, Federated: `plans/architecture/architecture_ai_federated_p2p.md` (ai2ai terminology)
+  - Decision framework: `DECISION_FRAMEWORK.md`
+  - Roadmaps: `roadmaps/`
+
+- **Plans:** `plans/` - All implementation plans organized by feature/system
+  - Phase documentation: `plans/phase_1_3/`
+  - Methodology: `plans/methodology/`
+  - Test suite: `plans/test_suite_update/`
+  - Services: `plans/services/` - Service index and dependency matrix
+  - See: `plans/ORGANIZATION_SUMMARY.md` for complete structure
+
+- **Reports:** `reports/` - Project reports organized by category
+  - Project status: `reports/project_status/`
+  - Refactoring/cleanup: `reports/refactoring_cleanup/`
+  - Feature implementation: `reports/feature_implementation/`
+  - Code quality/testing: `reports/code_quality_testing/`
+  - Session/progress: `reports/session_progress/`
+  - Optimization: `reports/optimization/`
+  - See: `reports/README.md` for organization schema
+
+- **Agent Documentation:** `agents/` - Agent prompts, tasks, reports organized by phase
+  - See: `agents/README.md` for complete structure
+
+- **Background Agents:** `background-agents/` - Background agent instructions & prompts
+
+- **Design:** `design/` - Design documentation and UI/UX notes
+
+- **ADRs:** `ADRS/` - Architecture Decision Records
+
+### **Other Documentation**
+- Supabase setup: `SUPABASE_SETUP.md`

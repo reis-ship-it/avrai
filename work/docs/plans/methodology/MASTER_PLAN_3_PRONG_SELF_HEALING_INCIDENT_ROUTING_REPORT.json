@@ -1,0 +1,27 @@
+{
+  "active_incidents": 2,
+  "all_routed": true,
+  "contain_slo_compliant": true,
+  "detect_slo_compliant": true,
+  "errors": [],
+  "generated_at": "2026-02-27T14:00:00Z",
+  "per_domain": {
+    "avrai_os": 1,
+    "avrai_product": 1,
+    "reality_system": 1
+  },
+  "per_severity": {
+    "p0": 0,
+    "p1": 2,
+    "p2": 1,
+    "p3": 0
+  },
+  "recover_slo_compliant": true,
+  "routed_incidents": 3,
+  "slo_breaches": 0,
+  "slo_compliant": true,
+  "source": "configs/runtime/self_healing_incident_routing_queue.json",
+  "total_incidents": 3,
+  "verdict": "PASS",
+  "version": "v1"
+}

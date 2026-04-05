@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AVRAI Brand Book – Glass Pane Mockup</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #0A1A2F; font-family: 'Inter', sans-serif; }
+
+    #drop-zone {
+      position: fixed; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 16px;
+      color: #8A8A8A; font-size: 16px;
+      border: 2px dashed #333; margin: 40px;
+      border-radius: 20px; cursor: pointer;
+      transition: border-color 0.3s, background 0.3s;
+      z-index: 200;
+    }
+    #drop-zone:hover, #drop-zone.dragover {
+      border-color: #00FF66; background: rgba(0,255,102,0.05);
+    }
+    #drop-zone .icon { font-size: 48px; opacity: 0.4; }
+    #drop-zone .hint { color: #555; font-size: 12px; }
+    #drop-zone.hidden { display: none; }
+
+    canvas { display: block; }
+    #main-canvas { position: fixed; inset: 0; }
+
+    .controls {
+      position: fixed; bottom: 20px; right: 20px;
+      display: flex; gap: 10px; z-index: 100;
+    }
+    .controls button {
+      padding: 10px 20px;
+      background: rgba(0,0,0,0.7); color: #00FF66;
+      border: 1px solid rgba(0,255,102,0.4); border-radius: 8px;
+      font-family: 'Inter', sans-serif; font-size: 13px;
+      cursor: pointer; backdrop-filter: blur(10px);
+    }
+    .controls button:hover { background: rgba(0,255,102,0.15); }
+
+    .sliders {
+      position: fixed; top: 20px; right: 20px;
+      background: rgba(0,0,0,0.75); padding: 16px 20px;
+      border-radius: 12px; z-index: 100;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.08);
+      min-width: 240px;
+    }
+    .sliders.hidden { display: none; }
+    .sliders h3 { color: #00FF66; font-size: 11px; letter-spacing: 2px; margin-bottom: 12px; text-transform: uppercase; }
+    .slider-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .slider-row label { color: #8A8A8A; font-size: 11px; min-width: 80px; }
+    .slider-row input[type=range] { flex: 1; accent-color: #00FF66; }
+    .slider-row .val { color: #B0B0B0; font-size: 11px; min-width: 35px; text-align: right; }
+
+    #info {
+      position: fixed; top: 20px; left: 20px;
+      color: #6E6E6E; font-size: 10px; z-index: 100;
+      line-height: 1.5;
+    }
+    #info.hidden { display: none; }
+  </style>
+</head>
+<body>
+
+  <!-- Drop zone for image -->
+  <div id="drop-zone" onclick="document.getElementById('file-input').click()">
+    <div class="icon">+</div>
+    <div>Drop your background image here, or click to browse</div>
+    <div class="hint">Recommended: high-resolution landscape photo (sky + grass)</div>
+    <input type="file" id="file-input" accept="image/*" style="display:none">
+  </div>
+
+  <!-- Main render canvas -->
+  <canvas id="main-canvas"></canvas>
+
+  <!-- Controls -->
+  <div class="sliders hidden" id="sliders">
+    <h3>Glass Pane Controls</h3>
+    <div class="slider-row">
+      <label>Blur</label>
+      <input type="range" id="s-blur" min="5" max="60" value="28" step="1">
+      <span class="val" id="v-blur">28</span>
+    </div>
+    <div class="slider-row">
+      <label>Tint</label>
+      <input type="range" id="s-tint" min="0" max="60" value="22" step="1">
+      <span class="val" id="v-tint">22%</span>
+    </div>
+    <div class="slider-row">
+      <label>Corners</label>
+      <input type="range" id="s-radius" min="8" max="80" value="38" step="1">
+      <span class="val" id="v-radius">38</span>
+    </div>
+    <div class="slider-row">
+      <label>Width %</label>
+      <input type="range" id="s-width" min="50" max="95" value="82" step="1">
+      <span class="val" id="v-width">82%</span>
+    </div>
+    <div class="slider-row">
+      <label>Height %</label>
+      <input type="range" id="s-height" min="40" max="95" value="78" step="1">
+      <span class="val" id="v-height">78%</span>
+    </div>
+    <div class="slider-row">
+      <label>Border</label>
+      <input type="range" id="s-border" min="0" max="5" value="1.8" step="0.1">
+      <span class="val" id="v-border">1.8</span>
+    </div>
+    <div class="slider-row">
+      <label>Shadow</label>
+      <input type="range" id="s-shadow" min="0" max="80" value="45" step="1">
+      <span class="val" id="v-shadow">45</span>
+    </div>
+    <div class="slider-row">
+      <label>Y Offset</label>
+      <input type="range" id="s-yoff" min="-20" max="20" value="0" step="1">
+      <span class="val" id="v-yoff">0</span>
+    </div>
+  </div>
+
+  <div class="controls" id="controls" style="display:none">
+    <button onclick="saveImage(1)">Save 1x</button>
+    <button onclick="saveImage(2)">Save 2x</button>
+    <button onclick="saveImage(4)">Save 4K</button>
+    <button onclick="document.getElementById('file-input').click()">Change Image</button>
+  </div>
+
+  <div id="info" class="hidden">AVRAI Brand Book – Glass Pane Mockup</div>
+
+  <script>
+    // ═══════════════════════════════════════════════════
+    // AVRAI Brand Book - Glass Pane over Photo Background
+    // Canvas 2D approach: real Gaussian blur of actual photo
+    // ═══════════════════════════════════════════════════
+
+    const canvas = document.getElementById('main-canvas');
+    const ctx = canvas.getContext('2d');
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const slidersPanel = document.getElementById('sliders');
+    const controlsPanel = document.getElementById('controls');
+    const infoPanel = document.getElementById('info');
+
+    let bgImage = null;
+
+    // ── Parameters ──
+    const P = {
+      blur: 28,
+      tint: 0.22,
+      radius: 38,
+      paneW: 0.82,
+      paneH: 0.78,
+      borderW: 1.8,
+      shadowBlur: 45,
+      yOffset: 0
+    };
+
+    // ── Slider wiring ──
+    function wireSlider(id, param, transform, format) {
+      const slider = document.getElementById('s-' + id);
+      const display = document.getElementById('v-' + id);
+      slider.addEventListener('input', () => {
+        P[param] = transform(parseFloat(slider.value));
+        display.textContent = format(slider.value);
+        render();
+      });
+    }
+
+    wireSlider('blur', 'blur', v => v, v => v);
+    wireSlider('tint', 'tint', v => v / 100, v => v + '%');
+    wireSlider('radius', 'radius', v => v, v => v);
+    wireSlider('width', 'paneW', v => v / 100, v => v + '%');
+    wireSlider('height', 'paneH', v => v / 100, v => v + '%');
+    wireSlider('border', 'borderW', v => v, v => v);
+    wireSlider('shadow', 'shadowBlur', v => v, v => v);
+    wireSlider('yoff', 'yOffset', v => v, v => v);
+
+    // ── Image loading ──
+    function loadImage(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          bgImage = img;
+          dropZone.classList.add('hidden');
+          slidersPanel.classList.remove('hidden');
+          controlsPanel.style.display = 'flex';
+          infoPanel.classList.remove('hidden');
+          render();
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Drag & drop
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      if (e.dataTransfer.files.length) loadImage(e.dataTransfer.files[0]);
+    });
+    fileInput.addEventListener('change', (e) => { if (e.target.files.length) loadImage(e.target.files[0]); });
+
+    // ── Rounded rect path helper ──
+    function roundedRectPath(ctx, x, y, w, h, r) {
+      r = Math.min(r, w / 2, h / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.arcTo(x + w, y, x + w, y + r, r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+      ctx.lineTo(x + r, y + h);
+      ctx.arcTo(x, y + h, x, y + h - r, r);
+      ctx.lineTo(x, y + r);
+      ctx.arcTo(x, y, x + r, y, r);
+      ctx.closePath();
+    }
+
+    // ── Main render ──
+    function render(scale) {
+      if (!bgImage) return;
+
+      scale = scale || 1;
+      const W = (window.innerWidth * (scale > 1 ? scale : window.devicePixelRatio));
+      const H = (window.innerHeight * (scale > 1 ? scale : window.devicePixelRatio));
+
+      canvas.width = W;
+      canvas.height = H;
+      canvas.style.width = window.innerWidth + 'px';
+      canvas.style.height = window.innerHeight + 'px';
+
+      // ── 1. Draw background image (cover fit) ──
+      const imgAspect = bgImage.width / bgImage.height;
+      const canvasAspect = W / H;
+      let sx, sy, sw, sh;
+
+      if (imgAspect > canvasAspect) {
+        // Image wider: crop sides
+        sh = bgImage.height;
+        sw = bgImage.height * canvasAspect;
+        sx = (bgImage.width - sw) / 2;
+        sy = 0;
+      } else {
+        // Image taller: crop top/bottom
+        sw = bgImage.width;
+        sh = bgImage.width / canvasAspect;
+        sx = 0;
+        sy = (bgImage.height - sh) / 2;
+      }
+
+      ctx.drawImage(bgImage, sx, sy, sw, sh, 0, 0, W, H);
+
+      // ── 2. Glass pane dimensions ──
+      const pW = W * P.paneW;
+      const pH = H * P.paneH;
+      const pX = (W - pW) / 2;
+      const pY = (H - pH) / 2 + P.yOffset * (scale > 1 ? scale : window.devicePixelRatio);
+      const r = P.radius * (scale > 1 ? scale : window.devicePixelRatio);
+      const borderW = P.borderW * (scale > 1 ? scale : window.devicePixelRatio);
+
+      // ── 3. Drop shadow ──
+      ctx.save();
+      const shadowScale = (scale > 1 ? scale : window.devicePixelRatio);
+      roundedRectPath(ctx, pX, pY + 12 * shadowScale, pW, pH, r);
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+      ctx.shadowBlur = P.shadowBlur * shadowScale;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 18 * shadowScale;
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+      ctx.fill();
+      ctx.restore();
+
+      // ── 4. Frosted glass interior ──
+      // Clip to pane shape, apply blur, draw tinted version
+      ctx.save();
+      roundedRectPath(ctx, pX, pY, pW, pH, r);
+      ctx.clip();
+
+      // Draw blurred background inside the clip
+      ctx.filter = `blur(${P.blur * shadowScale}px)`;
+      ctx.drawImage(bgImage, sx, sy, sw, sh, 0, 0, W, H);
+      ctx.filter = 'none';
+
+      // Dark tint overlay
+      ctx.fillStyle = `rgba(0, 0, 0, ${P.tint})`;
+      ctx.fillRect(pX, pY, pW, pH);
+
+      // Subtle noise/grain for glass texture (via semi-random dots)
+      ctx.globalAlpha = 0.015;
+      for (let i = 0; i < 8000; i++) {
+        const nx = pX + Math.random() * pW;
+        const ny = pY + Math.random() * pH;
+        const ns = Math.random() * 2 * shadowScale;
+        ctx.fillStyle = Math.random() > 0.5 ? '#ffffff' : '#000000';
+        ctx.fillRect(nx, ny, ns, ns);
+      }
+      ctx.globalAlpha = 1.0;
+
+      // ── 5. Inner reflection/highlight (top area) ──
+      const reflGrad = ctx.createLinearGradient(pX, pY, pX + pW * 0.6, pY + pH * 0.5);
+      reflGrad.addColorStop(0, 'rgba(255, 255, 255, 0.07)');
+      reflGrad.addColorStop(0.3, 'rgba(255, 255, 255, 0.03)');
+      reflGrad.addColorStop(0.6, 'rgba(255, 255, 255, 0.0)');
+      reflGrad.addColorStop(1, 'rgba(0, 0, 0, 0.02)');
+      ctx.fillStyle = reflGrad;
+      ctx.fillRect(pX, pY, pW, pH);
+
+      // Top edge highlight bar
+      const topGrad = ctx.createLinearGradient(pX, pY, pX, pY + pH * 0.15);
+      topGrad.addColorStop(0, 'rgba(255, 255, 255, 0.06)');
+      topGrad.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
+      ctx.fillStyle = topGrad;
+      ctx.fillRect(pX, pY, pW, pH * 0.15);
+
+      ctx.restore();
+
+      // ── 6. Metallic gradient border ──
+      if (borderW > 0) {
+        ctx.save();
+        roundedRectPath(ctx, pX, pY, pW, pH, r);
+
+        // Create gradient along the diagonal (top-left bright to bottom-right dark)
+        const borderGrad = ctx.createLinearGradient(
+          pX - pW * 0.1, pY - pH * 0.1,
+          pX + pW * 1.1, pY + pH * 1.1
+        );
+        borderGrad.addColorStop(0.0, 'rgba(240, 240, 240, 0.85)');   // Bright highlight
+        borderGrad.addColorStop(0.25, 'rgba(200, 200, 200, 0.6)');   // Light
+        borderGrad.addColorStop(0.5, 'rgba(140, 140, 140, 0.4)');    // Mid
+        borderGrad.addColorStop(0.75, 'rgba(80, 80, 80, 0.5)');      // Dark
+        borderGrad.addColorStop(1.0, 'rgba(40, 40, 40, 0.7)');       // Shadow
+
+        ctx.strokeStyle = borderGrad;
+        ctx.lineWidth = borderW;
+        ctx.stroke();
+
+        // Second pass: inner highlight line (thinner, brighter)
+        roundedRectPath(ctx, pX + borderW * 0.5, pY + borderW * 0.5, pW - borderW, pH - borderW, r - borderW * 0.5);
+        const innerGrad = ctx.createLinearGradient(
+          pX, pY,
+          pX + pW * 0.5, pY + pH * 0.5
+        );
+        innerGrad.addColorStop(0.0, 'rgba(255, 255, 255, 0.2)');
+        innerGrad.addColorStop(0.4, 'rgba(255, 255, 255, 0.05)');
+        innerGrad.addColorStop(1.0, 'rgba(0, 0, 0, 0.0)');
+        ctx.strokeStyle = innerGrad;
+        ctx.lineWidth = borderW * 0.5;
+        ctx.stroke();
+
+        ctx.restore();
+      }
+
+      // ── 7. Subtle outer glow on top-left corner ──
+      ctx.save();
+      const glowGrad = ctx.createRadialGradient(
+        pX + r * 1.5, pY + r * 1.5, 0,
+        pX + r * 1.5, pY + r * 1.5, r * 4
+      );
+      glowGrad.addColorStop(0, 'rgba(255, 255, 255, 0.04)');
+      glowGrad.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
+      ctx.fillStyle = glowGrad;
+      roundedRectPath(ctx, pX - 2, pY - 2, pW + 4, pH + 4, r + 2);
+      ctx.fill();
+      ctx.restore();
+
+      // ── 8. Light vignette on entire image ──
+      ctx.save();
+      const vigGrad = ctx.createRadialGradient(W / 2, H / 2, W * 0.2, W / 2, H / 2, W * 0.75);
+      vigGrad.addColorStop(0, 'rgba(0, 0, 0, 0.0)');
+      vigGrad.addColorStop(1, 'rgba(0, 0, 0, 0.12)');
+      ctx.fillStyle = vigGrad;
+      ctx.fillRect(0, 0, W, H);
+      ctx.restore();
+    }
+
+    // ── Save ──
+    window.saveImage = function(multiplier) {
+      if (!bgImage) return;
+
+      const saveW = window.innerWidth * multiplier;
+      const saveH = window.innerHeight * multiplier;
+
+      // Create offscreen canvas at target resolution
+      const offCanvas = document.createElement('canvas');
+      offCanvas.width = saveW;
+      offCanvas.height = saveH;
+      const offCtx = offCanvas.getContext('2d');
+
+      // Temporarily swap contexts
+      const origCtx = ctx;
+      const origCanvas = canvas;
+
+      // Render at save resolution using a temporary approach
+      // Save current canvas state
+      canvas.width = saveW;
+      canvas.height = saveH;
+
+      // Override devicePixelRatio effect for clean render
+      const tempStyle = canvas.style.width;
+      canvas.style.width = saveW + 'px';
+      canvas.style.height = saveH + 'px';
+
+      // Hack: temporarily override innerWidth/Height for render
+      const ow = window.innerWidth, oh = window.innerHeight;
+      Object.defineProperty(window, 'innerWidth', { value: saveW, writable: true, configurable: true });
+      Object.defineProperty(window, 'innerHeight', { value: saveH, writable: true, configurable: true });
+
+      render(1); // render at 1x since canvas is already at target size
+
+      // Restore
+      Object.defineProperty(window, 'innerWidth', { value: ow, writable: true, configurable: true });
+      Object.defineProperty(window, 'innerHeight', { value: oh, writable: true, configurable: true });
+
+      // Save
+      const link = document.createElement('a');
+      link.download = `avrai_brand_book_${saveW}x${saveH}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+
+      // Restore canvas
+      canvas.style.width = ow + 'px';
+      canvas.style.height = oh + 'px';
+      render();
+    };
+
+    // ── Resize ──
+    window.addEventListener('resize', () => render());
+
+    console.log('AVRAI Brand Book Glass Pane Mockup loaded.');
+    console.log('Drop a background image to begin.');
+  </script>
+</body>
+</html>

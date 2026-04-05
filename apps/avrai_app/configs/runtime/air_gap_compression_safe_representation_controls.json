@@ -1,0 +1,24 @@
+{
+  "milestone_id": "M31-P12-1",
+  "scope": "phase-12 air gap compression contract, safe artifact envelope, bounded compression kernel, and compressed knowledge packet baseline",
+  "master_plan_refs": [
+    "12.4A.1",
+    "12.4A.2",
+    "12.4A.3",
+    "12.4A.4",
+    "12.4A.6",
+    "12.4A.7"
+  ],
+  "dependencies": [
+    "M31-P10-4"
+  ],
+  "guardrails": {
+    "raw_payload_markers_forbidden": true,
+    "higher_layer_artifacts_require_policy_approval": true,
+    "distortion_budget_must_fail_closed": true,
+    "compression_preserves_provenance_and_privacy_tags": true,
+    "knowledge_packets_carry_only_safe_artifacts": true
+  },
+  "status": "implemented_baseline",
+  "opened_on": "2026-03-31"
+}

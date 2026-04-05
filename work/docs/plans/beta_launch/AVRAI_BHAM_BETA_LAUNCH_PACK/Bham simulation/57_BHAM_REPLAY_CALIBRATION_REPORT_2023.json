@@ -1,0 +1,168 @@
+{
+  "environmentId": "bham-replay-world-2023",
+  "replayYear": 2023,
+  "passed": true,
+  "records": [
+    {
+      "metricId": "city_population_total",
+      "targetValue": 669744.0,
+      "actualValue": 669744.0,
+      "allowedVariancePct": 1.0,
+      "passed": true,
+      "rationale": "Population total should exactly reflect ACS/BEA truth-year intake.",
+      "metadata": {
+        "delta": 0.0,
+        "variancePct": 0.0,
+        "comparison": "exact"
+      }
+    },
+    {
+      "metricId": "city_housing_total",
+      "targetValue": 309542.0,
+      "actualValue": 309542.0,
+      "allowedVariancePct": 1.0,
+      "passed": true,
+      "rationale": "Housing total should remain aligned with replay truth-year inputs.",
+      "metadata": {
+        "delta": 0.0,
+        "variancePct": 0.0,
+        "comparison": "exact"
+      }
+    },
+    {
+      "metricId": "metro_core_locality_coverage_pct",
+      "targetValue": 100.0,
+      "actualValue": 100.0,
+      "allowedVariancePct": 0.0,
+      "passed": true,
+      "rationale": "Every in-scope metro-core locality must be represented.",
+      "metadata": {
+        "delta": 0.0,
+        "variancePct": 0.0,
+        "comparison": "minimum"
+      }
+    },
+    {
+      "metricId": "weighted_actor_count",
+      "targetValue": 25000.0,
+      "actualValue": 25000.0,
+      "allowedVariancePct": 0.0,
+      "passed": true,
+      "rationale": "Dense city-faithful replay requires at least 25k weighted actors.",
+      "metadata": {
+        "delta": 0.0,
+        "variancePct": 0.0,
+        "comparison": "minimum"
+      }
+    },
+    {
+      "metricId": "venue_profile_count",
+      "targetValue": 700.0,
+      "actualValue": 825.0,
+      "allowedVariancePct": 0.0,
+      "passed": true,
+      "rationale": "Venue graph should be dense enough for metro-core destination choice.",
+      "metadata": {
+        "delta": 125.0,
+        "variancePct": 0.0,
+        "comparison": "minimum"
+      }
+    },
+    {
+      "metricId": "club_profile_count",
+      "targetValue": 120.0,
+      "actualValue": 564.0,
+      "allowedVariancePct": 0.0,
+      "passed": true,
+      "rationale": "Club structure must be materially present in the truth-year graph.",
+      "metadata": {
+        "delta": 444.0,
+        "variancePct": 0.0,
+        "comparison": "minimum"
+      }
+    },
+    {
+      "metricId": "community_profile_count",
+      "targetValue": 500.0,
+      "actualValue": 827.0,
+      "allowedVariancePct": 0.0,
+      "passed": true,
+      "rationale": "Community density should be citywide, not just structural anchors.",
+      "metadata": {
+        "delta": 327.0,
+        "variancePct": 0.0,
+        "comparison": "minimum"
+      }
+    },
+    {
+      "metricId": "organization_profile_count",
+      "targetValue": 300.0,
+      "actualValue": 415.0,
+      "allowedVariancePct": 0.0,
+      "passed": true,
+      "rationale": "Organizations should be explicit enough to host city life.",
+      "metadata": {
+        "delta": 115.0,
+        "variancePct": 0.0,
+        "comparison": "minimum"
+      }
+    },
+    {
+      "metricId": "event_profile_count",
+      "targetValue": 1000.0,
+      "actualValue": 1774.0,
+      "allowedVariancePct": 0.0,
+      "passed": true,
+      "rationale": "A 2023 city-faithful year needs a materially dense event corpus.",
+      "metadata": {
+        "delta": 774.0,
+        "variancePct": 0.0,
+        "comparison": "minimum"
+      }
+    },
+    {
+      "metricId": "active_kernel_count",
+      "targetValue": 9.0,
+      "actualValue": 9.0,
+      "allowedVariancePct": 0.0,
+      "passed": true,
+      "rationale": "All replay-participating kernels must remain active.",
+      "metadata": {
+        "delta": 0.0,
+        "variancePct": 0.0,
+        "comparison": "minimum"
+      }
+    },
+    {
+      "metricId": "daily_behavior_locality_coverage_pct",
+      "targetValue": 100.0,
+      "actualValue": 100.0,
+      "allowedVariancePct": 0.0,
+      "passed": true,
+      "rationale": "Daily behavior should cover nearly all replay localities.",
+      "metadata": {
+        "delta": 0.0,
+        "variancePct": 0.0,
+        "comparison": "minimum"
+      }
+    },
+    {
+      "metricId": "daily_behavior_action_density",
+      "targetValue": 25000.0,
+      "actualValue": 50000.0,
+      "allowedVariancePct": 0.0,
+      "passed": true,
+      "rationale": "At least one explicit replay action per weighted actor is expected.",
+      "metadata": {
+        "delta": 25000.0,
+        "variancePct": 0.0,
+        "comparison": "minimum"
+      }
+    }
+  ],
+  "unresolvedMetrics": [],
+  "metadata": {
+    "nodeCount": 1180,
+    "localityCount": 215
+  }
+}
